@@ -33,6 +33,8 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.common)
+    implementation(projects.core.data)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -40,4 +42,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    api(libs.okhttp.logging)
+    api(libs.retrofit.core)
+    api(libs.retrofit.converter.gson)
+    api(libs.retrofit.kotlin.serialization)
 }

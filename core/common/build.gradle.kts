@@ -49,4 +49,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
 
     api(libs.ksp.gradlePlugin)
+    api(libs.kotlinx.serialization.json)
+    api(libs.kotlinx.coroutines.core)
+    api(libs.kotlinx.coroutines.android)
 }

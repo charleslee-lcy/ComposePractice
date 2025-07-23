@@ -1,6 +1,7 @@
 package cn.thecover.media
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,11 +13,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
+import cn.thecover.media.core.network.YBNetwork
+import cn.thecover.media.feature.basis.MainApi
+import com.google.gson.Gson
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             MaterialTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -26,6 +33,12 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
+        }
+
+        lifecycleScope.launch {
+            val api = YBNetwork.ybRetrofit.create(MainApi::class.java)
+            val home = api.getHome()
+            Toast.makeText(this@MainActivity, Gson().toJson(home), Toast.LENGTH_LONG).show()
         }
     }
 }
