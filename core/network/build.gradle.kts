@@ -1,34 +1,18 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.nowinandroid.android.library)
+    alias(libs.plugins.nowinandroid.hilt)
+    id("kotlinx-serialization")
 }
 
 android {
     namespace = "cn.thecover.media.core.network"
-    compileSdk = 35
-
-    defaultConfig {
-        minSdk = 21
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
+    buildFeatures {
+        buildConfig = true
     }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
         }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
     }
 }
 
@@ -36,15 +20,10 @@ dependencies {
     implementation(projects.core.common)
     implementation(projects.core.data)
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-
+    implementation(libs.kotlinx.serialization.json)
     api(libs.okhttp.logging)
     api(libs.retrofit.core)
     api(libs.retrofit.converter.gson)
     api(libs.retrofit.kotlin.serialization)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cn.thecover.media.core.common.theme
+package cn.thecover.media.core.widget.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

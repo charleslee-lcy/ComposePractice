@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cn.thecover.media.core.common.theme
+package cn.thecover.media.core.widget.theme
 
 import android.os.Build
 import androidx.annotation.ChecksSdkIntAtLeast
@@ -152,4 +152,4 @@ val DarkAndroidColorScheme = darkColorScheme(
 )
 
 @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
-fun supportsDynamicTheming() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+fun supportsDynamicTheming() = Build.VERSION.SDK_INT.compareTo(Build.VERSION_CODES.S)
