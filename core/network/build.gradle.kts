@@ -21,6 +21,8 @@ dependencies {
     implementation(projects.core.data)
 
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.coil.kt)
+    implementation(libs.coil.kt.svg)
     api(libs.okhttp.logging)
     api(libs.retrofit.core)
     api(libs.retrofit.converter.gson)
