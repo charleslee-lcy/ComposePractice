@@ -1,6 +1,7 @@
 package cn.thecover.media
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -18,6 +19,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import cn.thecover.media.MainActivityUiState.Loading
 import cn.thecover.media.core.common.network.NetworkMonitor
+import cn.thecover.media.core.widget.event.EventConstants
+import cn.thecover.media.core.widget.event.FlowBus
 import cn.thecover.media.core.widget.ui.LocalTimeZone
 import cn.thecover.media.core.widget.util.TimeZoneMonitor
 import cn.thecover.media.ui.YBApp
@@ -118,6 +121,10 @@ class MainActivity : ComponentActivity() {
             viewModel.getHomeData().collect {
                 Toast.makeText(this@MainActivity, Gson().toJson(it.data), Toast.LENGTH_LONG).show()
             }
+        }
+
+        FlowBus.observeEvent<String>(EventConstants.ACTION_HOME) {
+            Log.d("MainActivity", it.data)
         }
     }
 }

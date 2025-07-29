@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import cn.thecover.media.feature.basis.home.navigation.HomeBaseRoute
+import cn.thecover.media.feature.basis.home.navigation.HomeRoute
 import cn.thecover.media.feature.basis.home.navigation.homeIndex
 import cn.thecover.media.feature.basis.mine.navigation.mineScreen
 import cn.thecover.media.feature.review_data.navigation.reviewDataScreen
@@ -42,7 +43,7 @@ fun YBNavHost(
     val navController = appState.navController
     NavHost(
         navController = navController,
-        startDestination = HomeBaseRoute,
+        startDestination = HomeRoute,
         modifier = modifier,
     ) {
         homeIndex()

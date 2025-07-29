@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.basis.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
@@ -8,6 +9,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import cn.thecover.media.core.widget.event.EventConstants
+import cn.thecover.media.core.widget.event.FlowBus
+import cn.thecover.media.core.widget.event.FlowEvent
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.YBTheme
 
 
@@ -35,7 +39,10 @@ internal fun HomeScreen(
         modifier = modifier.fillMaxSize()
     ) {
         Text(
-            text = "首页"
+            text = "首页",
+            modifier = modifier.clickable {
+                FlowBus.post(FlowEvent(EventConstants.ACTION_HOME, "我传了消息"))
+            }
         )
     }
 }

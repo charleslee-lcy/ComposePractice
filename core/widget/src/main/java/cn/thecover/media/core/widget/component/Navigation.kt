@@ -38,6 +38,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cn.thecover.media.core.widget.icon.YBIcons
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.YBTheme
@@ -199,7 +200,7 @@ fun YBNavigationSuiteScaffold(
             unselectedIconColor = YBNavigationDefaults.navigationContentColor(),
             selectedTextColor = YBNavigationDefaults.navigationSelectedItemColor(),
             unselectedTextColor = YBNavigationDefaults.navigationContentColor(),
-            indicatorColor = YBNavigationDefaults.navigationIndicatorColor(),
+            indicatorColor = Color.LightGray,
         ),
         navigationRailItemColors = NavigationRailItemDefaults.colors(
             selectedIconColor = YBNavigationDefaults.navigationSelectedItemColor(),
@@ -265,7 +266,7 @@ class YBNavigationSuiteScope internal constructor(
     )
 }
 
-@ThemePreviews
+@Preview(showBackground = true)
 @Composable
 fun YBNavigationBarPreview() {
     val items = listOf("For you", "Saved", "Interests")
@@ -305,7 +306,6 @@ fun YBNavigationBarPreview() {
     }
 }
 
-@ThemePreviews
 @Composable
 fun YBNavigationRailPreview() {
     val items = listOf("For you", "Saved", "Interests")

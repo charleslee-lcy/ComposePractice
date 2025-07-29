@@ -23,8 +23,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navDeepLink
 import cn.thecover.media.feature.basis.home.HomeRoute
-import cn.thecover.media.feature.basis.home.HomeScreen
-import cn.thecover.media.feature.basis.home.navigation.HomeRoute
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -37,7 +35,7 @@ fun NavController.navigateToHome(navOptions: NavOptions) = navigate(route = Home
 
 fun NavGraphBuilder.homeIndex(
 ) {
-    navigation<HomeBaseRoute>(startDestination = HomeRoute) {
+//    navigation<HomeBaseRoute>(startDestination = HomeRoute) {
         composable<HomeRoute>(
             deepLinks = listOf(
                 navDeepLink {
@@ -54,5 +52,5 @@ fun NavGraphBuilder.homeIndex(
         ) {
             HomeRoute()
         }
-    }
+//    }
 }
