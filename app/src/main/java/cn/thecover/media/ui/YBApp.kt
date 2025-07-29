@@ -32,6 +32,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration.Indefinite
 import androidx.compose.material3.SnackbarDuration.Short
 import androidx.compose.material3.SnackbarHost
@@ -66,10 +67,12 @@ import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.YBBackground
 import cn.thecover.media.core.widget.component.YBGradientBackground
 import cn.thecover.media.core.widget.component.YBNavigationSuiteScaffold
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.GradientColors
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.LocalGradientColors
+import cn.thecover.media.core.widget.theme.Orange90
+import cn.thecover.media.core.widget.theme.Red40
 import cn.thecover.media.navigation.TopLevelDestination
 import cn.thecover.media.navigation.YBNavHost
+import com.google.samples.apps.nowinandroid.core.designsystem.theme.GradientColors
+import com.google.samples.apps.nowinandroid.core.designsystem.theme.LocalGradientColors
 import kotlin.reflect.KClass
 
 @Composable
@@ -129,7 +132,7 @@ internal fun YBApp(
 
     // 判断当前是否在顶级目的地页面
     val isTopLevelDestination = appState.topLevelDestinations.any { destination ->
-        currentDestination.isRouteInHierarchy(destination.baseRoute)
+        currentDestination.isRouteInHierarchy(destination.route)
     }
 
     // 只有在顶级页面才显示底部导航栏
@@ -193,6 +196,9 @@ private fun MainContent(
                         WindowInsets.ime,
                     ),
                 ),
+                snackbar = {
+                    Snackbar(it, contentColor = Red40, containerColor = Orange90)
+                }
             )
         },
     ) { padding ->

@@ -117,11 +117,11 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        lifecycleScope.launch {
-            viewModel.getHomeData().collect {
-                Toast.makeText(this@MainActivity, Gson().toJson(it.data), Toast.LENGTH_LONG).show()
-            }
-        }
+//        lifecycleScope.launch {
+//            viewModel.getHomeData().collect {
+//                Toast.makeText(this@MainActivity, Gson().toJson(it.data), Toast.LENGTH_LONG).show()
+//            }
+//        }
 
         FlowBus.observeEvent<String>(EventConstants.ACTION_HOME) {
             Log.d("MainActivity", it.data)
