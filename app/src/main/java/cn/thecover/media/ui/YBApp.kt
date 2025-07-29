@@ -127,87 +127,107 @@ internal fun YBApp(
 ) {
     val currentDestination = appState.currentDestination
 
-    YBNavigationSuiteScaffold(
-        navigationSuiteItems = {
-            appState.topLevelDestinations.forEach { destination ->
-                val hasUnread = false
-                val selected = currentDestination
-                    .isRouteInHierarchy(destination.baseRoute)
-                item(
-                    selected = selected,
-                    onClick = { appState.navigateToTopLevelDestination(destination) },
-                    icon = {
-                        Icon(
-                            imageVector = destination.unselectedIcon,
-                            contentDescription = null,
-                        )
-                    },
-                    selectedIcon = {
-                        Icon(
-                            imageVector = destination.selectedIcon,
-                            contentDescription = null,
-                        )
-                    },
-                    label = { Text(stringResource(destination.iconTextId)) },
-                    modifier = Modifier
-                        .testTag("YBNavItem")
-                        .then(if (hasUnread) Modifier.notificationDot() else Modifier),
-                )
-            }
-        },
-        windowAdaptiveInfo = windowAdaptiveInfo,
-    ) {
-        Scaffold(
-            modifier = modifier.semantics {
-                testTagsAsResourceId = true
-            },
-            containerColor = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-            contentWindowInsets = WindowInsets(0, 0, 0, 0),
-            snackbarHost = {
-                SnackbarHost(
-                    snackbarHostState,
-                    modifier = Modifier.windowInsetsPadding(
-                        WindowInsets.safeDrawing.exclude(
-                            WindowInsets.ime,
-                        ),
-                    ),
-                )
-            },
-        ) { padding ->
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .consumeWindowInsets(padding)
-                    .windowInsetsPadding(
-                        WindowInsets.safeDrawing.only(
-                            WindowInsetsSides.Horizontal,
-                        ),
-                    ),
-            ) {
+    // 判断当前是否在顶级目的地页面
+    val isTopLevelDestination = appState.topLevelDestinations.any { destination ->
+        currentDestination.isRouteInHierarchy(destination.baseRoute)
+    }
 
-                Box(
-                    // Workaround for https://issuetracker.google.com/338478720
-                    modifier = Modifier.consumeWindowInsets(
-                        WindowInsets(0, 0, 0, 0)
-                    ),
-                ) {
-                    YBNavHost(
-                        appState = appState,
-                        onShowSnackBar = { message, action ->
-                            snackbarHostState.showSnackbar(
-                                message = message,
-                                actionLabel = action,
-                                duration = Short,
-                            ) == ActionPerformed
+    // 只有在顶级页面才显示底部导航栏
+    if (isTopLevelDestination) {
+        YBNavigationSuiteScaffold(
+            navigationSuiteItems = {
+                appState.topLevelDestinations.forEach { destination ->
+                    val hasUnread = false
+                    val selected = currentDestination
+                        .isRouteInHierarchy(destination.baseRoute)
+                    item(
+                        selected = selected,
+                        onClick = { appState.navigateToTopLevelDestination(destination) },
+                        icon = {
+                            Icon(
+                                imageVector = destination.unselectedIcon,
+                                contentDescription = null,
+                            )
                         },
+                        selectedIcon = {
+                            Icon(
+                                imageVector = destination.selectedIcon,
+                                contentDescription = null,
+                            )
+                        },
+                        label = { Text(stringResource(destination.iconTextId)) },
+                        modifier = Modifier
+                            .testTag("YBNavItem")
+                            .then(if (hasUnread) Modifier.notificationDot() else Modifier),
                     )
                 }
+            },
+            windowAdaptiveInfo = windowAdaptiveInfo,
+        ) {
+            MainContent(appState, snackbarHostState, modifier)
+        }
+    } else {
+        // 非顶级页面直接显示内容，不包含底部导航栏
+        MainContent(appState, snackbarHostState, modifier)
+    }
+}
 
-                // TODO: We may want to add padding or spacer when the snackbar is shown so that
-                //  content doesn't display behind it.
+@Composable
+private fun MainContent(
+    appState: YBAppState,
+    snackbarHostState: SnackbarHostState,
+    modifier: Modifier = Modifier
+) {
+    Scaffold(
+        modifier = modifier.semantics {
+            testTagsAsResourceId = true
+        },
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        snackbarHost = {
+            SnackbarHost(
+                snackbarHostState,
+                modifier = Modifier.windowInsetsPadding(
+                    WindowInsets.safeDrawing.exclude(
+                        WindowInsets.ime,
+                    ),
+                ),
+            )
+        },
+    ) { padding ->
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .consumeWindowInsets(padding)
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(
+                        WindowInsetsSides.Horizontal,
+                    ),
+                ),
+        ) {
+
+            Box(
+                // Workaround for https://issuetracker.google.com/338478720
+                modifier = Modifier.consumeWindowInsets(
+                    WindowInsets(0, 0, 0, 0)
+                ),
+            ) {
+                YBNavHost(
+                    appState = appState,
+                    onShowSnackBar = { message, action ->
+                        snackbarHostState.showSnackbar(
+                            message = message,
+                            actionLabel = action,
+                            duration = Short,
+                        ) == ActionPerformed
+                    },
+                )
             }
+
+            // TODO: We may want to add padding or spacer when the snackbar is shown so that
+            //  content doesn't display behind it.
         }
     }
 }
