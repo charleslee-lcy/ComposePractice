@@ -20,23 +20,31 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
-import androidx.navigation.navDeepLink
-import cn.thecover.media.feature.basis.home.HomeScreen
-import cn.thecover.media.feature.basis.home.navigation.HomeBaseRoute
-import cn.thecover.media.feature.basis.home.navigation.HomeRoute
 import cn.thecover.media.feature.basis.mine.MineRoute
-import cn.thecover.media.feature.basis.mine.MineScreen
+import cn.thecover.media.feature.basis.mine.intent.MineNavigationIntent
+import cn.thecover.media.feature.basis.mine.modifypassword.ModifyPasswordRoute
 import kotlinx.serialization.Serializable
 
 @Serializable
 data object MineRoute
 
+
 fun NavController.navigateToMine(navOptions: NavOptions) = navigate(route = MineRoute, navOptions)
 
-fun NavGraphBuilder.mineScreen(
-) {
+fun NavController.navigateToModifyPassword(navOptions: NavOptions? = null) =
+    navigate(MineNavigationIntent.ModifyPassword, navOptions)
+
+fun NavGraphBuilder.mineScreen(navi: NavController) {
+
     composable<MineRoute> {
-        MineRoute()
+        MineRoute(navController = navi)
     }
+
+    // 修改密码页面路由
+    composable<MineNavigationIntent.ModifyPassword> {
+        ModifyPasswordRoute() // 需要创建该页面组件
+    }
+
 }
+
+
