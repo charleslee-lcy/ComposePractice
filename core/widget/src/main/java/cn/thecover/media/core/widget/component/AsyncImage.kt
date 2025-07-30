@@ -25,8 +25,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -39,7 +41,7 @@ import com.google.samples.apps.nowinandroid.core.designsystem.theme.LocalTintThe
 
 /**
  * 默认为加载本地图片，placeholder设置本地图片资源。
- * 设置imageUrl则为加载网络图片
+ * 设置imageUrl则为加载网络图片, placeholder为占位图片。
  * @param imageUrl 图片地址
  * @param placeholder 占位图
  */
@@ -47,7 +49,7 @@ import com.google.samples.apps.nowinandroid.core.designsystem.theme.LocalTintThe
 fun YBImage(
     modifier: Modifier = Modifier,
     imageUrl: String = "",
-    placeholder: Painter = painterResource(R.drawable.shape_image_placeholder),
+    placeholder: Painter = ColorPainter(Color.LightGray),
 ) {
     val iconTint = LocalTintTheme.current.iconTint
     var isLoading by remember { mutableStateOf(true) }

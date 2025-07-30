@@ -16,6 +16,7 @@
 
 package cn.thecover.media.core.widget.component
 
+import android.R.attr.textColor
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,9 +34,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cn.thecover.media.core.widget.icon.YBIcons
+import cn.thecover.media.core.widget.theme.MainColor
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.YBTheme
 
 /**
@@ -54,6 +58,8 @@ fun YBButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    textColor: Color = Color.White,
+    backgroundColor: Color = MainColor,
     content: @Composable RowScope.() -> Unit,
 ) {
     Button(
@@ -61,7 +67,10 @@ fun YBButton(
         modifier = modifier,
         enabled = enabled,
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.onBackground,
+            containerColor = backgroundColor,
+            contentColor = textColor,
+            disabledContainerColor = Color.LightGray,
+            disabledContentColor = Color.White
         ),
         contentPadding = contentPadding,
         content = content,
@@ -84,12 +93,16 @@ fun YBButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     text: @Composable () -> Unit,
+    textColor: Color = Color.White,
+    backgroundColor: Color = MainColor,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     YBButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
+        textColor = textColor,
+        backgroundColor = backgroundColor,
         contentPadding = if (leadingIcon != null) {
             ButtonDefaults.ButtonWithIconContentPadding
         } else {
