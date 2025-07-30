@@ -16,6 +16,9 @@
 
 package cn.thecover.media.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -41,10 +44,15 @@ fun YBNavHost(
     modifier: Modifier = Modifier,
 ) {
     val navController = appState.navController
+
     NavHost(
         navController = navController,
         startDestination = HomeRoute,
         modifier = modifier,
+        enterTransition = { EnterTransition.None },
+        popEnterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None },
+        popExitTransition = { ExitTransition.None },
     ) {
         homeIndex()
         reviewManageScreen()

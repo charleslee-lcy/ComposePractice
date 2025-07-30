@@ -21,6 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
+import cn.thecover.media.core.widget.component.YBDialog
 import cn.thecover.media.feature.basis.R
 import cn.thecover.media.feature.basis.mine.intent.MineNavigationIntent
 import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPassword
@@ -66,6 +70,7 @@ internal fun MineScreen(
         contentAlignment = Alignment.Center,
         modifier = modifier.fillMaxSize()
     ) {
+        var showLogoutDialog by remember { mutableStateOf(false) }
         val userAvatarState by viewModel.userAvatarState.collectAsState()
         Column(
             modifier = Modifier
@@ -77,7 +82,10 @@ internal fun MineScreen(
             Spacer(modifier = Modifier.height(56.dp))
             MineFunctionList(navController)
             Button(
-                onClick = { },
+                onClick = {
+                    // 显示退出登录确认弹窗
+                    showLogoutDialog=true
+                },
                 modifier = Modifier
                     .padding(top = 24.dp, start = 24.dp, end = 24.dp)
                     .fillMaxWidth(),
@@ -86,6 +94,22 @@ internal fun MineScreen(
                 Text("退出登录")
             }
         }
+        if (showLogoutDialog) {
+            YBDialog(
+                onDismissRequest = { showLogoutDialog = false },
+                title = "退出登录",
+                content = {
+                    Text("您确定要退出登录吗？")
+                },
+                confirmButtonText = "退出",
+                onConfirm = {
+                    // 执行退出登录逻辑
+                    // TODO: 实现退出登录功能
+                },
+                isConfirmDestructive = true
+            )
+        }
+
     }
 }
 
