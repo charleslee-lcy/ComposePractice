@@ -21,6 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,12 +35,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
+import cn.thecover.media.core.widget.component.YBAutoDismissDialog
+import cn.thecover.media.core.widget.component.YBDialog
+import cn.thecover.media.core.widget.component.YBLoadingDialog
+import cn.thecover.media.core.widget.state.rememberIconTipsDialogState
+import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import androidx.navigation.navOptions
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.feature.basis.R
+import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FAILED
+import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FINISHED
+import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_STARTED
 import cn.thecover.media.feature.basis.home.navigation.LoginRoute
 import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
 import cn.thecover.media.feature.basis.mine.intent.MineNavigationIntent
@@ -69,7 +79,9 @@ internal fun MineScreen(
     Box(
         contentAlignment = Alignment.Center, modifier = modifier.fillMaxSize()
     ) {
+        var showLogoutDialog by remember { mutableStateOf(false) }
         val userAvatarState by viewModel.userAvatarState.collectAsState()
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -81,13 +93,8 @@ internal fun MineScreen(
             MineFunctionList(navController)
             YBButton(
                 onClick = {
-                    navController.navigateToLogin(navOptions {
-                        // 清除所有之前的页面
-                        popUpTo(navController.graph.id) {
-                            inclusive = true
-                        }
-                        launchSingleTop = true
-                    })
+                    showLogoutDialog = true
+
                 },
                 modifier = Modifier
                     .padding(top = 24.dp, start = 16.dp, end = 16.dp)
@@ -96,6 +103,27 @@ internal fun MineScreen(
                 Text("退出登录")
             }
         }
+        if (showLogoutDialog) {
+            YBDialog(
+                onDismissRequest = { showLogoutDialog = false },
+                title = "退出登录",
+                content = {
+                    Text("您确定要退出登录吗？")
+                },
+                confirmButtonText = "退出",
+                onConfirm = {
+                    navController.navigateToLogin(navOptions {
+                        // 清除所有之前的页面
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    })
+                },
+                isConfirmDestructive = true
+            )
+        }
+
     }
 }
 
@@ -153,34 +181,61 @@ private fun UserAvatar(avatarUrl: String?, userName: String?) {
  * 我的功能列表
  */
 @Composable
-private fun MineFunctionList(navController: NavController) {
+private fun MineFunctionList(
+    navController: NavController,
+    viewModel: MineViewModel = hiltViewModel()
+) {
+    val loadingState = rememberTipsDialogState()
+
+    val statusState = rememberIconTipsDialogState()
+    val showClearCacheState = viewModel.cacheClearState.collectAsState()
+
+    if (showClearCacheState.value == CACHE_CLEAR_STATE_STARTED) {
+        loadingState.show("清理中")
+    } else {
+        loadingState.hide()
+        if (showClearCacheState.value == CACHE_CLEAR_STATE_FINISHED) {
+            statusState.show("清理完成", cn.thecover.media.core.widget.R.drawable.icon_checked)
+        } else if (showClearCacheState.value == CACHE_CLEAR_STATE_FAILED) {
+            statusState.show("清理失败")
+        }
+    }
+
     LazyColumn(modifier = Modifier.padding(start = 16.dp)) {
         items(MineFunctionType.entries) { func ->
             MineFunctionItem(
-                func.title, func.desc, clickAction = when (func) {
-                    MineFunctionType.ModifyPassword -> {
-                        {
-                            navController.navigateToModifyPassword()
+                func.title, func.desc, clickAction =
+                    when (func) {
+                        MineFunctionType.ModifyPassword -> {
+                            {
+                                navController.navigateToModifyPassword()
+                            }
                         }
-                    }
 
-                    MineFunctionType.Cache -> {
-                        {
-                            //todo 清除缓存
+                        MineFunctionType.Cache -> {
+                            {
+                                viewModel.handleIntent(MineIntent.ClearCache)
+                            }
                         }
-                    }
 
-                    MineFunctionType.HelpCenter -> {
-                        {
-                            //todo 跳转至帮助中心
+                        MineFunctionType.HelpCenter -> {
+                            {
+                                //todo 跳转至帮助中心
+                            }
                         }
-                    }
 
-                    else -> null
+                        else -> null
 
-                })
+                    })
         }
     }
+
+
+    YBLoadingDialog(loadingState, enableDismiss = true, onDismissRequest = { loadingState.hide() })
+
+    YBAutoDismissDialog(statusState)
+
+
 }
 
 

@@ -34,9 +34,11 @@ fun NavController.navigateToMine(navOptions: NavOptions) = navigate(route = Mine
 fun NavController.navigateToModifyPassword(navOptions: NavOptions? = null) =
     navigate(MineNavigationIntent.ModifyPassword, navOptions)
 
+
 fun NavGraphBuilder.mineScreen(navi: NavController) {
 
     composable<MineRoute> {
+
         MineRoute(navController = navi)
     }
 

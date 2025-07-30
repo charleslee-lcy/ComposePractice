@@ -8,4 +8,6 @@ package cn.thecover.media.feature.basis.mine
 sealed class MineIntent {
 
     data class GetUserInfo(val username: String) : MineIntent()
+
+    data object ClearCache : MineIntent()
 }
