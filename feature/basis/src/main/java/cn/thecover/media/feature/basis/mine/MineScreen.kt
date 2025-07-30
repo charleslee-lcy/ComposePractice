@@ -93,13 +93,8 @@ internal fun MineScreen(
             MineFunctionList(navController)
             YBButton(
                 onClick = {
-                    navController.navigateToLogin(navOptions {
-                        // 清除所有之前的页面
-                        popUpTo(navController.graph.id) {
-                            inclusive = true
-                        }
-                        launchSingleTop = true
-                    })
+                    showLogoutDialog = true
+
                 },
                 modifier = Modifier
                     .padding(top = 24.dp, start = 16.dp, end = 16.dp)
@@ -117,8 +112,13 @@ internal fun MineScreen(
                 },
                 confirmButtonText = "退出",
                 onConfirm = {
-                    // 执行退出登录逻辑
-                    // TODO: 实现退出登录功能
+                    navController.navigateToLogin(navOptions {
+                        // 清除所有之前的页面
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    })
                 },
                 isConfirmDestructive = true
             )
