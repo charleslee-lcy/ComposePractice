@@ -37,10 +37,15 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
+import cn.thecover.media.core.widget.component.YBAutoDismissDialog
 import cn.thecover.media.core.widget.component.YBDialog
 import cn.thecover.media.core.widget.component.YBLoadingDialog
-import cn.thecover.media.core.widget.state.rememberLoadingState
+import cn.thecover.media.core.widget.state.rememberIconTipsDialogState
+import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.feature.basis.R
+import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FAILED
+import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FINISHED
+import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_STARTED
 import cn.thecover.media.feature.basis.mine.intent.MineNavigationIntent
 import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPassword
 import coil.compose.AsyncImage
@@ -73,6 +78,7 @@ internal fun MineScreen(
     ) {
         var showLogoutDialog by remember { mutableStateOf(false) }
         val userAvatarState by viewModel.userAvatarState.collectAsState()
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -170,8 +176,25 @@ private fun UserAvatar(avatarUrl: String?, userName: String?) {
  * 我的功能列表
  */
 @Composable
-private fun MineFunctionList(navController: NavController) {
-    val loadingState = rememberLoadingState()
+private fun MineFunctionList(
+    navController: NavController,
+    viewModel: MineViewModel = hiltViewModel()
+) {
+    val loadingState = rememberTipsDialogState()
+
+    val statusState = rememberIconTipsDialogState()
+    val showClearCacheState = viewModel.cacheClearState.collectAsState()
+
+    if (showClearCacheState.value == CACHE_CLEAR_STATE_STARTED) {
+        loadingState.show("清理中")
+    } else {
+        loadingState.hide()
+        if (showClearCacheState.value == CACHE_CLEAR_STATE_FINISHED) {
+            statusState.show("清理完成", cn.thecover.media.core.widget.R.drawable.icon_checked)
+        } else if (showClearCacheState.value == CACHE_CLEAR_STATE_FAILED) {
+            statusState.show("清理失败")
+        }
+    }
 
     LazyColumn(modifier = Modifier.padding(start = 16.dp)) {
         items(MineFunctionType.entries) { func ->
@@ -186,7 +209,7 @@ private fun MineFunctionList(navController: NavController) {
 
                         MineFunctionType.Cache -> {
                             {
-                                loadingState.show("清理中")
+                                viewModel.handleIntent(MineIntent.ClearCache)
                             }
                         }
 
@@ -205,6 +228,8 @@ private fun MineFunctionList(navController: NavController) {
 
 
     YBLoadingDialog(loadingState, enableDismiss = true, onDismissRequest = { loadingState.hide() })
+
+    YBAutoDismissDialog(statusState)
 
 
 }

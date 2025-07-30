@@ -1,17 +1,14 @@
 package cn.thecover.media.core.widget.component
 
 import android.annotation.SuppressLint
-import cn.thecover.media.core.widget.R
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,13 +35,34 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
-import cn.thecover.media.core.widget.state.LoadingState
+import cn.thecover.media.core.widget.R
+import cn.thecover.media.core.widget.state.IconDialogState
+import cn.thecover.media.core.widget.state.TipsDialogState
+import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
 /**
  *  Created by Wing at 10:54 on 2025/7/30
  *  状态弹窗如成功提示失败提示等
  */
+
+@Composable
+fun YBAutoDismissDialog(
+    tipsState: IconDialogState,
+    onDismissRequest: () -> Unit = {},
+) {
+    if (tipsState.isVisible) {
+        IconStatusDialog(
+            onDismissRequest = {
+                tipsState.hide()
+                onDismissRequest()
+            },
+            title = tipsState.message,
+            icon = tipsState.iconResource,
+            autoDismissMillis = 2000L,
+        )
+    }
+}
 
 /**
  * 图标状态弹窗
@@ -53,14 +72,22 @@ import kotlin.math.roundToInt
  * @param icon 图标
  */
 @Composable
-fun IconStatusDialog(onDismissRequest: () -> Unit, title: String = "", @DrawableRes icon: Int) {
-    FullScreenStatusDialogContent(onDismissRequest = onDismissRequest, message = title, icon = {
-        Icon(
-            painter = painterResource(id = icon),
-            contentDescription = null,
-            modifier = Modifier.size(64.dp)
-        )
-    })
+fun IconStatusDialog(
+    onDismissRequest: () -> Unit,
+    title: String = "",
+    @DrawableRes icon: Int,
+    autoDismissMillis: Long = 2000L
+) {
+    FullScreenStatusDialogContent(
+        onDismissRequest = onDismissRequest, message = title, icon = {
+            Icon(
+                painter = painterResource(id = icon),
+                contentDescription = null,
+                modifier = Modifier.size(64.dp)
+            )
+        },
+        autoDismissMillis = autoDismissMillis
+    )
 }
 
 /**
@@ -72,7 +99,7 @@ fun IconStatusDialog(onDismissRequest: () -> Unit, title: String = "", @Drawable
  */
 @Composable
 fun YBLoadingDialog(
-    loadingState: LoadingState,
+    loadingState: TipsDialogState,
     onDismissRequest: () -> Unit = {},
     enableDismiss: Boolean = false
 ) {
@@ -103,18 +130,11 @@ fun FullScreenLoading(
     onDismissRequest: () -> Unit = {}
 ) {
     if (isVisible) {
-        Popup(
-            properties = PopupProperties(
-                dismissOnBackPress = enableDismiss,
-                dismissOnClickOutside = enableDismiss
-            )
-        ) {
-            FullScreenLoadingContent(
-                message = message,
-                enableDismiss = enableDismiss,
-                onDismissRequest = onDismissRequest
-            )
-        }
+        FullScreenLoadingContent(
+            message = message,
+            enableDismiss = enableDismiss,
+            onDismissRequest = onDismissRequest
+        )
     }
 }
 
@@ -157,7 +177,8 @@ private fun FullScreenLoadingContent(
             )
         },
         enableDismiss = enableDismiss,
-        onDismissRequest = onDismissRequest
+        onDismissRequest = onDismissRequest,
+        autoDismissMillis = 20000L
     )
 }
 
@@ -174,7 +195,8 @@ private fun FullScreenStatusDialogContent(
     message: String,
     icon: @Composable (() -> Unit)? = null,
     enableDismiss: Boolean = false,
-    onDismissRequest: (() -> Unit)? = null
+    onDismissRequest: (() -> Unit)? = null,
+    autoDismissMillis: Long = 2000L
 ) {
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
@@ -186,52 +208,65 @@ private fun FullScreenStatusDialogContent(
     val boxSize = 110.dp
     val boxSizePx = with(density) { boxSize.toPx() }
 
-    BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxSize()
-            .then(
-                if (enableDismiss) {
-                    Modifier.clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        onDismissRequest?.invoke()
-                    }
-                } else {
-                    Modifier
-                }
-            )
+    if (autoDismissMillis > 0) {
+        LaunchedEffect(Unit) {
+            delay(autoDismissMillis)
+            onDismissRequest?.invoke()
+        }
+    }
+    Popup(
+        properties = PopupProperties(
+            dismissOnBackPress = enableDismiss,
+            dismissOnClickOutside = enableDismiss
+        )
     ) {
-        // 计算居中位置
-        val centerX = (screenWidthPx - boxSizePx) / 2
-        val centerY = (screenHeightPx - boxSizePx) / 2
-
-        Card(
+        BoxWithConstraints(
             modifier = Modifier
-                .offset {
-                    IntOffset(
-                        x = centerX.roundToInt(),
-                        y = centerY.roundToInt()
+                .fillMaxSize()
+                .then(
+                    if (enableDismiss) {
+                        Modifier.clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+                            onDismissRequest?.invoke()
+                        }
+                    } else {
+                        Modifier
+                    }
+                )
+        ) {
+            // 计算居中位置
+            val centerX = (screenWidthPx - boxSizePx) / 2
+            val centerY = (screenHeightPx - boxSizePx) / 2
+
+            Card(
+                modifier = Modifier
+                    .offset {
+                        IntOffset(
+                            x = centerX.roundToInt(),
+                            y = centerY.roundToInt()
+                        )
+                    }
+                    .size(110.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
+
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    icon?.invoke()
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = message,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
-                .size(110.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.background
-            )
-
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                icon?.invoke()
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = message,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyMedium
-                )
             }
         }
     }
