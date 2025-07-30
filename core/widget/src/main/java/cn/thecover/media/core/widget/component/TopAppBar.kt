@@ -18,60 +18,62 @@
 
 package cn.thecover.media.core.widget.component
 
-import android.R
-import androidx.annotation.StringRes
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import cn.thecover.media.core.widget.icon.YBIcons
+import androidx.compose.ui.unit.sp
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.YBTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun YBTopAppBar(
-    @StringRes titleRes: Int,
-    navigationIcon: ImageVector,
-    navigationIconContentDescription: String,
-    actionIcon: ImageVector,
-    actionIconContentDescription: String,
     modifier: Modifier = Modifier,
-    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
+    title: String,
+    navigationIcon: ImageVector? = null,
+    actionIcon: ImageVector? = null,
+    titleColor: Color = Color(0xFF333333),
+    backgroundColor: Color = Color.White,
     onNavigationClick: () -> Unit = {},
     onActionClick: () -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
-        title = { Text(text = stringResource(id = titleRes)) },
+        title = { Text(text = title, fontSize = 17.sp) },
         navigationIcon = {
-            IconButton(onClick = onNavigationClick) {
-                Icon(
-                    imageVector = navigationIcon,
-                    contentDescription = navigationIconContentDescription,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
+            navigationIcon?.apply {
+                IconButton(onClick = onNavigationClick) {
+                    Icon(
+                        imageVector = this,
+                        contentDescription = "",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
             }
         },
         actions = {
-            IconButton(onClick = onActionClick) {
-                Icon(
-                    imageVector = actionIcon,
-                    contentDescription = actionIconContentDescription,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
+            actionIcon?.apply {
+                IconButton(onClick = onActionClick) {
+                    Icon(
+                        imageVector = this,
+                        contentDescription = "",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
             }
         },
-        colors = colors,
-        modifier = modifier.testTag("niaTopAppBar"),
+        colors = TopAppBarDefaults.topAppBarColors(
+            titleContentColor = titleColor,
+            containerColor = backgroundColor
+        ),
+        modifier = modifier,
     )
 }
 
@@ -80,12 +82,6 @@ fun YBTopAppBar(
 @Composable
 private fun NiaTopAppBarPreview() {
     YBTheme {
-        YBTopAppBar(
-            titleRes = R.string.untitled,
-            navigationIcon = YBIcons.Search,
-            navigationIconContentDescription = "Navigation icon",
-            actionIcon = YBIcons.MoreVert,
-            actionIconContentDescription = "Action icon",
-        )
+        YBTopAppBar(title = "标题")
     }
 }

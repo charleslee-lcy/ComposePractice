@@ -42,10 +42,14 @@ import cn.thecover.media.core.widget.component.YBDialog
 import cn.thecover.media.core.widget.component.YBLoadingDialog
 import cn.thecover.media.core.widget.state.rememberIconTipsDialogState
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
+import androidx.navigation.navOptions
+import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.feature.basis.R
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FAILED
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FINISHED
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_STARTED
+import cn.thecover.media.feature.basis.home.navigation.LoginRoute
+import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
 import cn.thecover.media.feature.basis.mine.intent.MineNavigationIntent
 import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPassword
 import coil.compose.AsyncImage
@@ -73,8 +77,7 @@ internal fun MineScreen(
     navController: NavController,
 ) {
     Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier.fillMaxSize()
+        contentAlignment = Alignment.Center, modifier = modifier.fillMaxSize()
     ) {
         var showLogoutDialog by remember { mutableStateOf(false) }
         val userAvatarState by viewModel.userAvatarState.collectAsState()
@@ -88,15 +91,19 @@ internal fun MineScreen(
             UserAvatar(userAvatarState.avatarUrl, userAvatarState.username)
             Spacer(modifier = Modifier.height(56.dp))
             MineFunctionList(navController)
-            Button(
+            YBButton(
                 onClick = {
-                    // 显示退出登录确认弹窗
-                    showLogoutDialog = true
+                    navController.navigateToLogin(navOptions {
+                        // 清除所有之前的页面
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    })
                 },
                 modifier = Modifier
-                    .padding(top = 24.dp, start = 24.dp, end = 24.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+                    .padding(top = 24.dp, start = 16.dp, end = 16.dp)
+                    .fillMaxWidth()
             ) {
                 Text("退出登录")
             }
@@ -128,21 +135,19 @@ private fun MineScreenPreview() {
         val previewViewModel = MineViewModel(SavedStateHandle())
 
         MineScreen(
-            viewModel = previewViewModel,
-            navController = NavController(LocalContext.current)
+            viewModel = previewViewModel, navController = NavController(LocalContext.current)
         )
     }
 }
 
 
 enum class MineFunctionType(
-    val title: String,
-    var desc: String,
-    val navigateAction: (MineNavigationIntent)? = null
+    val title: String, var desc: String, val navigateAction: (MineNavigationIntent)? = null
 ) {
-    Version("版本", "v1.0.0"),
-    Cache("缓存", "上次清理 "),
-    ModifyPassword("修改密码", ""),
+    Version("版本", "v1.0.0"), Cache("缓存", "上次清理 "), ModifyPassword(
+        "修改密码",
+        ""
+    ),
     HelpCenter("帮助中心", "")
 }
 
@@ -221,8 +226,7 @@ private fun MineFunctionList(
 
                         else -> null
 
-                    }
-            )
+                    })
         }
     }
 
@@ -247,8 +251,7 @@ private fun MineFunctionItem(title: String, desc: String, clickAction: (() -> Un
             .clickable(enabled = clickAction != null) { clickAction?.invoke() }
             .padding(vertical = 16.dp),
 
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+        verticalAlignment = Alignment.CenterVertically) {
         Text(title, modifier = Modifier.weight(1f), fontSize = 16.sp)
 
         Text(desc)

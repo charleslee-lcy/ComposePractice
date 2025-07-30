@@ -16,14 +16,13 @@
 
 package cn.thecover.media.navigation
 
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import cn.thecover.media.feature.basis.home.navigation.LoginRoute
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
-import cn.thecover.media.feature.basis.home.navigation.HomeBaseRoute
-import cn.thecover.media.feature.basis.home.navigation.HomeRoute
 import cn.thecover.media.feature.basis.home.navigation.homeIndex
 import cn.thecover.media.feature.basis.mine.navigation.mineScreen
 import cn.thecover.media.feature.review_data.navigation.reviewDataScreen
@@ -44,17 +43,18 @@ fun YBNavHost(
     modifier: Modifier = Modifier,
 ) {
     val navController = appState.navController
-
     NavHost(
         navController = navController,
-        startDestination = HomeRoute,
+        startDestination = LoginRoute,
         modifier = modifier,
-        enterTransition = { EnterTransition.None },
-        popEnterTransition = { EnterTransition.None },
-        exitTransition = { ExitTransition.None },
-        popExitTransition = { ExitTransition.None },
+        enterTransition = {
+            fadeIn(animationSpec = tween(300))
+        },
+        exitTransition = {
+            fadeOut(animationSpec = tween(300))
+        }
     ) {
-        homeIndex()
+        homeIndex(navController)
         reviewManageScreen()
         reviewDataScreen()
         mineScreen(navController)
