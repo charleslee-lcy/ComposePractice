@@ -148,7 +148,7 @@ fun YBGradientBackground(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark theme")
 annotation class ThemePreviews
 
-@ThemePreviews
+@Preview
 @Composable
 fun BackgroundDefault() {
     YBTheme(disableDynamicTheming = true) {
@@ -156,7 +156,7 @@ fun BackgroundDefault() {
     }
 }
 
-@ThemePreviews
+@Preview
 @Composable
 fun BackgroundDynamic() {
     YBTheme(disableDynamicTheming = false) {
@@ -164,7 +164,7 @@ fun BackgroundDynamic() {
     }
 }
 
-@ThemePreviews
+@Preview
 @Composable
 fun BackgroundAndroid() {
     YBTheme(androidTheme = true) {
@@ -172,7 +172,7 @@ fun BackgroundAndroid() {
     }
 }
 
-@ThemePreviews
+@Preview
 @Composable
 fun GradientBackgroundDefault() {
     YBTheme(disableDynamicTheming = true) {
@@ -180,7 +180,7 @@ fun GradientBackgroundDefault() {
     }
 }
 
-@ThemePreviews
+@Preview
 @Composable
 fun GradientBackgroundDynamic() {
     YBTheme(disableDynamicTheming = false) {
@@ -188,7 +188,7 @@ fun GradientBackgroundDynamic() {
     }
 }
 
-@ThemePreviews
+@Preview
 @Composable
 fun GradientBackgroundAndroid() {
     YBTheme(androidTheme = true) {
