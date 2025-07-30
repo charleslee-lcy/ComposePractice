@@ -18,8 +18,10 @@ package cn.thecover.media.core.widget.theme
 
 import androidx.compose.ui.graphics.Color
 
+val MainColor = Color(0xFF0377F4)
+
 /**
- * Now in Android colors.
+ * Material in Android colors.
  */
 val Blue10 = Color(0xFF001F28)
 val Blue20 = Color(0xFF003544)

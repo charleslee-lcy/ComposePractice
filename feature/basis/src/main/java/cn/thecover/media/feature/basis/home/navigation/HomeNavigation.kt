@@ -20,10 +20,13 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import androidx.navigation.navDeepLink
 import cn.thecover.media.feature.basis.home.HomeRoute
+import cn.thecover.media.feature.basis.login.LoginRoute
 import kotlinx.serialization.Serializable
+
+@Serializable
+data object LoginRoute // route to base navigation graph
 
 @Serializable
 data object HomeRoute // route to ForYou screen
@@ -31,26 +34,29 @@ data object HomeRoute // route to ForYou screen
 @Serializable
 data object HomeBaseRoute // route to base navigation graph
 
+fun NavController.navigateToLogin(navOptions: NavOptions? = null) = navigate(route = LoginRoute, navOptions)
+
 fun NavController.navigateToHome(navOptions: NavOptions) = navigate(route = HomeRoute, navOptions)
 
-fun NavGraphBuilder.homeIndex(
-) {
-//    navigation<HomeBaseRoute>(startDestination = HomeRoute) {
-        composable<HomeRoute>(
-            deepLinks = listOf(
-                navDeepLink {
-                    /**
-                     * This destination has a deep link that enables a specific news resource to be
-                     * opened from a notification (@see SystemTrayNotifier for more). The news resource
-                     * ID is sent in the URI rather than being modelled in the route type because it's
-                     * transient data (stored in SavedStateHandle) that is cleared after the user has
-                     * opened the news resource.
-                     */
-                    uriPattern = ""
-                },
-            ),
-        ) {
-            HomeRoute()
-        }
-//    }
+fun NavGraphBuilder.homeIndex(navController: NavController) {
+    composable<LoginRoute> {
+        LoginRoute(navController = navController)
+    }
+
+    composable<HomeRoute>(
+        deepLinks = listOf(
+            navDeepLink {
+                /**
+                 * This destination has a deep link that enables a specific news resource to be
+                 * opened from a notification (@see SystemTrayNotifier for more). The news resource
+                 * ID is sent in the URI rather than being modelled in the route type because it's
+                 * transient data (stored in SavedStateHandle) that is cleared after the user has
+                 * opened the news resource.
+                 */
+                uriPattern = ""
+            },
+        ),
+    ) {
+        HomeRoute()
+    }
 }
