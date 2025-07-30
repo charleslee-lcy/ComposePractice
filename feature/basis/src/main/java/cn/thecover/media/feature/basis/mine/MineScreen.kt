@@ -35,10 +35,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import cn.thecover.media.core.widget.component.YBDialog
+import cn.thecover.media.core.widget.component.YBLoadingDialog
+import cn.thecover.media.core.widget.state.rememberLoadingState
 import cn.thecover.media.feature.basis.R
 import cn.thecover.media.feature.basis.mine.intent.MineNavigationIntent
 import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPassword
@@ -84,7 +85,7 @@ internal fun MineScreen(
             Button(
                 onClick = {
                     // 显示退出登录确认弹窗
-                    showLogoutDialog=true
+                    showLogoutDialog = true
                 },
                 modifier = Modifier
                     .padding(top = 24.dp, start = 24.dp, end = 24.dp)
@@ -170,35 +171,42 @@ private fun UserAvatar(avatarUrl: String?, userName: String?) {
  */
 @Composable
 private fun MineFunctionList(navController: NavController) {
+    val loadingState = rememberLoadingState()
+
     LazyColumn(modifier = Modifier.padding(start = 16.dp)) {
         items(MineFunctionType.entries) { func ->
             MineFunctionItem(
                 func.title, func.desc, clickAction =
-                when (func) {
-                    MineFunctionType.ModifyPassword -> {
-                        {
-                            navController.navigateToModifyPassword()
+                    when (func) {
+                        MineFunctionType.ModifyPassword -> {
+                            {
+                                navController.navigateToModifyPassword()
+                            }
                         }
-                    }
 
-                    MineFunctionType.Cache -> {
-                        {
-                            //todo 清除缓存
+                        MineFunctionType.Cache -> {
+                            {
+                                loadingState.show("清理中")
+                            }
                         }
-                    }
 
-                    MineFunctionType.HelpCenter -> {
-                        {
-                            //todo 跳转至帮助中心
+                        MineFunctionType.HelpCenter -> {
+                            {
+                                //todo 跳转至帮助中心
+                            }
                         }
+
+                        else -> null
+
                     }
-
-                    else -> null
-
-                }
             )
         }
     }
+
+
+    YBLoadingDialog(loadingState, enableDismiss = true, onDismissRequest = { loadingState.hide() })
+
+
 }
 
 
