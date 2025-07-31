@@ -44,6 +44,7 @@ import cn.thecover.media.core.widget.state.rememberIconTipsDialogState
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import androidx.navigation.navOptions
 import cn.thecover.media.core.widget.component.YBButton
+import cn.thecover.media.core.widget.component.popup.YBPopup
 import cn.thecover.media.feature.basis.R
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FAILED
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FINISHED
@@ -90,7 +91,7 @@ internal fun MineScreen(
         ) {
             UserAvatar(userAvatarState.avatarUrl, userAvatarState.username)
             Spacer(modifier = Modifier.height(56.dp))
-            MineFunctionList(navController)
+            MineFunctionList(navController,viewModel)
             YBButton(
                 onClick = {
                     showLogoutDialog = true
@@ -190,6 +191,7 @@ private fun MineFunctionList(
     val statusState = rememberIconTipsDialogState()
     val showClearCacheState = viewModel.cacheClearState.collectAsState()
 
+    var showpop by remember { mutableStateOf(false) }
     if (showClearCacheState.value == CACHE_CLEAR_STATE_STARTED) {
         loadingState.show("清理中")
     } else {
@@ -220,6 +222,7 @@ private fun MineFunctionList(
 
                         MineFunctionType.HelpCenter -> {
                             {
+                                showpop=true
                                 //todo 跳转至帮助中心
                             }
                         }
@@ -236,6 +239,7 @@ private fun MineFunctionList(
     YBAutoDismissDialog(statusState)
 
 
+    YBPopup(showpop, title = "提示", content = {}, draggable = true,onClose = { showpop = false })
 }
 
 
