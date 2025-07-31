@@ -25,7 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import cn.thecover.media.core.widget.icon.YBIcons
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.YBTheme
+import cn.thecover.media.core.widget.theme.YBTheme
 
 /**
  * Now in Android toggle button with icon and checked icon content slots. Wraps Material 3

@@ -1,6 +1,5 @@
 package cn.thecover.media.feature.basis.mine
 
-import android.R.attr.top
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -18,7 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -53,12 +51,11 @@ import cn.thecover.media.feature.basis.R
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FAILED
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FINISHED
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_STARTED
-import cn.thecover.media.feature.basis.home.navigation.LoginRoute
 import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
 import cn.thecover.media.feature.basis.mine.intent.MineNavigationIntent
 import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPassword
 import coil.compose.AsyncImage
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.YBTheme
+import cn.thecover.media.core.widget.theme.YBTheme
 
 
 /**

@@ -44,4 +44,6 @@
 - YBToast 自定义SnackBar仿Toast效果，多次show以最新的一次内容显示
 使用方法：snackBarHostState.showToast(message)
 
+- YBImage 支持加载网络和本地图片，网络加载引用的Coil
+
 ==============================================

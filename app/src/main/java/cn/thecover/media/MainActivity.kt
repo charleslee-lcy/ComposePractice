@@ -2,7 +2,6 @@ package cn.thecover.media
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -26,8 +25,7 @@ import cn.thecover.media.core.widget.util.TimeZoneMonitor
 import cn.thecover.media.ui.YBApp
 import cn.thecover.media.ui.rememberYBAppState
 import cn.thecover.media.util.isSystemInDarkTheme
-import com.google.gson.Gson
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.YBTheme
+import cn.thecover.media.core.widget.theme.YBTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged

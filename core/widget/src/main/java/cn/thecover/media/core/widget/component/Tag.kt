@@ -26,7 +26,7 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.YBTheme
+import cn.thecover.media.core.widget.theme.YBTheme
 import kotlin.text.uppercase
 
 @Composable

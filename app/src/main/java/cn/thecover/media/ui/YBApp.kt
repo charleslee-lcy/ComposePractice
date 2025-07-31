@@ -71,8 +71,8 @@ import cn.thecover.media.core.widget.theme.Orange90
 import cn.thecover.media.core.widget.theme.Red40
 import cn.thecover.media.navigation.TopLevelDestination
 import cn.thecover.media.navigation.YBNavHost
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.GradientColors
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.LocalGradientColors
+import cn.thecover.media.core.widget.theme.GradientColors
+import cn.thecover.media.core.widget.theme.LocalGradientColors
 import kotlin.reflect.KClass
 
 @Composable
