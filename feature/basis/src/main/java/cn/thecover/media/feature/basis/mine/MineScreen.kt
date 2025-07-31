@@ -44,6 +44,7 @@ import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import cn.thecover.media.core.widget.component.YBAutoDismissDialog
 import cn.thecover.media.core.widget.component.YBDialog
+import cn.thecover.media.core.widget.component.YBAlertDialog
 import cn.thecover.media.core.widget.component.YBLoadingDialog
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.picker.YBTimePicker
@@ -125,7 +126,7 @@ internal fun MineScreen(
 
         }
         if (showLogoutDialog) {
-            YBDialog(
+            YBAlertDialog(
                 onDismissRequest = { showLogoutDialog = false },
                 title = "退出登录",
                 content = {
