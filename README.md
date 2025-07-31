@@ -41,5 +41,7 @@
 
 # 自定义组件
 
+- YBToast 自定义SnackBar仿Toast效果，多次show以最新的一次内容显示
+使用方法：snackBarHostState.showToast(message)
 
 ==============================================
