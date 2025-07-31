@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -44,6 +45,7 @@ import cn.thecover.media.core.widget.state.rememberIconTipsDialogState
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import androidx.navigation.navOptions
 import cn.thecover.media.core.widget.component.YBButton
+import cn.thecover.media.core.widget.component.popup.YBPopup
 import cn.thecover.media.feature.basis.R
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FAILED
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FINISHED
@@ -90,7 +92,7 @@ internal fun MineScreen(
         ) {
             UserAvatar(userAvatarState.avatarUrl, userAvatarState.username)
             Spacer(modifier = Modifier.height(56.dp))
-            MineFunctionList(navController)
+            MineFunctionList(navController,viewModel)
             YBButton(
                 onClick = {
                     showLogoutDialog = true
@@ -189,7 +191,8 @@ private fun MineFunctionList(
 
     val statusState = rememberIconTipsDialogState()
     val showClearCacheState = viewModel.cacheClearState.collectAsState()
-
+    val dialogState=remember { mutableStateOf(false) }
+    var showpop by remember { mutableStateOf(false) }
     if (showClearCacheState.value == CACHE_CLEAR_STATE_STARTED) {
         loadingState.show("清理中")
     } else {
@@ -220,6 +223,7 @@ private fun MineFunctionList(
 
                         MineFunctionType.HelpCenter -> {
                             {
+                                dialogState.value=true
                                 //todo 跳转至帮助中心
                             }
                         }
@@ -236,6 +240,12 @@ private fun MineFunctionList(
     YBAutoDismissDialog(statusState)
 
 
+    YBDialog(dialogState=dialogState, onDismissRequest = { dialogState.value=false },title = "帮助中心", cancelText = "取消", confirmText = "确定") {
+        Box(modifier = Modifier.wrapContentSize().background(color = Color.Blue)){
+            Text("bangzhuzhongxin")
+        }
+    }
+    YBPopup(showpop, title = "提示", content = {}, draggable = true,onClose = { showpop = false })
 }
 
 

@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -60,6 +61,7 @@ fun YBButton(
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     textColor: Color = Color.White,
     backgroundColor: Color = MainColor,
+    borderColor: Color = backgroundColor,
     content: @Composable RowScope.() -> Unit,
 ) {
     Button(
@@ -70,8 +72,10 @@ fun YBButton(
             containerColor = backgroundColor,
             contentColor = textColor,
             disabledContainerColor = Color.LightGray,
-            disabledContentColor = Color.White
+            disabledContentColor = Color.White,
         ),
+        shape = RoundedCornerShape(2.dp),
+        border = BorderStroke(0.5.dp, borderColor),
         contentPadding = contentPadding,
         content = content,
     )
