@@ -16,6 +16,7 @@
 
 package cn.thecover.media.core.widget.icon
 
+import cn.thecover.media.core.widget.R
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ShortText
@@ -57,4 +58,20 @@ object YBIcons {
     val Upcoming = Icons.Rounded.Upcoming
     val UpcomingBorder = Icons.Outlined.Upcoming
     val ViewDay = Icons.Rounded.ViewDay
+
+
+    // 自定义 Drawable 图标
+    object Custom {
+        val DefaultAvatar = R.drawable.icon_avatar_default
+        val MineVersion= R.drawable.icon_mine_version
+        val MineLogout = R.drawable.icon_mine_logout
+        val MineModifyPassword = R.drawable.icon_mine_setting
+        val MineClearCache = R.drawable.icon_mine_clear_cache
+        val MineHelpCenter = R.drawable.icon_mine_help
+        val RightArrow= R.drawable.icon_right_arrow
+    }
+    object Background {
+        val Mine = R.drawable.bg_mine
+
+    }
 }
