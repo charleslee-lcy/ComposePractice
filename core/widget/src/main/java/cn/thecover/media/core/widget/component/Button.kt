@@ -16,7 +16,6 @@
 
 package cn.thecover.media.core.widget.component
 
-import android.R.attr.textColor
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,9 +23,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +33,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cn.thecover.media.core.widget.icon.YBIcons
@@ -62,6 +60,7 @@ fun YBButton(
     textColor: Color = Color.White,
     backgroundColor: Color = MainColor,
     borderColor: Color = backgroundColor,
+    shape: Shape = ButtonDefaults.shape,
     content: @Composable RowScope.() -> Unit,
 ) {
     Button(
@@ -72,10 +71,10 @@ fun YBButton(
             containerColor = backgroundColor,
             contentColor = textColor,
             disabledContainerColor = Color.LightGray,
-            disabledContentColor = Color.White,
+            disabledContentColor = Color.White
         ),
-        shape = RoundedCornerShape(2.dp),
         border = BorderStroke(0.5.dp, borderColor),
+        shape = shape,
         contentPadding = contentPadding,
         content = content,
     )
@@ -99,6 +98,7 @@ fun YBButton(
     text: @Composable () -> Unit,
     textColor: Color = Color.White,
     backgroundColor: Color = MainColor,
+    shape: Shape = ButtonDefaults.shape,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     YBButton(
@@ -107,6 +107,7 @@ fun YBButton(
         enabled = enabled,
         textColor = textColor,
         backgroundColor = backgroundColor,
+        shape = shape,
         contentPadding = if (leadingIcon != null) {
             ButtonDefaults.ButtonWithIconContentPadding
         } else {
@@ -288,7 +289,7 @@ private fun YBButtonContent(
 fun YBButtonPreview() {
     YBTheme {
         YBBackground(modifier = Modifier.size(150.dp, 50.dp)) {
-            YBButton(onClick = {}, text = { Text("Test button") })
+            YBButton(onClick = {}, text = { Text("Test button")})
         }
     }
 }

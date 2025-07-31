@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.basis.mine
 
+import android.R.attr.top
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -100,6 +101,7 @@ internal fun MineScreen(
                     showLogoutDialog = true
 
                 },
+                shape = RoundedCornerShape(2.dp),
                 modifier = Modifier
                     .padding(top = 24.dp, start = 16.dp, end = 16.dp)
                     .fillMaxWidth()
