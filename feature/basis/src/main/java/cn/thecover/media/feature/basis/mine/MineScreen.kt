@@ -46,6 +46,8 @@ import cn.thecover.media.core.widget.state.rememberIconTipsDialogState
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import androidx.navigation.navOptions
 import cn.thecover.media.core.widget.component.YBButton
+import cn.thecover.media.core.widget.component.picker.YBDatePicker
+import cn.thecover.media.core.widget.component.picker.YBTimePicker
 import cn.thecover.media.core.widget.component.popup.YBPopup
 import cn.thecover.media.feature.basis.R
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FAILED
@@ -195,6 +197,7 @@ private fun MineFunctionList(
     val showClearCacheState = viewModel.cacheClearState.collectAsState()
     val dialogState=remember { mutableStateOf(false) }
     var showpop by remember { mutableStateOf(false) }
+    var timePickerShow by remember { mutableStateOf(false) }
     if (showClearCacheState.value == CACHE_CLEAR_STATE_STARTED) {
         loadingState.show("清理中")
     } else {
@@ -205,7 +208,7 @@ private fun MineFunctionList(
             statusState.show("清理失败")
         }
     }
-
+    val datePickerState = remember { mutableStateOf(false) }
     LazyColumn(modifier = Modifier.padding(start = 16.dp)) {
         items(MineFunctionType.entries) { func ->
             MineFunctionItem(
@@ -225,7 +228,7 @@ private fun MineFunctionList(
 
                         MineFunctionType.HelpCenter -> {
                             {
-                                dialogState.value=true
+                                timePickerShow=true
                                 //todo 跳转至帮助中心
                             }
                         }
@@ -242,6 +245,9 @@ private fun MineFunctionList(
     YBAutoDismissDialog(statusState)
 
 
+
+    YBTimePicker(timePickerShow, onCancel = { timePickerShow = false }, onChange = {})
+    YBDatePicker(datePickerState.value, onCancel = { datePickerState.value = false }, onChange = {})
     YBDialog(dialogState=dialogState, onDismissRequest = { dialogState.value=false },title = "帮助中心", cancelText = "取消", confirmText = "确定") {
         Box(modifier = Modifier.wrapContentSize().background(color = Color.Blue)){
             Text("bangzhuzhongxin")
