@@ -240,7 +240,7 @@ private fun MineFunctionList(
     YBAutoDismissDialog(statusState)
 
 
-    YBDialog(dialogState=dialogState, onDismissRequest = { dialogState.value=false },title = "帮助中心") {
+    YBDialog(dialogState=dialogState, onDismissRequest = { dialogState.value=false },title = "帮助中心", cancelText = "取消", confirmText = "确定") {
         Box(modifier = Modifier.wrapContentSize().background(color = Color.Blue)){
             Text("bangzhuzhongxin")
         }
