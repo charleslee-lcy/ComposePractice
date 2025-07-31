@@ -64,6 +64,7 @@ import cn.thecover.media.core.widget.theme.GreenGray50
 import cn.thecover.media.core.widget.theme.GreenGray60
 import cn.thecover.media.core.widget.theme.GreenGray80
 import cn.thecover.media.core.widget.theme.GreenGray90
+import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.Orange10
 import cn.thecover.media.core.widget.theme.Orange20
 import cn.thecover.media.core.widget.theme.Orange30
@@ -96,36 +97,73 @@ import cn.thecover.media.core.widget.theme.Teal90
 import cn.thecover.media.core.widget.theme.YBTypography
 
 /**
- * Light default theme color scheme
+ * 日间主题色设定
+ * 容器颜色是指用于承载内容的背景色，它们与主要颜色（primary）相关但用途不同常见使用场景如信息展示卡片
+ * surface: 通用的 UI 组件背景
+ * container: 强调特定内容或功能的背景
  */
 @VisibleForTesting
 val LightDefaultColorScheme = lightColorScheme(
-    primary = Purple40,
+    // 主要颜色 - 用于关键组件，如 FAB、重要按钮等
+    primary = MainColor,
+    // 主要颜色上的内容 - 在 primary 颜色上显示的文本和图标颜色
     onPrimary = Color.White,
+    // 主要颜色容器 - 用于容纳主要颜色内容的容器背景
     primaryContainer = Purple90,
+    // 主要颜色容器上的内容 - 在 primaryContainer 上显示的文本和图标颜色
     onPrimaryContainer = Purple10,
+
+    // 次要颜色 - 用于次要组件，如次要按钮等
     secondary = Orange40,
+    // 次要颜色上的内容 - 在 secondary 颜色上显示的文本和图标颜色
     onSecondary = Color.White,
+    // 次要颜色容器 - 用于容纳次要颜色内容的容器背景
     secondaryContainer = Orange90,
+    // 次要颜色容器上的内容 - 在 secondaryContainer 上显示的文本和图标颜色
     onSecondaryContainer = Orange10,
+
+    // 第三颜色 - 用于装饰性或补充性元素
     tertiary = Blue40,
+    // 第三颜色上的内容 - 在 tertiary 颜色上显示的文本和图标颜色
     onTertiary = Color.White,
+    // 第三颜色容器 - 用于容纳第三颜色内容的容器背景
     tertiaryContainer = Blue90,
+    // 第三颜色容器上的内容 - 在 tertiaryContainer 上显示的文本和图标颜色
     onTertiaryContainer = Blue10,
-    error = Red40,
+
+    // 错误颜色 - 用于表示错误状态的元素
+    error = Color(0xFFF53E3E),
+    // 错误颜色上的内容 - 在 error 颜色上显示的文本和图标颜色
     onError = Color.White,
+    // 错误颜色容器 - 用于容纳错误状态内容的容器背景
     errorContainer = Red90,
+    // 错误颜色容器上的内容 - 在 errorContainer 上显示的文本和图标颜色
     onErrorContainer = Red10,
-    background = DarkPurpleGray99,
+
+    // 背景颜色 - 应用程序的主要背景颜色
+    background = Color(0xFFFAFAFA),
+    // 背景上的内容 - 在 background 上显示的文本和图标颜色
     onBackground = DarkPurpleGray10,
-    surface = DarkPurpleGray99,
-    onSurface = DarkPurpleGray10,
-    surfaceVariant = PurpleGray90,
-    onSurfaceVariant = PurpleGray30,
+
+    // 表面颜色 - UI 组件（如卡片、列表）的表面颜色
+    surface = Color(0xFFFFFFFF),
+    // 表面上的内容 - 在 surface 上显示的文本和图标颜色
+    onSurface = Color(0xFF1A1A1A),
+
+    // 表面变体颜色 - surface 的变体，用于区分不同类型的表面
+    surfaceVariant = Color(0xFFFAFAFA),
+    // 表面变体上的内容 - 在 surfaceVariant 上显示的文本和图标颜色
+    onSurfaceVariant = Color(0xFF737373),
+
+    // 反转表面颜色 - 与主要表面颜色形成对比的表面颜色
     inverseSurface = DarkPurpleGray20,
+    // 反转表面上的内容 - 在 inverseSurface 上显示的文本和图标颜色
     inverseOnSurface = DarkPurpleGray95,
-    outline = PurpleGray50,
+
+    // 轮廓颜色 - 用于边框、分隔线等轮廓元素
+    outline = Color(0xFFE5E5E5),
 )
+
 
 /**
  * Dark default theme color scheme

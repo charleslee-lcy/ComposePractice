@@ -18,7 +18,11 @@ package cn.thecover.media.core.widget.theme
 
 import androidx.compose.ui.graphics.Color
 
-val MainColor = Color(0xFF0377F4)
+val MainColor = Color(0xFF306CFF)
+
+val MainTextColor=Color(0xFF1A1A1A)
+val SecondaryTextColor=Color(0xFF737373)
+val TernaryTextColor=Color(0xFFB3B3B3)
 
 /**
  * Material in Android colors.
