@@ -1,5 +1,7 @@
 package cn.thecover.media.feature.basis.mine
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,6 +19,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -37,21 +41,23 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
+import androidx.navigation.navOptions
 import cn.thecover.media.core.widget.component.YBAutoDismissDialog
 import cn.thecover.media.core.widget.component.YBDialog
+import cn.thecover.media.core.widget.component.YBAlertDialog
 import cn.thecover.media.core.widget.component.YBLoadingDialog
-import cn.thecover.media.core.widget.state.rememberIconTipsDialogState
-import cn.thecover.media.core.widget.state.rememberTipsDialogState
-import androidx.navigation.navOptions
-import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.picker.YBTimePicker
 import cn.thecover.media.core.widget.component.popup.YBPopup
-import cn.thecover.media.feature.basis.R
+import cn.thecover.media.core.widget.icon.YBIcons
+import cn.thecover.media.core.widget.state.rememberIconTipsDialogState
+import cn.thecover.media.core.widget.state.rememberTipsDialogState
+import cn.thecover.media.core.widget.theme.MainTextColor
+import cn.thecover.media.core.widget.theme.TertiaryTextColor
+import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FAILED
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FINISHED
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_STARTED
-import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
 import cn.thecover.media.feature.basis.mine.intent.MineNavigationIntent
 import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPassword
 import coil.compose.AsyncImage
@@ -79,35 +85,48 @@ internal fun MineScreen(
     navController: NavController,
 ) {
     Box(
-        contentAlignment = Alignment.Center, modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         var showLogoutDialog by remember { mutableStateOf(false) }
         val userAvatarState by viewModel.userAvatarState.collectAsState()
+        Image(
+            painter = painterResource(id = YBIcons.Background.Mine),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
 
+        )
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 24.dp, end = 24.dp, top = 56.dp),
+                .padding(start = 24.dp, end = 24.dp, top = 76.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             UserAvatar(userAvatarState.avatarUrl, userAvatarState.username)
-            Spacer(modifier = Modifier.height(56.dp))
-            MineFunctionList(navController,viewModel)
-            YBButton(
-                onClick = {
-                    showLogoutDialog = true
-
-                },
-                shape = RoundedCornerShape(2.dp),
+            Spacer(modifier = Modifier.height(40.dp))
+            MineFunctionList(navController, viewModel)
+            Spacer(modifier = Modifier.height(16.dp))
+            Box(
                 modifier = Modifier
-                    .padding(top = 24.dp, start = 16.dp, end = 16.dp)
                     .fillMaxWidth()
+                    .background(
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .padding(horizontal = 16.dp)
             ) {
-                Text("退出登录")
+                MineFunctionItem(
+                    YBIcons.Custom.MineLogout,
+                    "退出登录",
+                    "",
+                    clickAction = { showLogoutDialog = true },
+                    showRightArrow = false
+                )
             }
+
         }
         if (showLogoutDialog) {
-            YBDialog(
+            YBAlertDialog(
                 onDismissRequest = { showLogoutDialog = false },
                 title = "退出登录",
                 content = {
@@ -145,13 +164,21 @@ private fun MineScreenPreview() {
 
 
 enum class MineFunctionType(
-    val title: String, var desc: String, val navigateAction: (MineNavigationIntent)? = null
+    @DrawableRes val icon: Int,
+    val title: String,
+    var desc: String,
+    val navigateAction: (MineNavigationIntent)? = null
 ) {
-    Version("版本", "v1.0.0"), Cache("缓存", "上次清理 "), ModifyPassword(
-        "修改密码",
+    Version(
+        YBIcons.Custom.MineVersion,
+        "版本",
+        "v1.0.0"
+    ),
+    Cache(icon = YBIcons.Custom.MineClearCache, "缓存", "上次清理 "), ModifyPassword(
+        icon = YBIcons.Custom.MineModifyPassword, "修改密码",
         ""
     ),
-    HelpCenter("帮助中心", "")
+    HelpCenter(icon = YBIcons.Custom.MineHelpCenter, "帮助中心", "")
 }
 
 /**
@@ -164,15 +191,15 @@ private fun UserAvatar(avatarUrl: String?, userName: String?) {
             model = avatarUrl,
             contentDescription = "用户头像",
             modifier = Modifier
-                .size(80.dp)
+                .size(60.dp)
                 .clip(CircleShape)
                 .background(Color.LightGray),
 
             contentScale = ContentScale.Crop,
-            placeholder = painterResource(R.drawable.ic_mine_avatar),
+            placeholder = painterResource(YBIcons.Custom.DefaultAvatar),
 
             // 加载失败/异常占位图
-            error = painterResource(R.drawable.ic_mine_avatar),
+            error = painterResource(YBIcons.Custom.DefaultAvatar),
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(userName ?: "", modifier = Modifier.weight(1f), fontSize = 20.sp)
@@ -192,7 +219,7 @@ private fun MineFunctionList(
 
     val statusState = rememberIconTipsDialogState()
     val showClearCacheState = viewModel.cacheClearState.collectAsState()
-    val dialogState=remember { mutableStateOf(false) }
+    val dialogState = remember { mutableStateOf(false) }
     var showpop by remember { mutableStateOf(false) }
     var timePickerShow by remember { mutableStateOf(false) }
     if (showClearCacheState.value == CACHE_CLEAR_STATE_STARTED) {
@@ -206,9 +233,18 @@ private fun MineFunctionList(
         }
     }
     val datePickerState = remember { mutableStateOf(false) }
-    LazyColumn(modifier = Modifier.padding(start = 16.dp)) {
+    LazyColumn(
+        modifier = Modifier
+            .background(
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(8.dp)
+            )
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
         items(MineFunctionType.entries) { func ->
             MineFunctionItem(
+                icon = func.icon,
                 func.title, func.desc, clickAction =
                     when (func) {
                         MineFunctionType.ModifyPassword -> {
@@ -225,7 +261,7 @@ private fun MineFunctionList(
 
                         MineFunctionType.HelpCenter -> {
                             {
-                                timePickerShow=true
+                                timePickerShow = true
                                 //todo 跳转至帮助中心
                             }
                         }
@@ -245,12 +281,22 @@ private fun MineFunctionList(
 
     YBTimePicker(timePickerShow, onCancel = { timePickerShow = false }, onChange = {})
     YBDatePicker(datePickerState.value, onCancel = { datePickerState.value = false }, onChange = {})
-    YBDialog(dialogState=dialogState, onDismissRequest = { dialogState.value=false },title = "帮助中心", cancelText = "取消", confirmText = "确定") {
-        Box(modifier = Modifier.wrapContentSize().background(color = Color.Blue)){
+    YBDialog(
+        dialogState = dialogState,
+        onDismissRequest = { dialogState.value = false },
+        title = "帮助中心",
+        cancelText = "取消",
+        confirmText = "确定"
+    ) {
+        Box(
+            modifier = Modifier
+                .wrapContentSize()
+                .background(color = Color.Blue)
+        ) {
             Text("bangzhuzhongxin")
         }
     }
-    YBPopup(showpop, title = "提示", content = {}, draggable = true,onClose = { showpop = false })
+    YBPopup(showpop, title = "提示", content = {}, draggable = true, onClose = { showpop = false })
 }
 
 
@@ -259,20 +305,36 @@ private fun MineFunctionList(
  */
 
 @Composable
-private fun MineFunctionItem(title: String, desc: String, clickAction: (() -> Unit)? = null) {
+private fun MineFunctionItem(
+    @DrawableRes icon: Int,
+    title: String,
+    desc: String,
+    clickAction: (() -> Unit)? = null,
+    showRightArrow: Boolean = true
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(enabled = clickAction != null) { clickAction?.invoke() }
             .padding(vertical = 16.dp),
-
         verticalAlignment = Alignment.CenterVertically) {
-        Text(title, modifier = Modifier.weight(1f), fontSize = 16.sp)
+        Icon(
+            painterResource(icon),
+            contentDescription = title,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(title, modifier = Modifier.weight(1f), fontSize = 15.sp, color = MainTextColor)
 
-        Text(desc)
+        Text(desc, fontSize = 14.sp, color = TertiaryTextColor)
 
-        if (clickAction != null) {
-            Text(">", fontSize = 16.sp)
+        if (clickAction != null && showRightArrow) {
+            Icon(
+                painterResource(YBIcons.Custom.RightArrow),
+                "",
+                modifier = Modifier.size(16.dp),
+                tint = TertiaryTextColor
+            )
         }
     }
 

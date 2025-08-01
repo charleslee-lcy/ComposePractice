@@ -111,7 +111,7 @@ fun YBPicker(
                 Mask()
             }
 
-            Spacer(modifier = Modifier.height(56.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             // 操作栏
             ActionBar(onCancel) {
                 onValuesChange(localValues)

@@ -1,13 +1,22 @@
-package cn.thecover.media.core.widget.component.badge
+package cn.thecover.media.core.widget.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.Message
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,7 +32,16 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cn.thecover.media.core.widget.theme.MsgColor
+import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.ui.ComponentPreview
 
+
+/**
+ *
+ * <p> Created by CharlesLee on 2025/7/31
+ * 15708478830@163.com
+ */
 
 /**
  * 云报小红点
@@ -92,6 +110,67 @@ fun YBBadge(
             content?.let {
                 Text(text = it, color = Color.White, fontSize = 12.sp)
             }
+        }
+    }
+}
+
+@Composable
+fun YBBadge(
+    modifier: Modifier = Modifier,
+    msgCount: Int = 0,
+    showNumber: Boolean = false,
+    content: @Composable BoxScope.() -> Unit
+) {
+    BadgedBox(
+        modifier = modifier,
+        badge = {
+            if (msgCount > 0) {
+                if (showNumber) {
+                    Badge(
+                        modifier = Modifier.align(Alignment.TopStart),
+                        containerColor = MsgColor,
+                        contentColor = Color.White
+                    ) {
+                        Text(text = "$msgCount")
+                    }
+                } else {
+                    Badge(
+                        containerColor = MsgColor,
+                        contentColor = Color.White
+                    )
+                }
+            }
+        },
+        content = content
+    )
+}
+
+@ComponentPreview
+@Composable
+fun YBBadgeNumberPreview() {
+    YBTheme {
+        YBBadge(msgCount = 5, showNumber = true) {
+            Icon(imageVector = Icons.Filled.Message, contentDescription = null)
+        }
+    }
+}
+
+@ComponentPreview
+@Composable
+fun YBBadgeDotPreview() {
+    YBTheme {
+        YBBadge(msgCount = 5, showNumber = false) {
+            Icon(imageVector = Icons.Filled.Message, contentDescription = null)
+        }
+    }
+}
+
+@ComponentPreview
+@Composable
+fun YBBadgeNoMsgPreview() {
+    YBTheme {
+        YBBadge(msgCount = 0, showNumber = false) {
+            Icon(imageVector = Icons.Filled.Message, contentDescription = null)
         }
     }
 }

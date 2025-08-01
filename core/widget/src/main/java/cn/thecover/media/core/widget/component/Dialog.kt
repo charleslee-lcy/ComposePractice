@@ -1,6 +1,5 @@
 package cn.thecover.media.core.widget.component
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -25,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import cn.thecover.media.core.widget.icon.YBIcons
-import cn.thecover.media.core.widget.theme.TernaryTextColor
+import cn.thecover.media.core.widget.theme.TertiaryTextColor
 
 
 /**
@@ -92,9 +90,9 @@ fun YBDialog(
                                         dialogState.value = false
                                     },
                                     modifier = Modifier.weight(1f),
-                                    textColor = TernaryTextColor,
+                                    textColor = TertiaryTextColor,
                                     backgroundColor = MaterialTheme.colorScheme.background,
-                                    borderColor = TernaryTextColor,
+                                    borderColor = TertiaryTextColor,
                                 ) {
                                     Text(text = cancelText)
                                 }
