@@ -50,6 +50,7 @@ import cn.thecover.media.feature.basis.R
 import cn.thecover.media.feature.basis.home.HomeViewModel
 import cn.thecover.media.feature.basis.home.navigation.navigateToHome
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPassword
 import kotlinx.coroutines.launch
 
 
@@ -204,9 +205,7 @@ internal fun LoginScreen(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .clickableWithoutRipple {
-                        loginScreenScope.launch {
-                            snackBarHostState.showToast("跳转到找回密码页面")
-                        }
+                        navController.navigateToModifyPassword()
                     }
                     .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
             )
