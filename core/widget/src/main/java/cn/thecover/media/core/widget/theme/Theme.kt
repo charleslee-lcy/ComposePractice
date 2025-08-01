@@ -321,7 +321,7 @@ fun YBTheme(
     }
     // Background theme
     val defaultBackgroundTheme = BackgroundTheme(
-        color = colorScheme.surface,
+        color = colorScheme.background,
         tonalElevation = 2.dp,
     )
     val backgroundTheme = when {

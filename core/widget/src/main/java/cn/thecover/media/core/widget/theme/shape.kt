@@ -22,6 +22,7 @@ val SmallShape = RoundedCornerShape(8.dp)
 val MediumShape = RoundedCornerShape(12.dp)
 val LargeShape = RoundedCornerShape(16.dp)
 val CircleShape = RoundedCornerShape(50.dp)
+val ButtonShape= RoundedCornerShape(2.dp)
 val TopRoundedShape = RoundedCornerShape(
     topStart = 12.dp,
     topEnd = 12.dp,

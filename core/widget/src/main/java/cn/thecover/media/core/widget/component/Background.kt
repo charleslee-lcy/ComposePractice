@@ -167,7 +167,7 @@ fun BackgroundDynamic() {
 @Preview
 @Composable
 fun BackgroundAndroid() {
-    YBTheme(androidTheme = false) {
+    YBTheme(androidTheme = true) {
         YBBackground(Modifier.size(100.dp), content = {})
     }
 }
@@ -191,7 +191,7 @@ fun GradientBackgroundDynamic() {
 @Preview
 @Composable
 fun GradientBackgroundAndroid() {
-    YBTheme(androidTheme = false) {
+    YBTheme(androidTheme = true) {
         YBGradientBackground(Modifier.size(100.dp), content = {})
     }
 }

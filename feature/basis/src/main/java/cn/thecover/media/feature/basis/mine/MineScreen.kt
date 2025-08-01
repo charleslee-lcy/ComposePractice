@@ -89,11 +89,11 @@ internal fun MineScreen(
     ) {
         val showLogoutDialog = remember { mutableStateOf(false) }
         val userAvatarState by viewModel.userAvatarState.collectAsState()
-        Image(
-            painter = painterResource(id = YBIcons.Background.Mine),
+        AsyncImage(
+            model = YBIcons.Background.Mine,
             contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier.fillMaxWidth()
 
         )
         Column(
