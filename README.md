@@ -35,10 +35,15 @@
 - navigation 路由框架
 - coil 图片加载
 
+# 主题
+
+- YBShape 形状定义，主要涉及圆角等
+  - 使用方法：YBShape.X 
+
 # 三方组件
 
 - FlowBus 协程流shareFlow处理事件总线，替代eventbus
--
+- 
 
 # 自定义组件
 
@@ -50,10 +55,6 @@
 - SingleColumnPicker 单列的选择器，基于YBPicker实现。
 - YBTimePicker 是一个时间选择器组件，基于YBPicker实现。
 - YBDatePicker 是一个日期选择器组件，基于YBPicker实现。
-- YBDialogNoScrim 自定义AlertDialog组件，提供与系统AlertDialog类似的功能，没有蒙层。
-  - 使用方法：传入state以控制显示和隐藏。
-  - 注意事项：用box组合实现，显示效果（位置、层级）可能会与标准带蒙层版本有差异。
-- YBAlertDialog 自定义的带蒙层的对话弹窗。
 - YBBadge 红点组件，有小红点和带数字的红点两种类型，可以自定义颜色。
   - 使用方法：将需要显示红点的组件与Box组合，可在YBBadge中传入Aliment控制位置。
 - YBDialog 自定义通用弹窗。
@@ -61,3 +62,4 @@
 - YBLoadingDialog 加载中弹窗
 
 ==============================================
+

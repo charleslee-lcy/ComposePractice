@@ -1,6 +1,5 @@
-package cn.thecover.media.core.widget.component
+package cn.thecover.media.core.widget.component.popup
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,7 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -24,8 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.TernaryTextColor
+import cn.thecover.media.core.widget.theme.YBShapes
 
 
 /**
@@ -65,6 +66,7 @@ fun YBDialog(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.background,
                     ),
+                    shape = YBShapes.medium,
                     modifier = Modifier
                         .padding()
                         .fillMaxWidth()
@@ -122,7 +124,26 @@ fun YBDialog(
             )
         )
     }
+}
 
+@Composable
+fun YBAlertDialog(
+    dialogState: MutableState<Boolean>,
+    onDismissRequest: () -> Unit,
+    title: String? = null,
+    content: @Composable () -> Unit,
+    confirmButtonText: String = "确认",
+    onConfirm: () -> Unit,
+    dismissButtonText: String? = "取消",
+    onDismiss: (() -> Unit)? = null,
+    isConfirmDestructive: Boolean = false,
+    enableDismiss: Boolean = true,
+) {
+    YBDialog(dialogState, onDismissRequest, title, confirmButtonText, dismissButtonText, onConfirm, onDismiss){
+        Column {
+            content()
+        }
+    }
 }
 
 
