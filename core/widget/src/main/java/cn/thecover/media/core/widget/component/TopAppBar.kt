@@ -38,6 +38,37 @@ import cn.thecover.media.core.widget.theme.YBTheme
 fun YBTopAppBar(
     modifier: Modifier = Modifier,
     title: String,
+    navigationIcon: (@Composable () -> Unit)? = null,
+    actionIcon: (@Composable () -> Unit)? = null,
+    titleColor: Color = Color(0xFF333333),
+    backgroundColor: Color = Color.White,
+) {
+    CenterAlignedTopAppBar(
+        title = { Text(text = title, fontSize = 17.sp) },
+        navigationIcon = {
+            navigationIcon?.apply {
+                navigationIcon.invoke()
+            }
+        },
+        actions = {
+            actionIcon?.apply {
+                actionIcon.invoke()
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            titleContentColor = titleColor,
+            containerColor = backgroundColor
+        ),
+        modifier = modifier,
+    )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun YBTopAppBar(
+    modifier: Modifier = Modifier,
+    title: String,
     navigationIcon: ImageVector? = null,
     actionIcon: ImageVector? = null,
     titleColor: Color = Color(0xFF333333),

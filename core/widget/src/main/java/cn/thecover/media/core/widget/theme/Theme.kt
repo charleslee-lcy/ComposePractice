@@ -45,9 +45,9 @@ val LightDefaultColorScheme = lightColorScheme(
     // 主要颜色上的内容 - 在 primary 颜色上显示的文本和图标颜色
     onPrimary = Color.White,
     // 主要颜色容器 - 用于容纳主要颜色内容的容器背景
-    primaryContainer = Purple90,
+    primaryContainer = Color(0xFF306CFF).copy(0.1f),
     // 主要颜色容器上的内容 - 在 primaryContainer 上显示的文本和图标颜色
-    onPrimaryContainer = Purple10,
+    onPrimaryContainer = MainColor,
 
     // 次要颜色 - 用于次要组件，如次要按钮等
     secondary = Orange40,
@@ -235,7 +235,7 @@ fun YBTheme(
 ) {
     // Color scheme
     val colorScheme = when {
-        androidTheme -> if (darkTheme) DarkAndroidColorScheme else LightAndroidColorScheme
+        androidTheme -> if (darkTheme) DarkAndroidColorScheme else LightDefaultColorScheme
         !disableDynamicTheming && supportsDynamicTheming() -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -257,7 +257,7 @@ fun YBTheme(
     }
     // Background theme
     val defaultBackgroundTheme = BackgroundTheme(
-        color = colorScheme.surface,
+        color = colorScheme.background,
         tonalElevation = 2.dp,
     )
     val backgroundTheme = when {

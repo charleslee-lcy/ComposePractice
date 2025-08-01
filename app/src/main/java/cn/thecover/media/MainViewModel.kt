@@ -36,7 +36,7 @@ class MainViewModel @Inject constructor(
     val uiState: StateFlow<MainActivityUiState> = flow<UserData> {
         emit(
             UserData(
-                themeBrand = ThemeBrand.ANDROID,
+                themeBrand = ThemeBrand.DEFAULT,
                 darkThemeConfig = DarkThemeConfig.FOLLOW_SYSTEM,
                 useDynamicColor = false,
                 shouldHideOnboarding = true
