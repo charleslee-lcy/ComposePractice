@@ -18,7 +18,7 @@ import cn.thecover.media.core.widget.event.EventConstants
 import cn.thecover.media.core.widget.event.FlowBus
 import cn.thecover.media.core.widget.event.FlowEvent
 import cn.thecover.media.core.widget.ui.ComponentPreview
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.YBTheme
+import cn.thecover.media.core.widget.theme.YBTheme
 
 
 /**

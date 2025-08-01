@@ -1,9 +1,5 @@
 package cn.thecover.media.feature.basis.login
 
-import android.R.attr.enabled
-import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,15 +13,11 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarDuration.Indefinite
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -54,7 +46,7 @@ import cn.thecover.media.core.widget.ui.Visibility
 import cn.thecover.media.feature.basis.R
 import cn.thecover.media.feature.basis.home.HomeViewModel
 import cn.thecover.media.feature.basis.home.navigation.navigateToHome
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.YBTheme
+import cn.thecover.media.core.widget.theme.YBTheme
 import kotlinx.coroutines.launch
 
 
@@ -70,7 +62,9 @@ fun LoginRoute(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
 //    val feedState by viewModel.collectAsStateWithLifecycle()
-    LoginScreen(modifier, navController)
+    YBTheme {
+        LoginScreen(modifier, navController)
+    }
 }
 
 
@@ -124,7 +118,6 @@ internal fun LoginScreen(
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
-                    focusedIndicatorColor = MainColor,
                     unfocusedIndicatorColor = DividerColor
                 ),
                 contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(
@@ -158,7 +151,6 @@ internal fun LoginScreen(
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
-                    focusedIndicatorColor = MainColor,
                     unfocusedIndicatorColor = DividerColor
                 ),
                 contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(
