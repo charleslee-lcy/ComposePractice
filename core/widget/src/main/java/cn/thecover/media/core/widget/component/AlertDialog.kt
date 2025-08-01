@@ -60,7 +60,7 @@ import androidx.compose.ui.window.SecureFlagPolicy
  * @param showScrim 是否显示背景蒙层，默认为 false
  */
 @Composable
-fun YBDialogNoScrim(
+fun YBAlertDialogNoScrim(
     onDismissRequest: () -> Unit,
     title: String? = null,
     content: @Composable () -> Unit,
@@ -119,7 +119,7 @@ fun YBDialogNoScrim(
  * @param enableDismiss 是否允许点击蒙层或返回键关闭弹窗，默认为 true
  */
 @Composable
-fun YBDialog(
+fun YBAlertDialog(
     onDismissRequest: () -> Unit,
     title: String? = null,
     content: @Composable () -> Unit,
@@ -257,7 +257,7 @@ fun ConfirmDialog(
     onConfirm: () -> Unit
 ) {
     if (openDialog) {
-        YBDialogNoScrim(
+        YBAlertDialogNoScrim(
             onDismissRequest = onDismissRequest,
             title = "确认操作",
             content = {
@@ -282,7 +282,7 @@ fun InputDialog(
     var inputText by remember { mutableStateOf(initialText) }
 
     if (openDialog) {
-        YBDialogNoScrim(
+        YBAlertDialogNoScrim(
             onDismissRequest = {
                 inputText = ""
                 onDismissRequest()

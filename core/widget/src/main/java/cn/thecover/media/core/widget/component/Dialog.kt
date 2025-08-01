@@ -25,7 +25,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import cn.thecover.media.core.widget.icon.YBIcons
-import cn.thecover.media.core.widget.theme.MainColor
+import cn.thecover.media.core.widget.theme.TernaryTextColor
+
 
 /**
  *  Created by Wing at 10:02 on 2025/7/31
@@ -91,9 +92,9 @@ fun YBDialog(
                                         dialogState.value = false
                                     },
                                     modifier = Modifier.weight(1f),
-                                    textColor = MaterialTheme.colorScheme.tertiary,
+                                    textColor = TernaryTextColor,
                                     backgroundColor = MaterialTheme.colorScheme.background,
-                                    borderColor = MaterialTheme.colorScheme.tertiary,
+                                    borderColor = TernaryTextColor,
                                 ) {
                                     Text(text = cancelText)
                                 }

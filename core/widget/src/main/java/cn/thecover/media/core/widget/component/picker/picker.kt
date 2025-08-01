@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.popup.YBPopup
+import cn.thecover.media.core.widget.theme.MainTextColor
 
 import kotlin.math.roundToInt
 
@@ -157,7 +158,7 @@ private fun RowScope.ColumnItem(
                  .height(itemHeight),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = it, color = MaterialTheme.colorScheme.secondary, fontSize = 17.sp)
+                Text(text = it, color = MainTextColor, fontSize = 17.sp)
             }
         }
     }
