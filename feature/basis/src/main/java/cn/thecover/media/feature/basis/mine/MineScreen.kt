@@ -42,10 +42,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
-import cn.thecover.media.core.widget.component.YBAutoDismissDialog
-import cn.thecover.media.core.widget.component.YBDialog
-import cn.thecover.media.core.widget.component.YBAlertDialog
-import cn.thecover.media.core.widget.component.YBLoadingDialog
+import cn.thecover.media.core.widget.component.popup.YBAutoDismissDialog
+import cn.thecover.media.core.widget.component.popup.YBDialog
+import cn.thecover.media.core.widget.component.popup.YBAlertDialog
+import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.picker.YBTimePicker
 import cn.thecover.media.core.widget.component.popup.YBPopup
@@ -87,13 +87,13 @@ internal fun MineScreen(
     Box(
         modifier = modifier.fillMaxSize()
     ) {
-        var showLogoutDialog by remember { mutableStateOf(false) }
+        val showLogoutDialog = remember { mutableStateOf(false) }
         val userAvatarState by viewModel.userAvatarState.collectAsState()
-        Image(
-            painter = painterResource(id = YBIcons.Background.Mine),
+        AsyncImage(
+            model = YBIcons.Background.Mine,
             contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier.fillMaxWidth()
 
         )
         Column(
@@ -119,32 +119,36 @@ internal fun MineScreen(
                     YBIcons.Custom.MineLogout,
                     "退出登录",
                     "",
-                    clickAction = { showLogoutDialog = true },
+                    clickAction = { showLogoutDialog.value = true },
                     showRightArrow = false
                 )
             }
 
         }
-        if (showLogoutDialog) {
-            YBAlertDialog(
-                onDismissRequest = { showLogoutDialog = false },
-                title = "退出登录",
-                content = {
-                    Text("您确定要退出登录吗？")
-                },
-                confirmButtonText = "退出",
-                onConfirm = {
-                    navController.navigateToLogin(navOptions {
-                        // 清除所有之前的页面
-                        popUpTo(navController.graph.id) {
-                            inclusive = true
-                        }
-                        launchSingleTop = true
-                    })
-                },
-                isConfirmDestructive = true
-            )
-        }
+
+        YBDialog(
+            dialogState = showLogoutDialog,
+            onDismissRequest = { showLogoutDialog.value = false },
+            title = "退出登录",
+            content = {
+                Text("您确定要退出登录吗？")
+            },
+            confirmText = "退出",
+            onConfirm = {
+                navController.navigateToLogin(navOptions {
+                    // 清除所有之前的页面
+                    popUpTo(navController.graph.id) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                })
+            },
+            cancelText = "取消",
+            onCancel = {
+                showLogoutDialog.value = false
+            }
+        )
+
 
     }
 }

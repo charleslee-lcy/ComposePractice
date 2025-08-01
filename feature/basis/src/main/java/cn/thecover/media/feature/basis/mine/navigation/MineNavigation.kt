@@ -44,7 +44,7 @@ fun NavGraphBuilder.mineScreen(navi: NavController) {
 
     // 修改密码页面路由
     composable<MineNavigationIntent.ModifyPassword> {
-        ModifyPasswordRoute() // 需要创建该页面组件
+        ModifyPasswordRoute(navController = navi) // 需要创建该页面组件
     }
 
 }

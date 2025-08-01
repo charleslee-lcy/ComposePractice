@@ -69,6 +69,9 @@ object YBIcons {
         val MineClearCache = R.drawable.icon_mine_clear_cache
         val MineHelpCenter = R.drawable.icon_mine_help
         val RightArrow= R.drawable.icon_right_arrow
+        val PasswordWatch= R.drawable.icon_watch
+        val PasswordHide= R.drawable.icon_watch_banned
+        val BackArrow= R.drawable.icon_back_arrow
     }
     object Background {
         val Mine = R.drawable.bg_mine

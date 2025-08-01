@@ -1,4 +1,4 @@
-package cn.thecover.media.core.widget.component
+package cn.thecover.media.core.widget.component.popup
 
 import android.annotation.SuppressLint
 import androidx.annotation.DrawableRes
