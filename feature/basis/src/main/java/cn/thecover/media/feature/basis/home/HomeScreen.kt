@@ -2,21 +2,27 @@ package cn.thecover.media.feature.basis.home
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Poll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
@@ -41,16 +47,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import cn.thecover.media.core.widget.component.YBBadge
 import cn.thecover.media.core.widget.component.YBBanner
 import cn.thecover.media.core.widget.component.YBImage
+import cn.thecover.media.core.widget.component.YBTab
+import cn.thecover.media.core.widget.component.YBTabRow
 import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.showToast
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
+import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.HintTextColor
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
+import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.ComponentPreview
 import cn.thecover.media.feature.basis.R
@@ -93,10 +103,11 @@ internal fun HomeScreen(
     val snackBarHostState = remember { SnackbarHostState() }
     val scrollState = rememberScrollState()
     var roleState by remember { mutableIntStateOf(1) }
+    val titles = listOf("稿件TOP10", "稿件传播力TOP10")
+    val currentIndex = remember { mutableIntStateOf(0) }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         TopBar {
             roleState = if (roleState == 1) 2 else 1
@@ -105,10 +116,9 @@ internal fun HomeScreen(
         Column(
             modifier = modifier
                 .fillMaxWidth()
-                .weight(1f)
                 .verticalScroll(scrollState)
                 .background(PageBackgroundColor),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Spacer(modifier = Modifier.height(1.dp))
             AnimatedContent(roleState) {
@@ -118,11 +128,16 @@ internal fun HomeScreen(
                     LeaderUserContent()
                 }
             }
-            YBBanner(modifier = Modifier.height(150.dp), items = listData, autoScroll = true, autoScrollDelay = 3000L)
+            YBBanner(
+                modifier = Modifier.height(150.dp),
+                items = listData,
+                autoScroll = true,
+                autoScrollDelay = 3000L
+            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 15.dp),
+                    .padding(start = 15.dp, end = 5.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -139,22 +154,55 @@ internal fun HomeScreen(
                     modifier = Modifier.padding(start = 5.dp)
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = "查看更多",
-                    color = HintTextColor,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(10.dp).clickableWithoutRipple {
-                        mainScreenScope.launch {
-                            snackBarHostState.showToast("查看更多排行数据")
-                        }
-                    }
-                )
+                Row(
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .clickable {
+                            mainScreenScope.launch {
+                                snackBarHostState.showToast("查看更多排行数据")
+                            }
+                        },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "查看更多",
+                        color = TertiaryTextColor,
+                        lineHeight = 14.sp,
+                        fontSize = 14.sp,
+                    )
+                    Icon(
+                        painterResource(YBIcons.Custom.RightArrow),
+                        contentDescription = "Localized description",
+                        Modifier
+                            .size(18.dp)
+                            .padding(2.dp),
+                        tint = TertiaryTextColor
+                    )
+                }
             }
-            Spacer(modifier = Modifier.height(500.dp))
 
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 15.dp, end = 15.dp, bottom = 15.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = RoundedCornerShape(12.dp),
+            ) {
+                YBTabRow(
+                    selectedTabIndex = currentIndex.intValue,
+                    modifier = Modifier.padding(horizontal = 30.dp)
+                ) {
+                    titles.forEachIndexed { index, title ->
+                        YBTab(
+                            selected = index == currentIndex.intValue,
+                            onClick = { currentIndex.intValue = index },
+                            text = { Text(text = title) }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(500.dp))
+            }
         }
-
-        HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 0.25.dp, color = OutlineColor)
     }
 
     YBToast(snackBarHostState = snackBarHostState)
@@ -180,7 +228,7 @@ private fun TopBar(titleClick: () -> Unit = {}) {
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .align(Alignment.CenterStart)
-                .clickableWithoutRipple{
+                .clickableWithoutRipple {
                     titleClick.invoke()
                 }
         )

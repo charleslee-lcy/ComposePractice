@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -74,6 +75,7 @@ import cn.thecover.media.core.widget.theme.GradientColors
 import cn.thecover.media.core.widget.theme.LocalGradientColors
 import cn.thecover.media.core.widget.theme.MsgColor
 import cn.thecover.media.core.widget.theme.Orange90
+import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.Red40
 import cn.thecover.media.navigation.TopLevelDestination
 import cn.thecover.media.navigation.YBNavHost
@@ -143,6 +145,7 @@ internal fun YBApp(
                 .weight(1f)
         )
         if (isTopLevelDestination) {
+            HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 0.25.dp, color = OutlineColor)
             YBNavigationBar(
                 modifier = Modifier.height(60.dp)
             ) {
