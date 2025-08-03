@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ResourceName">
     <string name="login_title">登录</string>
+
+    <string name="feature_home_title">首页</string>
+    <string name="feature_review_manage_title">绩效管理</string>
+    <string name="feature_review_data_title">考核数据</string>
+    <string name="feature_mine_title">我的</string>
 </resources>

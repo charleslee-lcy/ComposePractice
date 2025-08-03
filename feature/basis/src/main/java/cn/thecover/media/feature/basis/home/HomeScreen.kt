@@ -1,7 +1,6 @@
 package cn.thecover.media.feature.basis.home
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.AnimationState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Poll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -49,6 +49,7 @@ import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.HintTextColor
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
+import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.ComponentPreview
@@ -103,7 +104,8 @@ internal fun HomeScreen(
 
         Column(
             modifier = modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .weight(1f)
                 .verticalScroll(scrollState)
                 .background(PageBackgroundColor),
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -140,8 +142,7 @@ internal fun HomeScreen(
                 Text(
                     text = "查看更多",
                     color = HintTextColor,
-                    fontSize = 11.sp,
-                    lineHeight = 11.sp,
+                    fontSize = 14.sp,
                     modifier = Modifier.padding(10.dp).clickableWithoutRipple {
                         mainScreenScope.launch {
                             snackBarHostState.showToast("查看更多排行数据")
@@ -152,6 +153,8 @@ internal fun HomeScreen(
             Spacer(modifier = Modifier.height(500.dp))
 
         }
+
+        HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 0.25.dp, color = OutlineColor)
     }
 
     YBToast(snackBarHostState = snackBarHostState)
