@@ -1,4 +1,4 @@
-package cn.thecover.media.feature.review_manager
+package cn.thecover.media.feature.review_manager.assign
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.review_manager.ReviewManageViewModel
 
 
 /**

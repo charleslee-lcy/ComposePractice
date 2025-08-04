@@ -133,9 +133,7 @@ internal fun YBApp(
     val currentDestination = appState.currentDestination
 
     // 判断当前是否在顶级目的地页面
-    val isTopLevelDestination = appState.topLevelDestinations.any { destination ->
-        currentDestination.isRouteInHierarchy(destination.route)
-    }
+
 
     // 只有在顶级页面才显示底部导航栏
     Column {
@@ -144,7 +142,7 @@ internal fun YBApp(
                 .fillMaxWidth()
                 .weight(1f)
         )
-        if (isTopLevelDestination) {
+        if (appState.isTopLevelDestination == true) {
             HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 0.25.dp, color = OutlineColor)
             YBNavigationBar(
                 modifier = Modifier.height(60.dp)
@@ -331,7 +329,7 @@ private fun Modifier.showMsg(
         }
     }
 
-private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
+fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
     this?.hierarchy?.any {
         it.hasRoute(route)
     } == true

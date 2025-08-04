@@ -106,6 +106,13 @@ class YBAppState(
      */
     val topLevelDestinations: List<TopLevelDestination> = TopLevelDestination.entries
 
+    val isTopLevelDestination: Boolean?
+        @Composable get() {
+            return topLevelDestinations.any { destination ->
+                currentDestination?.isRouteInHierarchy(destination.route) == true
+            }
+        }
+
     val currentTimeZone = timeZoneMonitor.currentTimeZone
         .stateIn(
             coroutineScope,
