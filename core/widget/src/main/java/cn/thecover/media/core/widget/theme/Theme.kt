@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package com.google.samples.apps.nowinandroid.core.designsystem.theme
+package cn.thecover.media.core.widget.theme
 
 import android.os.Build
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.VisibleForTesting
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -31,70 +34,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import cn.thecover.media.core.widget.theme.Blue10
-import cn.thecover.media.core.widget.theme.Blue20
-import cn.thecover.media.core.widget.theme.Blue30
-import cn.thecover.media.core.widget.theme.Blue40
-import cn.thecover.media.core.widget.theme.Blue80
-import cn.thecover.media.core.widget.theme.Blue90
-import cn.thecover.media.core.widget.theme.DarkGreen10
-import cn.thecover.media.core.widget.theme.DarkGreen20
-import cn.thecover.media.core.widget.theme.DarkGreen30
-import cn.thecover.media.core.widget.theme.DarkGreen40
-import cn.thecover.media.core.widget.theme.DarkGreen80
-import cn.thecover.media.core.widget.theme.DarkGreen90
-import cn.thecover.media.core.widget.theme.DarkGreenGray10
-import cn.thecover.media.core.widget.theme.DarkGreenGray20
-import cn.thecover.media.core.widget.theme.DarkGreenGray90
-import cn.thecover.media.core.widget.theme.DarkGreenGray95
-import cn.thecover.media.core.widget.theme.DarkGreenGray99
-import cn.thecover.media.core.widget.theme.DarkPurpleGray10
-import cn.thecover.media.core.widget.theme.DarkPurpleGray20
-import cn.thecover.media.core.widget.theme.DarkPurpleGray90
-import cn.thecover.media.core.widget.theme.DarkPurpleGray95
-import cn.thecover.media.core.widget.theme.DarkPurpleGray99
-import cn.thecover.media.core.widget.theme.Green10
-import cn.thecover.media.core.widget.theme.Green20
-import cn.thecover.media.core.widget.theme.Green30
-import cn.thecover.media.core.widget.theme.Green40
-import cn.thecover.media.core.widget.theme.Green80
-import cn.thecover.media.core.widget.theme.Green90
-import cn.thecover.media.core.widget.theme.GreenGray30
-import cn.thecover.media.core.widget.theme.GreenGray50
-import cn.thecover.media.core.widget.theme.GreenGray60
-import cn.thecover.media.core.widget.theme.GreenGray80
-import cn.thecover.media.core.widget.theme.GreenGray90
-import cn.thecover.media.core.widget.theme.MainColor
-import cn.thecover.media.core.widget.theme.Orange10
-import cn.thecover.media.core.widget.theme.Orange20
-import cn.thecover.media.core.widget.theme.Orange30
-import cn.thecover.media.core.widget.theme.Orange40
-import cn.thecover.media.core.widget.theme.Orange80
-import cn.thecover.media.core.widget.theme.Orange90
-import cn.thecover.media.core.widget.theme.Purple10
-import cn.thecover.media.core.widget.theme.Purple20
-import cn.thecover.media.core.widget.theme.Purple30
-import cn.thecover.media.core.widget.theme.Purple40
-import cn.thecover.media.core.widget.theme.Purple80
-import cn.thecover.media.core.widget.theme.Purple90
-import cn.thecover.media.core.widget.theme.PurpleGray30
-import cn.thecover.media.core.widget.theme.PurpleGray50
-import cn.thecover.media.core.widget.theme.PurpleGray60
-import cn.thecover.media.core.widget.theme.PurpleGray80
-import cn.thecover.media.core.widget.theme.PurpleGray90
-import cn.thecover.media.core.widget.theme.Red10
-import cn.thecover.media.core.widget.theme.Red20
-import cn.thecover.media.core.widget.theme.Red30
-import cn.thecover.media.core.widget.theme.Red40
-import cn.thecover.media.core.widget.theme.Red80
-import cn.thecover.media.core.widget.theme.Red90
-import cn.thecover.media.core.widget.theme.Teal10
-import cn.thecover.media.core.widget.theme.Teal20
-import cn.thecover.media.core.widget.theme.Teal30
-import cn.thecover.media.core.widget.theme.Teal40
-import cn.thecover.media.core.widget.theme.Teal80
-import cn.thecover.media.core.widget.theme.Teal90
-import cn.thecover.media.core.widget.theme.YBTypography
 
 /**
  * 日间主题色设定
@@ -338,6 +277,7 @@ fun YBTheme(
         LocalGradientColors provides gradientColors,
         LocalBackgroundTheme provides backgroundTheme,
         LocalTintTheme provides tintTheme,
+        LocalRippleConfiguration provides null
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

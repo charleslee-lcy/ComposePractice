@@ -16,8 +16,16 @@
 
 package cn.thecover.media.core.widget.component
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -36,12 +44,15 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScope
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cn.thecover.media.core.widget.icon.YBIcons
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.YBTheme
+import cn.thecover.media.core.widget.theme.MainColor
+import cn.thecover.media.core.widget.theme.MainTextColor
+import cn.thecover.media.core.widget.theme.YBTheme
 import kotlin.collections.forEachIndexed
 import kotlin.run
 
@@ -80,11 +91,9 @@ fun RowScope.YBNavigationBarItem(
         label = label,
         alwaysShowLabel = alwaysShowLabel,
         colors = NavigationBarItemDefaults.colors(
-            selectedIconColor = YBNavigationDefaults.navigationSelectedItemColor(),
-            unselectedIconColor = YBNavigationDefaults.navigationContentColor(),
-            selectedTextColor = YBNavigationDefaults.navigationSelectedItemColor(),
-            unselectedTextColor = YBNavigationDefaults.navigationContentColor(),
-            indicatorColor = YBNavigationDefaults.navigationIndicatorColor(),
+            selectedTextColor = MainColor,
+            unselectedTextColor = MainTextColor,
+            indicatorColor = Color.Transparent,
         ),
     )
 }
@@ -99,14 +108,52 @@ fun RowScope.YBNavigationBarItem(
 @Composable
 fun YBNavigationBar(
     modifier: Modifier = Modifier,
+    containerColor: Color = Color.White,
     content: @Composable RowScope.() -> Unit,
 ) {
     NavigationBar(
         modifier = modifier,
-        contentColor = YBNavigationDefaults.navigationContentColor(),
+        containerColor = containerColor,
         tonalElevation = 0.dp,
         content = content,
     )
+}
+
+@Composable
+fun CustomBottomBar(
+    modifier: Modifier = Modifier,
+    items: List<Pair<@Composable () -> Unit, String>>,
+    selectedIndex: Int,
+    onItemClick: (Int) -> Unit
+) {
+    Row (
+        modifier = modifier
+            .fillMaxWidth()
+            .height(60.dp)                       // 自己定高度
+            .background(MaterialTheme.colorScheme.surface),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        items.forEachIndexed { index, (icon, label) ->
+            Column(
+                modifier = Modifier
+                    .clickable { onItemClick(index) }
+                    .padding(horizontal = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp) // ← 这里控制图标文字间距
+            ) {
+                icon()
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (index == selectedIndex)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
 }
 
 /**
@@ -196,11 +243,11 @@ fun YBNavigationSuiteScaffold(
         .calculateFromAdaptiveInfo(windowAdaptiveInfo)
     val navigationSuiteItemColors = NavigationSuiteItemColors(
         navigationBarItemColors = NavigationBarItemDefaults.colors(
-            selectedIconColor = YBNavigationDefaults.navigationSelectedItemColor(),
-            unselectedIconColor = YBNavigationDefaults.navigationContentColor(),
+//            selectedIconColor = YBNavigationDefaults.navigationSelectedItemColor(),
+//            unselectedIconColor = YBNavigationDefaults.navigationContentColor(),
             selectedTextColor = YBNavigationDefaults.navigationSelectedItemColor(),
             unselectedTextColor = YBNavigationDefaults.navigationContentColor(),
-            indicatorColor = Color.LightGray,
+            indicatorColor = Color.Transparent,
         ),
         navigationRailItemColors = NavigationRailItemDefaults.colors(
             selectedIconColor = YBNavigationDefaults.navigationSelectedItemColor(),
@@ -227,8 +274,8 @@ fun YBNavigationSuiteScaffold(
         layoutType = layoutType,
         containerColor = Color.Transparent,
         navigationSuiteColors = NavigationSuiteDefaults.colors(
-            navigationBarContentColor = YBNavigationDefaults.navigationContentColor(),
-            navigationRailContainerColor = Color.Transparent,
+            navigationBarContentColor = Color.White,
+            navigationRailContainerColor = Color.White,
         ),
         modifier = modifier,
     ) {

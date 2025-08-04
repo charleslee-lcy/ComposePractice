@@ -22,15 +22,23 @@ import androidx.compose.ui.graphics.Color
  * APP color
  */
 val MainColor = Color(0xFF306CFF)
+
 // text
-val MainTextColor=Color(0xFF1A1A1A)
-val SecondaryTextColor=Color(0xFF737373)
-val TernaryTextColor=Color(0xFFB3B3B3)
-val TextColor1 = Color(0xFF333333)
-val HintTextColor = Color(0xFFB3B3B3)
+val MainTextColor = Color(0xFF1A1A1A)
+val SecondaryTextColor = Color(0xFF737373)
+val TertiaryTextColor = Color(0xFFB3B3B3)
+val HintTextColor = Color(0xFFD4D4D4)
+val EditHintTextColor = Color(0xFFB3B3B3)
 
 // divider color
 val DividerColor = Color(0xFFE0E0E0)
+val OutlineColor = Color(0xFFE5E5E5)
+
+// msg color
+val MsgColor = Color(0xFFF95252)
+
+// page background
+val PageBackgroundColor = Color(0xFFFAFAFA)
 
 /**
  * Material in Android colors.

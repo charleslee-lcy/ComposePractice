@@ -32,7 +32,7 @@ import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImagePainter.State.Error
 import coil.compose.AsyncImagePainter.State.Loading
 import coil.compose.rememberAsyncImagePainter
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.LocalTintTheme
+import cn.thecover.media.core.widget.theme.LocalTintTheme
 
 /**
  * 默认为加载本地图片，placeholder设置本地图片资源。

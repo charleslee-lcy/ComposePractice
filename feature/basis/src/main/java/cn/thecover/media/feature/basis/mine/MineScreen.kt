@@ -53,7 +53,7 @@ import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.state.rememberIconTipsDialogState
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.MainTextColor
-import cn.thecover.media.core.widget.theme.TernaryTextColor
+import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FAILED
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FINISHED
@@ -61,7 +61,7 @@ import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_
 import cn.thecover.media.feature.basis.mine.intent.MineNavigationIntent
 import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPassword
 import coil.compose.AsyncImage
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.YBTheme
+import cn.thecover.media.core.widget.theme.YBTheme
 
 
 /**
@@ -330,14 +330,14 @@ private fun MineFunctionItem(
         Spacer(modifier = Modifier.width(16.dp))
         Text(title, modifier = Modifier.weight(1f), fontSize = 15.sp, color = MainTextColor)
 
-        Text(desc, fontSize = 14.sp, color = TernaryTextColor)
+        Text(desc, fontSize = 14.sp, color = TertiaryTextColor)
 
         if (clickAction != null && showRightArrow) {
             Icon(
                 painterResource(YBIcons.Custom.RightArrow),
                 "",
                 modifier = Modifier.size(16.dp),
-                tint = TernaryTextColor
+                tint = TertiaryTextColor
             )
         }
     }

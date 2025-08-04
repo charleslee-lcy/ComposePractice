@@ -17,9 +17,7 @@
 package cn.thecover.media.navigation
 
 import androidx.annotation.StringRes
-import androidx.compose.ui.graphics.vector.ImageVector
-import cn.thecover.media.core.widget.R
-import cn.thecover.media.core.widget.icon.YBIcons
+import cn.thecover.media.feature.basis.R
 import cn.thecover.media.feature.basis.home.navigation.HomeBaseRoute
 import cn.thecover.media.feature.basis.home.navigation.HomeRoute
 import cn.thecover.media.feature.basis.mine.navigation.MineRoute
@@ -42,38 +40,38 @@ import kotlin.reflect.KClass
  * there is a single destination in that section of the app (no nested destinations).
  */
 enum class TopLevelDestination(
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
+    val selectedIcon: Any,
+    val unselectedIcon: Any,
     @StringRes val iconTextId: Int,
     @StringRes val titleTextId: Int,
     val route: KClass<*>,
     val baseRoute: KClass<*> = route,
 ) {
     HOME(
-        selectedIcon = YBIcons.Upcoming,
-        unselectedIcon = YBIcons.UpcomingBorder,
+        selectedIcon = R.mipmap.ic_tab_home_normal,
+        unselectedIcon = R.mipmap.ic_tab_home_checked,
         iconTextId = R.string.feature_home_title,
         titleTextId = R.string.feature_home_title,
         route = HomeRoute::class,
         baseRoute = HomeBaseRoute::class,
     ),
     REVIEW_MANAGE(
-        selectedIcon = YBIcons.Bookmarks,
-        unselectedIcon = YBIcons.BookmarksBorder,
+        selectedIcon = R.mipmap.ic_tab_review_manage_normal,
+        unselectedIcon = R.mipmap.ic_tab_review_manage_checked,
         iconTextId = R.string.feature_review_manage_title,
         titleTextId = R.string.feature_review_manage_title,
         route = ReviewManageRoute::class,
     ),
     REVIEW_DATA(
-        selectedIcon = YBIcons.Bookmark,
-        unselectedIcon = YBIcons.BookmarkBorder,
+        selectedIcon = R.mipmap.ic_tab_review_data_normal,
+        unselectedIcon = R.mipmap.ic_tab_review_data_checked,
         iconTextId = R.string.feature_review_data_title,
         titleTextId = R.string.feature_review_data_title,
         route = ReviewDataRoute::class,
     ),
     MINE(
-        selectedIcon = YBIcons.Person,
-        unselectedIcon = YBIcons.Person,
+        selectedIcon = R.mipmap.ic_tab_mine_normal,
+        unselectedIcon = R.mipmap.ic_tab_mine_checked,
         iconTextId = R.string.feature_mine_title,
         titleTextId = R.string.feature_mine_title,
         route = MineRoute::class,

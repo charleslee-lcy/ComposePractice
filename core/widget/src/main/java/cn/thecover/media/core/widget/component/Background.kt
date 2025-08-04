@@ -34,10 +34,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.GradientColors
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.LocalBackgroundTheme
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.LocalGradientColors
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.YBTheme
+import cn.thecover.media.core.widget.theme.GradientColors
+import cn.thecover.media.core.widget.theme.LocalBackgroundTheme
+import cn.thecover.media.core.widget.theme.LocalGradientColors
+import cn.thecover.media.core.widget.theme.YBTheme
 import kotlin.math.tan
 import kotlin.to
 

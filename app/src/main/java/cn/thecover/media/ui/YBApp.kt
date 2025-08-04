@@ -23,13 +23,16 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -39,26 +42,25 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult.ActionPerformed
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.WindowAdaptiveInfo
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTagsAsResourceId
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -66,26 +68,28 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.YBBackground
 import cn.thecover.media.core.widget.component.YBGradientBackground
-import cn.thecover.media.core.widget.component.YBNavigationSuiteScaffold
+import cn.thecover.media.core.widget.component.YBImage
+import cn.thecover.media.core.widget.component.YBNavigationBar
+import cn.thecover.media.core.widget.component.YBNavigationBarItem
+import cn.thecover.media.core.widget.theme.GradientColors
+import cn.thecover.media.core.widget.theme.LocalGradientColors
+import cn.thecover.media.core.widget.theme.MsgColor
 import cn.thecover.media.core.widget.theme.Orange90
+import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.Red40
 import cn.thecover.media.navigation.TopLevelDestination
 import cn.thecover.media.navigation.YBNavHost
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.GradientColors
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.LocalGradientColors
 import kotlin.reflect.KClass
 
 @Composable
 fun YBApp(
     appState: YBAppState,
     modifier: Modifier = Modifier,
-    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
     val shouldShowGradientBackground =
         appState.currentTopLevelDestination == TopLevelDestination.HOME
-    var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
 
-    YBBackground (modifier = modifier) {
+    YBBackground(modifier = modifier) {
         YBGradientBackground(
             gradientColors = if (shouldShowGradientBackground) {
                 LocalGradientColors.current
@@ -93,7 +97,7 @@ fun YBApp(
                 GradientColors()
             },
         ) {
-            val snackbarHostState = remember { SnackbarHostState() }
+            val snackBarHostState = remember { SnackbarHostState() }
 
             val isOffline by appState.isOffline.collectAsStateWithLifecycle()
 
@@ -101,7 +105,7 @@ fun YBApp(
             val notConnectedMessage = stringResource(R.string.not_connected)
             LaunchedEffect(isOffline) {
                 if (isOffline) {
-                    snackbarHostState.showSnackbar(
+                    snackBarHostState.showSnackbar(
                         message = notConnectedMessage,
                         duration = Indefinite,
                     )
@@ -110,8 +114,7 @@ fun YBApp(
 
             YBApp(
                 appState = appState,
-                snackbarHostState = snackbarHostState,
-                windowAdaptiveInfo = windowAdaptiveInfo,
+                snackBarHostState = snackBarHostState
             )
         }
     }
@@ -124,9 +127,8 @@ fun YBApp(
 )
 internal fun YBApp(
     appState: YBAppState,
-    snackbarHostState: SnackbarHostState,
-    modifier: Modifier = Modifier,
-    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
+    snackBarHostState: SnackbarHostState,
+    modifier: Modifier = Modifier
 ) {
     val currentDestination = appState.currentDestination
 
@@ -136,61 +138,93 @@ internal fun YBApp(
     }
 
     // 只有在顶级页面才显示底部导航栏
-    if (isTopLevelDestination) {
-        YBNavigationSuiteScaffold(
-            navigationSuiteItems = {
-                appState.topLevelDestinations.forEach { destination ->
-                    val hasUnread = false
-                    val selected = currentDestination
-                        .isRouteInHierarchy(destination.baseRoute)
-                    item(
+    Column {
+        MainContent(
+            appState, snackBarHostState, modifier = modifier
+                .fillMaxWidth()
+                .weight(1f)
+        )
+        if (isTopLevelDestination) {
+            HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 0.25.dp, color = OutlineColor)
+            YBNavigationBar(
+                modifier = Modifier.height(60.dp)
+            ) {
+                appState.topLevelDestinations.forEachIndexed { index, destination ->
+                    val hasUnreadMsg = index == 1 || index == 2
+                    val showMsgCount = index == 2
+                    val msgModifier = if (hasUnreadMsg) {
+                        if (showMsgCount) {
+                            Modifier.showMsg(18, MessageType.Number)
+                        } else {
+                            Modifier.showMsg(18, MessageType.Dot)
+                        }
+                    } else {
+                        Modifier
+                    }
+                    val selected = currentDestination.isRouteInHierarchy(destination.route)
+                    YBNavigationBarItem(
                         selected = selected,
                         onClick = { appState.navigateToTopLevelDestination(destination) },
                         icon = {
-                            Icon(
-                                imageVector = destination.unselectedIcon,
-                                contentDescription = null,
-                            )
+                            if (destination.selectedIcon is String) {
+                                // 网络图片
+                                YBImage(
+                                    imageUrl = destination.selectedIcon,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                            if (destination.selectedIcon is Int) {
+                                // 静态资源
+                                YBImage(
+                                    placeholder = painterResource(destination.selectedIcon),
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
                         },
                         selectedIcon = {
-                            Icon(
-                                imageVector = destination.selectedIcon,
-                                contentDescription = null,
+                            if (destination.unselectedIcon is String) {
+                                // 网络图片
+                                YBImage(
+                                    imageUrl = destination.unselectedIcon,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                            if (destination.unselectedIcon is Int) {
+                                // 静态资源
+                                YBImage(
+                                    placeholder = painterResource(destination.unselectedIcon),
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        },
+                        label = {
+                            Text(
+                                text = stringResource(destination.iconTextId),
+                                fontSize = 12.sp
                             )
                         },
-                        label = { Text(stringResource(destination.iconTextId)) },
-                        modifier = Modifier
-                            .testTag("YBNavItem")
-                            .then(if (hasUnread) Modifier.notificationDot() else Modifier),
+                        modifier = Modifier.then(if (hasUnreadMsg) msgModifier else Modifier),
                     )
                 }
-            },
-            windowAdaptiveInfo = windowAdaptiveInfo,
-        ) {
-            MainContent(appState, snackbarHostState, modifier)
+            }
         }
-    } else {
-        // 非顶级页面直接显示内容，不包含底部导航栏
-        MainContent(appState, snackbarHostState, modifier)
     }
 }
 
 @Composable
 private fun MainContent(
     appState: YBAppState,
-    snackbarHostState: SnackbarHostState,
+    snackBarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
-        modifier = modifier.semantics {
-            testTagsAsResourceId = true
-        },
+        modifier = modifier,
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onBackground,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = {
             SnackbarHost(
-                snackbarHostState,
+                snackBarHostState,
                 modifier = Modifier.windowInsetsPadding(
                     WindowInsets.safeDrawing.exclude(
                         WindowInsets.ime,
@@ -213,7 +247,6 @@ private fun MainContent(
                     ),
                 ),
         ) {
-
             Box(
                 // Workaround for https://issuetracker.google.com/338478720
                 modifier = Modifier.consumeWindowInsets(
@@ -223,7 +256,7 @@ private fun MainContent(
                 YBNavHost(
                     appState = appState,
                     onShowSnackBar = { message, action ->
-                        snackbarHostState.showSnackbar(
+                        snackBarHostState.showSnackbar(
                             message = message,
                             actionLabel = action,
                             duration = Short,
@@ -231,33 +264,74 @@ private fun MainContent(
                     },
                 )
             }
-
-            // TODO: We may want to add padding or spacer when the snackbar is shown so that
-            //  content doesn't display behind it.
         }
     }
 }
 
-private fun Modifier.notificationDot(): Modifier =
+private enum class MessageType {
+    Dot,
+    Number
+}
+
+private fun Modifier.showMsg(
+    msgCount: Int = 0,
+    type: MessageType = MessageType.Number
+): Modifier =
     composed {
-        val tertiaryColor = MaterialTheme.colorScheme.tertiary
+        val textMeasurer = rememberTextMeasurer()
+        val textLayoutResult = remember("$msgCount") {
+            textMeasurer.measure(
+                text = "$msgCount",
+                style = TextStyle(
+                    fontSize = 10.sp,
+                    color = Color.White
+                )
+            )
+        }
         drawWithContent {
             drawContent()
-            drawCircle(
-                tertiaryColor,
-                radius = 5.dp.toPx(),
-                // This is based on the dimensions of the NavigationBar's "indicator pill";
-                // however, its parameters are private, so we must depend on them implicitly
-                // (NavigationBarTokens.ActiveIndicatorWidth = 64.dp)
-                center = center + Offset(
-                    64.dp.toPx() * .45f,
-                    32.dp.toPx() * -.45f - 6.dp.toPx(),
-                ),
-            )
+
+            if (type == MessageType.Number) {
+                val offset = center + Offset(
+                    64.dp.toPx() * .08f,
+                    32.dp.toPx() * -.45f - 10.dp.toPx(),
+                )
+                val horPadding = 3.5f.dp.toPx()
+                // 1. 先画圆角背景
+                drawRoundRect(
+                    color = MsgColor,
+                    topLeft = offset,
+                    size = Size(
+                        textLayoutResult.size.width.toFloat() + horPadding * 2,
+                        textLayoutResult.size.height.toFloat()
+                    ),
+                    cornerRadius = CornerRadius(50.dp.toPx(), 50.dp.toPx())
+                )
+                // 2. 再画文字（居中）
+                drawText(
+                    textLayoutResult = textLayoutResult,
+                    topLeft = offset.copy(
+                        x = offset.x + horPadding,
+                    )
+                )
+            } else {
+                // 画小圆点
+                drawCircle(
+                    MsgColor,
+                    radius = 4.dp.toPx(),
+                    // This is based on the dimensions of the NavigationBar's "indicator pill";
+                    // however, its parameters are private, so we must depend on them implicitly
+                    // (NavigationBarTokens.ActiveIndicatorWidth = 64.dp)
+                    center = center + Offset(
+                        64.dp.toPx() * .2f,
+                        32.dp.toPx() * -.45f - 6.dp.toPx(),
+                    ),
+                )
+            }
         }
     }
 
 private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
     this?.hierarchy?.any {
         it.hasRoute(route)
-    } ?: false
+    } == true

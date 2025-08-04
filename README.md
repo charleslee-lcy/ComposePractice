@@ -43,12 +43,12 @@
 # 三方组件
 
 - FlowBus 协程流shareFlow处理事件总线，替代eventbus
-- 
 
 # 自定义组件
 
 - YBToast 自定义SnackBar仿Toast效果，多次show以最新的一次内容显示
   使用方法：snackBarHostState.showToast(message)
+- YBImage 支持加载网络和本地图片，网络加载引用的Coil
 - YBPopup:自定义的底部弹出窗口
   - 使用方法：可在任意层级添加，通过传入的visible控制显示和隐藏。
 - YBPicker 基于popup实现，是一个基础的选择器组件，支持多列选择。
@@ -60,6 +60,8 @@
 - YBDialog 自定义通用弹窗。
 - YBAutoDismissDialog 自动消失的状态提示弹窗，如成功、失败等。
 - YBLoadingDialog 加载中弹窗
+
+
 
 ==============================================
 

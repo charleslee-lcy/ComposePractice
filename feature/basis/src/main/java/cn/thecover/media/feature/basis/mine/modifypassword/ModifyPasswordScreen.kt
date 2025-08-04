@@ -41,7 +41,7 @@ import cn.thecover.media.core.widget.component.YBTopAppBar
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
-import cn.thecover.media.core.widget.theme.TernaryTextColor
+import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.feature.basis.mine.MineViewModel
 
 /**
@@ -101,7 +101,7 @@ fun ModifyPasswordScreen(modifier: Modifier, navController: NavController) {
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = "*密码不小于8位，必须包含数字、字母、特殊符号\n*修改后，电脑端也需要用新密码登录",
-                color = TernaryTextColor,
+                color = TertiaryTextColor,
                 fontSize = 12.sp
             )
             Spacer(modifier = Modifier.height(40.dp))
@@ -149,7 +149,7 @@ fun ModifyPasswordInput(textState: MutableState<String>, label: String, hint: St
                                 Text(
                                     hint ?: "",
                                     fontSize = 15.sp,
-                                    color = TernaryTextColor,
+                                    color = TertiaryTextColor,
                                     style = LocalTextStyle.current
                                 )
                             }
@@ -159,7 +159,7 @@ fun ModifyPasswordInput(textState: MutableState<String>, label: String, hint: St
                             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                 Icon(
                                     painterResource(if (passwordVisible) YBIcons.Custom.PasswordHide else YBIcons.Custom.PasswordWatch),
-                                    tint = TernaryTextColor,
+                                    tint = TertiaryTextColor,
                                     contentDescription = if (passwordVisible) "隐藏密码" else "查看密码"
                                 )
                             }

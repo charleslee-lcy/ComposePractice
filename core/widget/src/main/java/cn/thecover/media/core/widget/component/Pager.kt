@@ -1,13 +1,12 @@
 package cn.thecover.media.core.widget.component
 
-import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,14 +20,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.ui.ComponentPreview
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
@@ -41,14 +41,14 @@ import kotlinx.coroutines.delay
  */
 
 @Composable
-fun YBBanner(items: SnapshotStateList<String>, autoScroll: Boolean = false, autoScrollDelay: Long = 3000L) {
+fun YBBanner(modifier: Modifier = Modifier, items: SnapshotStateList<String>, autoScroll: Boolean = false, autoScrollDelay: Long = 3000L) {
     if (items.isEmpty()) return
 
-    val context = LocalContext.current
     val pageCount = items.size
     val loopingCount = Int.MAX_VALUE
     val startIndex = loopingCount / 2
     val pagerState = rememberPagerState(initialPage = startIndex, pageCount = { loopingCount })
+    val bannerScope = rememberCoroutineScope()
 
     // 页码转换
     fun pageMapper(index: Int) = (index - startIndex).floorMod(pageCount)
@@ -92,17 +92,13 @@ fun YBBanner(items: SnapshotStateList<String>, autoScroll: Boolean = false, auto
         }
     }
 
-    Box(contentAlignment = Alignment.BottomCenter) {
-        HorizontalPager(state = pagerState) { pageIndex ->
+    Box(contentAlignment = Alignment.BottomCenter, modifier = modifier) {
+        HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { pageIndex ->
             YBImage(
                 imageUrl = items[pageMapper(pageIndex)],
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .clickable {
-                        Toast.makeText(context, "点击 position：$pageIndex", Toast.LENGTH_LONG)
-                            .show()
-                    },
+                    .fillMaxSize()
+                    .clickableWithoutRipple { }
             )
         }
 
@@ -151,5 +147,5 @@ fun YBBannerPreview() {
         )
     }
 
-    YBBanner(listData, true, 3000L)
+    YBBanner(items = listData, autoScroll = true, autoScrollDelay = 3000L)
 }

@@ -16,24 +16,34 @@
 
 package cn.thecover.media.core.widget.component
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.samples.apps.nowinandroid.core.designsystem.theme.YBTheme
+import cn.thecover.media.core.widget.theme.MainColor
+import cn.thecover.media.core.widget.theme.SecondaryTextColor
+import cn.thecover.media.core.widget.theme.YBTheme
 import kotlin.collections.forEachIndexed
 
 /**
@@ -60,7 +70,10 @@ fun YBTab(
         modifier = modifier,
         enabled = enabled,
         text = {
-            val style = MaterialTheme.typography.labelLarge.copy(textAlign = TextAlign.Center)
+            val style = MaterialTheme.typography.labelLarge.copy(
+                color = if (selected) MainColor else SecondaryTextColor,
+                textAlign = TextAlign.Center
+            )
             ProvideTextStyle(
                 value = style,
                 content = {
@@ -93,12 +106,39 @@ fun YBTabRow(
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onSurface,
         indicator = { tabPositions ->
-            TabRowDefaults.SecondaryIndicator(
-                modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
+            TabRowDefaults.PrimaryIndicator(
+                modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]).padding(bottom = 4.dp),
+                width = 72.dp,
                 height = 2.dp,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MainColor,
             )
         },
+        divider = {},
+        tabs = tabs,
+    )
+}
+
+@Composable
+fun YBScrollTabRow(
+    selectedTabIndex: Int,
+    modifier: Modifier = Modifier,
+    tabs: @Composable () -> Unit,
+) {
+    ScrollableTabRow(
+        modifier = modifier,
+        selectedTabIndex = selectedTabIndex,
+        edgePadding = 0.dp,
+        containerColor = Color.Transparent,
+        contentColor = Color.Transparent,
+        indicator = { tabPositions ->
+            TabRowDefaults.PrimaryIndicator(
+                modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                width = 72.dp,
+                height = 2.dp,
+                color = MainColor,
+            )
+        },
+        divider = {},
         tabs = tabs,
     )
 }
@@ -120,6 +160,31 @@ fun TabsPreview() {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun ScrolledTabsPreview() {
+    YBTheme {
+        val titles = listOf("Topics", "People")
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            YBScrollTabRow(
+                selectedTabIndex = 0,
+                modifier = Modifier.wrapContentWidth()
+            ) {
+                titles.forEachIndexed { index, title ->
+                    YBTab(
+                        selected = index == 0,
+                        onClick = { },
+                        text = { Text(text = title) },
+                    )
+                }
+            }
+        }
+    }
+}
+
 object YBTabDefaults {
-    val TabTopPadding = 7.dp
+    val TabTopPadding = 0.dp
 }
