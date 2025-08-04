@@ -16,6 +16,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable object ReviewDataRoute
 
+@Serializable object DepartmentReviewRoute
+
 fun NavController.navigateToReviewData(navOptions: NavOptions) =
     navigate(route = ReviewDataRoute, navOptions)
 
@@ -23,4 +25,8 @@ fun NavGraphBuilder.reviewDataScreen() {
     composable<ReviewDataRoute> {
         ReviewDataRoute()
     }
+}
+
+internal fun NavController.navigateToDepartmentReviewPage() {
+    navigate(DepartmentReviewRoute)
 }
