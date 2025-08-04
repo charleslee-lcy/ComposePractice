@@ -4,6 +4,7 @@ import android.R.attr.text
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -62,7 +63,7 @@ fun YBDropdownMenu(
     cornerRadius: Dp = 0.dp,
     backgroundColor: Color = Color.White,
     offset: DpOffset = DpOffset(0.dp, 10.dp),
-    anchor: @Composable () -> Unit = {},
+    anchor: @Composable ColumnScope.() -> Unit = {},
 ) {
     var currentIndex by remember { mutableIntStateOf(initialIndex) }
 

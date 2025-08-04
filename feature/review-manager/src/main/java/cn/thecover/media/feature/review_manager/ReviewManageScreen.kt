@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -28,6 +29,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import cn.thecover.media.core.widget.component.YBBadge
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.popup.YBDropdownMenu
@@ -47,8 +50,9 @@ import cn.thecover.media.feature.review_manager.assign.DepartmentAssignScreen
 @Composable
 internal fun ReviewManageRoute(
     modifier: Modifier = Modifier,
+    navController: NavController,
 ) {
-    ReviewManageScreen(modifier)
+    ReviewManageScreen(modifier = modifier, navController = navController)
 }
 
 internal enum class ReviewManageType(val index: Int) {
@@ -60,13 +64,12 @@ internal enum class ReviewManageType(val index: Int) {
 @Composable
 internal fun ReviewManageScreen(
     modifier: Modifier = Modifier,
-    viewModel: ReviewManageViewModel = hiltViewModel()
+    navController: NavController,
 ) {
     var pageType by remember { mutableIntStateOf(ReviewManageType.ARCHIVE_SCORE.index) }
 
     Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        modifier = modifier.fillMaxSize()
     ) {
         TopBar { text, index ->
             if (pageType != index) {
@@ -76,15 +79,15 @@ internal fun ReviewManageScreen(
         when(pageType) {
             ReviewManageType.DEPARTMENT_ASSIGN.index -> {
                 // 部门内分配
-                DepartmentAssignScreen()
+                DepartmentAssignScreen(navController = navController)
             }
             ReviewManageType.APPEAL_MANAGE.index -> {
                 // 申诉管理
-                AppealManageScreen()
+                AppealManageScreen(navController = navController)
             }
             else -> {
                 // 稿件打分
-                ReviewManageScreenInternal()
+                ReviewManageScreenInternal(navController = navController)
             }
         }
     }
@@ -92,7 +95,8 @@ internal fun ReviewManageScreen(
 
 @Composable
 internal fun ReviewManageScreenInternal(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavController,
 ) {
     Column(
         modifier = modifier.fillMaxSize()
@@ -163,6 +167,6 @@ private fun TopBar(titleClick: (String, Int) -> Unit = {_, _ -> }) {
 @Composable
 private fun ReviewManagePreview() {
     YBTheme {
-        ReviewManageScreen()
+        ReviewManageScreen(navController = NavController(LocalContext.current))
     }
 }
