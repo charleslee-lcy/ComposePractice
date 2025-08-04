@@ -80,13 +80,13 @@ internal val YBTypography = Typography(
     ),
     titleMedium = TextStyle(
         fontWeight = FontWeight.Bold,
-        fontSize = 18.sp,
+        fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.1.sp,
     ),
     titleSmall = TextStyle(
         fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
+        fontSize = 15.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp,
     ),
