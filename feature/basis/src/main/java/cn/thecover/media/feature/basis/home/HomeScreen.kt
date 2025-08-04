@@ -8,14 +8,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -23,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Poll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -44,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.YBBadge
 import cn.thecover.media.core.widget.component.YBBanner
 import cn.thecover.media.core.widget.component.YBImage
@@ -55,17 +53,15 @@ import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.showToast
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.icon.YBIcons
-import cn.thecover.media.core.widget.theme.HintTextColor
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
-import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.ComponentPreview
-import cn.thecover.media.feature.basis.R
 import cn.thecover.media.feature.basis.home.ui.LeaderUserContent
 import cn.thecover.media.feature.basis.home.ui.ReporterUserContent
+import cn.thecover.media.feature.basis.home.ui.normalCardElevation
 import kotlinx.coroutines.launch
 
 
@@ -186,6 +182,7 @@ internal fun HomeScreen(
                     .fillMaxWidth()
                     .padding(start = 15.dp, end = 15.dp, bottom = 15.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
                 shape = RoundedCornerShape(12.dp),
             ) {
                 YBTabRow(
@@ -248,7 +245,7 @@ private fun TopBar(titleClick: () -> Unit = {}) {
             )
             YBImage(
                 modifier = Modifier.size(20.dp),
-                placeholder = painterResource(cn.thecover.media.core.widget.R.mipmap.ic_arrow_down)
+                placeholder = painterResource(R.mipmap.ic_arrow_down)
             )
         }
         YBBadge(
@@ -274,7 +271,6 @@ private fun TopBar(titleClick: () -> Unit = {}) {
         }
     )
 }
-
 
 @ComponentPreview
 @Composable

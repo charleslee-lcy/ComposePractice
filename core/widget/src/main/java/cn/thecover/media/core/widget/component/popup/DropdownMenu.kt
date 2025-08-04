@@ -1,14 +1,46 @@
 package cn.thecover.media.core.widget.component.popup
 
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.ColumnScope
+import android.R.attr.text
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import cn.thecover.media.core.widget.component.YBImage
+import cn.thecover.media.core.widget.event.clickableWithoutRipple
+import cn.thecover.media.core.widget.theme.MainColor
+import cn.thecover.media.core.widget.theme.MainTextColor
+import cn.thecover.media.core.widget.theme.OutlineColor
+import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
-import cn.thecover.media.core.widget.ui.ComponentPreview
+import cn.thecover.media.core.widget.ui.PhonePreview
 
 
 /**
@@ -16,29 +48,112 @@ import cn.thecover.media.core.widget.ui.ComponentPreview
  * <p> Created by CharlesLee on 2025/7/31
  * 15708478830@163.com
  */
+
+/**
+ * 定义与页面等宽的下拉菜单，item项文字居中显示
+ */
 @Composable
 fun YBDropdownMenu(
-    visible: Boolean,
-    enterTransition: EnterTransition = slideInVertically(
-        animationSpec = tween(150),
-        initialOffsetY = { it }
-    ),
-    exitTransition: ExitTransition = slideOutVertically(
-        animationSpec = tween(150),
-        targetOffsetY = { it }
-    ),
-    onClose: () -> Unit = {},
-    content: @Composable ColumnScope.() -> Unit
+    modifier: Modifier = Modifier,
+    initialIndex: Int = 0,
+    data: List<String> = listOf<String>(),
+    expanded: MutableState<Boolean>,
+    onItemClick: (text: String, index: Int) -> Unit = { _, _ -> },
+    cornerRadius: Dp = 0.dp,
+    backgroundColor: Color = Color.White,
+    offset: DpOffset = DpOffset(0.dp, 10.dp),
+    anchor: @Composable () -> Unit = {},
 ) {
+    var currentIndex by remember { mutableIntStateOf(initialIndex) }
 
+    Column(modifier = modifier) {
+        anchor()
+        DropdownMenu(
+            modifier = Modifier.fillMaxWidth(),
+            expanded = expanded.value,
+            containerColor = backgroundColor,
+            shadowElevation = 5.dp,
+            offset = offset,
+            shape = RoundedCornerShape(cornerRadius),
+            onDismissRequest = { expanded.value = false }
+        ) {
+            data.forEachIndexed { index, item ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = "$item",
+                            color = if (index == currentIndex) MainColor else SecondaryTextColor,
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)
+                        )
+                    },
+                    onClick = {
+                        expanded.value = false
+                        currentIndex = index
+                        onItemClick.invoke(item, index)
+                    }
+                )
+                if (index != data.lastIndex) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = OutlineColor,
+                        thickness = 0.5.dp
+                    )
+                }
+            }
+        }
+    }
 }
 
-@ComponentPreview
+@PhonePreview
 @Composable
 fun YBDropdownMenuPreview() {
     YBTheme {
-        YBDropdownMenu(visible = true) {
+        val list = listOf(
+            "稿件打分",
+            "部门内分配",
+            "申诉管理"
+        )
+        var expanded = remember { mutableStateOf(false) }
+        var title by remember { mutableStateOf(list[0]) }
 
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .statusBarsPadding()
+                .height(40.dp)
+        ) {
+            YBDropdownMenu(
+                data = list,
+                expanded = expanded,
+                modifier = Modifier.align(Alignment.Center),
+                onItemClick = { text, index ->
+                    title = text
+                }
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp)
+                        .clickableWithoutRipple {
+                            expanded.value = !expanded.value
+                        },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = title,
+                        color = MainTextColor,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center
+                    )
+                    YBImage(
+                        modifier = Modifier.size(20.dp),
+                        placeholder = painterResource(cn.thecover.media.core.widget.R.mipmap.ic_arrow_down)
+                    )
+                }
+            }
         }
     }
 }

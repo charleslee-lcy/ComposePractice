@@ -1,10 +1,6 @@
 package cn.thecover.media.feature.basis.home.ui
 
-import android.R.attr.bottom
-import android.R.attr.fontWeight
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Task
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -26,12 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cn.thecover.media.core.widget.theme.DividerColor
 import cn.thecover.media.core.widget.theme.HintTextColor
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -40,7 +33,6 @@ import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.ComponentPreview
-import cn.thecover.media.core.widget.ui.PhonePreview
 
 
 /**
@@ -48,6 +40,9 @@ import cn.thecover.media.core.widget.ui.PhonePreview
  * <p> Created by CharlesLee on 2025/8/1
  * 15708478830@163.com
  */
+
+val normalCardElevation = 0.5.dp
+
 @Composable
 internal fun ReporterUserContent() {
     Column(
@@ -90,6 +85,7 @@ internal fun ReporterUserContent() {
                     .weight(1f)
                     .fillMaxHeight(),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
@@ -111,6 +107,7 @@ internal fun ReporterUserContent() {
                     .weight(1f)
                     .fillMaxHeight(),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
@@ -139,6 +136,7 @@ internal fun ReporterUserContent() {
                     .fillMaxHeight()
                     .weight(1f),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
@@ -160,6 +158,7 @@ internal fun ReporterUserContent() {
                     .weight(1f)
                     .fillMaxHeight(),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
@@ -206,20 +205,30 @@ internal fun ReporterUserContent() {
         }
 
         Card(
-            modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
             shape = RoundedCornerShape(12.dp)
         ) {
             Row(modifier = Modifier.height(70.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "定额任务",
                     color = SecondaryTextColor,
+                    textAlign = TextAlign.Center,
                     fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 20.dp)
+                    modifier = Modifier.weight(0.8f)
                 )
-                VerticalDivider(modifier = Modifier.height(38.dp).padding(start = 20.dp), thickness = 0.5.dp, color = TertiaryTextColor)
+                VerticalDivider(
+                    modifier = Modifier.height(38.dp),
+                    thickness = 0.5.dp,
+                    color = TertiaryTextColor
+                )
                 Column(
-                    modifier = Modifier.weight(1f).padding(start = 30.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 30.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -254,8 +263,11 @@ internal fun ReporterUserContent() {
         }
 
         Card(
-            modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
             shape = RoundedCornerShape(12.dp)
         ) {
             Row(modifier = Modifier.height(70.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -263,11 +275,18 @@ internal fun ReporterUserContent() {
                     text = "内参任务",
                     color = SecondaryTextColor,
                     fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 20.dp)
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(0.8f)
                 )
-                VerticalDivider(modifier = Modifier.height(38.dp).padding(start = 20.dp), thickness = 0.5.dp, color = TertiaryTextColor)
+                VerticalDivider(
+                    modifier = Modifier.height(38.dp),
+                    thickness = 0.5.dp,
+                    color = TertiaryTextColor
+                )
                 Column(
-                    modifier = Modifier.weight(1f).padding(start = 30.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 30.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -345,6 +364,7 @@ internal fun LeaderUserContent() {
                     .weight(1f)
                     .fillMaxHeight(),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
@@ -366,6 +386,7 @@ internal fun LeaderUserContent() {
                     .weight(1f)
                     .fillMaxHeight(),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
@@ -394,6 +415,7 @@ internal fun LeaderUserContent() {
                     .fillMaxHeight()
                     .weight(1f),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
@@ -415,6 +437,7 @@ internal fun LeaderUserContent() {
                     .weight(1f)
                     .fillMaxHeight(),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
@@ -443,6 +466,7 @@ internal fun LeaderUserContent() {
                     .fillMaxHeight()
                     .weight(1f),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
@@ -464,6 +488,7 @@ internal fun LeaderUserContent() {
                     .weight(1f)
                     .fillMaxHeight(),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
@@ -492,6 +517,7 @@ internal fun LeaderUserContent() {
                     .fillMaxHeight()
                     .weight(1f),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
@@ -539,8 +565,11 @@ internal fun LeaderUserContent() {
         }
 
         Card(
-            modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
             shape = RoundedCornerShape(12.dp)
         ) {
             Row(modifier = Modifier.height(70.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -551,9 +580,15 @@ internal fun LeaderUserContent() {
                     fontSize = 14.sp,
                     modifier = Modifier.weight(0.8f)
                 )
-                VerticalDivider(modifier = Modifier.height(38.dp), thickness = 0.5.dp, color = TertiaryTextColor)
+                VerticalDivider(
+                    modifier = Modifier.height(38.dp),
+                    thickness = 0.5.dp,
+                    color = TertiaryTextColor
+                )
                 Column(
-                    modifier = Modifier.weight(1f).padding(start = 30.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 30.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -588,8 +623,11 @@ internal fun LeaderUserContent() {
         }
 
         Card(
-            modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
             shape = RoundedCornerShape(12.dp)
         ) {
             Row(modifier = Modifier.height(70.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -600,9 +638,15 @@ internal fun LeaderUserContent() {
                     fontSize = 14.sp,
                     modifier = Modifier.weight(0.8f)
                 )
-                VerticalDivider(modifier = Modifier.height(38.dp), thickness = 0.5.dp, color = TertiaryTextColor)
+                VerticalDivider(
+                    modifier = Modifier.height(38.dp),
+                    thickness = 0.5.dp,
+                    color = TertiaryTextColor
+                )
                 Column(
-                    modifier = Modifier.weight(1f).padding(start = 30.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 30.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -637,8 +681,11 @@ internal fun LeaderUserContent() {
         }
 
         Card(
-            modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
             shape = RoundedCornerShape(12.dp)
         ) {
             Row(modifier = Modifier.height(70.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -651,9 +698,15 @@ internal fun LeaderUserContent() {
                     fontSize = 14.sp,
                     modifier = Modifier.weight(0.8f)
                 )
-                VerticalDivider(modifier = Modifier.height(38.dp), thickness = 0.5.dp, color = TertiaryTextColor)
+                VerticalDivider(
+                    modifier = Modifier.height(38.dp),
+                    thickness = 0.5.dp,
+                    color = TertiaryTextColor
+                )
                 Column(
-                    modifier = Modifier.weight(1f).padding(start = 30.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 30.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
