@@ -34,7 +34,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -42,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.YBBadge
 import cn.thecover.media.core.widget.component.YBBanner
 import cn.thecover.media.core.widget.component.YBImage
@@ -59,7 +59,6 @@ import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.ComponentPreview
-import cn.thecover.media.feature.basis.R
 import cn.thecover.media.feature.basis.home.ui.LeaderUserContent
 import cn.thecover.media.feature.basis.home.ui.ReporterUserContent
 import cn.thecover.media.feature.basis.home.ui.normalCardElevation
@@ -246,7 +245,7 @@ private fun TopBar(titleClick: () -> Unit = {}) {
             )
             YBImage(
                 modifier = Modifier.size(20.dp),
-                placeholder = painterResource(cn.thecover.media.core.widget.R.mipmap.ic_arrow_down)
+                placeholder = painterResource(R.mipmap.ic_arrow_down)
             )
         }
         YBBadge(
