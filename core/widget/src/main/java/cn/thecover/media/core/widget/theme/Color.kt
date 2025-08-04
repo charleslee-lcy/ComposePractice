@@ -40,6 +40,10 @@ val MsgColor = Color(0xFFF95252)
 // page background
 val PageBackgroundColor = Color(0xFFFAFAFA)
 
+//辅助颜色
+val SecondaryAuxiliaryColor = Color(0xFFFFB833)
+val TertiaryAuxiliaryColor = Color(0xFFF1D66B)
+
 /**
  * Material in Android colors.
  */

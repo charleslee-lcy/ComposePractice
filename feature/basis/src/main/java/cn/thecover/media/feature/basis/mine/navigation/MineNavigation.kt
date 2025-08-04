@@ -38,7 +38,6 @@ fun NavController.navigateToModifyPassword(navOptions: NavOptions? = null) =
 fun NavGraphBuilder.mineScreen(navi: NavController) {
 
     composable<MineRoute> {
-
         MineRoute(navController = navi)
     }
 
