@@ -20,7 +20,7 @@ import cn.thecover.media.core.widget.theme.YBShapes
 internal fun DataItemCard(content: @Composable () -> Unit) {
     Card(
         modifier = Modifier
-            .padding(top = 12.dp)
+
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surface, shape = YBShapes.small)
             .padding(12.dp),

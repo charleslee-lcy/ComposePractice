@@ -33,7 +33,7 @@ import cn.thecover.media.feature.review_data.data.DepartmentTaskDataEntity
 @Composable
 fun DepartmentTaskReviewPage() {
     LazyColumn(
-        modifier = Modifier.padding(horizontal = 16.dp),
+
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         val items = mutableStateListOf(

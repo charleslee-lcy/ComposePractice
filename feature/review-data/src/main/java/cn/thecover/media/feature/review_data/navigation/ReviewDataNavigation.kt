@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import cn.thecover.media.feature.review_data.ReviewDataRoute
 import cn.thecover.media.feature.review_data.department_review.DepartmentReviewScreen
 import cn.thecover.media.feature.review_data.department_review.DepartmentTaskReviewPage
+import cn.thecover.media.feature.review_data.department_review.DepartmentTopRankingPage
 import kotlinx.serialization.Serializable
 
 
@@ -20,9 +21,13 @@ import kotlinx.serialization.Serializable
 object ReviewDataRoute
 
 @Serializable
-object DepartmentReviewRoute
+ object DepartmentReviewRoute
+
 @Serializable
-object DepartmentTaskReviewRoute
+ object DepartmentTaskReviewRoute
+
+@Serializable
+ object DepartmentTopRankingRoute
 
 fun NavController.navigateToReviewData(navOptions: NavOptions) =
     navigate(route = ReviewDataRoute, navOptions)
@@ -34,11 +39,20 @@ fun NavGraphBuilder.reviewDataScreen() {
 }
 
 fun NavGraphBuilder.reviewDataPage() {
-    composable<DepartmentReviewRoute> {
-        DepartmentReviewScreen()
-    }
-    composable<DepartmentTaskReviewRoute> {
-        DepartmentTaskReviewPage()
+    composable<DepartmentReviewRoute>(
+        content = {
+            DepartmentReviewScreen()
+        }
+    )
+
+    composable<DepartmentTaskReviewRoute>(
+        content = {
+            DepartmentTaskReviewPage()
+        }
+    )
+
+    composable<DepartmentTopRankingRoute> {
+        DepartmentTopRankingPage()
     }
 }
 
@@ -52,15 +66,26 @@ internal fun NavController.navigateToDepartmentTaskReviewPage() {
 
 enum class ReviewDataNavigationType(
     val cateName: String,
-    val navigation: (navController: NavController) -> Unit
-) {
-    DepartmentTotalData(
-        "部门总数据排行",
-        { nav -> nav.navigateToDepartmentReviewPage() }
-    ),
+    val navigation: (navController: NavController) -> Unit,
+    val route: String,
 
-    DepartmentTaskData(
+    ) {
+    DEPARTMENT_TOTAL_DATA(
+        "部门总数据排行",
+        { nav -> nav.navigateToDepartmentReviewPage() },
+        DepartmentReviewRoute.toString(),
+
+        ),
+
+    DEPARTMENT_TASK_DATA(
         "部门完成任务情况",
-        { nav -> nav.navigateToDepartmentTaskReviewPage() }
+        { nav -> nav.navigateToDepartmentTaskReviewPage() },
+        DepartmentTaskReviewRoute.toString(),
+
+        ),
+    DEPARTMENT_TOP_RANKING(
+        "部门TOP排行",
+        { nav -> nav.navigate(DepartmentTopRankingRoute) },
+        DepartmentTopRankingRoute.toString(),
     )
 }

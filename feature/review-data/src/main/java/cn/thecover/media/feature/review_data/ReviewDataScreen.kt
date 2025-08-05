@@ -65,7 +65,7 @@ internal fun ReviewDataScreen(
         NavHost(
             navController = reviewNavController,
             startDestination = DepartmentTaskReviewRoute,
-            modifier = modifier
+            modifier = modifier.padding(start = 16.dp,top=12.dp, end = 16.dp)
         ) {
             reviewDataPage()
         }
@@ -74,6 +74,11 @@ internal fun ReviewDataScreen(
 
 @Composable
 private fun TopBar(navController: NavController) {
+
+    val currentTitle = ReviewDataNavigationType.entries.first {
+        it.route.contains(navController.currentDestination?.route ?: "")
+    }.cateName
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -104,7 +109,7 @@ private fun TopBar(navController: NavController) {
                 .align(Alignment.Center), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "部门总数据排行",
+                text =currentTitle,
                 color = MainTextColor,
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center

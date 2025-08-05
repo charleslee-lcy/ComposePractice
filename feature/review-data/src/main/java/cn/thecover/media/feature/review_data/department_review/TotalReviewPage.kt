@@ -26,16 +26,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cn.thecover.media.core.widget.theme.MainTextColor
-import cn.thecover.media.core.widget.theme.MsgColor
-import cn.thecover.media.core.widget.theme.SecondaryAuxiliaryColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
-import cn.thecover.media.core.widget.theme.TertiaryAuxiliaryColor
-import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.review_data.basic_widget.DataItemCard
 import cn.thecover.media.feature.review_data.basic_widget.DataItemDropMenu
-import cn.thecover.media.feature.review_data.data.DepartmentTotalData
+import cn.thecover.media.feature.review_data.basic_widget.chooseRankingColor
+import cn.thecover.media.feature.review_data.data.DepartmentTotalDataEntity
 
 /**
  *  Created by Wing at 10:54 on 2025/8/4
@@ -47,18 +44,18 @@ import cn.thecover.media.feature.review_data.data.DepartmentTotalData
 internal fun DepartmentReviewScreen(
     modifier: Modifier = Modifier
 ) {
-    val depart = mutableListOf<DepartmentTotalData>(
-        DepartmentTotalData(1, "经济部"),
-        DepartmentTotalData(2, "时政新闻部"),
-        DepartmentTotalData(3, "市场部"),
-        DepartmentTotalData(4, "国际部"),
+    val depart = mutableListOf<DepartmentTotalDataEntity>(
+        DepartmentTotalDataEntity(1, "经济部"),
+        DepartmentTotalDataEntity(2, "时政新闻部"),
+        DepartmentTotalDataEntity(3, "市场部"),
+        DepartmentTotalDataEntity(4, "国际部"),
     )
     Surface {
         LazyColumn(
             modifier = modifier
                 .background(MaterialTheme.colorScheme.surfaceVariant)
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
             item { DepartmentTotalHeader() }
@@ -96,21 +93,16 @@ private fun DepartmentTotalHeader() {
 
 @Composable
 private fun DepartmentReviewItem(
-    bank: Int,
+    ranking: Int,
     name: String,
 ) {
     DataItemCard {
 
         Row(verticalAlignment = Alignment.Top) {
             Text(
-                text = bank.toString(),
+                text = ranking.toString(),
                 style = MaterialTheme.typography.titleSmall,
-                color = when (bank) {
-                    1 -> MsgColor
-                    2 -> SecondaryAuxiliaryColor
-                    3 -> TertiaryAuxiliaryColor
-                    else -> TertiaryTextColor
-                },
+                color = ranking.chooseRankingColor(),
                 modifier = Modifier.padding(top = 1.dp, end = 10.dp)
             )
             Column {
