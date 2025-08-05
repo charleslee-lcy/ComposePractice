@@ -39,9 +39,10 @@ internal fun AppealManageScreen(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
+    val count = remember { mutableIntStateOf(10) }
     val tabs = listOf(
         FilterType("我的申诉", 0),
-        FilterType("申诉审批", 1)
+        FilterType("申诉审批${if (count.intValue > 0) "(${count.intValue})" else ""}", 1)
     )
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { tabs.size })
     val currentTabIndex = remember { mutableIntStateOf(0) }
