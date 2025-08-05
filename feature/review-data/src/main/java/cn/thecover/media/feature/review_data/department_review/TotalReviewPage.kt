@@ -16,9 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,10 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.MsgColor
 import cn.thecover.media.core.widget.theme.SecondaryAuxiliaryColor
@@ -38,6 +33,8 @@ import cn.thecover.media.core.widget.theme.TertiaryAuxiliaryColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.review_data.basic_widget.DataItemCard
+import cn.thecover.media.feature.review_data.basic_widget.DataItemDropMenu
 import cn.thecover.media.feature.review_data.data.DepartmentTotalData
 
 /**
@@ -75,57 +72,22 @@ internal fun DepartmentReviewScreen(
 
 @Composable
 private fun DepartmentTotalHeader() {
-    DepartmentTotalCard {
+    DataItemCard {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("排序指数")
+                Text("排序指数", style = MaterialTheme.typography.labelMedium)
                 Spacer(Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            MaterialTheme.colorScheme.background,
-                            shape = YBShapes.extraSmall
-                        )
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-
-                    ) {
-                    Text("部门总稿费")
-                    Spacer(Modifier.weight(1f))
-                    Icon(
-                        painterResource(R.mipmap.ic_arrow_down),
-                        contentDescription = "部门总稿费下拉筛选按钮",
-                        tint = TertiaryTextColor
-                    )
-                }
+                DataItemDropMenu("部门总稿费")
             }
-
             Spacer(Modifier.width(12.dp))
+
             Column(modifier = Modifier.weight(1f)) {
-                Text("时间")
+                Text("时间", style = MaterialTheme.typography.labelMedium)
                 Spacer(Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            MaterialTheme.colorScheme.background,
-                            shape = YBShapes.extraSmall
-                        )
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("2025年5月")
-                    Spacer(Modifier.weight(1f))
-                    Icon(
-                        painterResource(R.mipmap.ic_arrow_down),
-                        contentDescription = "部门总稿费下拉筛选按钮",
-                        tint = TertiaryTextColor
-                    )
-                }
+                DataItemDropMenu("2025年5月")
             }
         }
     }
@@ -137,7 +99,7 @@ private fun DepartmentReviewItem(
     bank: Int,
     name: String,
 ) {
-    DepartmentTotalCard {
+    DataItemCard {
 
         Row(verticalAlignment = Alignment.Top) {
             Text(
@@ -187,22 +149,6 @@ private fun DepartmentReviewItem(
     }
 }
 
-@Composable
-private fun DepartmentTotalCard(content: @Composable () -> Unit) {
-    Card(
-        modifier = Modifier
-            .padding(top = 12.dp)
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface, shape = YBShapes.small)
-            .padding(12.dp),
-        shape = YBShapes.small,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
-    ) {
-        content()
-    }
-}
 
 
 @Composable
