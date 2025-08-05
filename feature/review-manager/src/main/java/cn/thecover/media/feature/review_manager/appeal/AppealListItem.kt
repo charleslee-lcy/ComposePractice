@@ -1,7 +1,5 @@
 package cn.thecover.media.feature.review_manager.appeal
 
-import android.R.attr.text
-import android.R.attr.top
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -41,7 +39,8 @@ import kotlin.random.Random
  */
 @Composable
 fun AppealListItem(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    index: Int = 0
 ) {
     val type = Random.nextInt(4)
 
@@ -56,7 +55,7 @@ fun AppealListItem(
         ) {
             Text(
                 modifier = Modifier.padding(start = 12.dp, top = 12.dp),
-                text = "申诉ID：298237821321",
+                text = "${index}申诉ID：298237821321",
                 style = TextStyle(
                     color = TertiaryTextColor, fontSize = 14.sp
                 )
