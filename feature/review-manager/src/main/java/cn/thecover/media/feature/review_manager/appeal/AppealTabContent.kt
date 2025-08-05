@@ -12,11 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,11 +29,13 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.thecover.media.core.widget.component.YBImage
+import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.EditHintTextColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.OutlineColor
+import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 
 
@@ -49,7 +47,9 @@ import cn.thecover.media.core.widget.ui.PhonePreview
 @Composable
 fun MyAppealContent() {
     Column(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 15.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 15.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         val filters = listOf(
@@ -58,7 +58,7 @@ fun MyAppealContent() {
             AppealFilterType.ARCHIVE_CONTENT
         )
 
-        FilterSearchBar(initialIndex = 1) { text, index ->
+        FilterSearchBar(initialIndex = 0) { text, index ->
             Log.d("CharlesLee", "filterType: ${filters[index].type}")
         }
     }
@@ -71,19 +71,22 @@ internal enum class AppealFilterType(val type: Int) {
 }
 
 @Composable
-private fun FilterSearchBar(initialIndex: Int = 0, filterClick: (String, Int) -> Unit = {_, _ -> }) {
+private fun FilterSearchBar(
+    initialIndex: Int = 0,
+    filterClick: (String, Int) -> Unit = { _, _ -> }
+) {
     val list = listOf("稿件标题", "稿件ID", "申诉内容")
     var expanded = remember { mutableStateOf(false) }
     var title by remember { mutableStateOf(list[initialIndex]) }
-    val userNameState = rememberTextFieldState("")
+    val searchTextState = remember { mutableStateOf("") }
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 12.dp)
-            .height(36.dp)
+            .border(1.dp, Color(0xFFEAEAEB), RoundedCornerShape(4.dp))
             .background(Color.White)
-            .border(1.dp, Color(0xFFEAEAEB), RoundedCornerShape(4.dp)),
+            .height(36.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         YBAlignDropdownMenu(
@@ -91,7 +94,7 @@ private fun FilterSearchBar(initialIndex: Int = 0, filterClick: (String, Int) ->
             expanded = expanded,
             initialIndex = initialIndex,
             isItemWidthAlign = true,
-            modifier = Modifier.weight(0.28f),
+            modifier = Modifier.weight(0.25f),
             offset = DpOffset(0.dp, 0.dp),
             onItemClick = { text, index ->
                 title = text
@@ -121,27 +124,20 @@ private fun FilterSearchBar(initialIndex: Int = 0, filterClick: (String, Int) ->
             }
         }
         VerticalDivider(modifier = Modifier.height(20.dp), thickness = 0.5.dp, color = OutlineColor)
-        TextField(
-            state = userNameState,
-            lineLimits = TextFieldLineLimits.MultiLine(maxHeightInLines = 1),
-            placeholder = {
-                Text(
-                    text = "请输入搜索内容",
-                    color = EditHintTextColor,
-                    fontSize = 15.sp,
-                    modifier = Modifier.padding(bottom = 1.dp)
-                )
-            },
-            textStyle = TextStyle(color = Color(0xFF333333), fontSize = 15.sp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+        YBInput(
+            modifier = Modifier
+                .weight(0.7f)
+                .padding(horizontal = 15.dp),
+            textStyle = TextStyle(
+                fontSize = 13.sp,
+                color = MainTextColor
             ),
-            contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(
-                start = 0.dp, end = 0.dp
-            ),
-            modifier = Modifier.weight(0.7f)
+            hint = "请输入搜索内容",
+            hintTextSize = 13.sp,
+            hintTextColor = EditHintTextColor,
+            onValueChange = {
+                Log.d("CharlesLee", it)
+            }
         )
     }
 }
@@ -149,5 +145,7 @@ private fun FilterSearchBar(initialIndex: Int = 0, filterClick: (String, Int) ->
 @PhonePreview
 @Composable
 private fun AppealTabContentPreview() {
-    MyAppealContent()
+    YBTheme {
+        MyAppealContent()
+    }
 }
