@@ -16,6 +16,7 @@
 
 package cn.thecover.media.core.widget.component
 
+import android.R.id.tabs
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,8 +41,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import cn.thecover.media.core.widget.theme.MainColor
+import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import kotlin.collections.forEachIndexed
@@ -62,6 +65,8 @@ fun YBTab(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    normalTextColor: Color = SecondaryTextColor,
+    selectedTextColor: Color = MainColor,
     text: @Composable () -> Unit,
 ) {
     Tab(
@@ -71,7 +76,7 @@ fun YBTab(
         enabled = enabled,
         text = {
             val style = MaterialTheme.typography.labelLarge.copy(
-                color = if (selected) MainColor else SecondaryTextColor,
+                color = if (selected) selectedTextColor else normalTextColor,
                 textAlign = TextAlign.Center
             )
             ProvideTextStyle(
@@ -98,6 +103,8 @@ fun YBTab(
 fun YBTabRow(
     selectedTabIndex: Int,
     modifier: Modifier = Modifier,
+    indicatorWidth: Dp = 72.dp,
+    indicatorBottomMargin: Dp = 4.dp,
     tabs: @Composable () -> Unit,
 ) {
     TabRow(
@@ -107,8 +114,8 @@ fun YBTabRow(
         contentColor = MaterialTheme.colorScheme.onSurface,
         indicator = { tabPositions ->
             TabRowDefaults.PrimaryIndicator(
-                modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]).padding(bottom = 4.dp),
-                width = 72.dp,
+                modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]).padding(indicatorBottomMargin),
+                width = indicatorWidth,
                 height = 2.dp,
                 color = MainColor,
             )

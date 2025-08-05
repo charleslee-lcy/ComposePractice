@@ -61,6 +61,11 @@
 - YBAutoDismissDialog 自动消失的状态提示弹窗，如成功、失败等。
 - YBLoadingDialog 加载中弹窗
 
+## 下拉菜单
+详见DropdownMenu.kt
+- YBDropdownMenu 定义与页面等宽的下拉菜单，item项文字居中显示（一般用于页面顶部选择）
+- YBAlignDropdownMenu 定义自适应item宽度或与anchor组件等宽的下拉菜单，item项文字居左显示（一般用于页面内筛选项）
+
 
 
 ==============================================

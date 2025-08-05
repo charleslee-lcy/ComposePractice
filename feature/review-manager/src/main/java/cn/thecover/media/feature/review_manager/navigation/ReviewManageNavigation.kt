@@ -19,8 +19,8 @@ import kotlinx.serialization.Serializable
 fun NavController.navigateToReviewManage(navOptions: NavOptions) =
     navigate(route = ReviewManageRoute, navOptions)
 
-fun NavGraphBuilder.reviewManageScreen() {
+fun NavGraphBuilder.reviewManageScreen(navController: NavController) {
     composable<ReviewManageRoute> {
-        ReviewManageRoute()
+        ReviewManageRoute(navController = navController)
     }
 }

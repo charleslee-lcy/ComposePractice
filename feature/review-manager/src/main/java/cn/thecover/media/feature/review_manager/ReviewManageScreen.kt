@@ -1,7 +1,6 @@
 package cn.thecover.media.feature.review_manager
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,13 +20,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import cn.thecover.media.core.widget.component.YBBadge
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.popup.YBDropdownMenu
@@ -47,8 +47,9 @@ import cn.thecover.media.feature.review_manager.assign.DepartmentAssignScreen
 @Composable
 internal fun ReviewManageRoute(
     modifier: Modifier = Modifier,
+    navController: NavController,
 ) {
-    ReviewManageScreen(modifier)
+    ReviewManageScreen(modifier = modifier, navController = navController)
 }
 
 internal enum class ReviewManageType(val index: Int) {
@@ -60,15 +61,14 @@ internal enum class ReviewManageType(val index: Int) {
 @Composable
 internal fun ReviewManageScreen(
     modifier: Modifier = Modifier,
-    viewModel: ReviewManageViewModel = hiltViewModel()
+    navController: NavController,
 ) {
-    var pageType by remember { mutableIntStateOf(ReviewManageType.ARCHIVE_SCORE.index) }
+    var pageType by remember { mutableIntStateOf(ReviewManageType.APPEAL_MANAGE.index) }
 
     Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        modifier = modifier.fillMaxSize()
     ) {
-        TopBar { text, index ->
+        TopBar(pageType) { text, index ->
             if (pageType != index) {
                 pageType = index
             }
@@ -76,15 +76,15 @@ internal fun ReviewManageScreen(
         when(pageType) {
             ReviewManageType.DEPARTMENT_ASSIGN.index -> {
                 // 部门内分配
-                DepartmentAssignScreen()
+                DepartmentAssignScreen(navController = navController)
             }
             ReviewManageType.APPEAL_MANAGE.index -> {
                 // 申诉管理
-                AppealManageScreen()
+                AppealManageScreen(navController = navController)
             }
             else -> {
                 // 稿件打分
-                ReviewManageScreenInternal()
+                ReviewManageScreenInternal(navController = navController)
             }
         }
     }
@@ -92,7 +92,8 @@ internal fun ReviewManageScreen(
 
 @Composable
 internal fun ReviewManageScreenInternal(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavController,
 ) {
     Column(
         modifier = modifier.fillMaxSize()
@@ -102,10 +103,10 @@ internal fun ReviewManageScreenInternal(
 }
 
 @Composable
-private fun TopBar(titleClick: (String, Int) -> Unit = {_, _ -> }) {
+private fun TopBar(initialIndex: Int, titleClick: (String, Int) -> Unit = {_, _ -> }) {
     val list = listOf("稿件打分", "部门内分配", "申诉管理")
     var expanded = remember { mutableStateOf(false) }
-    var title by remember { mutableStateOf(list[0]) }
+    var title by remember { mutableStateOf(list[initialIndex]) }
 
     Box(
         modifier = Modifier
@@ -116,6 +117,7 @@ private fun TopBar(titleClick: (String, Int) -> Unit = {_, _ -> }) {
     ) {
         YBDropdownMenu(
             data = list,
+            initialIndex = initialIndex,
             expanded = expanded,
             modifier = Modifier.align(Alignment.Center),
             onItemClick = { text, index ->
@@ -163,6 +165,6 @@ private fun TopBar(titleClick: (String, Int) -> Unit = {_, _ -> }) {
 @Composable
 private fun ReviewManagePreview() {
     YBTheme {
-        ReviewManageScreen()
+        ReviewManageScreen(navController = NavController(LocalContext.current))
     }
 }

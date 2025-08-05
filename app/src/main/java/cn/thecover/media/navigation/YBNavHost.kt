@@ -85,7 +85,7 @@ fun YBNavHost(
         }
     ) {
         homeIndex(navController)
-        reviewManageScreen()
+        reviewManageScreen(navController)
         reviewDataScreen()
         mineScreen(navController)
     }
