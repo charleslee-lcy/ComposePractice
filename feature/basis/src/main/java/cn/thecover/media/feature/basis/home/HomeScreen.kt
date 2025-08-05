@@ -71,9 +71,7 @@ import kotlinx.coroutines.launch
  * 15708478830@163.com
  */
 @Composable
-internal fun HomeRoute(
-    viewModel: HomeViewModel = hiltViewModel(),
-) {
+internal fun HomeRoute() {
 //    val feedState by viewModel..collectAsStateWithLifecycle()
     YBTheme {
         HomeScreen()
@@ -167,7 +165,7 @@ internal fun HomeScreen(
                         fontSize = 14.sp,
                     )
                     Icon(
-                        painterResource(YBIcons.Custom.RightArrow),
+                        painterResource(R.drawable.icon_right_arrow),
                         contentDescription = "Localized description",
                         Modifier
                             .size(18.dp)

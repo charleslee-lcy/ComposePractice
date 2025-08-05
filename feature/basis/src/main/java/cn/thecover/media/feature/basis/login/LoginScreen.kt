@@ -62,8 +62,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun LoginRoute(
     modifier: Modifier = Modifier,
-    navController: NavController,
-    viewModel: HomeViewModel = hiltViewModel(),
+    navController: NavController
 ) {
 //    val feedState by viewModel.collectAsStateWithLifecycle()
     YBTheme {
@@ -89,7 +88,7 @@ internal fun LoginScreen(
     ) {
         YBImage(
             modifier = Modifier.fillMaxSize(),
-            placeholder = painterResource(R.mipmap.img_login_page_bg)
+            placeholder = painterResource(R.drawable.img_login_page_bg)
         )
         Column(
             modifier = modifier
