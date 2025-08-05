@@ -116,7 +116,7 @@ internal val YBTypography = Typography(
     // Used for Button
     labelLarge = TextStyle(
         fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
+        fontSize = 15.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp,
         lineHeightStyle = LineHeightStyle(
@@ -127,7 +127,7 @@ internal val YBTypography = Typography(
     // Used for Navigation items
     labelMedium = TextStyle(
         fontWeight = FontWeight.Medium,
-        fontSize = 12.sp,
+        fontSize = 13.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp,
         lineHeightStyle = LineHeightStyle(
@@ -138,7 +138,7 @@ internal val YBTypography = Typography(
     // Used for Tag
     labelSmall = TextStyle(
         fontWeight = FontWeight.Medium,
-        fontSize = 10.sp,
+        fontSize = 11.sp,
         lineHeight = 14.sp,
         letterSpacing = 0.sp,
         lineHeightStyle = LineHeightStyle(
