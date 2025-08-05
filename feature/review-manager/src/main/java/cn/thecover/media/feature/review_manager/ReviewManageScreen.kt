@@ -1,7 +1,6 @@
 package cn.thecover.media.feature.review_manager
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,9 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import cn.thecover.media.core.widget.component.YBBadge
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.popup.YBDropdownMenu
@@ -66,12 +63,12 @@ internal fun ReviewManageScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
 ) {
-    var pageType by remember { mutableIntStateOf(ReviewManageType.ARCHIVE_SCORE.index) }
+    var pageType by remember { mutableIntStateOf(ReviewManageType.APPEAL_MANAGE.index) }
 
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        TopBar { text, index ->
+        TopBar(pageType) { text, index ->
             if (pageType != index) {
                 pageType = index
             }
@@ -106,10 +103,10 @@ internal fun ReviewManageScreenInternal(
 }
 
 @Composable
-private fun TopBar(titleClick: (String, Int) -> Unit = {_, _ -> }) {
+private fun TopBar(initialIndex: Int, titleClick: (String, Int) -> Unit = {_, _ -> }) {
     val list = listOf("稿件打分", "部门内分配", "申诉管理")
     var expanded = remember { mutableStateOf(false) }
-    var title by remember { mutableStateOf(list[0]) }
+    var title by remember { mutableStateOf(list[initialIndex]) }
 
     Box(
         modifier = Modifier
@@ -120,6 +117,7 @@ private fun TopBar(titleClick: (String, Int) -> Unit = {_, _ -> }) {
     ) {
         YBDropdownMenu(
             data = list,
+            initialIndex = initialIndex,
             expanded = expanded,
             modifier = Modifier.align(Alignment.Center),
             onItemClick = { text, index ->
