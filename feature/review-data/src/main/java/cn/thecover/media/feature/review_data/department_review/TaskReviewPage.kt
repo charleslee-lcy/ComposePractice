@@ -14,15 +14,21 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import cn.thecover.media.core.widget.component.picker.DateType
+import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.review_data.basic_widget.DataItemCard
-import cn.thecover.media.feature.review_data.basic_widget.DataItemDropMenu
+import cn.thecover.media.feature.review_data.basic_widget.DataItemSelectionView
 import cn.thecover.media.feature.review_data.data.DepartmentTaskDataEntity
 
 /**
@@ -32,8 +38,10 @@ import cn.thecover.media.feature.review_data.data.DepartmentTaskDataEntity
 
 @Composable
 fun DepartmentTaskReviewPage() {
-    LazyColumn(
+    var showDatePicker by remember { mutableStateOf(false) }
+    var datePickedText by remember { mutableStateOf("2025年5月") }
 
+    LazyColumn(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         val items = mutableStateListOf(
@@ -48,7 +56,9 @@ fun DepartmentTaskReviewPage() {
                 Column {
                     Text(text = "时间")
                     Spacer(modifier = Modifier.height(8.dp))
-                    DataItemDropMenu("2025年5月")
+                    DataItemSelectionView(label = datePickedText, onClick = {
+                        showDatePicker = !showDatePicker
+                    })
                 }
             }
         }
@@ -61,9 +71,16 @@ fun DepartmentTaskReviewPage() {
                 it.taskDesc
             )
         }
-
-
     }
+
+    YBDatePicker(
+        visible = showDatePicker,
+        type = DateType.MONTH,
+        onCancel = { showDatePicker = false },
+        onChange = {
+            datePickedText = "${it.year}年${it.monthValue}月"
+        }
+    )
 }
 
 

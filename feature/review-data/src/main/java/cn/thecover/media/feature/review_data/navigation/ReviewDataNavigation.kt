@@ -1,5 +1,8 @@
 package cn.thecover.media.feature.review_data.navigation
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -40,6 +43,7 @@ fun NavGraphBuilder.reviewDataScreen() {
 
 fun NavGraphBuilder.reviewDataPage() {
     composable<DepartmentReviewRoute>(
+
         content = {
             DepartmentReviewScreen()
         }

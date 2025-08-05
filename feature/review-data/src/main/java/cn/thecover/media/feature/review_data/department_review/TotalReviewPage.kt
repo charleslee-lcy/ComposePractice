@@ -20,17 +20,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import cn.thecover.media.core.widget.component.picker.DateType
+import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.review_data.basic_widget.DataItemCard
-import cn.thecover.media.feature.review_data.basic_widget.DataItemDropMenu
+import cn.thecover.media.feature.review_data.basic_widget.DataItemSelectionView
+import cn.thecover.media.feature.review_data.basic_widget.DataItemDropMenuView
 import cn.thecover.media.feature.review_data.basic_widget.chooseRankingColor
 import cn.thecover.media.feature.review_data.data.DepartmentTotalDataEntity
 
@@ -69,6 +75,9 @@ internal fun DepartmentReviewScreen(
 
 @Composable
 private fun DepartmentTotalHeader() {
+    var showDatePicker by remember { mutableStateOf(false) }
+    var datePickedText by remember { mutableStateOf("2025年5月") }
+    val selectFilterChoice = remember { mutableStateOf("部门总稿费") }
     DataItemCard {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -77,17 +86,28 @@ private fun DepartmentTotalHeader() {
             Column(modifier = Modifier.weight(1f)) {
                 Text("排序指数", style = MaterialTheme.typography.labelMedium)
                 Spacer(Modifier.height(8.dp))
-                DataItemDropMenu("部门总稿费")
+                DataItemDropMenuView(data = selectFilterChoice)
             }
             Spacer(Modifier.width(12.dp))
 
             Column(modifier = Modifier.weight(1f)) {
                 Text("时间", style = MaterialTheme.typography.labelMedium)
                 Spacer(Modifier.height(8.dp))
-                DataItemDropMenu("2025年5月")
+                DataItemSelectionView(label = datePickedText, onClick = {
+                    showDatePicker = true
+                })
             }
         }
     }
+
+    YBDatePicker(
+        visible = showDatePicker,
+        type = DateType.MONTH,
+        onCancel = { showDatePicker = false },
+        onChange = {
+            datePickedText = "${it.year}年${it.monthValue}月"
+        }
+    )
 }
 
 
