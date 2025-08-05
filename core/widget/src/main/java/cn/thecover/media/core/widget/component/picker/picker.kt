@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.popup.YBPopup
 import cn.thecover.media.core.widget.theme.MainTextColor
+import cn.thecover.media.core.widget.theme.TertiaryTextColor
 
 import kotlin.math.roundToInt
 
@@ -228,9 +229,10 @@ private fun ActionBar(onCancel: () -> Unit, onConfirm: () -> Unit) {
 
             },
             modifier = Modifier.weight(1f),
-            textColor = MaterialTheme.colorScheme.tertiary,
+            textColor = TertiaryTextColor,
             backgroundColor = MaterialTheme.colorScheme.background,
-            borderColor = MaterialTheme.colorScheme.tertiary,
+            borderColor = TertiaryTextColor,
+            shape = MaterialTheme.shapes.extraSmall
         ) {
             Text(text = "取消")
         }
@@ -241,6 +243,7 @@ private fun ActionBar(onCancel: () -> Unit, onConfirm: () -> Unit) {
 
             },
             modifier = Modifier.weight(1f),
+            shape = MaterialTheme.shapes.extraSmall
         ) {
             Text(text = "确认")
         }

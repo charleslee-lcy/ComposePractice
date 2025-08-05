@@ -96,6 +96,7 @@ fun YBDialog(
                                     modifier = Modifier.weight(1f),
                                     textColor = TertiaryTextColor,
                                     backgroundColor = MaterialTheme.colorScheme.background,
+                                    shape = MaterialTheme.shapes.extraSmall,
                                     borderColor = TertiaryTextColor,
                                 ) {
                                     Text(text = cancelText)
@@ -107,6 +108,7 @@ fun YBDialog(
                                         onConfirm?.invoke()
                                         dialogState.value = false
                                     },
+                                    shape = MaterialTheme.shapes.extraSmall,
                                     modifier = Modifier.weight(1f),
                                 ) {
                                     Text(text = confirmText)
