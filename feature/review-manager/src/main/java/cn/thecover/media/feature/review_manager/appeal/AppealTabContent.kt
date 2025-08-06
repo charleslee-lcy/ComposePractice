@@ -23,12 +23,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.YBNormalList
@@ -39,6 +41,7 @@ import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
+import cn.thecover.media.feature.review_manager.navigation.navigateToAppealDetail
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -49,7 +52,7 @@ import kotlinx.coroutines.launch
  * 15708478830@163.com
  */
 @Composable
-fun MyAppealContent() {
+fun MyAppealContent(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -99,7 +102,10 @@ fun MyAppealContent() {
                     if (items.value.size >= 50) canLoadMore.value = false
                 }
             }) { item, index ->
-            AppealListItem(modifier = Modifier.fillMaxWidth(), index = index)
+            AppealListItem(modifier = Modifier.fillMaxWidth().clickableWithoutRipple{
+                // 跳转到申诉详情页
+                navController.navigateToAppealDetail()
+            }, index = index)
         }
     }
 }
@@ -179,6 +185,6 @@ private fun FilterSearchBar(
 @Composable
 private fun AppealTabContentPreview() {
     YBTheme {
-        MyAppealContent()
+        MyAppealContent(navController = NavController(LocalContext.current))
     }
 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import cn.thecover.media.core.widget.component.YBTab
 import cn.thecover.media.core.widget.component.YBTabRow
+import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import kotlinx.coroutines.CancellationException
@@ -82,13 +84,15 @@ internal fun AppealManageScreen(
             }
         }
 
+        HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = OutlineColor, thickness = 0.25.dp)
+
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) {pageIndex ->
             when (pageIndex) {
-                0 -> MyAppealContent()
-                1 -> MyAppealContent()
+                0 -> MyAppealContent(navController = navController)
+                1 -> MyAppealContent(navController = navController)
             }
         }
     }

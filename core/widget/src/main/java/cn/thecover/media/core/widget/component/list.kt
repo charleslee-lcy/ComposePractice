@@ -22,6 +22,7 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,9 +49,9 @@ fun <T> YBNormalList(
     items: MutableState<List<T>>,
     onRefresh: () -> Unit = {},
     onLoadMore: () -> Unit = {},
-    isRefreshing: MutableState<Boolean>,
-    isLoadingMore: MutableState<Boolean>,
-    canLoadMore: MutableState<Boolean>,
+    isRefreshing: MutableState<Boolean> = mutableStateOf(false),
+    isLoadingMore: MutableState<Boolean>  = mutableStateOf(false),
+    canLoadMore: MutableState<Boolean> = mutableStateOf(false),
     itemContent: @Composable (item: T, position: Int) -> Unit
 ) {
     val listState = rememberLazyListState()
