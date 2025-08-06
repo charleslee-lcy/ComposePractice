@@ -1,5 +1,8 @@
 package cn.thecover.media.feature.review_manager
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -34,6 +39,7 @@ import cn.thecover.media.core.widget.component.popup.YBDropdownMenu
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.ui.PhonePreview
 import cn.thecover.media.feature.review_manager.appeal.AppealManageScreen
 import cn.thecover.media.feature.review_manager.assign.DepartmentAssignScreen
 
@@ -107,6 +113,18 @@ private fun TopBar(initialIndex: Int, titleClick: (String, Int) -> Unit = {_, _ 
     val list = listOf("稿件打分", "部门内分配", "申诉管理")
     var expanded = remember { mutableStateOf(false) }
     var title by remember { mutableStateOf(list[initialIndex]) }
+    val animRotate = remember { Animatable(0f) }
+
+    // 当菜单状态改变时触发动画
+    LaunchedEffect(expanded.value) {
+        animRotate.animateTo(
+            targetValue = if (expanded.value) 180f else 0f,
+            animationSpec = tween(
+                durationMillis = 300,
+                easing = FastOutSlowInEasing
+            )
+        )
+    }
 
     Box(
         modifier = Modifier
@@ -141,7 +159,7 @@ private fun TopBar(initialIndex: Int, titleClick: (String, Int) -> Unit = {_, _ 
                     textAlign = TextAlign.Center
                 )
                 YBImage(
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(20.dp).rotate(animRotate.value),
                     placeholder = painterResource(cn.thecover.media.core.widget.R.mipmap.ic_arrow_down)
                 )
             }
@@ -161,7 +179,7 @@ private fun TopBar(initialIndex: Int, titleClick: (String, Int) -> Unit = {_, _ 
     }
 }
 
-@Preview(showSystemUi = true)
+@PhonePreview
 @Composable
 private fun ReviewManagePreview() {
     YBTheme {
