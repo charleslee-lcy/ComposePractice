@@ -17,16 +17,13 @@
 package cn.thecover.media.core.widget.component
 
 import android.R.id.tabs
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.ScrollableTabRow
@@ -36,7 +33,6 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -44,10 +40,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import cn.thecover.media.core.widget.theme.MainColor
-import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
-import kotlin.collections.forEachIndexed
 
 /**
  * Now in Android tab. Wraps Material 3 [Tab] and shifts text label down.
@@ -105,6 +99,7 @@ fun YBTabRow(
     modifier: Modifier = Modifier,
     indicatorWidth: Dp = 72.dp,
     indicatorBottomMargin: Dp = 4.dp,
+    divider: @Composable () -> Unit = {},
     tabs: @Composable () -> Unit,
 ) {
     TabRow(
@@ -120,7 +115,7 @@ fun YBTabRow(
                 color = MainColor,
             )
         },
-        divider = {},
+        divider = divider,
         tabs = tabs,
     )
 }

@@ -16,7 +16,14 @@
 
 package cn.thecover.media.core.widget.component
 
+import android.R.attr.onClick
+import android.R.attr.text
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
@@ -24,9 +31,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import cn.thecover.media.core.widget.R
+import cn.thecover.media.core.widget.YBShape
+import cn.thecover.media.core.widget.event.clickableWithoutRipple
+import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.ui.ComponentPreview
 import kotlin.text.uppercase
 
 @Composable
@@ -63,6 +81,34 @@ fun YBTopicTag(
     }
 }
 
+@Composable
+fun YBLabel(
+    modifier: Modifier = Modifier,
+    space: Dp = 0.dp,
+    label: @Composable RowScope.() -> Unit,
+    leadingIcon: @Composable (RowScope.() -> Unit)? = null,
+    trailingIcon: @Composable (RowScope.() -> Unit)? = null,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    onClick: () -> Unit = {},
+) {
+    Row(
+        modifier = modifier.clickableWithoutRipple{
+            onClick.invoke()
+        },
+        verticalAlignment = verticalAlignment
+    ) {
+        leadingIcon?.apply {
+            invoke(this@Row)
+            Spacer(modifier = Modifier.width(space))
+        }
+        label.invoke(this)
+        trailingIcon?.apply {
+            Spacer(modifier = Modifier.width(space))
+            invoke(this@Row)
+        }
+    }
+}
+
 @Preview
 @Composable
 fun TagPreview() {
@@ -70,6 +116,20 @@ fun TagPreview() {
         YBTopicTag(followed = true, onClick = {}) {
             Text("Topic".uppercase())
         }
+    }
+}
+
+@ComponentPreview
+@Composable
+private fun YBLabelPreview() {
+    YBTheme {
+        YBLabel(label = { Text("Label") }, leadingIcon = {
+            YBShape(modifier = Modifier.size(6.dp, 16.dp), colors = listOf(MainColor, Color.Transparent))
+        }, trailingIcon = {
+            YBImage(placeholder = painterResource(R.drawable.icon_watch))
+        }, onClick = {
+
+        })
     }
 }
 
