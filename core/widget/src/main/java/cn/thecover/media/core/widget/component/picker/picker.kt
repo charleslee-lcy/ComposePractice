@@ -8,6 +8,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -42,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.popup.YBPopup
 import cn.thecover.media.core.widget.theme.MainTextColor
+import cn.thecover.media.core.widget.theme.TertiaryTextColor
 
 import kotlin.math.roundToInt
 
@@ -68,6 +71,7 @@ fun YBPicker(
     ranges: Array<List<String>>,
     values: Array<Int>,
     title: String? = null,
+    buttonInBottom: Boolean = false,
     onCancel: () -> Unit,
     onColumnValueChange: ((column: Int, value: Int, values: Array<Int>) -> Unit)? = null,
     onValuesChange: (Array<Int>) -> Unit
@@ -80,20 +84,24 @@ fun YBPicker(
         enterTransition = fadeIn(tween(150)) + slideInVertically(tween(150)) { it / 3 },
         exitTransition = fadeOut(tween(150)) + slideOutVertically(tween(150)) { it / 3 },
         draggable = false,
+        isShowTopActionBar = !buttonInBottom,
+        onConfirm = {
+            onValuesChange(localValues)
+            onCancel()
+        },
         onClose = onCancel
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.background(color=MaterialTheme.colorScheme.background)) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.background(color = MaterialTheme.colorScheme.surface)
+        ) {
             Box(
                 modifier = Modifier
-                 .height(280.dp)
-                 .drawIndicator(
-                     //选中时间上方蒙层
-                     if (isSystemInDarkTheme()) {
-                         Color(0xff202020)
-                     } else {
-                         Color(0xFFF7F7F7)
-                     }
-                 )
+                    .height(280.dp)
+                    .drawIndicator(
+                        //选中时间上方蒙层
+                        MaterialTheme.colorScheme.surfaceVariant
+                    )
             ) {
                 // 可选列表
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -112,12 +120,14 @@ fun YBPicker(
             }
 
             Spacer(modifier = Modifier.height(20.dp))
-            // 操作栏
-            ActionBar(onCancel) {
-                onValuesChange(localValues)
-                onCancel()
+            // 底部按钮操作栏
+            if (buttonInBottom) {
+                ActionBar(onCancel) {
+                    onValuesChange(localValues)
+                    onCancel()
+                }
+                Spacer(modifier = Modifier.height(20.dp))
             }
-            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
@@ -154,8 +164,8 @@ private fun RowScope.ColumnItem(
         items(options) {
             Box(
                 modifier = Modifier
-                 .fillMaxWidth()
-                 .height(itemHeight),
+                    .fillMaxWidth()
+                    .height(itemHeight),
                 contentAlignment = Alignment.Center
             ) {
                 Text(text = it, color = MainTextColor, fontSize = 17.sp)
@@ -170,17 +180,17 @@ private fun Mask() {
     fun ColumnScope.MaskItem(lightColors: List<Color>, darkColors: List<Color>) {
         Box(
             modifier = Modifier
-             .fillMaxWidth()
-             .weight(1f)
-             .background(
-              Brush.verticalGradient(
-               colors = if (isSystemInDarkTheme()) {
-                darkColors
-               } else {
-                lightColors
-               }
-              )
-             )
+                .fillMaxWidth()
+                .weight(1f)
+                .background(
+                    Brush.verticalGradient(
+                        colors = if (isSystemInDarkTheme()) {
+                            darkColors
+                        } else {
+                            lightColors
+                        }
+                    )
+                )
         )
     }
 
@@ -228,9 +238,10 @@ private fun ActionBar(onCancel: () -> Unit, onConfirm: () -> Unit) {
 
             },
             modifier = Modifier.weight(1f),
-            textColor = MaterialTheme.colorScheme.tertiary,
+            textColor = TertiaryTextColor,
             backgroundColor = MaterialTheme.colorScheme.background,
-            borderColor = MaterialTheme.colorScheme.tertiary,
+            borderColor = TertiaryTextColor,
+            shape = MaterialTheme.shapes.extraSmall
         ) {
             Text(text = "取消")
         }
@@ -238,9 +249,9 @@ private fun ActionBar(onCancel: () -> Unit, onConfirm: () -> Unit) {
         YBButton(
             onClick = {
                 onConfirm.invoke()
-
             },
             modifier = Modifier.weight(1f),
+            shape = MaterialTheme.shapes.extraSmall
         ) {
             Text(text = "确认")
         }

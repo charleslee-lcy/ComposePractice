@@ -101,6 +101,8 @@ val LightDefaultColorScheme = lightColorScheme(
 
     // 轮廓颜色 - 用于边框、分隔线等轮廓元素
     outline = Color(0xFFE5E5E5),
+    // 轮廓边框颜色
+    outlineVariant = Color(0xFFE5E5E5),
 )
 
 

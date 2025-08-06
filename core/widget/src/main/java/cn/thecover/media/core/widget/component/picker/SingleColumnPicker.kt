@@ -26,7 +26,7 @@ fun SingleColumnPicker(
         arrayOf(range),
         arrayOf(value),
         title,
-        onCancel
+        onCancel = onCancel
     ) {
         onChange(it.first())
     }

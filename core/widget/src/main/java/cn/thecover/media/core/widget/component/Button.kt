@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -61,7 +60,7 @@ fun YBButton(
     textColor: Color = Color.White,
     backgroundColor: Color = MainColor,
     borderColor: Color = backgroundColor,
-    shape: Shape = RoundedCornerShape(2.dp),
+    shape: Shape = MaterialTheme.shapes.extraSmall,
     content: @Composable RowScope.() -> Unit,
 ) {
     Button(
@@ -99,7 +98,7 @@ fun YBButton(
     text: @Composable () -> Unit,
     textColor: Color = Color.White,
     backgroundColor: Color = MainColor,
-    shape: Shape = RoundedCornerShape(2.dp),
+    shape: Shape = MaterialTheme.shapes.extraSmall,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     YBButton(
@@ -138,7 +137,7 @@ fun YBOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    shape: Shape = RoundedCornerShape(2.dp),
+    shape: Shape = MaterialTheme.shapes.extraSmall,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit,
 ) {
@@ -180,7 +179,7 @@ fun YBOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    shape: Shape = RoundedCornerShape(2.dp),
+    shape: Shape = MaterialTheme.shapes.extraSmall,
     text: @Composable () -> Unit,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {

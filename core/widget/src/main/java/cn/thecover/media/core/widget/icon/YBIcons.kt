@@ -72,6 +72,7 @@ object YBIcons {
         val PasswordWatch= R.drawable.icon_watch
         val PasswordHide= R.drawable.icon_watch_banned
         val BackArrow= R.drawable.icon_back_arrow
+        val Expand= R.drawable.icon_expand_down
     }
     object Background {
         val Mine = R.drawable.bg_mine

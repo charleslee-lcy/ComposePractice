@@ -16,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.YBBadge
@@ -65,7 +67,7 @@ internal fun ReviewDataScreen(
         NavHost(
             navController = reviewNavController,
             startDestination = DepartmentTaskReviewRoute,
-            modifier = modifier.padding(start = 16.dp,top=12.dp, end = 16.dp)
+            modifier = modifier.padding(start = 16.dp, top = 12.dp, end = 16.dp)
         ) {
             reviewDataPage()
         }
@@ -74,10 +76,16 @@ internal fun ReviewDataScreen(
 
 @Composable
 private fun TopBar(navController: NavController) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route ?: ""
 
-    val currentTitle = ReviewDataNavigationType.entries.first {
-        it.route.contains(navController.currentDestination?.route ?: "")
-    }.cateName
+    val currentTitle = remember(currentRoute) {
+        ReviewDataNavigationType.entries.first {
+            it.route.contains(currentRoute)
+        }.cateName
+    }
+
+
 
     Box(
         modifier = Modifier
@@ -109,7 +117,9 @@ private fun TopBar(navController: NavController) {
                 .align(Alignment.Center), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text =currentTitle,
+                text = ReviewDataNavigationType.entries.first {
+                    it.route.contains(currentRoute)
+                }.cateName,
                 color = MainTextColor,
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center
@@ -122,14 +132,15 @@ private fun TopBar(navController: NavController) {
             )
             YBDropdownMenu(
                 expanded = showReviewDataMenu,
-
                 modifier = Modifier.align(Alignment.CenterVertically),
                 data = ReviewDataNavigationType.entries.map {
                     it.cateName
                 },
+                initialIndex = ReviewDataNavigationType.entries.first {
+                    it.route.contains(currentRoute)
+                }.ordinal,
                 onItemClick = { name, index ->
                     ReviewDataNavigationType.entries[index].navigation(navController)
-
                 }
             )
         }

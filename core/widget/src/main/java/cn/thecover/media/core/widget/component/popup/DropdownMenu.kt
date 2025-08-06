@@ -68,7 +68,7 @@ fun YBDropdownMenu(
     offset: DpOffset = DpOffset(0.dp, 10.dp),
     anchor: @Composable ColumnScope.() -> Unit = {},
 ) {
-    var currentIndex by remember { mutableIntStateOf(initialIndex) }
+    var currentIndex by remember(initialIndex) { mutableIntStateOf(initialIndex) }
 
     Column(modifier = modifier) {
         anchor()
