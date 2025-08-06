@@ -25,17 +25,27 @@ import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.review_data.basic_widget.DataItemCard
+import cn.thecover.media.feature.review_data.basic_widget.DataItemRankingCard
 import cn.thecover.media.feature.review_data.basic_widget.DataItemSelectionView
-import cn.thecover.media.feature.review_data.basic_widget.chooseRankingColor
 import cn.thecover.media.feature.review_data.data.DepartmentTotalDataEntity
+import java.time.LocalDate
 
 /**
  *  Created by Wing at 11:40 on 2025/8/5
  *  部门TOP排行
  */
 
+
+/**
+ * 部门排行榜页面
+ *
+ * 该函数展示部门排名信息，包括各部门的平均分数排名，
+ * 并提供月份选择功能用于查看不同时间段的排名数据。
+ *
+ */
 @Composable
 internal fun DepartmentTopRankingPage() {
+    // 部门总数据列表，包含部门ID、名称和平均分数
     val departmentTotalData = remember {
         mutableStateListOf(
             DepartmentTotalDataEntity(1, "部门1", averageScore = 224),
@@ -44,8 +54,16 @@ internal fun DepartmentTopRankingPage() {
             DepartmentTotalDataEntity(4, "部门4", averageScore = 218),
         )
     }
+
+    // 获取当前日期并格式化为年月文本
+    val currentDate = LocalDate.now()
+    val currentMonthText = "${currentDate.year}年${currentDate.monthValue}月"
+
+    // 日期选择器显示状态和选中日期文本状态
     var showDatePicker by remember { mutableStateOf(false) }
-    var datePickedText by remember { mutableStateOf("2025年5月") }
+    var datePickedText by remember { mutableStateOf(currentMonthText) }
+
+    // 构建页面布局，包含日期选择和部门排名列表
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -64,6 +82,8 @@ internal fun DepartmentTopRankingPage() {
             TopRankingItem(it.departmentRanking, it.departmentName, it.averageScore)
         }
     }
+
+    // 月份选择器组件，用于选择查看排名的月份
     YBDatePicker(
         visible = showDatePicker,
         type = DateType.MONTH,
@@ -74,16 +94,20 @@ internal fun DepartmentTopRankingPage() {
     )
 }
 
+
+/**
+ * 顶部排名项的可组合函数，用于显示部门排名信息
+ *
+ * @param ranking 排名序号
+ * @param departmentName 部门名称
+ * @param score 部门人均得分
+ */
 @Composable
 private fun TopRankingItem(ranking: Int, departmentName: String, score: Int) {
-    DataItemCard {
-        Row(verticalAlignment = Alignment.Bottom) {
-            Text(
-                ranking.toString(),
-                style = MaterialTheme.typography.titleSmall,
-                color = ranking.chooseRankingColor()
-            )
-            Spacer(modifier = Modifier.width(12.dp))
+    // 使用排名卡片包装器显示排名信息
+    DataItemRankingCard(ranking) {
+        // 水平排列部门名称和得分信息
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = departmentName, style = MaterialTheme.typography.titleSmall)
             Spacer(modifier = Modifier.weight(1f))
             Text("部门人均得分", style = MaterialTheme.typography.bodySmall, color = MainTextColor)
@@ -96,6 +120,7 @@ private fun TopRankingItem(ranking: Int, departmentName: String, score: Int) {
         }
     }
 }
+
 
 @Composable
 @Preview
