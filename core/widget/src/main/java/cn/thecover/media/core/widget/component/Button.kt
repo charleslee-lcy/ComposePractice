@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -60,7 +61,7 @@ fun YBButton(
     textColor: Color = Color.White,
     backgroundColor: Color = MainColor,
     borderColor: Color = backgroundColor,
-    shape: Shape = ButtonDefaults.shape,
+    shape: Shape = RoundedCornerShape(2.dp),
     content: @Composable RowScope.() -> Unit,
 ) {
     Button(
@@ -98,7 +99,7 @@ fun YBButton(
     text: @Composable () -> Unit,
     textColor: Color = Color.White,
     backgroundColor: Color = MainColor,
-    shape: Shape = ButtonDefaults.shape,
+    shape: Shape = RoundedCornerShape(2.dp),
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     YBButton(
@@ -137,6 +138,7 @@ fun YBOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    shape: Shape = RoundedCornerShape(2.dp),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit,
 ) {
@@ -157,6 +159,7 @@ fun YBOutlinedButton(
                 )
             },
         ),
+        shape = shape,
         contentPadding = contentPadding,
         content = content,
     )
@@ -177,6 +180,7 @@ fun YBOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    shape: Shape = RoundedCornerShape(2.dp),
     text: @Composable () -> Unit,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
@@ -184,6 +188,7 @@ fun YBOutlinedButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
+        shape = shape,
         contentPadding = if (leadingIcon != null) {
             ButtonDefaults.ButtonWithIconContentPadding
         } else {
