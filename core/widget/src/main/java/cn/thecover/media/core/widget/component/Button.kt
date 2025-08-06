@@ -60,7 +60,7 @@ fun YBButton(
     textColor: Color = Color.White,
     backgroundColor: Color = MainColor,
     borderColor: Color = backgroundColor,
-    shape: Shape = ButtonDefaults.shape,
+    shape: Shape = MaterialTheme.shapes.extraSmall,
     content: @Composable RowScope.() -> Unit,
 ) {
     Button(
