@@ -8,6 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -16,12 +17,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,6 +45,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
@@ -49,6 +53,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
+import cn.thecover.media.core.widget.theme.MainTextColor
+import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
@@ -76,9 +82,11 @@ fun YBPopup(
         animationSpec = tween(150),
         targetOffsetY = { it }
     ),
-    padding: PaddingValues = PaddingValues(12.dp),
+    padding: PaddingValues = PaddingValues(vertical = 12.dp, horizontal = 20.dp),
     draggable: Boolean = true,
+    isShowTopActionBar: Boolean = false,
     onClose: () -> Unit,
+    onConfirm: () -> Unit = onClose,
     content: @Composable ColumnScope.() -> Unit
 ) {
     var localVisible by remember { mutableStateOf(false) }
@@ -137,7 +145,7 @@ fun YBPopup(
                         }
                     )
                     .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
-                    .background(MaterialTheme.colorScheme.background)
+                    .background(MaterialTheme.colorScheme.surface)
                     .clickableWithoutRipple { }
                     .padding(padding)
                     .onSizeChanged {
@@ -148,10 +156,12 @@ fun YBPopup(
                     if (draggable) {
                         DraggableLine()
                     }
-
-                    title?.let {
-                        PopupTitle(title = it)
+                    if (isShowTopActionBar) {
+                        TopActionBar(title, onCancel = onClose, onConfirm = onConfirm)
+                    } else if (title != null) {
+                        PopupTitle(title)
                     }
+
                     content()
                 }
             }
@@ -211,6 +221,35 @@ private fun DraggableLine() {
 }
 
 @Composable
+private fun TopActionBar(title: String?, onCancel: () -> Unit, onConfirm: () -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            modifier = Modifier.clickable { onCancel.invoke() },
+            color = TertiaryTextColor,
+            style = MaterialTheme.typography.titleMedium,
+            text = "取消"
+        )
+        Text(
+            modifier = Modifier.weight(1f),
+            text = title ?: "",
+            color = MainTextColor,
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            modifier = Modifier
+                .wrapContentSize()
+                .clickable {
+                    onConfirm.invoke()
+                },
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary,
+            text = "确认"
+        )
+    }
+}
+
+@Composable
 private fun PopupTitle(title: String) {
     Box(
         modifier = Modifier
@@ -220,9 +259,8 @@ private fun PopupTitle(title: String) {
     ) {
         Text(
             text = title,
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 17.sp,
-            fontWeight = FontWeight.Bold
+            color = MainTextColor,
+            style = MaterialTheme.typography.titleMedium
         )
     }
 }

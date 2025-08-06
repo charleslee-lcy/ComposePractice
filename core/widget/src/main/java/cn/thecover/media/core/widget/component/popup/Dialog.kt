@@ -95,7 +95,7 @@ fun YBDialog(
                                     },
                                     modifier = Modifier.weight(1f),
                                     textColor = TertiaryTextColor,
-                                    backgroundColor = MaterialTheme.colorScheme.background,
+                                    backgroundColor = MaterialTheme.colorScheme.surface,
                                     shape = MaterialTheme.shapes.extraSmall,
                                     borderColor = TertiaryTextColor,
                                 ) {
