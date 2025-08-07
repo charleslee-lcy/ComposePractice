@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastCoerceAtLeast
 import cn.thecover.media.core.widget.R
+import cn.thecover.media.core.widget.component.ItemScoreRow
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
@@ -49,13 +51,12 @@ import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
 import cn.thecover.media.core.widget.theme.YBTheme
-import cn.thecover.media.feature.review_data.basic_widget.DataItemCard
-import cn.thecover.media.feature.review_data.basic_widget.DataItemDropMenuView
-import cn.thecover.media.feature.review_data.basic_widget.DataItemRankingCard
-import cn.thecover.media.feature.review_data.basic_widget.DataItemSelectionView
-import cn.thecover.media.feature.review_data.basic_widget.ExpandItemColumn
-import cn.thecover.media.feature.review_data.basic_widget.ManuScriptItemHeader
-import cn.thecover.media.feature.review_data.basic_widget.ReviewDataItemScoreRow
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemDropMenuView
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingRow
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
+import cn.thecover.media.feature.review_data.basic_widget.widget.ExpandItemColumn
+import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
 import cn.thecover.media.feature.review_data.data.DiffusionDataEntity
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewDataEntity
 import java.time.LocalDate
@@ -103,7 +104,10 @@ fun ManuscriptDiffusionPage() {
     )
 
     // 使用 LazyColumn 垂直排列页面内容，item 之间间隔 12.dp
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.padding(horizontal = 12.dp)
+    ) {
         // 显示页面头部组件
         item {
             ManuscriptDiffusionHeader()
@@ -121,7 +125,9 @@ fun ManuscriptDiffusionPage() {
                 },
                 style = MaterialTheme.typography.labelMedium,
                 color = TertiaryTextColor,
-                modifier = Modifier.padding(start = 12.dp)
+                modifier = Modifier
+                    .padding(start = 12.dp)
+                    .offset(y = (-4).dp)
             )
         }
 
@@ -146,59 +152,63 @@ fun ManuscriptDiffusionPage() {
 @Composable
 private fun DiffusionItem(rank: Int, data: ManuscriptReviewDataEntity) {
     // 使用排名卡片包装整个内容区域
-    DataItemRankingCard(ranking = rank) {
-        // 可折叠的内容区域，包含基础信息和详细数据
-        ExpandItemColumn(offset = -12, content = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                // 显示稿件头部信息：标题、作者、编辑
-                ManuScriptItemHeader(
-                    title = data.title,
-                    author = data.author,
-                    editor = data.editor
-                )
-                // 显示传播评分数据行：公式传播分和最终传播分
-                ReviewDataItemScoreRow(
-                    items = arrayOf(
-                        Pair("公式传播分", data.diffusionDataEntity.basicDiffusionScore.toString()),
-                        Pair(
-                            "最终传播分",
-                            data.diffusionDataEntity.ultimateDiffusionScore.toString()
-                        ),
+    DataItemCard {
+        DataItemRankingRow(ranking = rank) {
+            // 可折叠的内容区域，包含基础信息和详细数据
+            ExpandItemColumn(offset = -12, content = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    // 显示稿件头部信息：标题、作者、编辑
+                    ManuScriptItemHeader(
+                        title = data.title,
+                        author = data.author,
+                        editor = data.editor
                     )
-                )
-            }
-        }, foldContent = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                // 显示转载数据：核心媒体、一级媒体、二级媒体转载数
-                ReviewDataItemScoreRow(
-                    items = arrayOf(
-                        Pair(
-                            "核心媒体转载数",
-                            data.diffusionDataEntity.coreMediaReprint.toString()
-                        ),
-                        Pair(
-                            "一级媒体转载数",
-                            data.diffusionDataEntity.level1MediaReprint.toString()
-                        ),
-                        Pair(
-                            "二级媒体转载数",
-                            data.diffusionDataEntity.level2MediaReprint.toString()
-                        ),
+                    // 显示传播评分数据行：公式传播分和最终传播分
+                    ItemScoreRow(
+                        items = arrayOf(
+                            Pair(
+                                "公式传播分",
+                                data.diffusionDataEntity.basicDiffusionScore.toString()
+                            ),
+                            Pair(
+                                "最终传播分",
+                                data.diffusionDataEntity.ultimateDiffusionScore.toString()
+                            ),
+                        )
                     )
-                )
-                // 显示用户互动数据：阅读数、分享数、点赞数、评论数
-                ReviewDataItemScoreRow(
-                    items = arrayOf(
-                        Pair("阅读数", data.diffusionDataEntity.readNumber.toString()),
-                        Pair("分享数", data.diffusionDataEntity.shareNumber.toString()),
-                        Pair("点赞数", data.diffusionDataEntity.thumbNumber.toString()),
-                        Pair("评论数", data.diffusionDataEntity.commentNumber.toString()),
+                }
+            }, foldContent = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    // 显示转载数据：核心媒体、一级媒体、二级媒体转载数
+                    ItemScoreRow(
+                        items = arrayOf(
+                            Pair(
+                                "核心媒体转载数",
+                                data.diffusionDataEntity.coreMediaReprint.toString()
+                            ),
+                            Pair(
+                                "一级媒体转载数",
+                                data.diffusionDataEntity.level1MediaReprint.toString()
+                            ),
+                            Pair(
+                                "二级媒体转载数",
+                                data.diffusionDataEntity.level2MediaReprint.toString()
+                            ),
+                        )
                     )
-                )
-            }
+                    // 显示用户互动数据：阅读数、分享数、点赞数、评论数
+                    ItemScoreRow(
+                        items = arrayOf(
+                            Pair("阅读数", data.diffusionDataEntity.readNumber.toString()),
+                            Pair("分享数", data.diffusionDataEntity.shareNumber.toString()),
+                            Pair("点赞数", data.diffusionDataEntity.thumbNumber.toString()),
+                            Pair("评论数", data.diffusionDataEntity.commentNumber.toString()),
+                        )
+                    )
+                }
 
-        })
-
+            })
+        }
     }
 }
 

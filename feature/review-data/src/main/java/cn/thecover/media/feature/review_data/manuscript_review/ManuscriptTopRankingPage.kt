@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
@@ -19,15 +20,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import cn.thecover.media.core.widget.component.ItemScoreRow
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
+import cn.thecover.media.core.widget.theme.MainTextColor
+import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
-import cn.thecover.media.feature.review_data.basic_widget.DataItemCard
-import cn.thecover.media.feature.review_data.basic_widget.DataItemDropMenuView
-import cn.thecover.media.feature.review_data.basic_widget.DataItemRankingCard
-import cn.thecover.media.feature.review_data.basic_widget.DataItemSelectionView
-import cn.thecover.media.feature.review_data.basic_widget.ManuScriptItemHeader
-import cn.thecover.media.feature.review_data.basic_widget.ReviewDataItemScoreRow
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemDropMenuView
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingRow
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
+import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewDataEntity
 import java.time.LocalDate
 
@@ -59,7 +62,10 @@ fun ManuscriptTopRankingPage() {
             diffusionScore = 5
         )
     )
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.padding(horizontal = 12.dp)
+    ) {
         item {
             ManuscriptTopRankingHeader()
         }
@@ -82,24 +88,26 @@ fun ManuscriptTopRankingPage() {
 @Composable
 private fun ManuscriptTopRankingItem(num: Int, data: ManuscriptReviewDataEntity) {
     // 使用排名数据卡片包装内容
-    DataItemRankingCard(ranking = num) {
-        Column(
-            modifier = Modifier,
-        ) {
-            // 显示稿件头部信息（标题、作者、编辑）
-            ManuScriptItemHeader(title = data.title, author = data.author, editor = data.editor)
-            Spacer(Modifier.height(8.dp))
-            // 显示稿件的各项评分数据行
-            ReviewDataItemScoreRow(
-                items = arrayOf(
-                    Pair("总分", data.score.toString()),
-                    Pair("基础分", data.basicScore.toString()),
-                    Pair("传播分", data.diffusionScore.toString()),
-                    Pair("质量分", data.qualityScore.toString()),
+    DataItemCard {
+        DataItemRankingRow(ranking = num) {
+            Column(
+                modifier = Modifier,
+            ) {
+                // 显示稿件头部信息（标题、作者、编辑）
+                ManuScriptItemHeader(title = data.title, author = data.author, editor = data.editor)
+                Spacer(Modifier.height(8.dp))
+                // 显示稿件的各项评分数据行
+                ItemScoreRow(
+                    items = arrayOf(
+                        Pair("总分", data.score.toString()),
+                        Pair("基础分", data.basicScore.toString()),
+                        Pair("传播分", data.diffusionScore.toString()),
+                        Pair("质量分", data.qualityScore.toString()),
+                    )
                 )
-            )
-        }
+            }
 
+        }
     }
 }
 

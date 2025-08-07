@@ -1,4 +1,4 @@
-package cn.thecover.media.feature.review_data.basic_widget
+package cn.thecover.media.feature.review_data.basic_widget.widget
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
