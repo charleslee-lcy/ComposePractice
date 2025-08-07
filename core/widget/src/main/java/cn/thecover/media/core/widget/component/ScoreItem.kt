@@ -1,6 +1,5 @@
 package cn.thecover.media.core.widget.component
 
-import androidx.compose.animation.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -13,13 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
@@ -32,10 +31,47 @@ import cn.thecover.media.core.widget.theme.YBTheme
 
 
 
-const val SCORE_ITEM_TYPE_NORMAL = 0
-const val SCORE_ITEM_TYPE_NORMAL_WITH_BORDER = 1
-const val SCORE_ITEM_TYPE_SELECTED = 2
-const val SCORE_ITEM_TYPE_SELECTED_WITH_BORDER = 3
+enum class ScoreItemType {
+    NORMAL,
+    NORMAL_WITH_BORDER,
+    PRIMARY,
+    PRIMARY_WITH_BORDER;
+
+    @Composable
+    fun backgroundColor(): Color {
+        return when (this) {
+            NORMAL -> MaterialTheme.colorScheme.surfaceVariant
+            NORMAL_WITH_BORDER -> MaterialTheme.colorScheme.surfaceVariant
+            PRIMARY -> MainColor.copy(alpha = 0.1f)
+            PRIMARY_WITH_BORDER -> MainColor.copy(alpha = 0.1f)
+        }
+    }
+
+    @Composable
+    fun textColor(): Color {
+        return when (this) {
+            NORMAL, NORMAL_WITH_BORDER -> MainTextColor
+            PRIMARY, PRIMARY_WITH_BORDER -> MainColor
+        }
+    }
+
+    @Composable
+    fun labelColor(): Color {
+        return when (this) {
+            NORMAL, NORMAL_WITH_BORDER -> SecondaryTextColor
+            PRIMARY, PRIMARY_WITH_BORDER -> MainColor.copy(alpha = 0.7f)
+        }
+    }
+
+    @Composable
+    fun borderColor(): Color {
+        return when (this) {
+            NORMAL, PRIMARY -> Color.Transparent
+            NORMAL_WITH_BORDER, PRIMARY_WITH_BORDER -> MainColor
+        }
+    }
+}
+
 
 /**
  * 数据评分项视图组件
@@ -59,9 +95,8 @@ internal fun DataScoreItem(
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     textColor: Color = MainTextColor,
     labelColor: Color = SecondaryTextColor,
-    borderColor: Color=backgroundColor
+    borderColor: Color = backgroundColor
 ) {
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -97,6 +132,25 @@ internal fun DataScoreItem(
     }
 }
 
+@Composable
+fun PrimaryScoreItem(
+    item: String,
+    value: String,
+    modifier: Modifier = Modifier,
+    type: ScoreItemType = ScoreItemType.NORMAL
+) {
+
+    DataScoreItem(
+        item = item,
+        value = value,
+        modifier = modifier,
+        backgroundColor = type.backgroundColor(),
+        textColor = type.textColor(),
+        labelColor = type.labelColor(),
+        borderColor = type.borderColor()
+    )
+}
+
 
 /**
  * 评分数据项行组件，用于水平排列多个数据评分项
@@ -119,7 +173,29 @@ fun ItemScoreRow(
             DataScoreItem(
                 item = item.first,
                 value = item.second,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+            )
+        }
+    }
+}
+
+
+@Composable
+fun PrimaryItemScoreRow(
+    vararg items: Triple<String, String,ScoreItemType>,
+    modifier: Modifier = Modifier
+){
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        // 遍历所有数据项，为每个项创建数据评分视图
+        items.forEach { item ->
+            PrimaryScoreItem(
+                item = item.first,
+                value = item.second,
+                modifier = Modifier.weight(1f),
+                type = item.third
             )
         }
     }
@@ -134,12 +210,26 @@ fun DepartmentReviewDataItemPreview() {
             DataScoreItem(item = "一级媒体转载数", value = "2222")
 
             Spacer(Modifier.height(12.dp))
-            ItemScoreRow( items = arrayOf(
-                Pair("阅读数", "1"),
-                Pair("分享数", "10"),
-                Pair("点赞数", "100"),
-                Pair("评论数", "1000"),
+            PrimaryScoreItem(item = "一级媒体转载数", value = "2222", type = ScoreItemType.PRIMARY)
+            Spacer(Modifier.height(12.dp))
+
+            ItemScoreRow(
+                items = arrayOf(
+                    Pair("阅读数", "1"),
+                    Pair("分享数", "10"),
+                    Pair("点赞数", "100"),
+                    Pair("评论数", "1000"),
+                )
             )
+
+            Spacer(Modifier.height(12.dp))
+            PrimaryItemScoreRow(
+                items = arrayOf(
+                    Triple("普通", "1", ScoreItemType.NORMAL),
+                    Triple("主要", "10", ScoreItemType.PRIMARY),
+                    Triple("主要带边框", "100", ScoreItemType.PRIMARY_WITH_BORDER),
+                    Triple("普通带边框", "1000", ScoreItemType.NORMAL_WITH_BORDER),
+                )
             )
         }
 

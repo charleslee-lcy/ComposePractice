@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
  * APP color
  */
 val MainColor = Color(0xFF306CFF)
+val MainContainerColor = MainColor.copy(0.1f)
 
 // text
 val MainTextColor = Color(0xFF1A1A1A)
