@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,9 +25,9 @@ import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
-import cn.thecover.media.feature.review_data.basic_widget.DataItemCard
-import cn.thecover.media.feature.review_data.basic_widget.DataItemRankingCard
-import cn.thecover.media.feature.review_data.basic_widget.DataItemSelectionView
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingCard
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
 import cn.thecover.media.feature.review_data.data.DepartmentTotalDataEntity
 import java.time.LocalDate
 
@@ -65,7 +66,8 @@ internal fun DepartmentTopRankingPage() {
 
     // 构建页面布局，包含日期选择和部门排名列表
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.padding(horizontal = 16.dp)
     ) {
         item {
             DataItemCard {

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
@@ -22,12 +23,12 @@ import androidx.compose.ui.unit.dp
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.YBTheme
-import cn.thecover.media.feature.review_data.basic_widget.DataItemCard
-import cn.thecover.media.feature.review_data.basic_widget.DataItemDropMenuView
-import cn.thecover.media.feature.review_data.basic_widget.DataItemRankingCard
-import cn.thecover.media.feature.review_data.basic_widget.DataItemSelectionView
-import cn.thecover.media.feature.review_data.basic_widget.ManuScriptItemHeader
-import cn.thecover.media.feature.review_data.basic_widget.ReviewDataItemScoreRow
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemDropMenuView
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingCard
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
+import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
+import cn.thecover.media.feature.review_data.basic_widget.widget.ReviewDataItemScoreRow
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewDataEntity
 import java.time.LocalDate
 
@@ -59,7 +60,7 @@ fun ManuscriptTopRankingPage() {
             diffusionScore = 5
         )
     )
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(horizontal = 12.dp)) {
         item {
             ManuscriptTopRankingHeader()
         }

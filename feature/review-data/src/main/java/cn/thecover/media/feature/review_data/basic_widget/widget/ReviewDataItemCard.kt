@@ -1,4 +1,4 @@
-package cn.thecover.media.feature.review_data.basic_widget
+package cn.thecover.media.feature.review_data.basic_widget.widget
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -37,6 +37,7 @@ import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.CardOutlineColor
 import cn.thecover.media.core.widget.theme.YBShapes
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.review_data.basic_widget.chooseRankingColor
 
 /**
  *  Created by Wing at 09:41 on 2025/8/5
@@ -50,16 +51,16 @@ import cn.thecover.media.core.widget.theme.YBTheme
  * @param content 卡片内部的内容组件。
  */
 @Composable
-internal fun DataItemCard(content: @Composable () -> Unit) {
+internal fun DataItemCard(containerColor :Color= MaterialTheme.colorScheme.surface,content: @Composable () -> Unit) {
     Card(
         modifier = Modifier
             .border(width = 0.5.dp, color = CardOutlineColor, shape = MaterialTheme.shapes.small)
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface, shape = YBShapes.small)
+            .background(containerColor, shape = YBShapes.small)
             .padding(horizontal = 12.dp),
         shape = YBShapes.small,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = Color.Transparent
         ),
     ) {
         Column {
@@ -133,8 +134,8 @@ internal fun ExpandItemColumn(
  * @param content 排名之后的主要内容组件。
  */
 @Composable
-internal fun DataItemRankingCard(ranking: Int = 0, content: @Composable () -> Unit) {
-    DataItemCard {
+internal fun DataItemRankingCard(ranking: Int = 0,containerColor :Color= MaterialTheme.colorScheme.surface, content: @Composable () -> Unit) {
+    DataItemCard(containerColor) {
         Row(verticalAlignment = Alignment.Top) {
             Text(
                 text = ranking.toString(),

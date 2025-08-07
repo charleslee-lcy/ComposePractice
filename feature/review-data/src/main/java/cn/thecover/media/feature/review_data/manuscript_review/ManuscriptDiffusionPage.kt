@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -49,13 +50,13 @@ import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
 import cn.thecover.media.core.widget.theme.YBTheme
-import cn.thecover.media.feature.review_data.basic_widget.DataItemCard
-import cn.thecover.media.feature.review_data.basic_widget.DataItemDropMenuView
-import cn.thecover.media.feature.review_data.basic_widget.DataItemRankingCard
-import cn.thecover.media.feature.review_data.basic_widget.DataItemSelectionView
-import cn.thecover.media.feature.review_data.basic_widget.ExpandItemColumn
-import cn.thecover.media.feature.review_data.basic_widget.ManuScriptItemHeader
-import cn.thecover.media.feature.review_data.basic_widget.ReviewDataItemScoreRow
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemDropMenuView
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingCard
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
+import cn.thecover.media.feature.review_data.basic_widget.widget.ExpandItemColumn
+import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
+import cn.thecover.media.feature.review_data.basic_widget.widget.ReviewDataItemScoreRow
 import cn.thecover.media.feature.review_data.data.DiffusionDataEntity
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewDataEntity
 import java.time.LocalDate
@@ -103,7 +104,7 @@ fun ManuscriptDiffusionPage() {
     )
 
     // 使用 LazyColumn 垂直排列页面内容，item 之间间隔 12.dp
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(horizontal = 12.dp)) {
         // 显示页面头部组件
         item {
             ManuscriptDiffusionHeader()
@@ -121,7 +122,7 @@ fun ManuscriptDiffusionPage() {
                 },
                 style = MaterialTheme.typography.labelMedium,
                 color = TertiaryTextColor,
-                modifier = Modifier.padding(start = 12.dp)
+                modifier = Modifier.padding(start = 12.dp).offset(y = (-4).dp)
             )
         }
 
