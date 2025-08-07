@@ -104,7 +104,7 @@ internal fun DataScoreItem(
  * @param modifier 修饰符，用于设置组件的样式和布局属性
  */
 @Composable
-fun ReviewDataItemScoreRow(
+fun ItemScoreRow(
     vararg items: Pair<String, String>,
     modifier: Modifier = Modifier
 ) {
@@ -129,6 +129,18 @@ fun ReviewDataItemScoreRow(
 @Preview
 fun DepartmentReviewDataItemPreview() {
     YBTheme {
-        DataScoreItem(item = "一级媒体转载数", value = "2222")
+        Column {
+            DataScoreItem(item = "一级媒体转载数", value = "2222")
+
+            Spacer(Modifier.height(12.dp))
+            ItemScoreRow( items = arrayOf(
+                Pair("阅读数", "1"),
+                Pair("分享数", "10"),
+                Pair("点赞数", "100"),
+                Pair("评论数", "1000"),
+            )
+            )
+        }
+
     }
 }
