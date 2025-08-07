@@ -9,10 +9,10 @@ data class ManuscriptReviewDataEntity(
     val title: String = "",
     val author: String = "",
     val editor: String = "",
-    val score: Int = 0,
-    val basicScore: Int = 0,
-    val qualityScore: Int = 0,
-    val diffusionScore: Int = 0,
+    val score: Int = 0,//稿件总分
+    val basicScore: Int = 0,//基础分
+    val qualityScore: Int = 0,//质量分
+    val diffusionScore: Int = 0,//传播分
     val diffusionDataEntity: DiffusionDataEntity = DiffusionDataEntity(
 
     )

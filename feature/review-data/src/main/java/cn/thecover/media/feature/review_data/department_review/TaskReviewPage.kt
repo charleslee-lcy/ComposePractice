@@ -27,8 +27,8 @@ import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
-import cn.thecover.media.feature.review_data.basic_widget.DataItemCard
-import cn.thecover.media.feature.review_data.basic_widget.DataItemSelectionView
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
 import cn.thecover.media.feature.review_data.data.DepartmentTaskDataEntity
 import java.time.LocalDate
 
@@ -58,7 +58,8 @@ fun DepartmentTaskReviewPage() {
     var datePickedText by remember { mutableStateOf(currentMonthText) }
 
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.padding(horizontal = 16.dp)
     ) {
         // 模拟的部门任务数据列表
         val items = mutableStateListOf(

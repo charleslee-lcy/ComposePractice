@@ -19,9 +19,7 @@ package cn.thecover.media.core.widget.theme
 import android.os.Build
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.VisibleForTesting
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -48,7 +46,7 @@ val LightDefaultColorScheme = lightColorScheme(
     // 主要颜色上的内容 - 在 primary 颜色上显示的文本和图标颜色
     onPrimary = Color.White,
     // 主要颜色容器 - 用于容纳主要颜色内容的容器背景
-    primaryContainer = Color(0xFF306CFF).copy(0.1f),
+    primaryContainer = MainColor.copy(0.1f),
     // 主要颜色容器上的内容 - 在 primaryContainer 上显示的文本和图标颜色
     onPrimaryContainer = MainColor,
 
@@ -66,9 +64,9 @@ val LightDefaultColorScheme = lightColorScheme(
     // 第三颜色上的内容 - 在 tertiary 颜色上显示的文本和图标颜色
     onTertiary = Color.White,
     // 第三颜色容器 - 用于容纳第三颜色内容的容器背景
-    tertiaryContainer = Blue90,
+    tertiaryContainer = SpecificCardColor,
     // 第三颜色容器上的内容 - 在 tertiaryContainer 上显示的文本和图标颜色
-    onTertiaryContainer = Blue10,
+    onTertiaryContainer = MainColor.copy(0.5f),
 
     // 错误颜色 - 用于表示错误状态的元素
     error = Color(0xFFF53E3E),

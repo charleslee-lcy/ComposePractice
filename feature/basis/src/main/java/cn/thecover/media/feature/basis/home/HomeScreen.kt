@@ -15,12 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Poll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -44,8 +41,6 @@ import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.YBBadge
 import cn.thecover.media.core.widget.component.YBBanner
 import cn.thecover.media.core.widget.component.YBImage
-import cn.thecover.media.core.widget.component.YBTab
-import cn.thecover.media.core.widget.component.YBTabRow
 import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
@@ -58,8 +53,8 @@ import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.ComponentPreview
 import cn.thecover.media.feature.basis.home.ui.LeaderUserContent
+import cn.thecover.media.feature.basis.home.ui.ManuscriptTopRankingItem
 import cn.thecover.media.feature.basis.home.ui.ReporterUserContent
-import cn.thecover.media.feature.basis.home.ui.normalCardElevation
 import kotlinx.coroutines.launch
 
 
@@ -95,8 +90,6 @@ internal fun HomeScreen(
     val snackBarHostState = remember { SnackbarHostState() }
     val scrollState = rememberScrollState()
     var roleState by remember { mutableIntStateOf(1) }
-    val titles = listOf("稿件TOP10", "稿件传播力TOP10")
-    val currentIndex = remember { mutableIntStateOf(0) }
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -173,28 +166,8 @@ internal fun HomeScreen(
                 }
             }
 
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 15.dp, end = 15.dp, bottom = 15.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
-                shape = RoundedCornerShape(12.dp),
-            ) {
-                YBTabRow(
-                    selectedTabIndex = currentIndex.intValue,
-                    modifier = Modifier.padding(horizontal = 30.dp)
-                ) {
-                    titles.forEachIndexed { index, title ->
-                        YBTab(
-                            selected = index == currentIndex.intValue,
-                            onClick = { currentIndex.intValue = index },
-                            text = { Text(text = title) }
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(500.dp))
-            }
+            ManuscriptTopRankingItem()
+
         }
     }
 

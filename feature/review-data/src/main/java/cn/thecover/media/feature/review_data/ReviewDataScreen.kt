@@ -37,6 +37,7 @@ import cn.thecover.media.core.widget.component.YBBadge
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.popup.YBDropdownMenu
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
+import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.review_data.navigation.DepartmentTaskReviewRoute
@@ -67,7 +68,7 @@ internal fun ReviewDataScreen(
         NavHost(
             navController = reviewNavController,
             startDestination = DepartmentTaskReviewRoute,
-            modifier = modifier.padding(start = 16.dp, top = 12.dp, end = 16.dp)
+            modifier = modifier.padding(top = 12.dp)
         ) {
             reviewDataPage()
         }
@@ -155,7 +156,7 @@ private fun TopBar(navController: NavController) {
                 modifier = Modifier
                     .padding(2.dp)
                     .size(18.dp),
-                placeholder = painterResource(R.drawable.icon_message)
+                placeholder = painterResource(YBIcons.Custom.Msg)
             )
         }
     }
