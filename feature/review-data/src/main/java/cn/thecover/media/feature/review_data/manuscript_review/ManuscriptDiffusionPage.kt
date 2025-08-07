@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastCoerceAtLeast
 import cn.thecover.media.core.widget.R
+import cn.thecover.media.core.widget.component.ItemScoreRow
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
@@ -56,7 +57,6 @@ import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRanking
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
 import cn.thecover.media.feature.review_data.basic_widget.widget.ExpandItemColumn
 import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
-import cn.thecover.media.feature.review_data.basic_widget.widget.ReviewDataItemScoreRow
 import cn.thecover.media.feature.review_data.data.DiffusionDataEntity
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewDataEntity
 import java.time.LocalDate
@@ -164,7 +164,7 @@ private fun DiffusionItem(rank: Int, data: ManuscriptReviewDataEntity) {
                         editor = data.editor
                     )
                     // 显示传播评分数据行：公式传播分和最终传播分
-                    ReviewDataItemScoreRow(
+                    ItemScoreRow(
                         items = arrayOf(
                             Pair(
                                 "公式传播分",
@@ -180,7 +180,7 @@ private fun DiffusionItem(rank: Int, data: ManuscriptReviewDataEntity) {
             }, foldContent = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     // 显示转载数据：核心媒体、一级媒体、二级媒体转载数
-                    ReviewDataItemScoreRow(
+                    ItemScoreRow(
                         items = arrayOf(
                             Pair(
                                 "核心媒体转载数",
@@ -197,7 +197,7 @@ private fun DiffusionItem(rank: Int, data: ManuscriptReviewDataEntity) {
                         )
                     )
                     // 显示用户互动数据：阅读数、分享数、点赞数、评论数
-                    ReviewDataItemScoreRow(
+                    ItemScoreRow(
                         items = arrayOf(
                             Pair("阅读数", data.diffusionDataEntity.readNumber.toString()),
                             Pair("分享数", data.diffusionDataEntity.shareNumber.toString()),

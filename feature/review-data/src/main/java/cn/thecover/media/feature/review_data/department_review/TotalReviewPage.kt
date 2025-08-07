@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import cn.thecover.media.core.widget.component.ItemScoreRow
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -32,7 +33,6 @@ import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemDropMenuView
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingRow
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
-import cn.thecover.media.feature.review_data.basic_widget.widget.ReviewDataItemScoreRow
 import cn.thecover.media.feature.review_data.data.DepartmentTotalDataEntity
 import java.time.LocalDate
 
@@ -155,7 +155,7 @@ private fun DepartmentReviewItem(
                 // 显示部门名称
                 Text(name, color = MainTextColor, style = MaterialTheme.typography.titleMedium)
                 // 显示评审数据项得分行，包含总稿费、总人数、人员平均分和总分
-                ReviewDataItemScoreRow(
+                ItemScoreRow(
                     items = arrayOf(
                         Pair(
                             "总稿费", 1000.toString()

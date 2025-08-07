@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import cn.thecover.media.core.widget.component.ItemScoreRow
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -30,7 +31,6 @@ import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemDropMen
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingRow
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
 import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
-import cn.thecover.media.feature.review_data.basic_widget.widget.ReviewDataItemScoreRow
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewDataEntity
 import java.time.LocalDate
 
@@ -97,7 +97,7 @@ private fun ManuscriptTopRankingItem(num: Int, data: ManuscriptReviewDataEntity)
                 ManuScriptItemHeader(title = data.title, author = data.author, editor = data.editor)
                 Spacer(Modifier.height(8.dp))
                 // 显示稿件的各项评分数据行
-                ReviewDataItemScoreRow(
+                ItemScoreRow(
                     items = arrayOf(
                         Pair("总分", data.score.toString()),
                         Pair("基础分", data.basicScore.toString()),
@@ -110,34 +110,6 @@ private fun ManuscriptTopRankingItem(num: Int, data: ManuscriptReviewDataEntity)
         }
     }
 }
-
-@Composable
-internal fun ManuScriptItemHeader(
-    title: String = "",
-    author: String = "",
-    editor: String = "",
-) {
-    // 显示稿件标题
-    Column {
-        Text(title, style = MaterialTheme.typography.titleSmall, color = MainTextColor)
-        Spacer(Modifier.height(8.dp))
-        // 显示作者和编辑信息
-        Row {
-            Text(
-                "作者：${author}",
-                style = MaterialTheme.typography.bodySmall,
-                color = SecondaryTextColor
-            )
-            Spacer(Modifier.width(20.dp))
-            Text(
-                "编辑：${editor}",
-                style = MaterialTheme.typography.bodySmall,
-                color = SecondaryTextColor
-            )
-        }
-    }
-}
-
 
 
 /**
