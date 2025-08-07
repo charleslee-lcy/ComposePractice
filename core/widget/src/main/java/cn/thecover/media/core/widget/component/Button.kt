@@ -98,7 +98,7 @@ fun YBButton(
     text: @Composable () -> Unit,
     textColor: Color = Color.White,
     backgroundColor: Color = MainColor,
-    shape: Shape = ButtonDefaults.shape,
+    shape: Shape = MaterialTheme.shapes.extraSmall,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     YBButton(
@@ -137,6 +137,7 @@ fun YBOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    shape: Shape = MaterialTheme.shapes.extraSmall,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit,
 ) {
@@ -157,6 +158,7 @@ fun YBOutlinedButton(
                 )
             },
         ),
+        shape = shape,
         contentPadding = contentPadding,
         content = content,
     )
@@ -177,6 +179,7 @@ fun YBOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    shape: Shape = MaterialTheme.shapes.extraSmall,
     text: @Composable () -> Unit,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
@@ -184,6 +187,7 @@ fun YBOutlinedButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
+        shape = shape,
         contentPadding = if (leadingIcon != null) {
             ButtonDefaults.ButtonWithIconContentPadding
         } else {

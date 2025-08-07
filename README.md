@@ -53,7 +53,7 @@
 - YBLabel 标签组件, 左中右结构，主要用于页面内容显示和带icon的title显示
 - YBTitleBar 通用标题栏，左中右结构，默认为返回按钮和标题，可自己塞组件替换
 - YBTabRow/YBScrollTabRow 通用标签tab和可滚动标签tab
-- YBInput 通用文本输入框
+- YBInput 通用文本输入框，支持输入限制和实时字数显示
 - YBPopup:自定义的底部弹出窗口
   - 使用方法：可在任意层级添加，通过传入的visible控制显示和隐藏。
 - YBPicker 基于popup实现，是一个基础的选择器组件，支持多列选择。
