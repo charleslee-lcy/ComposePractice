@@ -1,7 +1,9 @@
 package cn.thecover.media.feature.review_manager.appeal
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -35,10 +38,15 @@ import androidx.navigation.NavController
 import cn.thecover.media.core.widget.GradientLeftBottom
 import cn.thecover.media.core.widget.GradientLeftTop
 import cn.thecover.media.core.widget.YBShape
+import cn.thecover.media.core.widget.component.YBButton
+import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.YBLabel
 import cn.thecover.media.core.widget.component.YBTitleBar
+import cn.thecover.media.core.widget.component.popup.YBDialog
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
+import cn.thecover.media.core.widget.theme.MsgColor
+import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
@@ -58,7 +66,10 @@ internal fun AppealDetailRoute(
 
 @Composable
 fun AppealDetailScreen(modifier: Modifier = Modifier, navController: NavController) {
+    val onlyRead = false
     val scrollState = rememberScrollState()
+    val showApprovalDialog = remember { mutableStateOf(false) }
+    val showRejectDialog = remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -72,266 +83,379 @@ fun AppealDetailScreen(modifier: Modifier = Modifier, navController: NavControll
         YBTitleBar(title = "申诉详情", leftOnClick = {
             navController.popBackStack()
         })
-        Column(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .verticalScroll(scrollState)
                 .background(MaterialTheme.colorScheme.background)
                 .padding(horizontal = 15.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Card(
+
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-                shape = RoundedCornerShape(8.dp),
-            ) {
-                YBLabel(
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp),
-                    label = {
-                        Text(
-                            text = "申诉信息",
-                            color = MainTextColor,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    },
-                    space = 5.dp,
-                    leadingIcon = {
-                        YBShape(
-                            modifier = Modifier.size(6.dp, 16.dp),
-                            colors = listOf(MainColor, Color.Transparent),
-                            start = GradientLeftTop,
-                            end = GradientLeftBottom
-                        )
-                    })
-                YBLabel(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 12.dp, end = 12.dp, top = 12.dp),
-                    leadingIcon = {
-                        Text(
-                            modifier = Modifier.weight(0.24f),
-                            text = "申诉人：",
-                            color = SecondaryTextColor,
-                            fontSize = 14.sp
-                        )
-                    },
-                    label = {
-                        Text(
-                            modifier = Modifier.weight(0.76f),
-                            text = "张馨文",
-                            color = MainTextColor,
-                            fontSize = 14.sp
-                        )
-                    })
-                YBLabel(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 12.dp, end = 12.dp, top = 4.dp),
-                    leadingIcon = {
-                        Text(
-                            modifier = Modifier.weight(0.24f),
-                            text = "申诉类型：",
-                            color = SecondaryTextColor,
-                            fontSize = 14.sp
-                        )
-                    },
-                    label = {
-                        Text(
-                            modifier = Modifier.weight(0.76f),
-                            text = "稿件加分",
-                            color = MainTextColor,
-                            fontSize = 14.sp
-                        )
-                    })
-                YBLabel(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 12.dp, end = 12.dp, top = 4.dp),
-                    leadingIcon = {
-                        Text(
-                            modifier = Modifier.weight(0.24f),
-                            text = "稿件标题：",
-                            color = SecondaryTextColor,
-                            fontSize = 14.sp
-                        )
-                    },
-                    label = {
-                        Text(
-                            modifier = Modifier.weight(0.76f),
-                            text = "关于云南，你不知道的20个冷知识，带你了解最真实的云南风貌",
-                            color = MainTextColor,
-                            fontSize = 14.sp
-                        )
-                    },
-                    verticalAlignment = Alignment.Top
-                )
-                YBLabel(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 12.dp, end = 12.dp, top = 4.dp),
-                    leadingIcon = {
-                        Text(
-                            modifier = Modifier.weight(0.24f),
-                            text = "申诉内容：",
-                            color = SecondaryTextColor,
-                            fontSize = 14.sp
-                        )
-                    },
-                    label = {
-                        Text(
-                            modifier = Modifier.weight(0.76f),
-                            text = "老师，这篇稿件分数我有疑问，获得了领导批示，分加漏了，请帮忙看看",
-                            color = MainTextColor,
-                            fontSize = 14.sp
-                        )
-                    },
-                    verticalAlignment = Alignment.Top
-                )
-                YBLabel(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 12.dp, end = 12.dp, top = 4.dp, bottom = 12.dp),
-                    leadingIcon = {
-                        Text(
-                            modifier = Modifier.weight(0.24f),
-                            text = "证明材料：",
-                            color = SecondaryTextColor,
-                            fontSize = 14.sp
-                        )
-                    },
-                    label = {
-                        Column(modifier = Modifier.weight(0.76f)) {
-                            Text(
-                                text = "1. 申诉材料1",
-                                color = MainTextColor,
-                                fontSize = 14.sp
-                            )
-                            Text(
-                                text = "2. 申诉材料2",
-                                color = MainTextColor,
-                                fontSize = 14.sp
-                            )
-                        }
-                    },
-                    verticalAlignment = Alignment.Top
-                )
-            }
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-                shape = RoundedCornerShape(8.dp),
-            ) {
-                YBLabel(
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp),
-                    label = {
-                        Text(
-                            text = "审批流程",
-                            color = MainTextColor,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    },
-                    space = 5.dp,
-                    leadingIcon = {
-                        YBShape(
-                            modifier = Modifier.size(6.dp, 16.dp),
-                            colors = listOf(MainColor, Color.Transparent),
-                            start = GradientLeftTop,
-                            end = GradientLeftBottom
-                        )
-                    })
-
-                ApprovalProcessContent()
-            }
-
-            Card(
-                modifier = Modifier
-                    .padding(bottom = 15.dp)
                     .fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-                shape = RoundedCornerShape(8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                YBLabel(
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp),
-                    label = {
-                        Text(
-                            text = "申诉回复",
-                            color = MainTextColor,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                    shape = RoundedCornerShape(8.dp),
+                ) {
+                    YBLabel(
+                        modifier = Modifier.padding(start = 12.dp, top = 12.dp),
+                        label = {
+                            Text(
+                                text = "申诉信息",
+                                color = MainTextColor,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        },
+                        space = 5.dp,
+                        leadingIcon = {
+                            YBShape(
+                                modifier = Modifier.size(6.dp, 16.dp),
+                                colors = listOf(MainColor, Color.Transparent),
+                                start = GradientLeftTop,
+                                end = GradientLeftBottom
+                            )
+                        })
+                    YBLabel(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 12.dp, end = 12.dp, top = 12.dp),
+                        leadingIcon = {
+                            Text(
+                                modifier = Modifier.weight(0.24f),
+                                text = "申诉人：",
+                                color = SecondaryTextColor,
+                                fontSize = 14.sp
+                            )
+                        },
+                        label = {
+                            Text(
+                                modifier = Modifier.weight(0.76f),
+                                text = "张馨文",
+                                color = MainTextColor,
+                                fontSize = 14.sp
+                            )
+                        })
+                    YBLabel(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 12.dp, end = 12.dp, top = 4.dp),
+                        leadingIcon = {
+                            Text(
+                                modifier = Modifier.weight(0.24f),
+                                text = "申诉类型：",
+                                color = SecondaryTextColor,
+                                fontSize = 14.sp
+                            )
+                        },
+                        label = {
+                            Text(
+                                modifier = Modifier.weight(0.76f),
+                                text = "稿件加分",
+                                color = MainTextColor,
+                                fontSize = 14.sp
+                            )
+                        })
+                    YBLabel(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 12.dp, end = 12.dp, top = 4.dp),
+                        leadingIcon = {
+                            Text(
+                                modifier = Modifier.weight(0.24f),
+                                text = "稿件标题：",
+                                color = SecondaryTextColor,
+                                fontSize = 14.sp
+                            )
+                        },
+                        label = {
+                            Text(
+                                modifier = Modifier.weight(0.76f),
+                                text = "关于云南，你不知道的20个冷知识，带你了解最真实的云南风貌",
+                                color = MainTextColor,
+                                fontSize = 14.sp
+                            )
+                        },
+                        verticalAlignment = Alignment.Top
+                    )
+                    YBLabel(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 12.dp, end = 12.dp, top = 4.dp),
+                        leadingIcon = {
+                            Text(
+                                modifier = Modifier.weight(0.24f),
+                                text = "申诉内容：",
+                                color = SecondaryTextColor,
+                                fontSize = 14.sp
+                            )
+                        },
+                        label = {
+                            Text(
+                                modifier = Modifier.weight(0.76f),
+                                text = "老师，这篇稿件分数我有疑问，获得了领导批示，分加漏了，请帮忙看看",
+                                color = MainTextColor,
+                                fontSize = 14.sp
+                            )
+                        },
+                        verticalAlignment = Alignment.Top
+                    )
+                    YBLabel(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 12.dp, end = 12.dp, top = 4.dp, bottom = 12.dp),
+                        leadingIcon = {
+                            Text(
+                                modifier = Modifier.weight(0.24f),
+                                text = "证明材料：",
+                                color = SecondaryTextColor,
+                                fontSize = 14.sp
+                            )
+                        },
+                        label = {
+                            Column(modifier = Modifier.weight(0.76f)) {
+                                Text(
+                                    text = "1. 申诉材料1",
+                                    color = MainTextColor,
+                                    fontSize = 14.sp
+                                )
+                                Text(
+                                    text = "2. 申诉材料2",
+                                    color = MainTextColor,
+                                    fontSize = 14.sp
+                                )
+                            }
+                        },
+                        verticalAlignment = Alignment.Top
+                    )
+                }
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                    shape = RoundedCornerShape(8.dp),
+                ) {
+                    YBLabel(
+                        modifier = Modifier.padding(start = 12.dp, top = 12.dp),
+                        label = {
+                            Text(
+                                text = "审批流程",
+                                color = MainTextColor,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        },
+                        space = 5.dp,
+                        leadingIcon = {
+                            YBShape(
+                                modifier = Modifier.size(6.dp, 16.dp),
+                                colors = listOf(MainColor, Color.Transparent),
+                                start = GradientLeftTop,
+                                end = GradientLeftBottom
+                            )
+                        })
+
+                    ApprovalProcessContent()
+                }
+
+                if (onlyRead) {
+                    Card(
+                        modifier = Modifier
+                            .padding(bottom = 15.dp)
+                            .fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                        shape = RoundedCornerShape(8.dp),
+                    ) {
+                        YBLabel(
+                            modifier = Modifier.padding(start = 12.dp, top = 12.dp),
+                            label = {
+                                Text(
+                                    text = "申诉回复",
+                                    color = MainTextColor,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            },
+                            space = 5.dp,
+                            leadingIcon = {
+                                YBShape(
+                                    modifier = Modifier.size(6.dp, 16.dp),
+                                    colors = listOf(MainColor, Color.Transparent),
+                                    start = GradientLeftTop,
+                                    end = GradientLeftBottom
+                                )
+                            })
+                        YBLabel(
+                            modifier = Modifier.padding(start = 12.dp, top = 12.dp),
+                            leadingIcon = {
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    text = "申诉回复",
+                                    color = MainTextColor,
+                                    fontSize = 14.sp
+                                )
+                            },
+                            label = {
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    text = "申诉回复",
+                                    color = MainTextColor,
+                                    fontSize = 14.sp
+                                )
+                            },
+                            trailingIcon = {
+                                Text(
+                                    modifier = Modifier.padding(end = 12.dp),
+                                    text = "2025-06-24 09:32:52",
+                                    color = MainTextColor,
+                                    fontSize = 14.sp
+                                )
+                            }
                         )
-                    },
-                    space = 5.dp,
-                    leadingIcon = {
-                        YBShape(
-                            modifier = Modifier.size(6.dp, 16.dp),
-                            colors = listOf(MainColor, Color.Transparent),
-                            start = GradientLeftTop,
-                            end = GradientLeftBottom
-                        )
-                    })
-                YBLabel(
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp),
-                    leadingIcon = {
                         Text(
-                            modifier = Modifier.weight(1f),
-                            text = "申诉回复",
-                            color = MainTextColor,
+                            modifier = Modifier
+                                .padding(start = 12.dp, end = 12.dp, top = 10.dp)
+                                .fillMaxWidth(),
+                            text = "回复内容：",
+                            color = SecondaryTextColor,
                             fontSize = 14.sp
                         )
-                    },
-                    label = {
                         Text(
-                            modifier = Modifier.weight(1f),
-                            text = "申诉回复",
-                            color = MainTextColor,
-                            fontSize = 14.sp
-                        )
-                    },
-                    trailingIcon = {
-                        Text(
-                            modifier = Modifier.padding(end = 12.dp),
-                            text = "2025-06-24 09:32:52",
+                            modifier = Modifier
+                                .padding(start = 12.dp, end = 12.dp, top = 4.dp, bottom = 12.dp)
+                                .fillMaxWidth(),
+                            text = "回复内容这里是2节里面有问题回复内容这里是回复内容这111111111里是回复内容这里是回复内容这里是回复内容这里是回复。",
                             color = MainTextColor,
                             fontSize = 14.sp
                         )
                     }
-                )
-                Text(
-                    modifier = Modifier
-                        .padding(start = 12.dp, end = 12.dp, top = 10.dp)
-                        .fillMaxWidth(),
-                    text = "回复内容：",
-                    color = SecondaryTextColor,
-                    fontSize = 14.sp
-                )
-                Text(
-                    modifier = Modifier
-                        .padding(start = 12.dp, end = 12.dp, top = 4.dp, bottom = 12.dp)
-                        .fillMaxWidth(),
-                    text = "回复内容这里是2节里面有问题回复内容这里是回复内容这111111111里是回复内容这里是回复内容这里是回复内容这里是回复。",
-                    color = MainTextColor,
-                    fontSize = 14.sp
-                )
+                }
+
             }
 
+            if (!onlyRead) {
+                Row(
+                    modifier = Modifier
+                        .padding(bottom = 30.dp)
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    YBButton(
+                        text = { Text(text = "驳回", fontSize = 16.sp, color = MsgColor) },
+                        modifier = modifier
+                            .border(
+                                width = 0.5.dp,
+                                color = MsgColor,
+                                shape = RoundedCornerShape(2.dp)
+                            )
+                            .weight(1f)
+                            .height(44.dp),
+                        backgroundColor = Color.Transparent,
+                        onClick = {
+                            showRejectDialog.value = true
+                        }
+                    )
+                    YBButton(
+                        text = { Text(text = "通过", fontSize = 16.sp) },
+                        modifier = modifier
+                            .weight(1f)
+                            .height(44.dp),
+                        shape = RoundedCornerShape(2.dp),
+                        onClick = {
+                            showApprovalDialog.value = true
+                        }
+                    )
+                }
+            }
+
+            YBDialog(
+                dialogState = showApprovalDialog,
+                onDismissRequest = { showApprovalDialog.value = false },
+                title = "申诉审批",
+                content = {
+                    Text(text = "确认通过审批？", fontSize = 16.sp, color = MainTextColor)
+                },
+                confirmText = "确认",
+                onConfirm = {
+                    navController.popBackStack()
+                },
+                cancelText = "取消",
+                onCancel = {
+                    showApprovalDialog.value = false
+                }
+            )
+
+            YBDialog(
+                dialogState = showRejectDialog,
+                onDismissRequest = { showRejectDialog.value = false },
+                title = "申诉审批",
+                content = {
+                    Column {
+                        Text(text = "确认驳回审批？", fontSize = 16.sp, color = MainTextColor)
+                        Row(
+                            modifier = Modifier.padding(top = 20.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = "*", fontSize = 14.sp, color = MsgColor)
+                            Text(text = "驳回意见：", fontSize = 14.sp, color = MainTextColor)
+                        }
+                        YBInput(
+                            modifier = Modifier
+                                .padding(top = 4.dp)
+                                .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(12.dp))
+                                .fillMaxWidth()
+                                .height(150.dp)
+                                .background(
+                                    PageBackgroundColor
+                                ),
+                            textStyle = TextStyle(
+                                fontSize = 14.sp,
+                                color = MainTextColor
+                            ),
+                            hint = "输入意见，不超过200字",
+                            hintTextSize = 14.sp,
+                            singleLine = false,
+                            showCount = true,
+                            maxLength = 200,
+                            contentPadding = 12.dp,
+                            onValueChange = {
+
+                            }
+                        )
+                    }
+                },
+                confirmText = "确认",
+                onConfirm = {
+                    navController.popBackStack()
+                },
+                cancelText = "取消",
+                onCancel = {
+                    showRejectDialog.value = false
+                }
+            )
         }
+
     }
 }
 
 @Composable
 private fun ApprovalProcessContent() {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 12.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp)
+        ) {
             Column(
                 modifier = Modifier.padding(start = 11.dp, top = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -431,9 +555,11 @@ private fun ApprovalProcessContent() {
                 }
             }
         }
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 12.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 12.dp)
+        ) {
             Column(
                 modifier = Modifier.padding(start = 11.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
