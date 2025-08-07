@@ -54,7 +54,7 @@ internal fun ManuscriptTopRankingItem() {
         Column {
             YBTabRow(
                 selectedTabIndex = currentIndex.intValue,
-                modifier = Modifier.padding(horizontal = 30.dp)
+                modifier = Modifier.padding()
             ) {
                 titles.forEachIndexed { index, title ->
                     YBTab(
