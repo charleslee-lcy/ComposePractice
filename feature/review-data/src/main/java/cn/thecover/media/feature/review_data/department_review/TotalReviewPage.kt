@@ -30,7 +30,7 @@ import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemDropMenuView
-import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingCard
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingRow
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
 import cn.thecover.media.feature.review_data.basic_widget.widget.ReviewDataItemScoreRow
 import cn.thecover.media.feature.review_data.data.DepartmentTotalDataEntity
@@ -63,7 +63,7 @@ internal fun DepartmentReviewScreen(
     )
 
     // 构建屏幕UI布局
-    Surface (modifier= Modifier.padding(horizontal = 16.dp)){
+    Surface(modifier = Modifier.padding(horizontal = 16.dp)) {
         LazyColumn(
             modifier = modifier
                 .background(MaterialTheme.colorScheme.surfaceVariant)
@@ -149,30 +149,31 @@ private fun DepartmentReviewItem(
     name: String,
 ) {
     // 显示部门排名卡片
-    DataItemRankingCard(ranking = ranking) {
-        Column {
-            // 显示部门名称
-            Text(name, color = MainTextColor, style = MaterialTheme.typography.titleMedium)
-            // 显示评审数据项得分行，包含总稿费、总人数、人员平均分和总分
-            ReviewDataItemScoreRow(
-                items = arrayOf(
-                    Pair(
-                        "总稿费", 1000.toString()
-                    ),
-                    Pair(
-                        "总人数", 100.toString()
-                    ),
-                    Pair(
-                        "人员平均分", 100.toString()
-                    ),
-                    Pair(
-                        "总分", 100.toString()
+    DataItemCard {
+        DataItemRankingRow(ranking = ranking) {
+            Column {
+                // 显示部门名称
+                Text(name, color = MainTextColor, style = MaterialTheme.typography.titleMedium)
+                // 显示评审数据项得分行，包含总稿费、总人数、人员平均分和总分
+                ReviewDataItemScoreRow(
+                    items = arrayOf(
+                        Pair(
+                            "总稿费", 1000.toString()
+                        ),
+                        Pair(
+                            "总人数", 100.toString()
+                        ),
+                        Pair(
+                            "人员平均分", 100.toString()
+                        ),
+                        Pair(
+                            "总分", 100.toString()
+                        )
+
                     )
-
                 )
-            )
+            }
         }
-
 
     }
 }

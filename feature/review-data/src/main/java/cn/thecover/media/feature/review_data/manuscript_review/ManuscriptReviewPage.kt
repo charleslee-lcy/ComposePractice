@@ -61,7 +61,7 @@ import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.review_data.basic_widget.ReviewDataImages
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemDropMenuView
-import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingCard
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingRow
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
 import cn.thecover.media.feature.review_data.basic_widget.widget.ExpandItemColumn
 import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
@@ -179,63 +179,65 @@ internal fun ManuscriptReviewPage(modifier: Modifier = Modifier) {
 
 @Composable
 private fun TotalRankingItem(rank: Int, rankLine: Int, data: ManuscriptReviewDataEntity) {
-
-    DataItemRankingCard(
-        ranking = rank,
+    DataItemCard(
         containerColor = if (rank < rankLine) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.tertiaryContainer
     ) {
-        ExpandItemColumn(offset = -12, content = {
-            Column {
-                // 显示稿件头部信息：标题、作者、编辑
-                ManuScriptItemHeader(
-                    title = data.title,
-                    author = data.author,
-                    editor = data.editor
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        data.score.toString(),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary
+        DataItemRankingRow(
+            ranking = rank,
+        ) {
+            ExpandItemColumn(offset = -12, content = {
+                Column {
+                    // 显示稿件头部信息：标题、作者、编辑
+                    ManuScriptItemHeader(
+                        title = data.title,
+                        author = data.author,
+                        editor = data.editor
                     )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        "改",
-                        modifier = Modifier
-                            .background(
-                                shape = MaterialTheme.shapes.extraSmall,
-                                color = MaterialTheme.colorScheme.error.copy(0.1f)
-                            )
-                            .size(16.dp)
-                            .padding(top = 2.dp),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.labelSmall,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    YBButton(
-                        content = {
-                            Text(
-                                "修改稿分",
-                                style = MaterialTheme.typography.labelMedium
-                            )
-                        },
-                        onClick = {},
-
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            data.score.toString(),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.primary
                         )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            "改",
+                            modifier = Modifier
+                                .background(
+                                    shape = MaterialTheme.shapes.extraSmall,
+                                    color = MaterialTheme.colorScheme.error.copy(0.1f)
+                                )
+                                .size(16.dp)
+                                .padding(top = 2.dp),
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.labelSmall,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        YBButton(
+                            content = {
+                                Text(
+                                    "修改稿分",
+                                    style = MaterialTheme.typography.labelMedium
+                                )
+                            },
+                            onClick = {},
+
+                            )
+                    }
                 }
-            }
-        }, foldContent = {
-            ItemFoldedView(
-                basicScore = data.basicScore,
-                qualityScore = data.qualityScore,
-                diffusionScore = data.diffusionScore
-            )
-        })
+            }, foldContent = {
+                ItemFoldedView(
+                    basicScore = data.basicScore,
+                    qualityScore = data.qualityScore,
+                    diffusionScore = data.diffusionScore
+                )
+            })
+        }
     }
 }
 

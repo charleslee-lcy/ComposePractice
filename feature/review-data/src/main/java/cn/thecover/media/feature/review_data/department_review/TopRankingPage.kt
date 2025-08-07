@@ -26,7 +26,7 @@ import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
-import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingCard
+import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingRow
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
 import cn.thecover.media.feature.review_data.data.DepartmentTotalDataEntity
 import java.time.LocalDate
@@ -107,18 +107,24 @@ internal fun DepartmentTopRankingPage() {
 @Composable
 private fun TopRankingItem(ranking: Int, departmentName: String, score: Int) {
     // 使用排名卡片包装器显示排名信息
-    DataItemRankingCard(ranking) {
-        // 水平排列部门名称和得分信息
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = departmentName, style = MaterialTheme.typography.titleSmall)
-            Spacer(modifier = Modifier.weight(1f))
-            Text("部门人均得分", style = MaterialTheme.typography.bodySmall, color = MainTextColor)
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                score.toString(),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.primary
-            )
+    DataItemCard {
+        DataItemRankingRow(ranking) {
+            // 水平排列部门名称和得分信息
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = departmentName, style = MaterialTheme.typography.titleSmall)
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    "部门人均得分",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MainTextColor
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    score.toString(),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }

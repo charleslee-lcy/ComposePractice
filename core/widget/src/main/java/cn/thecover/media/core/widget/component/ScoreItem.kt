@@ -1,4 +1,4 @@
-package cn.thecover.media.feature.review_data.basic_widget.widget
+package cn.thecover.media.core.widget.component
 
 import androidx.compose.animation.Animatable
 import androidx.compose.foundation.background

@@ -51,7 +51,10 @@ import cn.thecover.media.feature.review_data.basic_widget.chooseRankingColor
  * @param content 卡片内部的内容组件。
  */
 @Composable
-internal fun DataItemCard(containerColor :Color= MaterialTheme.colorScheme.surface,content: @Composable () -> Unit) {
+internal fun DataItemCard(
+    containerColor: Color = MaterialTheme.colorScheme.surface,
+    content: @Composable () -> Unit
+) {
     Card(
         modifier = Modifier
             .border(width = 0.5.dp, color = CardOutlineColor, shape = MaterialTheme.shapes.small)
@@ -134,17 +137,15 @@ internal fun ExpandItemColumn(
  * @param content 排名之后的主要内容组件。
  */
 @Composable
-internal fun DataItemRankingCard(ranking: Int = 0,containerColor :Color= MaterialTheme.colorScheme.surface, content: @Composable () -> Unit) {
-    DataItemCard(containerColor) {
-        Row(verticalAlignment = Alignment.Top) {
-            Text(
-                text = ranking.toString(),
-                style = MaterialTheme.typography.titleSmall,
-                color = ranking.chooseRankingColor(),
-                modifier = Modifier.padding(top = 0.dp, end = 10.dp)
-            )
-            content()
-        }
+internal fun DataItemRankingRow(ranking: Int = 0, content: @Composable () -> Unit) {
+    Row(verticalAlignment = Alignment.Top) {
+        Text(
+            text = ranking.toString(),
+            style = MaterialTheme.typography.titleSmall,
+            color = ranking.chooseRankingColor(),
+            modifier = Modifier.padding(top = 0.dp, end = 10.dp)
+        )
+        content()
     }
 }
 
@@ -153,7 +154,7 @@ internal fun DataItemRankingCard(ranking: Int = 0,containerColor :Color= Materia
 @Preview
 fun DepartmentReviewDataRankingPreview() {
     YBTheme {
-        DataItemRankingCard { }
+        DataItemRankingRow { }
     }
 }
 

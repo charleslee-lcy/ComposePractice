@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -145,7 +146,7 @@ internal fun YBApp(
         if (appState.isTopLevelDestination == true) {
             HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 0.25.dp, color = OutlineColor)
             YBNavigationBar(
-                modifier = Modifier.height(60.dp)
+                modifier = Modifier.heightIn(60.dp, 80.dp)//部分手机系统小白条会占用一部分高度,故预留一部分buffer值.
             ) {
                 appState.topLevelDestinations.forEachIndexed { index, destination ->
                     val hasUnreadMsg = index == 1 || index == 2
