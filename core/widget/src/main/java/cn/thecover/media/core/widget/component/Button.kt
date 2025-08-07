@@ -99,6 +99,7 @@ fun YBButton(
     textColor: Color = Color.White,
     backgroundColor: Color = MainColor,
     shape: Shape = MaterialTheme.shapes.extraSmall,
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     YBButton(
@@ -111,7 +112,7 @@ fun YBButton(
         contentPadding = if (leadingIcon != null) {
             ButtonDefaults.ButtonWithIconContentPadding
         } else {
-            ButtonDefaults.ContentPadding
+            contentPadding
         },
     ) {
         YBButtonContent(
@@ -293,7 +294,7 @@ private fun YBButtonContent(
 fun YBButtonPreview() {
     YBTheme {
         YBBackground(modifier = Modifier.size(150.dp, 50.dp)) {
-            YBButton(onClick = {}, text = { Text("Test button")})
+            YBButton(onClick = {}, text = { Text("预算剩余")})
         }
     }
 }

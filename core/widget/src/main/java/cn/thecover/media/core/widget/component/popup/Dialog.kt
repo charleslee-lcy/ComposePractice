@@ -16,9 +16,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,6 +32,7 @@ import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
+import cn.thecover.media.core.widget.ui.PhonePreview
 
 
 /**
@@ -57,8 +62,15 @@ fun YBDialog(
     cancelText: String? = "取消",
     onConfirm: (() -> Unit)? = null,
     onCancel: (() -> Unit)? = null,
+    widthRate: Float = 0.8f,
     content: @Composable () -> Unit,
 ) {
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+
+    // 获取屏幕尺寸
+    val screenWidth = with(density) { configuration.screenWidthDp.dp }
+
     if(dialogState.value){
         Dialog(
             onDismissRequest = onDismissRequest,
@@ -69,8 +81,9 @@ fun YBDialog(
                     ),
                     shape = YBShapes.medium,
                     modifier = Modifier
+                        .width(screenWidth * widthRate)
                         .padding()
-                        .fillMaxWidth()
+
                 ) {
                     Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -122,6 +135,7 @@ fun YBDialog(
                 }
             },
             properties = DialogProperties(
+                usePlatformDefaultWidth = false,
                 dismissOnBackPress = true,
                 dismissOnClickOutside = true
             )
@@ -146,6 +160,20 @@ fun YBAlertDialog(
         Column {
             content()
         }
+    }
+}
+
+@PhonePreview
+@Composable
+fun YBAlertDialogPreview() {
+    YBDialog(
+        dialogState = remember { mutableStateOf(true) },
+        onDismissRequest = {},
+        title = "提示",
+        confirmText = "确认",
+        cancelText = "取消"
+    ) {
+
     }
 }
 

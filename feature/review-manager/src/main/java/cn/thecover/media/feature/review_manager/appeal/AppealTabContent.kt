@@ -6,15 +6,16 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -31,11 +32,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.YBNormalList
@@ -58,31 +59,41 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun MyAppealContent(navController: NavController) {
+    val filters = listOf(
+        AppealFilterType(type = 0, desc = "稿件标题"),
+        AppealFilterType(type = 1, desc = "稿件ID"),
+        AppealFilterType(type = 2, desc = "申诉内容")
+    )
+
+    // 模拟数据
+    var items = remember { mutableStateOf((1..20).toList()) }
+    val scope = rememberCoroutineScope()
+    var isRefreshing = remember { mutableStateOf(false) }
+    var isLoadingMore = remember { mutableStateOf(false) }
+    var canLoadMore = remember { mutableStateOf(true) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 15.dp)
     ) {
-        val filters = listOf(
-            AppealFilterType.ARCHIVE_TITLE,
-            AppealFilterType.ARCHIVE_ID,
-            AppealFilterType.ARCHIVE_CONTENT
-        )
-
-        // 模拟数据
-//        var items = remember { mutableStateOf(listOf<Int>()) }
-        var items = remember { mutableStateOf((1..20).toList()) }
-        val scope = rememberCoroutineScope()
-        var isRefreshing = remember { mutableStateOf(false) }
-        var isLoadingMore = remember { mutableStateOf(false) }
-        var canLoadMore = remember { mutableStateOf(true) }
-
-        FilterSearchBar(initialIndex = 0) { text, index ->
+        FilterSearchBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp)
+                .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(4.dp))
+                .background(Color.White)
+                .height(36.dp),
+            initialIndex = 0,
+            filterData = filters
+        ) { text, index ->
             Log.d("CharlesLee", "filterType: ${filters[index].type}")
         }
 
         YBNormalList(
-            modifier = Modifier.fillMaxWidth().weight(1f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
             items = items,
             isRefreshing = isRefreshing,
             isLoadingMore = isLoadingMore,
@@ -107,26 +118,30 @@ fun MyAppealContent(navController: NavController) {
                     if (items.value.size >= 50) canLoadMore.value = false
                 }
             }) { item, index ->
-            AppealListItem(modifier = Modifier.fillMaxWidth().clickableWithoutRipple{
-                // 跳转到申诉详情页
-                navController.navigateToAppealDetail()
-            }, index = index)
+            AppealListItem(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickableWithoutRipple {
+                        // 跳转到申诉详情页
+                        navController.navigateToAppealDetail()
+                    }, index = index
+            )
         }
     }
 }
 
-internal enum class AppealFilterType(val type: Int) {
-    ARCHIVE_TITLE(0), ARCHIVE_ID(1), ARCHIVE_CONTENT(2)
-}
+data class AppealFilterType(val type: Int, val desc: String)
 
 @Composable
-private fun FilterSearchBar(
-    initialIndex: Int = 0, filterClick: (String, Int) -> Unit = { _, _ -> }
+fun FilterSearchBar(
+    modifier: Modifier = Modifier,
+    initialIndex: Int = 0,
+    filterData: List<AppealFilterType>,
+    filterClick: (String, Int) -> Unit = { _, _ -> }
 ) {
-    val list = listOf("稿件标题", "稿件ID", "申诉内容")
     var expanded = remember { mutableStateOf(false) }
     val animRotate = remember { Animatable(0f) }
-    var title by remember { mutableStateOf(list[initialIndex]) }
+    var title by remember { mutableStateOf(filterData[initialIndex].desc) }
     val searchTextState = remember { mutableStateOf("") }
 
     // 当菜单状态改变时触发动画
@@ -141,19 +156,15 @@ private fun FilterSearchBar(
     }
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 12.dp)
-            .border(1.dp, Color(0xFFEAEAEB), RoundedCornerShape(4.dp))
-            .background(Color.White)
-            .height(36.dp), verticalAlignment = Alignment.CenterVertically
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         YBAlignDropdownMenu(
-            data = list,
+            data = filterData.map { it.desc },
             expanded = expanded,
             initialIndex = initialIndex,
             isItemWidthAlign = true,
-            modifier = Modifier.weight(0.25f),
+            modifier = Modifier.weight(0.28f),
             offset = DpOffset(0.dp, 0.dp),
             onItemClick = { text, index ->
                 title = text
@@ -166,18 +177,21 @@ private fun FilterSearchBar(
                     .clickableWithoutRipple {
                         expanded.value = !expanded.value
                     },
-                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
+                    modifier = Modifier.padding(start = 12.dp),
                     text = title,
                     color = MainTextColor,
-                    fontSize = 13.sp,
-                    textAlign = TextAlign.Center
+                    style = MaterialTheme.typography.labelMedium
                 )
+                Spacer(Modifier.weight(1f))
                 YBImage(
-                    modifier = Modifier.size(18.dp).rotate(animRotate.value),
-                    placeholder = painterResource(cn.thecover.media.core.widget.R.mipmap.ic_arrow_down)
+                    modifier = Modifier
+                        .padding(end = 12.dp)
+                        .size(18.dp)
+                        .rotate(animRotate.value),
+                    placeholder = painterResource(R.mipmap.ic_arrow_down_light_grey)
                 )
             }
         }

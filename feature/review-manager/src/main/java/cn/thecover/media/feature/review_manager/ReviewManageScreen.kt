@@ -68,7 +68,7 @@ internal fun ReviewManageScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
 ) {
-    var pageType by remember { mutableIntStateOf(ReviewManageType.APPEAL_MANAGE.index) }
+    var pageType by remember { mutableIntStateOf(ReviewManageType.DEPARTMENT_ASSIGN.index) }
 
     Column(
         modifier = modifier.fillMaxSize()

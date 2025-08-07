@@ -34,6 +34,7 @@ val EditHintTextColor = Color(0xFFB3B3B3)
 val DividerColor = Color(0xFFE0E0E0)
 val OutlineColor = Color(0xFFE5E5E5)
 val CardOutlineColor =  Color(0xFFF2F2F2)
+val BlockDividerColor = Color(0xFFF7F7F7)
 
 // msg color
 val MsgColor = Color(0xFFF95252)
