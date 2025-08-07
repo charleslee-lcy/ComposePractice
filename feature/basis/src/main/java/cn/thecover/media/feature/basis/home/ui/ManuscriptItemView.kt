@@ -75,7 +75,7 @@ internal fun ManuscriptTopRankingItem() {
 
 @Composable
 private fun TopManuscriptPage() {
-    Column(modifier = Modifier.padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         for (index in 1..10) {
             DataItemRankingRow(index) {
                 ManuScriptItemHeader("稿件标题", "稿件作者", "稿件编辑")
@@ -103,7 +103,7 @@ private fun TopManuscriptPage() {
 
 @Composable
 private fun TopDiffusionPage() {
-    Column(modifier = Modifier.padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         for (index in 1..10) {
             DataItemRankingRow(index) {
                 ManuScriptItemHeader("稿件标题", "稿件作者", "稿件编辑")
