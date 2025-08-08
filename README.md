@@ -38,7 +38,7 @@
 # 主题
 
 - YBShape 形状定义，主要涉及圆角等
-  - 使用方法：YBShape.X 
+  - 使用方法：YBShape.X
 
 # 三方组件
 
@@ -65,13 +65,15 @@
 - YBDialog 自定义通用弹窗。
 - YBAutoDismissDialog 自动消失的状态提示弹窗，如成功、失败等。
 - YBLoadingDialog 加载中弹窗
+- DataScoreRow/PrimaryScoreRow 用于显示上标签下数字的积分组件，带Primary可换颜色
+- ItemScoreRow/PrimaryItemScoreRow 用于显示一行积分组件，每一个组件宽度一致
+- FilterSearchTextField 待下拉筛选框的的搜索栏组件
 
 ## 下拉菜单
+
 详见DropdownMenu.kt
+
 - YBDropdownMenu 定义与页面等宽的下拉菜单，item项文字居中显示（一般用于页面顶部选择）
 - YBAlignDropdownMenu 定义自适应item宽度或与anchor组件等宽的下拉菜单，item项文字居左显示（一般用于页面内筛选项）
 
-
-
 ==============================================
-

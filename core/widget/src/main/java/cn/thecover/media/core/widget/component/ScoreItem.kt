@@ -88,7 +88,7 @@ enum class ScoreItemType {
  *
  */
 @Composable
-internal fun DataScoreItem(
+fun DataScoreItem(
     modifier: Modifier = Modifier,
     item: String,
     value: String,
