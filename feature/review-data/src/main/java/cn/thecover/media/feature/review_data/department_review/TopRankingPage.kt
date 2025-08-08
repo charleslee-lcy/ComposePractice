@@ -12,8 +12,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -21,14 +22,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.review_data.ReviewDataViewModel
+import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingRow
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
-import cn.thecover.media.feature.review_data.data.DepartmentTotalDataEntity
 import java.time.LocalDate
 
 /**
@@ -45,16 +49,10 @@ import java.time.LocalDate
  *
  */
 @Composable
-internal fun DepartmentTopRankingPage() {
+internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel= hiltViewModel<ReviewDataViewModel>()) {
     // 部门总数据列表，包含部门ID、名称和平均分数
-    val departmentTotalData = remember {
-        mutableStateListOf(
-            DepartmentTotalDataEntity(1, "部门1", averageScore = 224),
-            DepartmentTotalDataEntity(2, "部门2", averageScore = 222),
-            DepartmentTotalDataEntity(3, "部门3", averageScore = 220),
-            DepartmentTotalDataEntity(4, "部门4", averageScore = 218),
-        )
-    }
+    val departmentTotalData by viewModel.departmentReviewDataState.collectAsState()
+
 
     // 获取当前日期并格式化为年月文本
     val currentDate = LocalDate.now()
@@ -64,6 +62,10 @@ internal fun DepartmentTopRankingPage() {
     var showDatePicker by remember { mutableStateOf(false) }
     var datePickedText by remember { mutableStateOf(currentMonthText) }
 
+
+    LaunchedEffect(datePickedText) {
+        viewModel.handleReviewDataIntent(ReviewDataIntent.FetchDepartmentReviewData(datePickedText))
+    }
     // 构建页面布局，包含日期选择和部门排名列表
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -80,7 +82,7 @@ internal fun DepartmentTopRankingPage() {
                 }
             }
         }
-        items(departmentTotalData) {
+        items(departmentTotalData.departments) {
             TopRankingItem(it.departmentRanking, it.departmentName, it.averageScore)
         }
     }
@@ -131,11 +133,10 @@ private fun TopRankingItem(ranking: Int, departmentName: String, score: Int) {
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun TopRankingItemPreview() {
     YBTheme {
-        DepartmentTopRankingPage()
-
+        DepartmentTopRankingPage(ReviewDataViewModel(SavedStateHandle()))
     }
 
 }

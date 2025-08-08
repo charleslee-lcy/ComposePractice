@@ -12,3 +12,8 @@ data class DepartmentTaskDataEntity(
     val taskProgress: Float,
     val taskDesc: String?
 )
+
+data class DepartmentTaskState(
+    val tasks: List<DepartmentTaskDataEntity> = emptyList(),
+    val isLoading: Boolean = false
+)

@@ -17,3 +17,8 @@ data class ManuscriptReviewDataEntity(
 
     )
 )
+
+data class ManuscriptReviewState(
+    val manuscripts: List<ManuscriptReviewDataEntity> = emptyList(),
+    val isLoading: Boolean = false
+)
