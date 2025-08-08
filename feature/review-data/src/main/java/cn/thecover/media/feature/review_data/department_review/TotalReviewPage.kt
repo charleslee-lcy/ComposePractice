@@ -16,6 +16,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,16 +26,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
 import cn.thecover.media.core.widget.component.ItemScoreRow
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.review_data.ReviewDataViewModel
+import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemDropMenuView
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingRow
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
-import cn.thecover.media.feature.review_data.data.DepartmentTotalDataEntity
 import java.time.LocalDate
 
 
@@ -52,15 +57,11 @@ import java.time.LocalDate
  */
 @Composable
 internal fun DepartmentReviewScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewmodel: ReviewDataViewModel = hiltViewModel<ReviewDataViewModel>()
 ) {
+    val depart by viewmodel.departmentReviewDataState.collectAsState()
     // 创建部门数据列表
-    val depart = mutableListOf(
-        DepartmentTotalDataEntity(1, "经济部"),
-        DepartmentTotalDataEntity(2, "时政新闻部"),
-        DepartmentTotalDataEntity(3, "市场部"),
-        DepartmentTotalDataEntity(4, "国际部"),
-    )
 
     // 构建屏幕UI布局
     Surface(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -72,11 +73,18 @@ internal fun DepartmentReviewScreen(
         ) {
 
             // 添加部门总览头部组件
-            item { DepartmentTotalHeader() }
+            item { DepartmentTotalHeader(viewmodel) }
 
             // 为每个部门数据项添加评审项组件
-            items(depart) {
-                DepartmentReviewItem(it.departmentRanking, it.departmentName)
+            items(depart.departments) {
+                DepartmentReviewItem(
+                    it.departmentRanking,
+                    it.departmentName,
+                    it.totalPayment,
+                    it.totalPersons,
+                    it.averageScore,
+                    it.totalScore
+                )
             }
         }
 
@@ -92,13 +100,18 @@ internal fun DepartmentReviewScreen(
  *
  */
 @Composable
-private fun DepartmentTotalHeader() {
+private fun DepartmentTotalHeader(viewModel: ReviewDataViewModel= hiltViewModel<ReviewDataViewModel>()) {
+
     val currentDate = LocalDate.now()
     val currentMonthText = "${currentDate.year}年${currentDate.monthValue}月"
 
     var showDatePicker by remember { mutableStateOf(false) }
     var datePickedText by remember { mutableStateOf(currentMonthText) }
     val selectFilterChoice = remember { mutableStateOf("部门总稿费") }
+
+    LaunchedEffect(datePickedText,selectFilterChoice.value) {
+        viewModel.handleReviewDataIntent(ReviewDataIntent.FetchDepartmentReviewData(datePickedText))
+    }
 
     // 创建数据项卡片容器，包含排序指数和时间选择两个主要功能区域
     DataItemCard {
@@ -147,27 +160,31 @@ private fun DepartmentTotalHeader() {
 private fun DepartmentReviewItem(
     ranking: Int,
     name: String,
+    totalPayment: Int = 0,
+    totalPersonNumber: Int = 0,
+    totalScore: Int = 0,
+    averageScore: Int = 0,
 ) {
     // 显示部门排名卡片
     DataItemCard {
         DataItemRankingRow(ranking = ranking) {
-            Column {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 // 显示部门名称
                 Text(name, color = MainTextColor, style = MaterialTheme.typography.titleMedium)
                 // 显示评审数据项得分行，包含总稿费、总人数、人员平均分和总分
                 ItemScoreRow(
                     items = arrayOf(
                         Pair(
-                            "总稿费", 1000.toString()
+                            "总稿费", totalPayment.toString()
                         ),
                         Pair(
-                            "总人数", 100.toString()
+                            "总人数", totalPersonNumber.toString()
                         ),
                         Pair(
-                            "人员平均分", 100.toString()
+                            "人员平均分", averageScore.toString()
                         ),
                         Pair(
-                            "总分", 100.toString()
+                            "总分", totalScore.toString()
                         )
 
                     )
@@ -182,8 +199,11 @@ private fun DepartmentReviewItem(
 @Composable
 @Preview(showSystemUi = true)
 fun DepartmentReviewScreenPreview() {
+    // 手动创建ViewModel实例，用于预览
+    val previewViewModel = ReviewDataViewModel(SavedStateHandle())
+
     YBTheme {
-        DepartmentReviewScreen()
+        DepartmentReviewScreen(viewmodel = previewViewModel)
     }
 }
 
