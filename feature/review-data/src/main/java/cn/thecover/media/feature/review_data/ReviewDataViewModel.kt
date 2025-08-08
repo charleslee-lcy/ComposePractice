@@ -8,6 +8,7 @@ import cn.thecover.media.feature.review_data.data.DepartmentReviewState
 import cn.thecover.media.feature.review_data.data.DepartmentTaskDataEntity
 import cn.thecover.media.feature.review_data.data.DepartmentTaskState
 import cn.thecover.media.feature.review_data.data.DepartmentTotalDataEntity
+import cn.thecover.media.feature.review_data.data.DiffusionDataEntity
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewDataEntity
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,14 +48,67 @@ class ReviewDataViewModel @Inject constructor(
     fun handleReviewDataIntent(intent: ReviewDataIntent) {
         when (intent) {
             is ReviewDataIntent.FetchDepartmentReviewData -> {
-                loadDepartmentData()
-
+                loadDepartmentData(intent.time)
             }
 
             is ReviewDataIntent.FetchDepartmentTaskData -> {
+                loadDepartmentTaskData()
+            }
 
-                    loadDepartmentTaskData()
+            is ReviewDataIntent.FetchManuscriptReviewData -> {
+                loadManuScriptReviewData()
+            }
+        }
+    }
 
+    private fun loadManuScriptReviewData() {
+        viewModelScope.launch {
+            _manuscriptReviewData.value = ManuscriptReviewState(isLoading = true)
+            // val result = repository.fetchManuscriptReviewData()
+
+            val result = listOf(
+                ManuscriptReviewDataEntity(
+                    title = "《三体》",
+                    author = "刘慈欣",
+                    editor = "王伟",
+                    score = 4,
+                    basicScore = 3,
+                    qualityScore = 4,
+                    diffusionScore = 5,
+                    diffusionDataEntity = DiffusionDataEntity(
+                        28888, 288888, 222, 222, 222, 222, 222, 222, 222
+                    )
+                ),
+                ManuscriptReviewDataEntity(
+                    title = "2025年12月份的云南省让“看一种云南生活”富饶世界云南生活富饶世界",
+                    author = "张明明",
+                    editor = "李华",
+                    score = 22,
+                    basicScore = 3,
+                    qualityScore = 4,
+                    diffusionScore = 5,
+                    diffusionDataEntity = DiffusionDataEntity(
+                        28888, 288888, 222, 222, 222, 222, 222, 222, 222
+                    )
+                ),
+                ManuscriptReviewDataEntity(
+                    title = "“看一种云南生活”富饶世界云南生活富饶世界",
+                    author = "张明明",
+                    editor = "李华",
+                    score = 22,
+                    basicScore = 3,
+                    qualityScore = 4,
+                    diffusionScore = 5,
+                    diffusionDataEntity = DiffusionDataEntity(
+                        28888, 288888, 222, 222, 222, 222, 222, 222, 222
+                    )
+                )
+            )
+            _manuscriptReviewData.update {
+                it.copy(
+                    isLoading = false,
+                    manuscripts = result
+                )
             }
         }
     }
@@ -70,17 +124,17 @@ class ReviewDataViewModel @Inject constructor(
 
             )
         _departmentTaskDataState.update {
-            it.copy(isLoading = false, tasks =departmentTaskData)
+            it.copy(isLoading = false, tasks = departmentTaskData)
         }
     }
 
-    private fun loadDepartmentData() {
+    private fun loadDepartmentData(time: String) {
         // 开始加载
         _departmentReviewDataState.update { it.copy(isLoading = true) }
         val departmentData = listOf(
             DepartmentTotalDataEntity(
                 departmentRanking = 1,
-                departmentName = "部门1",
+                departmentName = "部门1_$time",
                 totalScore = 100,
                 totalPersons = 10,
                 averageScore = 10,

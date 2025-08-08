@@ -24,6 +24,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,23 +42,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastCoerceAtLeast
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.ItemScoreRow
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
+import cn.thecover.media.core.widget.component.search.FilterSearchTextField
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.review_data.ReviewDataViewModel
+import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemDropMenuView
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingRow
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
 import cn.thecover.media.feature.review_data.basic_widget.widget.ExpandItemColumn
 import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
-import cn.thecover.media.feature.review_data.data.DiffusionDataEntity
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewDataEntity
 import java.time.LocalDate
 
@@ -73,35 +78,10 @@ import java.time.LocalDate
  * 页面结构包含一个头部组件、记录总数提示文本以及一个列表项组件用于展示每条稿件数据。
  */
 @Composable
-fun ManuscriptDiffusionPage() {
+fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
 
     // 模拟稿件传播数据列表
-    val data = listOf(
-        ManuscriptReviewDataEntity(
-            title = "《三体》",
-            author = "刘慈欣",
-            editor = "王伟",
-            score = 4,
-            basicScore = 3,
-            qualityScore = 4,
-            diffusionScore = 5,
-            diffusionDataEntity = DiffusionDataEntity(
-                28888, 288888, 222, 222, 222, 222, 222, 222, 222
-            )
-        ),
-        ManuscriptReviewDataEntity(
-            title = "2025年12月份的云南省让“看一种云南生活”富饶世界云南生活富饶世界",
-            author = "张明明",
-            editor = "李华",
-            score = 22,
-            basicScore = 3,
-            qualityScore = 4,
-            diffusionScore = 5,
-            diffusionDataEntity = DiffusionDataEntity(
-                28888, 288888, 222, 222, 222, 222, 222, 222, 222
-            )
-        )
-    )
+    val data by viewModel.manuscriptReviewData.collectAsState()
 
     // 使用 LazyColumn 垂直排列页面内容，item 之间间隔 12.dp
     LazyColumn(
@@ -110,7 +90,7 @@ fun ManuscriptDiffusionPage() {
     ) {
         // 显示页面头部组件
         item {
-            ManuscriptDiffusionHeader()
+            ManuscriptDiffusionHeader(viewModel)
         }
 
         // 显示记录总数提示文本，其中数字部分使用主色调高亮显示
@@ -119,7 +99,7 @@ fun ManuscriptDiffusionPage() {
                 text = buildAnnotatedString {
                     append("共 ")
                     withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                        append(data.size.toString())
+                        append(data.manuscripts.size.toString())
                     }
                     append(" 条记录")
                 },
@@ -132,8 +112,8 @@ fun ManuscriptDiffusionPage() {
         }
 
         // 遍历数据列表，为每条数据渲染 DiffusionItem 组件
-        items(data.size) {
-            DiffusionItem(it + 1, data[it])
+        items(data.manuscripts.size) {
+            DiffusionItem(it + 1, data.manuscripts[it])
         }
     }
 }
@@ -222,7 +202,7 @@ private fun DiffusionItem(rank: Int, data: ManuscriptReviewDataEntity) {
  * 注意：此函数为私有函数，仅在当前文件内使用。
  */
 @Composable
-private fun ManuscriptDiffusionHeader() {
+private fun ManuscriptDiffusionHeader(viewModel: ReviewDataViewModel) {
     // 获取当前日期并格式化为“年月”文本，作为默认显示的时间
     val currentDate = LocalDate.now()
     val currentMonthText = "${currentDate.year}年${currentDate.monthValue}月"
@@ -235,6 +215,12 @@ private fun ManuscriptDiffusionHeader() {
     val selectFilterChoice = remember { mutableStateOf("一级媒体转载数") }
     // 存储用户选择的搜索字段
     val selectSearchChoice = remember { mutableStateOf("稿件标题") }
+
+    var searchText by remember { mutableStateOf("") }
+
+    LaunchedEffect(selectSearchChoice, searchText, datePickedText) {
+        viewModel.handleReviewDataIntent(ReviewDataIntent.FetchManuscriptReviewData(datePickedText))
+    }
 
     // 主体内容卡片容器
     DataItemCard {
@@ -275,7 +261,12 @@ private fun ManuscriptDiffusionHeader() {
             }
 
             // 搜索输入区域
-            FilterSearchView(data = selectSearchChoice, label = "请输入搜索内容")
+            FilterSearchTextField(
+                data = selectSearchChoice, label = "请输入搜索内容", dataList = listOf(
+                    "稿件标题", "稿件作者", "稿件编辑"
+                ), onValueChange = { valueType, value ->
+                    searchText = value
+                })
         }
     }
 
@@ -431,7 +422,7 @@ private fun FilterSearchView(
 @Preview
 private fun ManuscriptDiffusionHeaderPreview() {
     YBTheme {
-        ManuscriptDiffusionPage()
+        ManuscriptDiffusionPage(ReviewDataViewModel(SavedStateHandle()))
     }
 
 }

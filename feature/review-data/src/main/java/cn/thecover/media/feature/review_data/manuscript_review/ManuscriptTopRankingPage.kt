@@ -12,6 +12,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,12 +22,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
 import cn.thecover.media.core.widget.component.ItemScoreRow
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
-import cn.thecover.media.core.widget.theme.MainTextColor
-import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.review_data.ReviewDataViewModel
+import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemDropMenuView
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingRow
@@ -40,38 +44,19 @@ import java.time.LocalDate
  */
 
 @Composable
-fun ManuscriptTopRankingPage() {
+fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
 
-    val data = listOf(
-        ManuscriptReviewDataEntity(
-            title = "《三体》",
-            author = "刘慈欣",
-            editor = "王伟",
-            score = 4,
-            basicScore = 3,
-            qualityScore = 4,
-            diffusionScore = 5
-        ),
-        ManuscriptReviewDataEntity(
-            title = "2025年12月份的云南省让“看一种云南生活”富饶世界云南生活富饶世界",
-            author = "张明明",
-            editor = "李华",
-            score = 22,
-            basicScore = 3,
-            qualityScore = 4,
-            diffusionScore = 5
-        )
-    )
+    val data by viewModel.manuscriptReviewData.collectAsState()
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.padding(horizontal = 12.dp)
     ) {
         item {
-            ManuscriptTopRankingHeader()
+            ManuscriptTopRankingHeader(viewModel)
         }
 
-        items(data.size) { index ->
-            ManuscriptTopRankingItem(num = index + 1, data = data[index])
+        items(data.manuscripts.size) { index ->
+            ManuscriptTopRankingItem(num = index + 1, data = data.manuscripts[index])
         }
 
     }
@@ -120,7 +105,7 @@ private fun ManuscriptTopRankingItem(num: Int, data: ManuscriptReviewDataEntity)
  *
  */
 @Composable
-private fun ManuscriptTopRankingHeader() {
+private fun ManuscriptTopRankingHeader(viewModel: ReviewDataViewModel) {
     val currentDate = LocalDate.now()
     val currentMonthText = "${currentDate.year}年${currentDate.monthValue}月"
 
@@ -128,6 +113,9 @@ private fun ManuscriptTopRankingHeader() {
     var datePickedText by remember { mutableStateOf(currentMonthText) }
     val selectFilterChoice = remember { mutableStateOf("质量分") }
 
+    LaunchedEffect(datePickedText, selectFilterChoice) {
+        viewModel.handleReviewDataIntent(ReviewDataIntent.FetchManuscriptReviewData(datePickedText))
+    }
     // 显示筛选条件卡片，包含排序指数下拉菜单和时间选择器
     DataItemCard {
         Row(
@@ -167,7 +155,7 @@ private fun ManuscriptTopRankingHeader() {
 @Preview()
 fun ManuscriptTopRankingPagePreview() {
     YBTheme {
-        ManuscriptTopRankingPage()
+        ManuscriptTopRankingPage(ReviewDataViewModel(SavedStateHandle()))
     }
 
 }
