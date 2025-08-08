@@ -51,13 +51,13 @@ val LightDefaultColorScheme = lightColorScheme(
     onPrimaryContainer = MainColor,
 
     // 次要颜色 - 用于次要组件，如次要按钮等
-    secondary = Orange40,
+    secondary = SecondaryColor,
     // 次要颜色上的内容 - 在 secondary 颜色上显示的文本和图标颜色
     onSecondary = Color.White,
     // 次要颜色容器 - 用于容纳次要颜色内容的容器背景
-    secondaryContainer = Orange90,
+    secondaryContainer = SecondaryColor.copy(0.1f),
     // 次要颜色容器上的内容 - 在 secondaryContainer 上显示的文本和图标颜色
-    onSecondaryContainer = Orange10,
+    onSecondaryContainer = SecondaryColor,
 
     // 第三颜色 - 用于装饰性或补充性元素
     tertiary = Blue40,
