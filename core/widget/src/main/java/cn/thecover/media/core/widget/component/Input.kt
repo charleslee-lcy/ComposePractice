@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +21,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -57,6 +59,7 @@ fun YBInput(
     maxLength: Int = Int.MAX_VALUE,
     showCount: Boolean = false,
     visualTransformation: VisualTransformation = VisualTransformation.None,
+    isDigitLimit: Boolean = false,
     onValueChange: (String) -> Unit = {},
     contentPadding: Dp = 0.dp,
 ) {
@@ -75,14 +78,19 @@ fun YBInput(
     BasicTextField(
         value = textState.value,
         onValueChange = {
-            if (it.length > maxLength) {
-                val cutText = it.substring(0, maxLength)
+            val result = if (isDigitLimit) {
+                it.filter { it.isDigit() }
+            } else {
+                it
+            }
+            if (result.length > maxLength) {
+                val cutText = result.substring(0, maxLength)
                 textState.value = cutText
                 onValueChange.invoke(cutText)
                 return@BasicTextField
             }
-            textState.value = it
-            onValueChange.invoke(it)
+            textState.value = result
+            onValueChange.invoke(result)
         },
         modifier = modifier.focusRequester(focusRequester),
         textStyle = textStyle.copy(lineHeight = textStyle.fontSize * 1.5f),
@@ -90,6 +98,7 @@ fun YBInput(
         maxLines = maxLines,
         minLines = minLines,
         cursorBrush = SolidColor(MainColor),
+        keyboardOptions = if (isDigitLimit) KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number) else KeyboardOptions.Default,
         visualTransformation = visualTransformation,
         decorationBox = { innerTextField ->
             Box(Modifier.fillMaxWidth()) {

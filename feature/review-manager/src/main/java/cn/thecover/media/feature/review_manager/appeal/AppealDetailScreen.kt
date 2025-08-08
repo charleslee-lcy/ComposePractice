@@ -377,75 +377,75 @@ fun AppealDetailScreen(modifier: Modifier = Modifier, navController: NavControll
                     )
                 }
             }
-
-            YBDialog(
-                dialogState = showApprovalDialog,
-                onDismissRequest = { showApprovalDialog.value = false },
-                title = "申诉审批",
-                content = {
-                    Text(text = "确认通过审批？", fontSize = 16.sp, color = MainTextColor)
-                },
-                confirmText = "确认",
-                onConfirm = {
-                    navController.popBackStack()
-                },
-                cancelText = "取消",
-                onCancel = {
-                    showApprovalDialog.value = false
-                }
-            )
-
-            YBDialog(
-                dialogState = showRejectDialog,
-                onDismissRequest = { showRejectDialog.value = false },
-                title = "申诉审批",
-                content = {
-                    Column {
-                        Text(text = "确认驳回审批？", fontSize = 16.sp, color = MainTextColor)
-                        Row(
-                            modifier = Modifier.padding(top = 20.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(text = "*", fontSize = 14.sp, color = MsgColor)
-                            Text(text = "驳回意见：", fontSize = 14.sp, color = MainTextColor)
-                        }
-                        YBInput(
-                            modifier = Modifier
-                                .padding(top = 4.dp)
-                                .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(12.dp))
-                                .fillMaxWidth()
-                                .height(150.dp)
-                                .background(
-                                    PageBackgroundColor
-                                ),
-                            textStyle = TextStyle(
-                                fontSize = 14.sp,
-                                color = MainTextColor
-                            ),
-                            hint = "输入意见，不超过200字",
-                            hintTextSize = 14.sp,
-                            singleLine = false,
-                            showCount = true,
-                            maxLength = 200,
-                            contentPadding = 12.dp,
-                            onValueChange = {
-
-                            }
-                        )
-                    }
-                },
-                confirmText = "确认",
-                onConfirm = {
-                    navController.popBackStack()
-                },
-                cancelText = "取消",
-                onCancel = {
-                    showRejectDialog.value = false
-                }
-            )
         }
 
     }
+
+    YBDialog(
+        dialogState = showApprovalDialog,
+        onDismissRequest = { showApprovalDialog.value = false },
+        title = "申诉审批",
+        content = {
+            Text(text = "确认通过审批？", fontSize = 16.sp, color = MainTextColor)
+        },
+        confirmText = "确认",
+        onConfirm = {
+            navController.popBackStack()
+        },
+        cancelText = "取消",
+        onCancel = {
+            showApprovalDialog.value = false
+        }
+    )
+
+    YBDialog(
+        dialogState = showRejectDialog,
+        onDismissRequest = { showRejectDialog.value = false },
+        title = "申诉审批",
+        content = {
+            Column {
+                Text(text = "确认驳回审批？", fontSize = 16.sp, color = MainTextColor)
+                Row(
+                    modifier = Modifier.padding(top = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "*", fontSize = 14.sp, color = MsgColor)
+                    Text(text = "驳回意见：", fontSize = 14.sp, color = MainTextColor)
+                }
+                YBInput(
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(12.dp))
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .background(
+                            PageBackgroundColor
+                        ),
+                    textStyle = TextStyle(
+                        fontSize = 14.sp,
+                        color = MainTextColor
+                    ),
+                    hint = "输入意见，不超过200字",
+                    hintTextSize = 14.sp,
+                    singleLine = false,
+                    showCount = true,
+                    maxLength = 200,
+                    contentPadding = 12.dp,
+                    onValueChange = {
+
+                    }
+                )
+            }
+        },
+        confirmText = "确认",
+        onConfirm = {
+            navController.popBackStack()
+        },
+        cancelText = "取消",
+        onCancel = {
+            showRejectDialog.value = false
+        }
+    )
 }
 
 @Composable

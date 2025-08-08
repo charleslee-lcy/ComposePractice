@@ -33,7 +33,7 @@ import kotlin.random.Random
 
 
 /**
- *
+ * 申诉管理列表item
  * <p> Created by CharlesLee on 2025/8/5
  * 15708478830@163.com
  */
