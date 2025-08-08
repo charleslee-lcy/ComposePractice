@@ -41,6 +41,7 @@ enum class DateType {
 @Composable
 fun YBDatePicker(
     visible: Boolean,
+    title: String = "选择日期",
     value: LocalDate? = null,
     type: DateType = DateType.DAY,
     start: LocalDate = LocalDate.now().minusYears(50),
@@ -60,7 +61,7 @@ fun YBDatePicker(
         visible,
         currentRanges,
         values = currentValues,
-        title = "选择日期",
+        title = title,
         onCancel = onCancel,
         onColumnValueChange = { column, _, newValues ->
             handleColumnChange(rangesSource, newValues, column, start, end, type) {

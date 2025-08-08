@@ -61,6 +61,28 @@ fun YBShape(
     )
 }
 
+fun Modifier.gradientShape(
+    colors: List<Color> = listOf(Color(0xFF00BCD4), Color(0xFF3F51B5)),
+    start: Offset = GradientLeftTop,
+    end: Offset = GradientRightTop,
+    borderWidth: Dp = 0.dp,
+    borderColor: Color = Color.White,
+    shape: Shape = RoundedCornerShape(0.dp)
+) = this
+    .border(
+        width = borderWidth,
+        color = borderColor,
+        shape = shape
+    )
+    .background(
+        brush = Brush.linearGradient(
+            colors = colors,
+            start = start,
+            end = end,
+        ),
+        shape = shape
+    )
+
 @ComponentPreview
 @Composable
 private fun YBShapePreview() {
