@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.YBBadge
 import cn.thecover.media.core.widget.component.YBBanner
@@ -52,6 +53,7 @@ import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.ComponentPreview
+import cn.thecover.media.feature.basis.home.navigation.MessageRoute
 import cn.thecover.media.feature.basis.home.ui.LeaderUserContent
 import cn.thecover.media.feature.basis.home.ui.ManuscriptTopRankingItem
 import cn.thecover.media.feature.basis.home.ui.ReporterUserContent
@@ -64,17 +66,23 @@ import kotlinx.coroutines.launch
  * 15708478830@163.com
  */
 @Composable
-internal fun HomeRoute() {
+internal fun HomeRoute(navController: NavController) {
 //    val feedState by viewModel..collectAsStateWithLifecycle()
+    val goToMessageRoute= {
+        navController.navigate(MessageRoute)
+    }
     YBTheme {
-        HomeScreen()
+        HomeScreen(
+            routeToMessageScreen = goToMessageRoute
+        )
     }
 }
 
 
 @Composable
 internal fun HomeScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    routeToMessageScreen:(()->Unit)?=null
 ) {
     val listData = remember {
         mutableStateListOf(
@@ -94,9 +102,11 @@ internal fun HomeScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        TopBar {
+        TopBar( {
             roleState = if (roleState == 1) 2 else 1
-        }
+        }, messageClick = {
+            routeToMessageScreen?.invoke()
+        })
 
         Column(
             modifier = modifier
@@ -175,7 +185,7 @@ internal fun HomeScreen(
 }
 
 @Composable
-private fun TopBar(titleClick: () -> Unit = {}) {
+private fun TopBar(titleClick: () -> Unit = {},messageClick: () -> Unit = {}) {
     var datePickerShow by remember { mutableStateOf(false) }
     var datePickedText by remember { mutableStateOf("2025年8月") }
 
@@ -225,7 +235,9 @@ private fun TopBar(titleClick: () -> Unit = {}) {
             showNumber = false
         ) {
             YBImage(
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(20.dp).clickable{
+                    messageClick()
+                },
                 placeholder = painterResource(R.mipmap.ic_home_msg)
             )
         }

@@ -21,8 +21,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
+import androidx.navigation.toRoute
 import cn.thecover.media.feature.basis.home.HomeRoute
 import cn.thecover.media.feature.basis.login.LoginRoute
+import cn.thecover.media.feature.basis.message.MessageDetailRoute
+import cn.thecover.media.feature.basis.message.MessageRoute
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -34,7 +37,18 @@ data object HomeRoute // route to ForYou screen
 @Serializable
 data object HomeBaseRoute // route to base navigation graph
 
-fun NavController.navigateToLogin(navOptions: NavOptions? = null) = navigate(route = LoginRoute, navOptions)
+@Serializable
+data object MessageRoute // route to 消息通知 navigation graph
+
+@Serializable
+data class MessageDetailRoute(val id: Long = 0) // route to 消息详情 navigation graph
+
+fun NavController.navigateToMessageDetail(id: Long) {
+    navigate(MessageDetailRoute(id = id))
+}
+
+fun NavController.navigateToLogin(navOptions: NavOptions? = null) =
+    navigate(route = LoginRoute, navOptions)
 
 fun NavController.navigateToHome(navOptions: NavOptions) = navigate(route = HomeRoute, navOptions)
 
@@ -57,6 +71,18 @@ fun NavGraphBuilder.homeIndex(navController: NavController) {
             },
         ),
     ) {
-        HomeRoute()
+        HomeRoute(navController)
+    }
+
+
+    composable<MessageDetailRoute> { backStackEntry ->
+        val args = backStackEntry.toRoute<MessageDetailRoute>()
+        MessageDetailRoute(args.id,{navController.popBackStack()})
+    }
+
+    composable<MessageRoute> {
+        MessageRoute { id ->
+            navController.navigateToMessageDetail(id)
+        }
     }
 }
