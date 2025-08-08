@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -46,7 +47,8 @@ import cn.thecover.media.core.widget.ui.PhonePreview
 fun ArchiveListItem(
     modifier: Modifier = Modifier,
     index: Int = 0,
-    onAssignClick: (() -> Unit)? = null
+    onDetailClick: (() -> Unit)? = null,
+    onScoreClick: (() -> Unit)? = null
 ) {
     Card(
         modifier = modifier.padding(top = 12.dp),
@@ -149,9 +151,9 @@ fun ArchiveListItem(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.weight(1f).clickableWithoutRipple {
-                        // 分配分数
-                        onAssignClick?.invoke()
+                    modifier = Modifier.fillMaxHeight().weight(1f).clickableWithoutRipple {
+                        // 查看稿件详情
+                        onDetailClick?.invoke()
                     }
                 ) {
                     YBImage(
@@ -171,9 +173,9 @@ fun ArchiveListItem(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.weight(1f).clickableWithoutRipple {
-                        // 分配分数
-                        onAssignClick?.invoke()
+                    modifier = Modifier.fillMaxHeight().weight(1f).clickableWithoutRipple {
+                        // 稿件评分
+                        onScoreClick?.invoke()
                     }
                 ) {
                     YBImage(

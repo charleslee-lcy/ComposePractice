@@ -1,11 +1,11 @@
 package cn.thecover.media.feature.review_manager
 
 import android.R.attr.label
-import android.text.format.DateUtils.formatDateTime
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,23 +16,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -43,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -50,15 +48,17 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import cn.thecover.media.core.widget.GradientLeftBottom
 import cn.thecover.media.core.widget.GradientLeftTop
-import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.picker.DateType
+import cn.thecover.media.core.widget.component.picker.SingleColumnPicker
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBDialog
+import cn.thecover.media.core.widget.component.popup.YBPopup
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.gradientShape
 import cn.thecover.media.core.widget.theme.EditHintTextColor
+import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
@@ -71,10 +71,6 @@ import cn.thecover.media.feature.review_manager.appeal.FilterType
 import cn.thecover.media.feature.review_manager.assign.FilterDropMenuView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 
 /**
@@ -92,6 +88,8 @@ fun ArchiveScoreScreen(
     var isRefreshing = remember { mutableStateOf(false) }
     var isLoadingMore = remember { mutableStateOf(false) }
     var canLoadMore = remember { mutableStateOf(true) }
+
+    var showScoreDialog = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -128,12 +126,207 @@ fun ArchiveScoreScreen(
             ArchiveListItem(
                 modifier = Modifier.fillMaxWidth(),
                 index = index,
-                onAssignClick = {
+                onDetailClick = {
+                },
+                onScoreClick = {
+                    showScoreDialog.value = true
                 }
             )
         }
     }
+
+    YBPopup(
+        visible = showScoreDialog.value,
+        isShowTopActionBar = true,
+        draggable = false,
+        onClose = { showScoreDialog.value = false }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Spacer(modifier = Modifier.height(15.dp))
+            ScoreInfoContent(
+                title = "值班副总编辑",
+                enable = false,
+                scoredList = listOf(
+                    "A-"
+                )
+            )
+            HorizontalDivider(
+                modifier = Modifier
+                    .padding(top = 15.dp)
+                    .fillMaxWidth(),
+                thickness = 0.5.dp,
+                color = OutlineColor
+            )
+            ScoreInfoContent(
+                title = "值班编委",
+                enable = true,
+                scoredList = listOf(
+                    "A-", "B+", "B", "C", "D"
+                )
+            )
+            HorizontalDivider(
+                modifier = Modifier
+                    .padding(top = 15.dp)
+                    .fillMaxWidth(),
+                thickness = 0.5.dp,
+                color = OutlineColor
+            )
+            ScoreInfoContent(
+                title = "专家",
+                enable = false
+            )
+            Spacer(modifier = Modifier.height(15.dp))
+        }
+
+    }
 }
+
+@Composable
+private fun ScoreInfoContent(
+    title: String,
+    enable: Boolean = false,
+    initialIndex: Int = 0,
+    scoredList: List<String> = listOf()
+) {
+    val scoreStateFilters = listOf(
+        FilterType(type = 1, desc = "A+"),
+        FilterType(type = 2, desc = "A"),
+        FilterType(type = 3, desc = "A-"),
+        FilterType(type = 4, desc = "B+"),
+        FilterType(type = 5, desc = "B"),
+        FilterType(type = 6, desc = "B-"),
+        FilterType(type = 7, desc = "C+"),
+        FilterType(type = 8, desc = "C"),
+        FilterType(type = 9, desc = "C-"),
+        FilterType(type = 10, desc = "D")
+    )
+    var showScoreFilter = remember { mutableStateOf(false) }
+    var currentIndex by remember { mutableIntStateOf(initialIndex) }
+
+    Row(
+        modifier = Modifier
+            .padding(top = 15.dp)
+            .fillMaxWidth()
+            .height(36.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = title,
+            style = scoreTitleStyle(enable)
+        )
+        Box(
+            modifier = Modifier.weight(3f)
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .size(81.dp, 36.dp)
+                    .background(
+                        color = if (enable) PageBackgroundColor else OutlineColor,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .clickableWithoutRipple {
+                        if (enable) {
+                            showScoreFilter.value = true
+                        }
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = if (enable) scoreStateFilters[currentIndex].desc else scoreStateFilters[initialIndex].desc,
+                    textAlign = TextAlign.Center,
+                    style = scoreTitleStyle(enable)
+                )
+                Icon(
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .size(18.dp),
+                    painter = painterResource(cn.thecover.media.core.widget.R.mipmap.ic_arrow_down),
+                    contentDescription = "",
+                    tint = TertiaryTextColor
+                )
+            }
+        }
+    }
+    Row(
+        modifier = Modifier
+            .padding(top = 8.dp)
+            .fillMaxWidth()
+            .height(36.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = "已打分记录",
+            fontSize = 14.sp,
+            color = MainTextColor,
+            textAlign = TextAlign.End,
+            fontWeight = FontWeight.SemiBold
+        )
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(5),
+            modifier = Modifier
+                .padding(start = 10.dp)
+                .weight(3f),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            if (scoredList.isEmpty()) {
+                item {
+                    Text(
+                        text = "无",
+                        color = TertiaryTextColor,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.background(
+                            color = OutlineColor,
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                    )
+                }
+            } else {
+                scoredList.forEach {
+                    item {
+                        Text(
+                            text = it,
+                            color = MainColor,
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.background(
+                                color = Color(0xFFEAF0FF),
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    SingleColumnPicker(
+        visible = showScoreFilter.value,
+        range = scoreStateFilters.map { it.desc },
+        value = currentIndex,
+        onChange = {
+            currentIndex = it
+        },
+        onCancel = {
+            showScoreFilter.value = false
+        }
+    )
+}
+
+private fun scoreTitleStyle(enable: Boolean) = TextStyle(
+    fontSize = 14.sp,
+    color = if (enable) MainTextColor else TertiaryTextColor,
+    fontWeight = FontWeight.SemiBold,
+    textAlign = TextAlign.End
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
