@@ -14,22 +14,25 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.review_data.ReviewDataViewModel
+import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
-import cn.thecover.media.feature.review_data.data.DepartmentTaskDataEntity
 import java.time.LocalDate
 
 
@@ -46,7 +49,7 @@ import java.time.LocalDate
  * 此函数不接受任何参数，也不返回任何值。
  */
 @Composable
-fun DepartmentTaskReviewPage() {
+fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel= hiltViewModel()) {
     // 获取当前日期并格式化为“年月”文本，用于初始化显示的时间
     val currentDate = LocalDate.now()
     val currentMonthText = "${currentDate.year}年${currentDate.monthValue}月"
@@ -57,18 +60,19 @@ fun DepartmentTaskReviewPage() {
     // 存储用户选择的日期文本（格式：yyyy年M月）
     var datePickedText by remember { mutableStateOf(currentMonthText) }
 
+    val taskState by viewModel.departmentTaskDataState.collectAsState()
+
+    LaunchedEffect(datePickedText) {
+        viewModel.handleReviewDataIntent(
+            ReviewDataIntent.FetchDepartmentTaskData(
+                datePickedText
+            )
+        )
+    }
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
-        // 模拟的部门任务数据列表
-        val items = mutableStateListOf(
-            DepartmentTaskDataEntity("时政部", 150, 150, 1f, "扣系数0.1"),
-            DepartmentTaskDataEntity("社会新闻部", 23, 30, 23.toFloat() / 30, "扣系数0.1"),
-            DepartmentTaskDataEntity("教育事业部", 243, 500, 243.toFloat() / 500, "扣系数0.1"),
-            DepartmentTaskDataEntity("科创部", 3, 100, 3 / 100.toFloat(), "扣系数0.1"),
-        )
-
         // 顶部时间选择卡片
         item {
             DataItemCard {
@@ -83,7 +87,7 @@ fun DepartmentTaskReviewPage() {
         }
 
         // 遍历并显示每个部门的任务审核项
-        items(items) {
+        items(taskState.tasks) {
             TaskReviewItemView(
                 it.departmentName.toString(),
                 it.taskFinishedPersons,
