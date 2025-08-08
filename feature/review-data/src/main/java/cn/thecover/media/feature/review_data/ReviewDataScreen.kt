@@ -40,6 +40,7 @@ import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.review_data.navigation.DepartmentReviewRoute
 import cn.thecover.media.feature.review_data.navigation.DepartmentTaskReviewRoute
 import cn.thecover.media.feature.review_data.navigation.ReviewDataNavigationType
 import cn.thecover.media.feature.review_data.navigation.reviewDataPage
@@ -53,21 +54,23 @@ import cn.thecover.media.feature.review_data.navigation.reviewDataPage
 @Composable
 internal fun ReviewDataRoute(
     modifier: Modifier = Modifier,
-    viewModel: ReviewDataViewModel = hiltViewModel()
+    viewModel: ReviewDataViewModel = hiltViewModel(),
+    routeToMsgScreen: () -> Unit = {},
 ) {
-    ReviewDataScreen(modifier)
+    ReviewDataScreen(modifier = modifier, routeToMsgScreen = routeToMsgScreen)
 }
 
 @Composable
 internal fun ReviewDataScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    routeToMsgScreen: () -> Unit = {},
 ) {
     val reviewNavController = rememberNavController()
     Column {
-        TopBar(reviewNavController)
+        TopBar(reviewNavController, routeToMsgScreen)
         NavHost(
             navController = reviewNavController,
-            startDestination = DepartmentTaskReviewRoute,
+            startDestination = DepartmentReviewRoute,
             modifier = modifier.padding(top = 12.dp)
         ) {
             reviewDataPage()
@@ -76,18 +79,9 @@ internal fun ReviewDataScreen(
 }
 
 @Composable
-private fun TopBar(navController: NavController) {
+private fun TopBar(navController: NavController, routeToMsgScreen: () -> Unit) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: ""
-
-    val currentTitle = remember(currentRoute) {
-        ReviewDataNavigationType.entries.first {
-            it.route.contains(currentRoute)
-        }.cateName
-    }
-
-
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -155,7 +149,10 @@ private fun TopBar(navController: NavController) {
             YBImage(
                 modifier = Modifier
                     .padding(2.dp)
-                    .size(18.dp),
+                    .size(18.dp)
+                    .clickableWithoutRipple {
+                        routeToMsgScreen()
+                    },
                 placeholder = painterResource(YBIcons.Custom.Msg)
             )
         }

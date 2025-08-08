@@ -44,11 +44,11 @@ import cn.thecover.media.feature.basis.home.data.MessageDataEntity
 
 
 @Composable
-fun MessageRoute(routeToDetail:(Long)-> Unit) {
-    MessageScreen(routeToDetail)
+fun MessageRoute(routeToDetail: (Long) -> Unit, onPopBack: () -> Unit) {
+    MessageScreen(routeToDetail, onPopBack)
 }
 
-val messagetList=listOf(
+val messagetList = listOf(
     MessageDataEntity(
         messageId = 0,
         title = "国家科技重大专项小麦育种新突破",
@@ -68,8 +68,9 @@ val messagetList=listOf(
         title = "您有一条新的催办消息",
     )
 )
+
 @Composable
-fun MessageScreen(routeToDetail:(Long)-> Unit) {
+fun MessageScreen(routeToDetail: (Long) -> Unit = {}, onPopBack: () -> Unit = {}) {
 
     val messageTypeList = MessageType.entries.map { it.typeName }
     val searchType = remember { mutableStateOf(messageTypeList.first()) }
@@ -83,7 +84,10 @@ fun MessageScreen(routeToDetail:(Long)-> Unit) {
             navigationIcon = {
                 Icon(
                     painter = painterResource(YBIcons.Custom.BackArrow),
-                    contentDescription = "返回"
+                    contentDescription = "返回",
+                    modifier = Modifier.clickable {
+                        onPopBack()
+                    }
                 )
             })
 
@@ -104,11 +108,11 @@ fun MessageScreen(routeToDetail:(Long)-> Unit) {
                 )
             }
 
-            items(messagetList) {index->
+            items(messagetList) { index ->
                 MessageItem(
                     title = index.title,
-                    time =index.time,
-                    msgType = MessageType.entries.first { it.ordinal==index.type },
+                    time = index.time,
+                    msgType = MessageType.entries.first { it.ordinal == index.type },
 
                     ) {
                     routeToDetail(1)
@@ -127,7 +131,8 @@ private fun MessageItem(title: String, time: String, msgType: MessageType, callb
             .border(width = 0.5.dp, color = CardOutlineColor, shape = MaterialTheme.shapes.small)
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surface, shape = YBShapes.small)
-            .padding(horizontal = 12.dp).clickable{
+            .padding(horizontal = 12.dp)
+            .clickable {
                 callback()
             },
         shape = YBShapes.small,

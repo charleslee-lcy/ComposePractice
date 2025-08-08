@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import cn.thecover.media.feature.basis.home.navigation.LoginRoute
 import cn.thecover.media.feature.basis.home.navigation.homeIndex
+import cn.thecover.media.feature.basis.home.navigation.navigateToMessage
 import cn.thecover.media.feature.basis.mine.navigation.mineScreen
 import cn.thecover.media.feature.review_data.navigation.reviewDataScreen
 import cn.thecover.media.feature.review_manager.navigation.reviewManageScreen
@@ -86,7 +87,9 @@ fun YBNavHost(
     ) {
         homeIndex(navController)
         reviewManageScreen(navController)
-        reviewDataScreen()
+        reviewDataScreen(routeToMsgScreen = {
+            navController.navigateToMessage()
+        })
         mineScreen(navController)
     }
 }

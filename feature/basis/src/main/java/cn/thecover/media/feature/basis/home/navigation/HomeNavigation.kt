@@ -47,6 +47,9 @@ fun NavController.navigateToMessageDetail(id: Long) {
     navigate(MessageDetailRoute(id = id))
 }
 
+fun NavController.navigateToMessage(navOptions: NavOptions? = null) =
+    navigate(MessageRoute, navOptions)
+
 fun NavController.navigateToLogin(navOptions: NavOptions? = null) =
     navigate(route = LoginRoute, navOptions)
 
@@ -77,12 +80,14 @@ fun NavGraphBuilder.homeIndex(navController: NavController) {
 
     composable<MessageDetailRoute> { backStackEntry ->
         val args = backStackEntry.toRoute<MessageDetailRoute>()
-        MessageDetailRoute(args.id,{navController.popBackStack()})
+        MessageDetailRoute(args.id, onPopBack = { navController.popBackStack() })
     }
 
     composable<MessageRoute> {
-        MessageRoute { id ->
+        MessageRoute(routeToDetail = { id ->
             navController.navigateToMessageDetail(id)
-        }
+        }, onPopBack = {
+            navController.popBackStack()
+        })
     }
 }

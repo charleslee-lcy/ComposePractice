@@ -120,7 +120,7 @@ internal fun ManuscriptReviewPage(
                 splitsNum -> Color.Transparent
                 else -> Color(0xFFF5F8FF)
             }
-            Spacer(modifier = Modifier.height(if (it == splitsNum) 32.dp else 0.dp))
+            Spacer(modifier = Modifier.height(if (it == splitsNum) 36.dp else 0.dp))
             Box {
                 if (it == splitsNum) {
                     Image(
