@@ -68,7 +68,7 @@ internal fun ReviewManageScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
 ) {
-    var pageType by remember { mutableIntStateOf(ReviewManageType.DEPARTMENT_ASSIGN.index) }
+    var pageType by remember { mutableIntStateOf(ReviewManageType.ARCHIVE_SCORE.index) }
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -89,21 +89,9 @@ internal fun ReviewManageScreen(
             }
             else -> {
                 // 稿件打分
-                ReviewManageScreenInternal(navController = navController)
+                ArchiveScoreScreen(navController = navController)
             }
         }
-    }
-}
-
-@Composable
-internal fun ReviewManageScreenInternal(
-    modifier: Modifier = Modifier,
-    navController: NavController,
-) {
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
-        Text("稿件打分")
     }
 }
 

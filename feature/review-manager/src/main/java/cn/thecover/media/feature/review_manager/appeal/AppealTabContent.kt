@@ -60,9 +60,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun MyAppealContent(navController: NavController) {
     val filters = listOf(
-        AppealFilterType(type = 0, desc = "稿件标题"),
-        AppealFilterType(type = 1, desc = "稿件ID"),
-        AppealFilterType(type = 2, desc = "申诉内容")
+        FilterType(type = 0, desc = "稿件标题"),
+        FilterType(type = 1, desc = "稿件ID"),
+        FilterType(type = 2, desc = "申诉内容")
     )
 
     // 模拟数据
@@ -130,13 +130,13 @@ fun MyAppealContent(navController: NavController) {
     }
 }
 
-data class AppealFilterType(val type: Int, val desc: String)
+data class FilterType(val type: Int, val desc: String)
 
 @Composable
 fun FilterSearchBar(
     modifier: Modifier = Modifier,
     initialIndex: Int = 0,
-    filterData: List<AppealFilterType>,
+    filterData: List<FilterType>,
     filterClick: (String, Int) -> Unit = { _, _ -> }
 ) {
     var expanded = remember { mutableStateOf(false) }

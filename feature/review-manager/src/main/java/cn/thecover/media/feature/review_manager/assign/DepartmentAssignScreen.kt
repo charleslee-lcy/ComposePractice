@@ -1,7 +1,5 @@
 package cn.thecover.media.feature.review_manager.assign
 
-import android.R.attr.singleLine
-import android.R.attr.textStyle
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,7 +32,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -53,7 +50,7 @@ import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
-import cn.thecover.media.feature.review_manager.appeal.AppealFilterType
+import cn.thecover.media.feature.review_manager.appeal.FilterType
 import cn.thecover.media.feature.review_manager.appeal.FilterSearchBar
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -284,9 +281,16 @@ private fun LabelText(prefix: String, label: String) {
 
 @Composable
 private fun DepartmentAssignHeader() {
-    val filters = listOf(
-        AppealFilterType(type = 1, desc = "部门人员"),
-        AppealFilterType(type = 2, desc = "人员ID")
+    val searchFilters = listOf(
+        FilterType(type = 1, desc = "部门人员"),
+        FilterType(type = 2, desc = "人员ID")
+    )
+    val departmentFilters = listOf(
+        FilterType(type = 1, desc = "部门总稿费"),
+        FilterType(type = 2, desc = "部门总完成度"),
+        FilterType(type = 3, desc = "部门总完成人数"),
+        FilterType(type = 4, desc = "部门总完成率"),
+        FilterType(type = 5, desc = "部门总完成时间")
     )
     val currentDate = LocalDate.now()
     val currentYearText = "${currentDate.year}年"
@@ -294,7 +298,6 @@ private fun DepartmentAssignHeader() {
     val showBudgetDialog = remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
     var datePickedText by remember { mutableStateOf(currentYearText) }
-    val selectFilterChoice = remember { mutableStateOf("部门总稿费") }
 
     Card(
         modifier = Modifier
@@ -312,7 +315,7 @@ private fun DepartmentAssignHeader() {
         ) {
             // 左侧排序指数选择区域
             Column(modifier = Modifier.weight(1.2f)) {
-                FilterDropMenuView(data = selectFilterChoice)
+                FilterDropMenuView(filterData = departmentFilters)
             }
             Spacer(Modifier.width(12.dp))
             // 右侧时间选择区域
@@ -342,9 +345,9 @@ private fun DepartmentAssignHeader() {
                 .background(PageBackgroundColor)
                 .height(36.dp),
             initialIndex = 0,
-            filterData = filters
+            filterData = searchFilters
         ) { text, index ->
-            Log.d("CharlesLee", "filterType: ${filters[index].type}")
+            Log.d("CharlesLee", "filterType: ${searchFilters[index].type}")
         }
     }
 
