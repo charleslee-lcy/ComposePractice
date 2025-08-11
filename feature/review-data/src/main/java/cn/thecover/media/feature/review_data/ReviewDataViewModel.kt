@@ -12,10 +12,12 @@ import cn.thecover.media.feature.review_data.data.DiffusionDataEntity
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewDataEntity
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import javax.inject.Inject
 
 /**
@@ -57,6 +59,10 @@ class ReviewDataViewModel @Inject constructor(
 
             is ReviewDataIntent.FetchManuscriptReviewData -> {
                 loadManuScriptReviewData()
+            }
+
+            is ReviewDataIntent.LoadMoreDepartmentTaskData -> {
+                loadMoreDepartmentTaskData()
             }
         }
     }
@@ -115,17 +121,46 @@ class ReviewDataViewModel @Inject constructor(
 
     private fun loadDepartmentTaskData() {
         // 开始加载
-        _departmentTaskDataState.update { it.copy(isLoading = true) }
-        val departmentTaskData = listOf(
-            DepartmentTaskDataEntity("时政部", 150, 150, 1f, "扣系数0.1"),
-            DepartmentTaskDataEntity("社会新闻部", 23, 30, 23.toFloat() / 30, "扣系数0.1"),
-            DepartmentTaskDataEntity("教育事业部", 243, 500, 243.toFloat() / 500, "扣系数0.1"),
-            DepartmentTaskDataEntity("科创部", 3, 100, 3 / 100.toFloat(), "扣系数0.1"),
+        _departmentTaskDataState.update { it.copy(isRefreshing = true) }
 
-            )
-        _departmentTaskDataState.update {
-            it.copy(isLoading = false, tasks = departmentTaskData)
+        viewModelScope.launch {
+            delay(2000L)
+            val departmentTaskData = listOf(
+                DepartmentTaskDataEntity("${Clock.System.now()})", 150, 150, 1f, "扣系数0.1"),
+                DepartmentTaskDataEntity("社会新闻部", 23, 30, 23.toFloat() / 30, "扣系数0.1"),
+                DepartmentTaskDataEntity("教育事业部", 243, 500, 243.toFloat() / 500, "扣系数0.1"),
+                DepartmentTaskDataEntity("科创部", 3, 100, 3 / 100.toFloat(), "扣系数0.1"),
+
+                DepartmentTaskDataEntity("实用生活部", 88, 150, 1f, "扣系数0.1"),
+                DepartmentTaskDataEntity("科技创新部", 99, 300, 23.toFloat() / 30, "扣系数0.1"),
+                DepartmentTaskDataEntity("财经新闻部", 66, 500, 243.toFloat() / 500, "扣系数0.1"),
+                DepartmentTaskDataEntity("国际新闻部", 22, 33, 3 / 100.toFloat(), "扣系数0.1"),)
+
+            _departmentTaskDataState.update {
+                it.copy(isRefreshing = false, tasks = departmentTaskData)
+            }
         }
+
+    }
+
+    private fun loadMoreDepartmentTaskData() {
+        // 开始加载
+        _departmentTaskDataState.update { it.copy(isLoadingMore = true) }
+
+        viewModelScope.launch {
+            delay(1000L)
+
+            val departmentTaskData =_departmentTaskDataState.value.tasks + listOf(
+                DepartmentTaskDataEntity("时政部", 150, 150, 1f, "扣系数0.1"),
+                DepartmentTaskDataEntity("社会新闻部", 23, 30, 23.toFloat() / 30, "扣系数0.1"),
+                DepartmentTaskDataEntity("教育事业部", 243, 500, 243.toFloat() / 500, "扣系数0.1"),
+                DepartmentTaskDataEntity("科创部", 3, 100, 3 / 100.toFloat(), "扣系数0.1"),)
+
+            _departmentTaskDataState.update {
+                it.copy(isLoadingMore = false, tasks = departmentTaskData)
+            }
+        }
+
     }
 
     private fun loadDepartmentData(time: String) {

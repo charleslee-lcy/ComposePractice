@@ -74,9 +74,9 @@ fun NavController.navigateToReviewData(navOptions: NavOptions) =
  * 在导航图中注册 ReviewDataRoute 页面。
  * 该页面使用 ReviewDataRoute 作为路由标识。
  */
-fun NavGraphBuilder.reviewDataScreen() {
+fun NavGraphBuilder.reviewDataScreen(routeToMsgScreen:()-> Unit) {
     composable<ReviewDataRoute> {
-        ReviewDataRoute()
+        ReviewDataRoute(routeToMsgScreen = routeToMsgScreen)
     }
 }
 

@@ -1,6 +1,5 @@
 package cn.thecover.media.core.widget.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -46,7 +45,9 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun <T> YBNormalList(
     modifier: Modifier = Modifier,
+    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(0.dp),
     items: MutableState<List<T>>,
+    header: @Composable () -> Unit = {},
     onRefresh: () -> Unit = {},
     onLoadMore: () -> Unit = {},
     isRefreshing: MutableState<Boolean> = mutableStateOf(false),
@@ -86,7 +87,11 @@ fun <T> YBNormalList(
             )
         }
     ) {
-        LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
+        LazyColumn(state = listState, modifier = Modifier.fillMaxSize(),verticalArrangement=verticalArrangement) {
+            stickyHeader {
+                header()
+            }
+
             itemsIndexed(items.value, key = { index, _ -> index }) { index, item ->
                 itemContent.invoke(item, index)
             }

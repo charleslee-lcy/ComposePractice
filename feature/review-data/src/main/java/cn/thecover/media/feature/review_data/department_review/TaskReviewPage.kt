@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.review_data.department_review
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -49,7 +49,7 @@ import java.time.LocalDate
  * 此函数不接受任何参数，也不返回任何值。
  */
 @Composable
-fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel= hiltViewModel()) {
+fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     // 获取当前日期并格式化为“年月”文本，用于初始化显示的时间
     val currentDate = LocalDate.now()
     val currentMonthText = "${currentDate.year}年${currentDate.monthValue}月"
@@ -61,7 +61,18 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel= hiltViewModel()) {
     var datePickedText by remember { mutableStateOf(currentMonthText) }
 
     val taskState by viewModel.departmentTaskDataState.collectAsState()
+    // 创建 MutableState 用于列表组件
+    val departmentTaskList = remember { mutableStateOf(taskState.tasks) }
+    val isLoadingMore = remember { mutableStateOf(taskState.isLoadingMore) }
+    val isRefreshing = remember { mutableStateOf(taskState.isRefreshing) }
+    val canLoadMore = remember { mutableStateOf(true) }
 
+    // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
+    LaunchedEffect(taskState) {
+        departmentTaskList.value = taskState.tasks
+        isLoadingMore.value = taskState.isLoadingMore
+        isRefreshing.value = taskState.isRefreshing
+    }
     LaunchedEffect(datePickedText) {
         viewModel.handleReviewDataIntent(
             ReviewDataIntent.FetchDepartmentTaskData(
@@ -69,12 +80,15 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel= hiltViewModel()) {
             )
         )
     }
-    LazyColumn(
+
+    YBNormalList(
+        items = departmentTaskList,
+        modifier = Modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.padding(horizontal = 16.dp)
-    ) {
-        // 顶部时间选择卡片
-        item {
+        isRefreshing = isRefreshing,
+        isLoadingMore = isLoadingMore,
+        canLoadMore = canLoadMore,
+        header = {
             DataItemCard {
                 Column {
                     Text(text = "时间")
@@ -84,19 +98,28 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel= hiltViewModel()) {
                     })
                 }
             }
-        }
-
-        // 遍历并显示每个部门的任务审核项
-        items(taskState.tasks) {
-            TaskReviewItemView(
-                it.departmentName.toString(),
-                it.taskFinishedPersons,
-                it.taskTotalPersons,
-                it.taskProgress,
-                it.taskDesc
+        },
+        onRefresh = {
+            viewModel.handleReviewDataIntent(ReviewDataIntent.FetchDepartmentTaskData(datePickedText))
+        },
+        onLoadMore = {
+            Log.d("mytest", "onLOADmORE")
+            viewModel.handleReviewDataIntent(
+                ReviewDataIntent.LoadMoreDepartmentTaskData(
+                    datePickedText
+                )
             )
-        }
+        },
+    ) { item, position ->
+        TaskReviewItemView(
+            item.departmentName.toString(),
+            item.taskFinishedPersons,
+            item.taskTotalPersons,
+            item.taskProgress,
+            item.taskDesc
+        )
     }
+
 
     // 月份选择器弹窗，当 showDatePicker 为 true 时显示
     YBDatePicker(

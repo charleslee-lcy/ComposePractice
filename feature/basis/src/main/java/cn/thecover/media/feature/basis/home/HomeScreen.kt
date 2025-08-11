@@ -53,7 +53,7 @@ import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.ComponentPreview
-import cn.thecover.media.feature.basis.home.navigation.MessageRoute
+import cn.thecover.media.feature.basis.home.navigation.navigateToMessage
 import cn.thecover.media.feature.basis.home.ui.LeaderUserContent
 import cn.thecover.media.feature.basis.home.ui.ManuscriptTopRankingItem
 import cn.thecover.media.feature.basis.home.ui.ReporterUserContent
@@ -69,7 +69,7 @@ import kotlinx.coroutines.launch
 internal fun HomeRoute(navController: NavController) {
 //    val feedState by viewModel..collectAsStateWithLifecycle()
     val goToMessageRoute= {
-        navController.navigate(MessageRoute)
+        navController.navigateToMessage()
     }
     YBTheme {
         HomeScreen(

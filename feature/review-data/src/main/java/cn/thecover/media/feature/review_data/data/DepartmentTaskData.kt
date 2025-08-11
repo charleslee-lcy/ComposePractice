@@ -15,5 +15,6 @@ data class DepartmentTaskDataEntity(
 
 data class DepartmentTaskState(
     val tasks: List<DepartmentTaskDataEntity> = emptyList(),
-    val isLoading: Boolean = false
+    val isLoadingMore: Boolean = false,
+    val isRefreshing: Boolean = false
 )
