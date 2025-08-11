@@ -1,6 +1,9 @@
 package cn.thecover.media.feature.review_manager.assign
 
+import android.R.attr.data
+import android.R.attr.label
 import android.R.attr.onClick
+import android.R.attr.type
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -21,8 +24,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -31,7 +36,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastCoerceAtLeast
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
@@ -40,27 +44,26 @@ import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.ComponentPreview
+import cn.thecover.media.feature.review_manager.appeal.FilterType
 
 
 /**
  *
+ *
  * <p> Created by CharlesLee on 2025/8/7
  * 15708478830@163.com
  */
+
+
 @Composable
 fun FilterDropMenuView(
-    data: MutableState<String> = mutableStateOf(""),
-    label: String = data.value,
-    dataList: List<String> = listOf(
-        "部门总稿费",
-        "部门总完成度",
-        "部门总完成人数",
-        "部门总完成率",
-        "部门总完成时间"
-    ),
+    initialIndex: Int = 0,
+    filterData: List<FilterType>,
+    filterClick: (String, Int) -> Unit = { _, _ -> }
 ) {
     val showDrop = remember { mutableStateOf(false) }
     val animRotate = remember { Animatable(0f) }
+    var title by remember { mutableStateOf(filterData[initialIndex].desc) }
 
     // 当菜单展开状态改变时，触发动画旋转图标
     LaunchedEffect(showDrop.value) {
@@ -75,13 +78,14 @@ fun FilterDropMenuView(
 
     // 构建下拉菜单及其触发区域
     YBAlignDropdownMenu(
-        data = dataList,
+        data = filterData.map { it.desc },
         expanded = showDrop,
-        initialIndex = dataList.indexOf(data.value).fastCoerceAtLeast(0),
+        initialIndex = initialIndex,
         isItemWidthAlign = true,
         offset = DpOffset(0.dp, 0.dp),
         onItemClick = { text, index ->
-            data.value = text
+            title = text
+            filterClick.invoke(text, index)
         }
     ) {
         // 下拉触发区域：显示当前选中项和箭头图标
@@ -104,7 +108,7 @@ fun FilterDropMenuView(
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(label, style = MaterialTheme.typography.labelMedium, color = MainTextColor)
+            Text(title, style = MaterialTheme.typography.labelMedium, color = MainTextColor)
             Spacer(Modifier.weight(1f))
             Icon(
                 modifier = Modifier
@@ -166,8 +170,15 @@ fun DateSelectionView(
 @Composable
 private fun DataItemDropMenuPreview() {
     YBTheme {
+        val filters = listOf(
+            FilterType(type = 1, desc = "部门总稿费"),
+            FilterType(type = 2, desc = "部门总完成度"),
+            FilterType(type = 3, desc = "部门总完成人数"),
+            FilterType(type = 4, desc = "部门总完成率"),
+            FilterType(type = 5, desc = "部门总完成时间")
+        )
         Column {
-            FilterDropMenuView(label = "经济部")
+            FilterDropMenuView(filterData = filters)
             DateSelectionView(label = "时间", textAlignCenter = true)
         }
     }

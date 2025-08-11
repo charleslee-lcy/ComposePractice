@@ -43,8 +43,8 @@ internal fun AppealManageScreen(
 ) {
     val count = remember { mutableIntStateOf(10) }
     val tabs = listOf(
-        FilterType("我的申诉", 0),
-        FilterType("申诉审批${if (count.intValue > 0) "(${count.intValue})" else ""}", 1)
+        FilterType(0, "我的申诉"),
+        FilterType(1, "申诉审批${if (count.intValue > 0) "(${count.intValue})" else ""}")
     )
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { tabs.size })
     val currentTabIndex = remember { mutableIntStateOf(0) }
@@ -79,7 +79,7 @@ internal fun AppealManageScreen(
                             pagerState.animateScrollToPage(index)
                         }
                     },
-                    text = { Text(text = tab.title, fontSize = 16.sp) }
+                    text = { Text(text = tab.desc, fontSize = 16.sp) }
                 )
             }
         }
@@ -97,9 +97,6 @@ internal fun AppealManageScreen(
         }
     }
 }
-
-private data class FilterType(val title: String, val type: Int)
-
 
 @Preview(showSystemUi = true)
 @Composable

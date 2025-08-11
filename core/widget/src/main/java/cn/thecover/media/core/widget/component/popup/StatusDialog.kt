@@ -83,7 +83,7 @@ fun IconStatusDialog(
             Icon(
                 painter = painterResource(id = icon),
                 contentDescription = null,
-                modifier = Modifier.size(64.dp)
+                modifier = Modifier.size(50.dp)
             )
         },
         autoDismissMillis = autoDismissMillis
@@ -171,7 +171,7 @@ private fun FullScreenLoadingContent(
                 painter = painterResource(id = R.drawable.ic_loading),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(64.dp)
+                    .size(50.dp)
                     .rotate(rotation),
                 tint = MaterialTheme.colorScheme.primary
             )
@@ -249,6 +249,7 @@ private fun FullScreenStatusDialogContent(
                         )
                     }
                     .size(110.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.background
                 )
