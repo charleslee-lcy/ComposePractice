@@ -9,5 +9,6 @@ sealed class ReviewDataIntent {
 
     data class FetchDepartmentReviewData(val time: String) : ReviewDataIntent()
     data class FetchDepartmentTaskData(val time: String) : ReviewDataIntent()
+    data class LoadMoreDepartmentTaskData(val time: String) : ReviewDataIntent()
     data class FetchManuscriptReviewData(val time: String) : ReviewDataIntent()
 }
