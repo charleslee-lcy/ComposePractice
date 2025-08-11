@@ -35,6 +35,7 @@ okhttp = "4.12.0"
 retrofit = "2.11.0"
 dependencyGuard = "0.5.0"
 uiUtil = "1.8.3"
+web = "0.8.0"
 
 [libraries]
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" } #动态权限
@@ -97,6 +98,7 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
+webview = { group = "com.mohamedrejeb.calf", name = "calf-webview", version.ref = "web" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }

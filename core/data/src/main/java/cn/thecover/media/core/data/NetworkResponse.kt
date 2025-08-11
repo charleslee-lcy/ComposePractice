@@ -14,3 +14,13 @@ data class NetworkResponse<T>(
     val errorCode: Int = 0,
     val errorMsg: String = "",
 )
+
+data class PageData<T>(
+    val curPage: Int,
+    val datas: List<T>,
+    val offset: Int,
+    val over: Boolean,
+    val pageCount: Int,
+    val size: Int,
+    val total: Int,
+)

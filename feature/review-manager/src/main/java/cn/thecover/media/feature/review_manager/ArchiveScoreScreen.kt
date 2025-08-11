@@ -28,6 +28,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -45,7 +47,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.navOptions
 import cn.thecover.media.core.widget.GradientLeftBottom
 import cn.thecover.media.core.widget.GradientLeftTop
 import cn.thecover.media.core.widget.component.YBImage
@@ -54,9 +61,11 @@ import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.SingleColumnPicker
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBDialog
+import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.component.popup.YBPopup
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.gradientShape
+import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.EditHintTextColor
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -69,7 +78,7 @@ import cn.thecover.media.core.widget.ui.PhonePreview
 import cn.thecover.media.feature.review_manager.appeal.FilterSearchBar
 import cn.thecover.media.feature.review_manager.appeal.FilterType
 import cn.thecover.media.feature.review_manager.assign.FilterDropMenuView
-import kotlinx.coroutines.delay
+import cn.thecover.media.feature.review_manager.navigation.navigateToArchiveDetail
 import kotlinx.coroutines.launch
 
 
@@ -80,15 +89,82 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun ArchiveScoreScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: ReviewManageViewModel = hiltViewModel()
 ) {
-    // 模拟数据
-    var items = remember { mutableStateOf((1..20).toList()) }
-    val scope = rememberCoroutineScope()
+
+    var curPage = remember { mutableIntStateOf(0) }
     var isRefreshing = remember { mutableStateOf(false) }
     var isLoadingMore = remember { mutableStateOf(false) }
     var canLoadMore = remember { mutableStateOf(true) }
+    val scope = rememberCoroutineScope()
+    val loadingState = rememberTipsDialogState()
+    var items = remember { mutableStateOf(listOf<ArchiveListData>()) }
 
+    LaunchedEffect(Unit) {
+        curPage.intValue = 0
+        viewModel.getArchiveList(curPage.intValue).collect {
+            when(it) {
+                is ArchiveListUiState.Loading -> {
+                    loadingState.show()
+                }
+                is ArchiveListUiState.Success -> {
+                    loadingState.hide()
+                    items.value = it.list
+                    isRefreshing.value = false
+                    canLoadMore.value = true
+                }
+                else -> {}
+            }
+        }
+    }
+
+    ArchiveScoreScreen(
+        navController = navController,
+        items = items,
+        isRefreshing = isRefreshing,
+        isLoadingMore = isLoadingMore,
+        canLoadMore = canLoadMore,
+        onRefresh = {
+            scope.launch {
+                curPage.intValue = 0
+                viewModel.getArchiveList(curPage.intValue).collect {
+                    if (it is ArchiveListUiState.Success) {
+                        items.value = it.list
+                        isRefreshing.value = false
+                        canLoadMore.value = true
+                    }
+                }
+            }
+        },
+        onLoadMore = {
+            scope.launch {
+                curPage.intValue++
+                viewModel.getArchiveList(curPage.intValue).collect { state ->
+                    if (state is ArchiveListUiState.Success) {
+                        items.value = items.value + state.list
+                        isLoadingMore.value = false
+                        // 最后一页
+                        if (state.list.size < 10) canLoadMore.value = false
+                    }
+                }
+            }
+        }
+    )
+
+    YBLoadingDialog(loadingState, enableDismiss = true, onDismissRequest = { loadingState.hide() })
+}
+
+@Composable
+fun ArchiveScoreScreen(
+    navController: NavController,
+    items: MutableState<List<ArchiveListData>>,
+    isRefreshing: MutableState<Boolean>,
+    isLoadingMore: MutableState<Boolean>,
+    canLoadMore: MutableState<Boolean>,
+    onRefresh: () -> Unit = {},
+    onLoadMore: () -> Unit = {},
+) {
     var showScoreDialog = remember { mutableStateOf(false) }
 
     Column(
@@ -104,29 +180,16 @@ fun ArchiveScoreScreen(
             isLoadingMore = isLoadingMore,
             canLoadMore = canLoadMore,
             onRefresh = {
-                scope.launch {
-                    // 模拟网络
-                    delay(1000)
-                    items.value = (1..20).toList()
-                    canLoadMore.value = true
-                    isRefreshing.value = false
-                }
+                onRefresh.invoke()
             },
             onLoadMore = {
-                scope.launch {
-                    // 模拟网络
-                    delay(1000)
-                    val next = items.value.lastOrNull() ?: 0
-                    items.value = items.value + (next + 1..next + 10).toList()
-                    isLoadingMore.value = false
-                    // 模拟最后一页
-                    if (items.value.size >= 50) canLoadMore.value = false
-                }
+                onLoadMore.invoke()
             }) { item, index ->
             ArchiveListItem(
                 modifier = Modifier.fillMaxWidth(),
-                index = index,
+                item = item,
                 onDetailClick = {
+                    navController.navigateToArchiveDetail(item)
                 },
                 onScoreClick = {
                     showScoreDialog.value = true
@@ -748,6 +811,19 @@ private data class ArchiveScoreRule(
 @Composable
 private fun ArchiveScoreScreenPreview() {
     YBTheme {
-        ArchiveScoreScreen(navController = NavController(LocalContext.current))
+        var isRefreshing = remember { mutableStateOf(false) }
+        var isLoadingMore = remember { mutableStateOf(false) }
+        var canLoadMore = remember { mutableStateOf(true) }
+        var items = remember { mutableStateOf(listOf<ArchiveListData>()) }
+        repeat(10) {
+            items.value = items.value + ArchiveListData(title = "标题$it", niceDate = "2023-05-05")
+        }
+        ArchiveScoreScreen(
+            navController = NavController(LocalContext.current),
+            items = items,
+            isRefreshing = isRefreshing,
+            isLoadingMore = isLoadingMore,
+            canLoadMore = canLoadMore,
+        )
     }
 }

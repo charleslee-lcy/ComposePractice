@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,6 +34,7 @@ import cn.thecover.media.core.widget.theme.SecondaryAuxiliaryColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
+import kotlinx.serialization.Serializable
 
 
 /**
@@ -46,7 +46,7 @@ import cn.thecover.media.core.widget.ui.PhonePreview
 @Composable
 fun ArchiveListItem(
     modifier: Modifier = Modifier,
-    index: Int = 0,
+    item: ArchiveListData,
     onDetailClick: (() -> Unit)? = null,
     onScoreClick: (() -> Unit)? = null
 ) {
@@ -60,7 +60,7 @@ fun ArchiveListItem(
             modifier = Modifier.padding(horizontal = 12.dp)
         ) {
             Text(
-                text = "关于云南，你不知道的20个冷知识，带你了解最真实的云南风貌",
+                text = item.title,
                 style = TextStyle(
                     color = MainTextColor,
                     fontSize = 15.sp,
@@ -113,7 +113,7 @@ fun ArchiveListItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "2025-06-07 14:32",
+                    text = item.niceDate,
                     color = TertiaryTextColor,
                     lineHeight = 13.sp,
                     fontSize = 13.sp
@@ -198,11 +198,25 @@ fun ArchiveListItem(
     }
 }
 
+@Serializable
+data class ArchiveListData(
+    val title: String = "",
+    val niceDate: String = "",
+    val link: String = "",
+)
+
 
 @PhonePreview
 @Composable
 private fun ArchiveListItemPreview() {
     YBTheme {
-        ArchiveListItem()
+        val item = ArchiveListData(
+            title = "关于云南，你不知道的20个冷知识，带你了解最真实的云南风貌",
+            niceDate = "2025-06-07 14:32",
+            link = ""
+        )
+        ArchiveListItem(
+            item = item
+        )
     }
 }
