@@ -106,7 +106,8 @@ fun ArchiveScoreScreen(
         viewModel.getArchiveList(curPage.intValue).collect {
             when(it) {
                 is ArchiveListUiState.Loading -> {
-                    loadingState.show()
+//                    loadingState.show()
+                    isRefreshing.value = true
                 }
                 is ArchiveListUiState.Success -> {
                     loadingState.hide()
