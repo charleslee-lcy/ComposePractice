@@ -34,6 +34,7 @@ import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 
 
 /**
@@ -47,7 +48,7 @@ fun <T> YBNormalList(
     modifier: Modifier = Modifier,
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(0.dp),
     items: MutableState<List<T>>,
-    header: @Composable (() -> Unit)? = null,
+    header: @Composable () -> Unit = {},
     onRefresh: () -> Unit = {},
     onLoadMore: () -> Unit = {},
     isRefreshing: MutableState<Boolean> = mutableStateOf(false),
@@ -60,13 +61,31 @@ fun <T> YBNormalList(
 
     // 上拉加载：监听滚动到底部
     LaunchedEffect(listState) {
-        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
-            .collectLatest { lastVisible ->
-                if (lastVisible == items.value.lastIndex && !isLoadingMore.value && canLoadMore.value) {
-                    isLoadingMore.value = true
-                    onLoadMore.invoke()
-                }
+        combine(
+            snapshotFlow {
+                listState.layoutInfo.visibleItemsInfo.firstOrNull()?.index
+            },
+            snapshotFlow {
+                listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+            },
+            snapshotFlow {
+                listState.canScrollForward
+            },
+            snapshotFlow {
+                listState.canScrollBackward
             }
+        ) { firstVisible, lastVisible, canScrollForward, canScrollBackward ->
+            var shouldLoadMore = false
+            if (canScrollBackward && lastVisible == items.value.lastIndex && !isLoadingMore.value && canLoadMore.value) {
+                shouldLoadMore = true
+            }
+            shouldLoadMore
+        }.collectLatest { shouldLoadMore ->
+            if (shouldLoadMore) {
+                isLoadingMore.value = true
+                onLoadMore.invoke()
+            }
+        }
     }
 
     PullToRefreshBox(
@@ -88,9 +107,9 @@ fun <T> YBNormalList(
         }
     ) {
         LazyColumn(state = listState, modifier = Modifier.fillMaxSize(),verticalArrangement=verticalArrangement) {
-            header?.let { headerContent ->
-                stickyHeader {
-                    headerContent.invoke()
+            stickyHeader {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    header.invoke()
                 }
             }
 
