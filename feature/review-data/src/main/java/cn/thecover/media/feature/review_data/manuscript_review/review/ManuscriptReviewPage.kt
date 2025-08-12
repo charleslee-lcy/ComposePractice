@@ -1,4 +1,4 @@
-package cn.thecover.media.feature.review_data.manuscript_review
+package cn.thecover.media.feature.review_data.manuscript_review.review
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -52,6 +52,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.YBButton
+import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
@@ -71,7 +72,7 @@ import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRanking
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
 import cn.thecover.media.feature.review_data.basic_widget.widget.ExpandItemColumn
 import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
-import cn.thecover.media.feature.review_data.data.ManuscriptReviewDataEntity
+import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
 import java.time.LocalDate
 
 /**
@@ -85,67 +86,88 @@ internal fun ManuscriptReviewPage(
     viewModel: ReviewDataViewModel = hiltViewModel()
 ) {
     val splitsNum = 1
-    val data by viewModel.manuscriptReviewData.collectAsState()
+    val data by viewModel.manuscriptReviewState.collectAsState()
     // 使用 LazyColumn 垂直排列页面内容，item 之间间隔 12.dp
-    LazyColumn(modifier = modifier) {
-        // 显示页面头部组件
-        item {
-            Column(modifier = Modifier.padding(horizontal = 12.dp)) {
+
+
+    // 创建 MutableState 用于列表组件
+    val manus = remember { mutableStateOf(data.manuscripts) }
+    val isLoadingMore = remember { mutableStateOf(data.isLoading) }
+    val isRefreshing = remember { mutableStateOf(data.isRefreshing) }
+    val canLoadMore = remember { mutableStateOf(true) }
+
+    // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
+    LaunchedEffect(data) {
+        manus.value = data.manuscripts
+        isLoadingMore.value = data.isLoading
+        isRefreshing.value = data.isRefreshing
+    }
+
+    YBNormalList(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp),
+        items = manus,
+        isLoadingMore = isLoadingMore,
+        isRefreshing = isRefreshing,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        canLoadMore = canLoadMore,
+        header = {
+            Column( verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 ManuscriptTotalRankingHeader(viewModel = viewModel)
-            }
-        }
-
-        // 显示记录总数提示文本，其中数字部分使用主色调高亮显示
-        item {
-            Text(
-                text = buildAnnotatedString {
-                    append("共 ")
-                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                        append(data.manuscripts.size.toString())
-                    }
-                    append(" 条记录")
-                },
-                style = MaterialTheme.typography.labelMedium,
-                color = TertiaryTextColor,
-                modifier = Modifier
-                    .padding(start = 24.dp, top = 8.dp)
-
-            )
-        }
-
-        // 遍历数据列表，为每条数据渲染 DiffusionItem 组件
-        items(data.manuscripts.size) {
-            val itemBg = when (it) {
-                in 0..<splitsNum -> MaterialTheme.colorScheme.background
-                splitsNum -> Color.Transparent
-                else -> Color(0xFFF5F8FF)
-            }
-            Spacer(modifier = Modifier.height(if (it == splitsNum) 36.dp else 0.dp))
-            Box {
-                if (it == splitsNum) {
-                    Image(
-                        painter = painterResource(ReviewDataImages.Background.ManuSplitsLine),
-                        contentDescription = "分割线背景",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .offset(y = (-32).dp),
-                        contentScale = ContentScale.FillBounds
-                    )
-                }
-                Column(
+                Text(
+                    text = buildAnnotatedString {
+                        append("共 ")
+                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                            append(data.manuscripts.size.toString())
+                        }
+                        append(" 条记录")
+                    },
+                    style = MaterialTheme.typography.labelMedium,
+                    color = TertiaryTextColor,
                     modifier = Modifier
-                        .background(color = itemBg)
-                        .padding(horizontal = 12.dp)
-                ) {
-                    Spacer(modifier = Modifier.height(12.dp))
+                        .padding(start = 24.dp, top = 8.dp)
 
-                    TotalRankingItem(it + 1, rankLine = splitsNum + 1, data.manuscripts[it])
-                }
+                )
+            }
+        },
+        onLoadMore = {
+            viewModel.handleReviewDataIntent(ReviewDataIntent.LoadMoreManuscriptReviewData)
+        },
+        onRefresh = {
+            viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptReviewData)
+        }
+    ) { item, index ->
+        val itemBg = when (index) {
+            in 0..<splitsNum -> MaterialTheme.colorScheme.background
+            splitsNum -> Color.Transparent
+            else -> Color(0xFFF5F8FF)
+        }
+        Spacer(modifier = Modifier.height(if (index == splitsNum) 36.dp else 0.dp))
+        Box {
+            if (index == splitsNum) {
+                Image(
+                    painter = painterResource(ReviewDataImages.Background.ManuSplitsLine),
+                    contentDescription = "分割线背景",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .offset(y = (-32).dp),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .background(color = itemBg)
+                    .padding(horizontal = 12.dp)
+            ) {
+                Spacer(modifier = Modifier.height(12.dp))
 
+                TotalRankingItem(index + 1, rankLine = splitsNum + 1, item)
             }
 
         }
     }
+
 }
 
 @Composable
@@ -285,7 +307,7 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
 
     var searchText by remember { mutableStateOf("") }
     LaunchedEffect(selectFilterChoice, datePickedText, searchText) {
-        viewModel.handleReviewDataIntent(ReviewDataIntent.FetchManuscriptReviewData(datePickedText))
+        viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptReviewData)
     }
     // 主体内容卡片容器
     DataItemCard {

@@ -8,9 +8,9 @@ import cn.thecover.media.feature.review_data.ReviewDataRoute
 import cn.thecover.media.feature.review_data.department_review.DepartmentReviewScreen
 import cn.thecover.media.feature.review_data.department_review.DepartmentTaskReviewPage
 import cn.thecover.media.feature.review_data.department_review.DepartmentTopRankingPage
-import cn.thecover.media.feature.review_data.manuscript_review.ManuscriptDiffusionPage
-import cn.thecover.media.feature.review_data.manuscript_review.ManuscriptReviewPage
-import cn.thecover.media.feature.review_data.manuscript_review.ManuscriptTopRankingPage
+import cn.thecover.media.feature.review_data.manuscript_review.manuscript_diffusion.ManuscriptDiffusionPage
+import cn.thecover.media.feature.review_data.manuscript_review.review.ManuscriptReviewPage
+import cn.thecover.media.feature.review_data.manuscript_review.topranking.ManuscriptTopRankingPage
 import kotlinx.serialization.Serializable
 
 
@@ -132,6 +132,33 @@ enum class ReviewDataNavigationType(
     val route: String,
 ) {
     /**
+     * 稿件总排行页面。
+     */
+    MANUSCRIPT_REVIEW(
+        "稿件总排行",
+        { nav -> nav.navigate(ManuscriptReviewRoute) },
+        ManuscriptReviewRoute.toString(),
+    ),
+
+    /**
+     * 稿件传播效果页面。
+     */
+    MANUSCRIPT_DIFFUSION(
+        "稿件传播效果",
+        { nav -> nav.navigate(ManuscriptDiffusionRoute) },
+        ManuscriptDiffusionRoute.toString(),
+    ),
+
+    /**
+     * 稿件 TOP 排行页面。
+     */
+    MANUSCRIPT_TOP_RANKING(
+        "稿件TOP排行",
+        { nav -> nav.navigate(ManuscriptTopRoute) },
+        ManuscriptTopRoute.toString(),
+    ),
+
+    /**
      * 部门总数据排行页面。
      */
     DEPARTMENT_TOTAL_DATA(
@@ -156,32 +183,5 @@ enum class ReviewDataNavigationType(
         "部门TOP排行",
         { nav -> nav.navigate(DepartmentTopRankingRoute) },
         DepartmentTopRankingRoute.toString(),
-    ),
-
-    /**
-     * 稿件 TOP 排行页面。
-     */
-    MANUSCRIPT_TOP_RANKING(
-        "稿件TOP排行",
-        { nav -> nav.navigate(ManuscriptTopRoute) },
-        ManuscriptTopRoute.toString(),
-    ),
-
-    /**
-     * 稿件总排行页面。
-     */
-    MANUSCRIPT_REVIEW(
-        "稿件总排行",
-        { nav -> nav.navigate(ManuscriptReviewRoute) },
-        ManuscriptReviewRoute.toString(),
-    ),
-
-    /**
-     * 稿件传播效果页面。
-     */
-    MANUSCRIPT_DIFFUSION(
-        "稿件传播效果",
-        { nav -> nav.navigate(ManuscriptDiffusionRoute) },
-        ManuscriptDiffusionRoute.toString(),
     ),
 }

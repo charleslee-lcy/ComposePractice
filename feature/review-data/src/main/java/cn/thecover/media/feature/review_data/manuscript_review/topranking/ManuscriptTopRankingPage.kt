@@ -1,4 +1,4 @@
-package cn.thecover.media.feature.review_data.manuscript_review
+package cn.thecover.media.feature.review_data.manuscript_review.topranking
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import cn.thecover.media.core.widget.component.ItemScoreRow
+import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.YBTheme
@@ -35,7 +35,7 @@ import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemDropMen
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingRow
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
 import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
-import cn.thecover.media.feature.review_data.data.ManuscriptReviewDataEntity
+import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
 import java.time.LocalDate
 
 /**
@@ -46,18 +46,41 @@ import java.time.LocalDate
 @Composable
 fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
 
-    val data by viewModel.manuscriptReviewData.collectAsState()
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.padding(horizontal = 12.dp)
-    ) {
-        item {
-            ManuscriptTopRankingHeader(viewModel)
-        }
+    val data by viewModel.manuscriptTopRankingState.collectAsState()
+    // 创建 MutableState 用于列表组件
+    val manus = remember { mutableStateOf(data.manuscripts) }
+    val isLoadingMore = remember { mutableStateOf(data.isLoading) }
+    val isRefreshing = remember { mutableStateOf(data.isRefreshing) }
+    val canLoadMore = remember { mutableStateOf(true) }
 
-        items(data.manuscripts.size) { index ->
-            ManuscriptTopRankingItem(num = index + 1, data = data.manuscripts[index])
+    // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
+    LaunchedEffect(data) {
+        manus.value = data.manuscripts
+        isLoadingMore.value = data.isLoading
+        isRefreshing.value = data.isRefreshing
+    }
+
+
+    YBNormalList(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp),
+        items = manus,
+        isLoadingMore = isLoadingMore,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        isRefreshing = isRefreshing,
+        canLoadMore = canLoadMore,
+        header = {
+            ManuscriptTopRankingHeader(viewModel)
+        },
+        onLoadMore = {
+            viewModel.handleReviewDataIntent(ReviewDataIntent.LoadMoreManuscriptReviewData)
+        },
+        onRefresh = {
+            viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptReviewData)
         }
+    ) { item, index ->
+        ManuscriptTopRankingItem(num = index + 1, data = data.manuscripts[index])
 
     }
 }
@@ -114,7 +137,7 @@ private fun ManuscriptTopRankingHeader(viewModel: ReviewDataViewModel) {
     val selectFilterChoice = remember { mutableStateOf("质量分") }
 
     LaunchedEffect(datePickedText, selectFilterChoice) {
-        viewModel.handleReviewDataIntent(ReviewDataIntent.FetchManuscriptReviewData(datePickedText))
+        viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptTopranking)
     }
     // 显示筛选条件卡片，包含排序指数下拉菜单和时间选择器
     DataItemCard {

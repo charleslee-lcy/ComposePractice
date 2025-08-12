@@ -63,22 +63,18 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     val taskState by viewModel.departmentTaskDataState.collectAsState()
     // 创建 MutableState 用于列表组件
     val departmentTaskList = remember { mutableStateOf(taskState.tasks) }
-    val isLoadingMore = remember { mutableStateOf(taskState.isLoadingMore) }
+    val isLoadingMore = remember { mutableStateOf(taskState.isLoading) }
     val isRefreshing = remember { mutableStateOf(taskState.isRefreshing) }
     val canLoadMore = remember { mutableStateOf(true) }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(taskState) {
         departmentTaskList.value = taskState.tasks
-        isLoadingMore.value = taskState.isLoadingMore
+        isLoadingMore.value = taskState.isLoading
         isRefreshing.value = taskState.isRefreshing
     }
     LaunchedEffect(datePickedText) {
-        viewModel.handleReviewDataIntent(
-            ReviewDataIntent.FetchDepartmentTaskData(
-                datePickedText
-            )
-        )
+        viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshDepartmentTaskData)
     }
 
     YBNormalList(
@@ -100,14 +96,11 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
             }
         },
         onRefresh = {
-            viewModel.handleReviewDataIntent(ReviewDataIntent.FetchDepartmentTaskData(datePickedText))
+            viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshDepartmentTaskData)
         },
         onLoadMore = {
-            Log.d("mytest", "onLOADmORE")
             viewModel.handleReviewDataIntent(
-                ReviewDataIntent.LoadMoreDepartmentTaskData(
-                    datePickedText
-                )
+                ReviewDataIntent.LoadMoreDepartmentTaskData
             )
         },
     ) { item, position ->
