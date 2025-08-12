@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -24,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
+import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -49,9 +51,9 @@ import java.time.LocalDate
  *
  */
 @Composable
-internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel= hiltViewModel<ReviewDataViewModel>()) {
+internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewModel<ReviewDataViewModel>()) {
     // 部门总数据列表，包含部门ID、名称和平均分数
-    val departmentTotalData by viewModel.departmentReviewDataState.collectAsState()
+    val departmentTotalData by viewModel.departmentReviewTopState.collectAsState()
 
 
     // 获取当前日期并格式化为年月文本
@@ -63,15 +65,38 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel= hiltViewMo
     var datePickedText by remember { mutableStateOf(currentMonthText) }
 
 
+    // 创建 MutableState 用于列表组件
+    val departmentList = remember { mutableStateOf(departmentTotalData.departments) }
+    val isLoadingMore = remember { mutableStateOf(departmentTotalData.isLoading) }
+    val isRefreshing = remember { mutableStateOf(departmentTotalData.isRefreshing) }
+    val canLoadMore = remember { mutableStateOf(true) }
+
+    // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
+    LaunchedEffect(departmentTotalData) {
+        departmentList.value = departmentTotalData.departments
+        isLoadingMore.value = departmentTotalData.isLoading
+        isRefreshing.value = departmentTotalData.isRefreshing
+    }
+
+
     LaunchedEffect(datePickedText) {
-        viewModel.handleReviewDataIntent(ReviewDataIntent.FetchDepartmentReviewData(datePickedText))
+        viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshDepartmentTopRanking)
     }
     // 构建页面布局，包含日期选择和部门排名列表
-    LazyColumn(
+    YBNormalList(
+        modifier = Modifier.padding(horizontal = 16.dp).fillMaxHeight(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.padding(horizontal = 16.dp)
-    ) {
-        item {
+        items = departmentList,
+        isLoadingMore = isLoadingMore,
+        isRefreshing = isRefreshing,
+        canLoadMore = canLoadMore,
+        onLoadMore = {
+            viewModel.handleReviewDataIntent(ReviewDataIntent.LoadMoreDepartmentTopRanking)
+        },
+        onRefresh = {
+            viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshDepartmentTopRanking)
+        },
+        header = {
             DataItemCard {
                 Column {
                     Text(text = "时间")
@@ -82,9 +107,8 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel= hiltViewMo
                 }
             }
         }
-        items(departmentTotalData.departments) {
-            TopRankingItem(it.departmentRanking, it.departmentName, it.averageScore)
-        }
+    ) {item, index ->
+        TopRankingItem(item.departmentRanking, item.departmentName, item.averageScore)
     }
 
     // 月份选择器组件，用于选择查看排名的月份
