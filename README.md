@@ -68,6 +68,8 @@
 - DataScoreRow/PrimaryScoreRow 用于显示上标签下数字的积分组件，带Primary可换颜色
 - ItemScoreRow/PrimaryItemScoreRow 用于显示一行积分组件，每一个组件宽度一致
 - FilterSearchTextField 待下拉筛选框的的搜索栏组件
+- CoordinatorLayout 拷贝开源项目源码，实现类似CoordinatorLayout的简单联动、吸顶效果等。还支持指定位置的吸顶效果
+- YBCoordinatorList 封装CoordinatorLayout + YBNormalList，快速实现刷新列表和顶部Card联动效果
 
 ## 下拉菜单
 
