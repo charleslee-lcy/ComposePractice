@@ -97,11 +97,10 @@ import java.time.LocalDate
 @Composable
 internal fun ManuscriptReviewPage(
     modifier: Modifier = Modifier,
-    viewModel: ReviewDataViewModel = hiltViewModel()
+    viewModel: ReviewDataViewModel
 ) {
     val splitsNum = 2
     val data by viewModel.manuscriptReviewState.collectAsState()
-    // 使用 LazyColumn 垂直排列页面内容，item 之间间隔 12.dp
 
     var showEditScorePop by remember { mutableStateOf(false) }
     var editId by remember { mutableIntStateOf(0) }

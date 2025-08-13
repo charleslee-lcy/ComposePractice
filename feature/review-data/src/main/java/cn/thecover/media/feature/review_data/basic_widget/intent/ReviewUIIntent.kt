@@ -8,4 +8,7 @@ package cn.thecover.media.feature.review_data.basic_widget.intent
 sealed class ReviewUIIntent {
     data class UpdateDepartmentDataFilter(val state: String, val time: String) :
         ReviewUIIntent()
+
+    data class UpdateManuscriptTopFilter(val state: String, val time: String) :
+        ReviewUIIntent()
 }

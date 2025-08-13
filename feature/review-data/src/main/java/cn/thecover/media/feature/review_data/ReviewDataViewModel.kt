@@ -8,6 +8,7 @@ import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
 import cn.thecover.media.feature.review_data.data.DepartmentReviewState
 import cn.thecover.media.feature.review_data.data.DepartmentReviewTaskState
 import cn.thecover.media.feature.review_data.data.DepartmentFilterState
+import cn.thecover.media.feature.review_data.data.ManuscriptReviewFilterState
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewState
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
@@ -66,6 +67,12 @@ class ReviewDataViewModel @Inject constructor(
 
     private val _departmentDataFilterState = MutableStateFlow(DepartmentFilterState())
     val departmentDataFilterState = _departmentDataFilterState
+    private val _manuscriptTopFilterState = MutableStateFlow(
+        ManuscriptReviewFilterState(
+            sortField = "总分"
+        )
+    )
+    val manuscriptTopFilterState = _manuscriptTopFilterState
 
 
     fun handleReviewDataIntent(intent: ReviewDataIntent) {
@@ -136,7 +143,16 @@ class ReviewDataViewModel @Inject constructor(
     fun handleUIIntent(intent: ReviewUIIntent) {
         when (intent) {
             is ReviewUIIntent.UpdateDepartmentDataFilter -> {
-                _departmentDataFilterState.update {state ->
+                _departmentDataFilterState.update { state ->
+                    state.copy(
+                        selectedDate = intent.time,
+                        sortField = intent.state
+                    )
+                }
+            }
+
+            is ReviewUIIntent.UpdateManuscriptTopFilter -> {
+                _manuscriptTopFilterState.update { state ->
                     state.copy(
                         selectedDate = intent.time,
                         sortField = intent.state
@@ -249,17 +265,18 @@ class ReviewDataViewModel @Inject constructor(
     )
 
     private fun loadManuScriptReviewData(isLoadMore: Boolean = false) {
+        _manuscriptReviewData.update {
+            if (isLoadMore) it.copy(isLoading = true) else it.copy(
+                isRefreshing = true
+            )
+        }
         viewModelScope.launch {
-            _manuscriptReviewData.value =
-                if (isLoadMore) ManuscriptReviewState(isLoading = true) else ManuscriptReviewState(
-                    isRefreshing = true
-                )
+            delay(1000)
             // val result = repository.fetchManuscriptReviewData()
 
             val result = manuscriptTestData
 
-            val manuscripts =
-                if (isLoadMore) (_manuscriptReviewData.value.manuscripts + result) else result
+            val manuscripts = if (isLoadMore) (_manuscriptReviewData.value.manuscripts + result) else result
             _manuscriptReviewData.update {
                 it.copy(
                     isLoading = false,
@@ -271,17 +288,18 @@ class ReviewDataViewModel @Inject constructor(
     }
 
     private fun loadManuScriptReviewDiffusionData(isLoadMore: Boolean = false) {
+        _manuscriptReviewDiffusionData.update {
+            if (isLoadMore) it.copy(isLoading = true) else it.copy(
+                isRefreshing = true
+            )
+        }
         viewModelScope.launch {
-            _manuscriptReviewDiffusionData.value =
-                if (isLoadMore) ManuscriptReviewState(isLoading = true) else ManuscriptReviewState(
-                    isRefreshing = true
-                )
+            delay(1000)
             // val result = repository.fetchManuscriptReviewData()
 
             val result = manuscriptTestData
 
-            val manuscripts =
-                if (isLoadMore) _manuscriptReviewDiffusionData.value.manuscripts + result else result
+            val manuscripts = if (isLoadMore) (_manuscriptReviewDiffusionData.value.manuscripts + result) else result
             _manuscriptReviewDiffusionData.update {
                 it.copy(
                     isLoading = false,
@@ -293,17 +311,18 @@ class ReviewDataViewModel @Inject constructor(
     }
 
     private fun loadManuScriptReviewTopData(isLoadMore: Boolean = false) {
+        _manuscriptReviewTopData.update {
+            if (isLoadMore) it.copy(isLoading = true) else it.copy(
+                isRefreshing = true
+            )
+        }
         viewModelScope.launch {
-            _manuscriptReviewTopData.value =
-                if (isLoadMore) ManuscriptReviewState(isLoading = true) else ManuscriptReviewState(
-                    isRefreshing = true
-                )
+            delay(1000)
             // val result = repository.fetchManuscriptReviewData()
 
             val result = manuscriptTestData
 
-            val manuscripts =
-                if (isLoadMore) _manuscriptReviewTopData.value.manuscripts + result else result
+            val manuscripts = if (isLoadMore) (_manuscriptReviewTopData.value.manuscripts + result) else result
             _manuscriptReviewTopData.update {
                 it.copy(
                     isLoading = false,
