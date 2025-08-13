@@ -9,6 +9,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,11 +19,15 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -30,6 +35,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,24 +47,30 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastCoerceAtLeast
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.YBButton
+import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
+import cn.thecover.media.core.widget.component.popup.YBPopup
 import cn.thecover.media.core.widget.component.search.FilterSearchTextField
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.MainTextColor
+import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
@@ -89,7 +101,8 @@ internal fun ManuscriptReviewPage(
     val data by viewModel.manuscriptReviewState.collectAsState()
     // 使用 LazyColumn 垂直排列页面内容，item 之间间隔 12.dp
 
-
+    var showEditScorePop by remember { mutableStateOf(false) }
+    var editId by remember { mutableIntStateOf(0) }
     // 创建 MutableState 用于列表组件
     val manus = remember { mutableStateOf(data.manuscripts) }
     val isLoadingMore = remember { mutableStateOf(data.isLoading) }
@@ -113,7 +126,7 @@ internal fun ManuscriptReviewPage(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         canLoadMore = canLoadMore,
         header = {
-            Column( verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 ManuscriptTotalRankingHeader(viewModel = viewModel)
                 Text(
                     text = buildAnnotatedString {
@@ -162,16 +175,93 @@ internal fun ManuscriptReviewPage(
             ) {
                 Spacer(modifier = Modifier.height(12.dp))
 
-                TotalRankingItem(index + 1, rankLine = splitsNum + 1, item)
+                TotalRankingItem(index + 1, rankLine = splitsNum + 1, item, onItemClick = {
+                    showEditScorePop = true
+                    editId = it
+                })
             }
 
         }
     }
+    var textFiledState by remember { mutableStateOf("") }
+
+    LaunchedEffect(showEditScorePop) {
+        if (showEditScorePop) {
+            val item = manus.value.firstOrNull { it.id == editId }
+            if (item != null) {
+                textFiledState = item.score.toString()
+            }
+        }
+    }
+    YBPopup(
+        visible = showEditScorePop,
+        isShowTopActionBar = true,
+        draggable = false,
+        onConfirm = {
+            showEditScorePop = false
+
+            if (textFiledState.isNotEmpty()) {
+                viewModel.handleReviewDataIntent(
+                    ReviewDataIntent.EditManuscriptScore(
+                        editId,
+                        textFiledState.toInt()
+                    )
+                )
+            }
+            textFiledState = ""
+        },
+        content = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 32.dp, end = 32.dp, top = 40.dp, bottom = 65.dp)
+            ) {
+                Text(
+                    text = "修改稿分",
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+
+                YBInput(
+                    text = textFiledState,
+                    onValueChange = {
+                        textFiledState = it
+                    },
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .fillMaxWidth()
+                        .border(0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                        .background(
+                            PageBackgroundColor
+                        ),
+                    isDigitLimit = true,
+                    hint = "请输入稿分",
+                    maxLines = 1,
+                    textStyle = TextStyle(
+                        textAlign = TextAlign.Center,
+                        fontSize = 14.sp, color = MainTextColor
+                    ),
+                    contentAlignment = Alignment.Center,
+                    contentPadding = 8.dp
+                )
+            }
+        },
+        onClose = {
+            showEditScorePop = false
+            textFiledState = ""
+        }
+    )
+
 
 }
 
 @Composable
-private fun TotalRankingItem(rank: Int, rankLine: Int, data: ManuscriptReviewDataEntity) {
+private fun TotalRankingItem(
+    rank: Int,
+    rankLine: Int,
+    data: ManuscriptReviewDataEntity,
+    onItemClick: (Int) -> Unit
+) {
     DataItemCard(
         containerColor = if (rank < rankLine) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.tertiaryContainer
     ) {
@@ -218,7 +308,9 @@ private fun TotalRankingItem(rank: Int, rankLine: Int, data: ManuscriptReviewDat
                                     style = MaterialTheme.typography.labelMedium
                                 )
                             },
-                            onClick = {},
+                            onClick = {
+                                onItemClick.invoke(data.id)
+                            },
 
                             )
                     }

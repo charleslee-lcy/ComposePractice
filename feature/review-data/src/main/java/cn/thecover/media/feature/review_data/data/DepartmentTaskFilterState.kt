@@ -5,7 +5,7 @@ package cn.thecover.media.feature.review_data.data
  *
  */
 
-data class DepartmentDFilterState(
+data class DepartmentTaskFilterState(
  val selectedDate: String = "",
  val sortField: String = "任务完成率"
 )

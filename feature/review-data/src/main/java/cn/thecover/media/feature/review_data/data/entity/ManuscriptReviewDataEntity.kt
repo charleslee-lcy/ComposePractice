@@ -6,6 +6,7 @@ package cn.thecover.media.feature.review_data.data.entity
  */
 
 data class ManuscriptReviewDataEntity(
+    val id: Int = 0,
     val title: String = "",
     val author: String = "",
     val editor: String = "",

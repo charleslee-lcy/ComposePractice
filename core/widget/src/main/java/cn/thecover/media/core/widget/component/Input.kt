@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -62,6 +63,7 @@ fun YBInput(
     isDigitLimit: Boolean = false,
     onValueChange: (String) -> Unit = {},
     contentPadding: Dp = 0.dp,
+    contentAlignment: Alignment= Alignment.CenterStart
 ) {
     val textState = remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
@@ -111,7 +113,8 @@ fun YBInput(
                             end = contentPadding,
                             bottom = if (showCount && maxLength != Int.MAX_VALUE) contentPadding + 14.dp else contentPadding
                         )
-                        .background(Color.Transparent)
+                        .background(Color.Transparent),
+                    contentAlignment = contentAlignment
                 ) {
                     if (textState.value.isEmpty()) {
                         Text(

@@ -137,7 +137,7 @@ private fun ManuscriptTopRankingHeader(viewModel: ReviewDataViewModel) {
     val selectFilterChoice = remember { mutableStateOf("质量分") }
 
     LaunchedEffect(datePickedText, selectFilterChoice) {
-        viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptTopranking)
+        viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptTopRanking)
     }
     // 显示筛选条件卡片，包含排序指数下拉菜单和时间选择器
     DataItemCard {
