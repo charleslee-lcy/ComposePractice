@@ -296,6 +296,8 @@ private fun ManuscriptDiffusionHeader(viewModel: ReviewDataViewModel) {
     // 日期选择器弹窗组件
     YBDatePicker(
         visible = showDatePicker,
+        end = LocalDate.now(),
+        start = LocalDate.of(2024, 1, 1),
         type = DateType.MONTH,
         onCancel = { showDatePicker = false },
         onChange = {

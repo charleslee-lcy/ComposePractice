@@ -119,6 +119,8 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
         visible = showDatePicker,
         type = DateType.MONTH,
         onCancel = { showDatePicker = false },
+        end = LocalDate.now(),
+        start =LocalDate.of(2024, 1, 1),
         onChange = {
             datePickedText = "${it.year}年${it.monthValue}月"
         }

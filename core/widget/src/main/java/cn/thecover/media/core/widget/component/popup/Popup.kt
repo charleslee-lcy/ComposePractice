@@ -82,7 +82,7 @@ fun YBPopup(
         animationSpec = tween(150),
         targetOffsetY = { it }
     ),
-    padding: PaddingValues = PaddingValues(vertical = 12.dp, horizontal = 20.dp),
+    padding: PaddingValues = PaddingValues(vertical = 20.dp, horizontal = 20.dp),
     draggable: Boolean = true,
     isShowTopActionBar: Boolean = false,
     onClose: () -> Unit,
@@ -144,8 +144,8 @@ fun YBPopup(
                             Modifier
                         }
                     )
-                    .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
-                    .background(MaterialTheme.colorScheme.surface)
+                    .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                    .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.extraLarge)
                     .clickableWithoutRipple { }
                     .padding(padding)
                     .onSizeChanged {

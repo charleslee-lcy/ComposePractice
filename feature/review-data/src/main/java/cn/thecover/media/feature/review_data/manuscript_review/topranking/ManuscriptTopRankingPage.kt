@@ -24,17 +24,21 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import cn.thecover.media.core.widget.component.ItemScoreRow
+import cn.thecover.media.core.widget.component.PrimaryItemScoreRow
+import cn.thecover.media.core.widget.component.ScoreItemType
 import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
+import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemDropMenuView
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingRow
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
 import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
+import cn.thecover.media.feature.review_data.data.ManuscriptReviewFilterState
 import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
 import java.time.LocalDate
 
@@ -44,8 +48,8 @@ import java.time.LocalDate
  */
 
 @Composable
-fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
-
+fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel) {
+    val filterState by viewModel.manuscriptTopFilterState.collectAsState()
     val data by viewModel.manuscriptTopRankingState.collectAsState()
     // 创建 MutableState 用于列表组件
     val manus = remember { mutableStateOf(data.manuscripts) }
@@ -60,6 +64,10 @@ fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
         isRefreshing.value = data.isRefreshing
     }
 
+    LaunchedEffect(filterState) {
+        viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptTopRanking)
+    }
+
 
     YBNormalList(
         modifier = Modifier
@@ -71,7 +79,7 @@ fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
         isRefreshing = isRefreshing,
         canLoadMore = canLoadMore,
         header = {
-            ManuscriptTopRankingHeader(viewModel)
+            ManuscriptTopRankingHeader(viewModel,filterState)
         },
         onLoadMore = {
             viewModel.handleReviewDataIntent(ReviewDataIntent.LoadMoreManuscriptReviewData)
@@ -80,8 +88,7 @@ fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
             viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptReviewData)
         }
     ) { item, index ->
-        ManuscriptTopRankingItem(num = index + 1, data = data.manuscripts[index])
-
+        ManuscriptTopRankingItem(num = index + 1, data = data.manuscripts[index], filterChoice = filterState.sortField)
     }
 }
 
@@ -94,7 +101,11 @@ fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
  * @param data 稿件评审数据实体，包含标题、作者、编辑和各项评分信息
  */
 @Composable
-private fun ManuscriptTopRankingItem(num: Int, data: ManuscriptReviewDataEntity) {
+private fun ManuscriptTopRankingItem(
+    num: Int,
+    data: ManuscriptReviewDataEntity,
+    filterChoice: String = ""
+) {
     // 使用排名数据卡片包装内容
     DataItemCard {
         DataItemRankingRow(ranking = num) {
@@ -105,12 +116,28 @@ private fun ManuscriptTopRankingItem(num: Int, data: ManuscriptReviewDataEntity)
                 ManuScriptItemHeader(title = data.title, author = data.author, editor = data.editor)
                 Spacer(Modifier.height(8.dp))
                 // 显示稿件的各项评分数据行
-                ItemScoreRow(
+                PrimaryItemScoreRow(
                     items = arrayOf(
-                        Pair("总分", data.score.toString()),
-                        Pair("基础分", data.basicScore.toString()),
-                        Pair("传播分", data.diffusionScore.toString()),
-                        Pair("质量分", data.qualityScore.toString()),
+                        Triple(
+                            "总分",
+                            data.score.toString(),
+                            if (filterChoice.contains("总分")) ScoreItemType.PRIMARY_WITH_BORDER else ScoreItemType.PRIMARY
+                        ),
+                        Triple(
+                            "基础分",
+                            data.basicScore.toString(),
+                            if (filterChoice.contains("基础分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                        ),
+                        Triple(
+                            "传播分",
+                            data.diffusionScore.toString(),
+                            if (filterChoice.contains("传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                        ),
+                        Triple(
+                            "质量分",
+                            data.qualityScore.toString(),
+                            if (filterChoice.contains("质量分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                        ),
                     )
                 )
             }
@@ -128,17 +155,30 @@ private fun ManuscriptTopRankingItem(num: Int, data: ManuscriptReviewDataEntity)
  *
  */
 @Composable
-private fun ManuscriptTopRankingHeader(viewModel: ReviewDataViewModel) {
-    val currentDate = LocalDate.now()
-    val currentMonthText = "${currentDate.year}年${currentDate.monthValue}月"
+private fun ManuscriptTopRankingHeader(viewModel: ReviewDataViewModel,filterState: ManuscriptReviewFilterState) {
 
+    val dataList = listOf(
+        "总分",
+        "基础分",
+        "传播分",
+        "质量分",
+    )
     var showDatePicker by remember { mutableStateOf(false) }
-    var datePickedText by remember { mutableStateOf(currentMonthText) }
-    val selectFilterChoice = remember { mutableStateOf("质量分") }
 
-    LaunchedEffect(datePickedText, selectFilterChoice) {
-        viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptTopranking)
+    val selectFilterChoice = remember { mutableStateOf(filterState.sortField) }
+
+    LaunchedEffect(selectFilterChoice.value) {
+        if(selectFilterChoice.value!=filterState.sortField){
+            viewModel.handleUIIntent(
+                ReviewUIIntent.UpdateManuscriptTopFilter(
+                    selectFilterChoice.value,
+                    filterState.selectedDate
+                )
+            )
+        }
     }
+
+
     // 显示筛选条件卡片，包含排序指数下拉菜单和时间选择器
     DataItemCard {
         Row(
@@ -148,14 +188,14 @@ private fun ManuscriptTopRankingHeader(viewModel: ReviewDataViewModel) {
             Column(modifier = Modifier.weight(1f)) {
                 Text("排序指数", style = MaterialTheme.typography.labelMedium)
                 Spacer(Modifier.height(8.dp))
-                DataItemDropMenuView(data = selectFilterChoice)
+                DataItemDropMenuView(data = selectFilterChoice, dataList = dataList)
             }
             Spacer(Modifier.width(12.dp))
 
             Column(modifier = Modifier.weight(1f)) {
                 Text("时间", style = MaterialTheme.typography.labelMedium)
                 Spacer(Modifier.height(8.dp))
-                DataItemSelectionView(label = datePickedText, onClick = {
+                DataItemSelectionView(label = filterState.selectedDate, onClick = {
                     showDatePicker = true
                 })
             }
@@ -167,8 +207,10 @@ private fun ManuscriptTopRankingHeader(viewModel: ReviewDataViewModel) {
         visible = showDatePicker,
         type = DateType.MONTH,
         onCancel = { showDatePicker = false },
+        end = LocalDate.now(),
+        start = LocalDate.of(2024, 1, 1),
         onChange = {
-            datePickedText = "${it.year}年${it.monthValue}月"
+           viewModel.handleUIIntent(ReviewUIIntent.UpdateManuscriptTopFilter(state = selectFilterChoice.value, time = "${it.year}年${it.monthValue}月"))
         }
     )
 }
