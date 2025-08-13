@@ -48,15 +48,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.navOptions
 import cn.thecover.media.core.widget.GradientLeftBottom
 import cn.thecover.media.core.widget.GradientLeftTop
+import cn.thecover.media.core.widget.component.YBCoordinatorList
 import cn.thecover.media.core.widget.component.YBImage
-import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.SingleColumnPicker
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
@@ -168,35 +164,32 @@ fun ArchiveScoreScreen(
 ) {
     var showScoreDialog = remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .padding(horizontal = 15.dp)
-            .fillMaxSize()
-    ) {
-        ArchiveScoreHeader()
-        YBNormalList(
-            modifier = Modifier.fillMaxSize(),
-            items = items,
-            isRefreshing = isRefreshing,
-            isLoadingMore = isLoadingMore,
-            canLoadMore = canLoadMore,
-            onRefresh = {
-                onRefresh.invoke()
+    YBCoordinatorList (
+        modifier = Modifier.fillMaxSize(),
+        items = items,
+        isRefreshing = isRefreshing,
+        isLoadingMore = isLoadingMore,
+        canLoadMore = canLoadMore,
+        onRefresh = {
+            onRefresh.invoke()
+        },
+        onLoadMore = {
+            onLoadMore.invoke()
+        },
+        enableCollapsable = true,
+        collapsableContent = {
+            ArchiveScoreHeader()
+        }) { item, index ->
+        ArchiveListItem(
+            modifier = Modifier.padding(horizontal = 15.dp).fillMaxWidth(),
+            item = item,
+            onDetailClick = {
+                navController.navigateToArchiveDetail(item)
             },
-            onLoadMore = {
-                onLoadMore.invoke()
-            }) { item, index ->
-            ArchiveListItem(
-                modifier = Modifier.fillMaxWidth(),
-                item = item,
-                onDetailClick = {
-                    navController.navigateToArchiveDetail(item)
-                },
-                onScoreClick = {
-                    showScoreDialog.value = true
-                }
-            )
-        }
+            onScoreClick = {
+                showScoreDialog.value = true
+            }
+        )
     }
 
     YBPopup(
@@ -417,7 +410,7 @@ private fun ArchiveScoreHeader() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 12.dp),
+            .padding(top = 12.dp, start = 15.dp, end = 15.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         shape = RoundedCornerShape(8.dp),
@@ -533,7 +526,7 @@ private fun ArchiveScoreHeader() {
 
     Card(
         modifier = Modifier
-            .padding(top = 12.dp)
+            .padding(top = 12.dp, start = 15.dp, end = 15.dp)
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
