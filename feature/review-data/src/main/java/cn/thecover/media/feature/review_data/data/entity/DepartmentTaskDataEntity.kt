@@ -1,4 +1,4 @@
-package cn.thecover.media.feature.review_data.data
+package cn.thecover.media.feature.review_data.data.entity
 
 /**
  *  Created by Wing at 10:46 on 2025/8/5
@@ -11,10 +11,4 @@ data class DepartmentTaskDataEntity(
     val taskTotalPersons: Int,
     val taskProgress: Float,
     val taskDesc: String?
-)
-
-data class DepartmentTaskState(
-    val tasks: List<DepartmentTaskDataEntity> = emptyList(),
-    val isLoadingMore: Boolean = false,
-    val isRefreshing: Boolean = false
 )

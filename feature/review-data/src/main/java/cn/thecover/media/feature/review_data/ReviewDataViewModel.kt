@@ -5,12 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
 import cn.thecover.media.feature.review_data.data.DepartmentReviewState
-import cn.thecover.media.feature.review_data.data.DepartmentTaskDataEntity
-import cn.thecover.media.feature.review_data.data.DepartmentTaskState
-import cn.thecover.media.feature.review_data.data.DepartmentTotalDataEntity
-import cn.thecover.media.feature.review_data.data.DiffusionDataEntity
-import cn.thecover.media.feature.review_data.data.ManuscriptReviewDataEntity
+import cn.thecover.media.feature.review_data.data.DepartmentReviewTaskState
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewState
+import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
+import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
+import cn.thecover.media.feature.review_data.data.entity.DiffusionDataEntity
+import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,43 +31,87 @@ class ReviewDataViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    //部门考核数据
+    //部门考核页信息流数据
     private val _departmentReviewDataState = MutableStateFlow(DepartmentReviewState())
-    val departmentReviewDataState: StateFlow<DepartmentReviewState> =
-        _departmentReviewDataState
+    val departmentReviewDataState: StateFlow<DepartmentReviewState> = _departmentReviewDataState
 
-    //部门任务数据
-    private val _departmentTaskDataState = MutableStateFlow(DepartmentTaskState())
-    val departmentTaskDataState: StateFlow<DepartmentTaskState> = _departmentTaskDataState
+    //部门top排行页信息流数据
+    private val _departmentReviewTopState = MutableStateFlow(DepartmentReviewState())
+    val departmentReviewTopState: StateFlow<DepartmentReviewState> = _departmentReviewTopState
 
+    //部门任务页信息流数据
+    private val _departmentTaskDataState = MutableStateFlow(DepartmentReviewTaskState())
+    val departmentTaskDataState: StateFlow<DepartmentReviewTaskState> = _departmentTaskDataState
 
+    //稿件总排行页面数据
     private val _manuscriptReviewData =
         MutableStateFlow(ManuscriptReviewState())
-    val manuscriptReviewData: StateFlow<ManuscriptReviewState> =
+    val manuscriptReviewState: StateFlow<ManuscriptReviewState> =
         _manuscriptReviewData
+
+
+    //稿件top排行页面数据
+    private val _manuscriptReviewTopData =
+        MutableStateFlow(ManuscriptReviewState())
+    val manuscriptTopRankingState: StateFlow<ManuscriptReviewState> =
+        _manuscriptReviewTopData
+
+    //稿件传播排行页面数据
+    private val _manuscriptReviewDiffusionData =
+        MutableStateFlow(ManuscriptReviewState())
+    val manuscriptDiffusionState: StateFlow<ManuscriptReviewState> =
+        _manuscriptReviewDiffusionData
 
 
     fun handleReviewDataIntent(intent: ReviewDataIntent) {
         when (intent) {
-            is ReviewDataIntent.FetchDepartmentReviewData -> {
-                loadDepartmentData(intent.time)
-            }
-
-            is ReviewDataIntent.FetchDepartmentTaskData -> {
-                loadDepartmentTaskData()
-            }
-
-            is ReviewDataIntent.FetchManuscriptReviewData -> {
-                loadManuScriptReviewData()
+            is ReviewDataIntent.RefreshDepartmentReviewData -> {
+                loadDepartmentData()
             }
 
             is ReviewDataIntent.LoadMoreDepartmentTaskData -> {
-                loadMoreDepartmentTaskData()
+                loadDepartmentTaskData(isLoadMore = true)
+            }
+
+            is ReviewDataIntent.LoadMoreDepartmentReviewData -> {
+                loadDepartmentData(isLoadMore = true)
+            }
+
+            ReviewDataIntent.LoadMoreDepartmentTopRanking -> {
+                loadDepartmentData(isLoadMore = true)
+            }
+            ReviewDataIntent.RefreshDepartmentTopRanking ->{
+                loadManuScriptReviewData(isLoadMore = true)
+            }
+
+            is ReviewDataIntent.RefreshDepartmentTaskData -> {
+                loadDepartmentTaskData()
+            }
+
+            is ReviewDataIntent.RefreshManuscriptReviewData -> {
+                loadManuScriptReviewData()
+            }
+            is ReviewDataIntent.LoadMoreManuscriptReviewData -> {
+                loadManuScriptReviewData(isLoadMore = true)
+            }
+
+            ReviewDataIntent.LoadMoreManuscriptDiffusion ->{
+                loadManuScriptReviewData(isLoadMore = true)
+            }
+            ReviewDataIntent.LoadMoreManuscriptReview -> {
+                loadManuScriptReviewData(isLoadMore = true)
+            }
+
+            ReviewDataIntent.RefreshManuscriptDiffusion ->{
+                loadManuScriptReviewData()
+            }
+            ReviewDataIntent.RefreshManuscriptTopranking -> {
+                loadManuScriptReviewData()
             }
         }
     }
 
-    private fun loadManuScriptReviewData() {
+    private fun loadManuScriptReviewData(isLoadMore: Boolean = false) {
         viewModelScope.launch {
             _manuscriptReviewData.value = ManuscriptReviewState(isLoading = true)
             // val result = repository.fetchManuscriptReviewData()
@@ -110,86 +154,86 @@ class ReviewDataViewModel @Inject constructor(
                     )
                 )
             )
+
+            val manuscripts =
+                if (isLoadMore) _manuscriptReviewData.value.manuscripts + result else result
             _manuscriptReviewData.update {
                 it.copy(
                     isLoading = false,
-                    manuscripts = result
+                    manuscripts = manuscripts
                 )
             }
         }
     }
 
-    private fun loadDepartmentTaskData() {
+    private fun loadDepartmentTaskData(isLoadMore: Boolean = false) {
         // 开始加载
-        _departmentTaskDataState.update { it.copy(isRefreshing = true) }
+        _departmentTaskDataState.update {
+            if (isLoadMore) it.copy(isLoading = true) else it.copy(
+                isRefreshing = true
+            )
+        }
 
         viewModelScope.launch {
-            delay(2000L)
-            val departmentTaskData = listOf(
+            delay(500L)
+
+            val result = listOf(
                 DepartmentTaskDataEntity("${Clock.System.now()})", 150, 150, 1f, "扣系数0.1"),
                 DepartmentTaskDataEntity("社会新闻部", 23, 30, 23.toFloat() / 30, "扣系数0.1"),
-                DepartmentTaskDataEntity("教育事业部", 243, 500, 243.toFloat() / 500, "扣系数0.1"),
-                DepartmentTaskDataEntity("科创部", 3, 100, 3 / 100.toFloat(), "扣系数0.1"),
-
-                DepartmentTaskDataEntity("实用生活部", 88, 150, 1f, "扣系数0.1"),
-                DepartmentTaskDataEntity("科技创新部", 99, 300, 23.toFloat() / 30, "扣系数0.1"),
                 DepartmentTaskDataEntity("财经新闻部", 66, 500, 243.toFloat() / 500, "扣系数0.1"),
-                DepartmentTaskDataEntity("国际新闻部", 22, 33, 3 / 100.toFloat(), "扣系数0.1"),)
-
-            _departmentTaskDataState.update {
-                it.copy(isRefreshing = false, tasks = departmentTaskData)
-            }
-        }
-
-    }
-
-    private fun loadMoreDepartmentTaskData() {
-        // 开始加载
-        _departmentTaskDataState.update { it.copy(isLoadingMore = true) }
-
-        viewModelScope.launch {
-            delay(1000L)
-
-            val departmentTaskData =_departmentTaskDataState.value.tasks + listOf(
-                DepartmentTaskDataEntity("时政部", 150, 150, 1f, "扣系数0.1"),
-                DepartmentTaskDataEntity("社会新闻部", 23, 30, 23.toFloat() / 30, "扣系数0.1"),
-                DepartmentTaskDataEntity("教育事业部", 243, 500, 243.toFloat() / 500, "扣系数0.1"),
-                DepartmentTaskDataEntity("科创部", 3, 100, 3 / 100.toFloat(), "扣系数0.1"),)
-
-            _departmentTaskDataState.update {
-                it.copy(isLoadingMore = false, tasks = departmentTaskData)
-            }
-        }
-
-    }
-
-    private fun loadDepartmentData(time: String) {
-        // 开始加载
-        _departmentReviewDataState.update { it.copy(isLoading = true) }
-        val departmentData = listOf(
-            DepartmentTotalDataEntity(
-                departmentRanking = 1,
-                departmentName = "部门1_$time",
-                totalScore = 100,
-                totalPersons = 10,
-                averageScore = 10,
-                totalPayment = 1000
-            ),
-            DepartmentTotalDataEntity(
-                departmentRanking = 2,
-                departmentName = "部门2",
-                totalScore = 100,
-                totalPersons = 10,
-                averageScore = 10,
-                totalPayment = 1000
-            ),
-        )
-        // 加载完成
-        _departmentReviewDataState.update {
-            it.copy(
-                departments = departmentData,
-                isLoading = false
+                DepartmentTaskDataEntity("国际新闻部", 22, 33, 3 / 100.toFloat(), "扣系数0.1"),
             )
+
+            val departmentTaskData =
+                if (isLoadMore) _departmentTaskDataState.value.tasks + result else result
+
+            _departmentTaskDataState.update {
+                it.copy(isRefreshing = false, isLoading = false, tasks = departmentTaskData)
+            }
+        }
+
+    }
+
+    private fun loadDepartmentData( isLoadMore: Boolean = false) {
+        // 开始加载
+        _departmentReviewDataState.update {
+            if (isLoadMore) it.copy(isLoading = true) else it.copy(
+                isRefreshing = true
+            )
+        }
+        viewModelScope.launch {
+            delay(500L)
+
+            val result = listOf(
+                DepartmentTotalDataEntity(
+                    departmentRanking = 1,
+                    departmentName = "部门1",
+                    totalScore = 100,
+                    totalPersons = 10,
+                    averageScore = 10,
+                    totalPayment = 1000
+                ),
+                DepartmentTotalDataEntity(
+                    departmentRanking = 2,
+                    departmentName = "部门2",
+                    totalScore = 100,
+                    totalPersons = 10,
+                    averageScore = 10,
+                    totalPayment = 1000
+                ),
+            )
+
+            val departmentData =
+                if (isLoadMore) _departmentReviewDataState.value.departments + result else result
+
+            // 加载完成
+            _departmentReviewDataState.update {
+                it.copy(
+                    departments = departmentData,
+                    isLoading = false,
+                    isRefreshing = false
+                )
+            }
         }
     }
 

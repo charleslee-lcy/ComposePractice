@@ -1,4 +1,4 @@
-package cn.thecover.media.feature.review_data.data
+package cn.thecover.media.feature.review_data.data.entity
 
 /**
  *  Created by Wing at 09:47 on 2025/8/6
@@ -18,7 +18,4 @@ data class ManuscriptReviewDataEntity(
     )
 )
 
-data class ManuscriptReviewState(
-    val manuscripts: List<ManuscriptReviewDataEntity> = emptyList(),
-    val isLoading: Boolean = false
-)
+

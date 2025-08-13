@@ -1,4 +1,4 @@
-package cn.thecover.media.feature.review_data.manuscript_review
+package cn.thecover.media.feature.review_data.manuscript_review.manuscript_diffusion
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -46,6 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.ItemScoreRow
+import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
@@ -63,7 +64,7 @@ import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRanking
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
 import cn.thecover.media.feature.review_data.basic_widget.widget.ExpandItemColumn
 import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
-import cn.thecover.media.feature.review_data.data.ManuscriptReviewDataEntity
+import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
 import java.time.LocalDate
 
 /**
@@ -81,41 +82,63 @@ import java.time.LocalDate
 fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
 
     // 模拟稿件传播数据列表
-    val data by viewModel.manuscriptReviewData.collectAsState()
+    val data by viewModel.manuscriptDiffusionState.collectAsState()
+    var selectedDate by remember { mutableStateOf("") }
+    var selectedSort by remember { mutableStateOf("") }
 
-    // 使用 LazyColumn 垂直排列页面内容，item 之间间隔 12.dp
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.padding(horizontal = 12.dp)
-    ) {
-        // 显示页面头部组件
-        item {
-            ManuscriptDiffusionHeader(viewModel)
-        }
+    // 创建 MutableState 用于列表组件
+    val manus = remember { mutableStateOf(data.manuscripts) }
+    val isLoadingMore = remember { mutableStateOf(data.isLoading) }
+    val isRefreshing = remember { mutableStateOf(data.isRefreshing) }
+    val canLoadMore = remember { mutableStateOf(true) }
 
-        // 显示记录总数提示文本，其中数字部分使用主色调高亮显示
-        item {
-            Text(
-                text = buildAnnotatedString {
-                    append("共 ")
-                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                        append(data.manuscripts.size.toString())
-                    }
-                    append(" 条记录")
-                },
-                style = MaterialTheme.typography.labelMedium,
-                color = TertiaryTextColor,
-                modifier = Modifier
-                    .padding(start = 12.dp)
-                    .offset(y = (-4).dp)
-            )
-        }
-
-        // 遍历数据列表，为每条数据渲染 DiffusionItem 组件
-        items(data.manuscripts.size) {
-            DiffusionItem(it + 1, data.manuscripts[it])
-        }
+    // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
+    LaunchedEffect(data) {
+        manus.value = data.manuscripts
+        isLoadingMore.value = data.isLoading
+        isRefreshing.value = data.isRefreshing
     }
+
+    YBNormalList(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp),
+        items = manus,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        header = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                ManuscriptDiffusionHeader(viewModel)
+                Text(
+                    text = buildAnnotatedString {
+                        append("共 ")
+                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                            append(data.manuscripts.size.toString())
+                        }
+                        append(" 条记录")
+                    },
+                    style = MaterialTheme.typography.labelMedium,
+                    color = TertiaryTextColor,
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                        .offset(y = (-4).dp)
+                )
+            }
+
+        },
+        isLoadingMore = isLoadingMore,
+        isRefreshing = isRefreshing,
+        canLoadMore = canLoadMore,
+        onLoadMore = {
+            viewModel.handleReviewDataIntent(ReviewDataIntent.LoadMoreManuscriptDiffusion)
+        },
+        onRefresh = {
+            viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptDiffusion)
+        }
+    ) { item, index ->
+
+        DiffusionItem(index, item)
+    }
+
 }
 
 
@@ -219,7 +242,7 @@ private fun ManuscriptDiffusionHeader(viewModel: ReviewDataViewModel) {
     var searchText by remember { mutableStateOf("") }
 
     LaunchedEffect(selectSearchChoice, searchText, datePickedText) {
-        viewModel.handleReviewDataIntent(ReviewDataIntent.FetchManuscriptReviewData(datePickedText))
+        viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptDiffusion)
     }
 
     // 主体内容卡片容器

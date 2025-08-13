@@ -2,13 +2,26 @@ package cn.thecover.media.feature.review_data.basic_widget.intent
 
 /**
  *  Created by Wing at 14:44 on 2025/8/8
- *  数据考核意图管理
+ *  数据考核列表数据意图管理
  */
 
 sealed class ReviewDataIntent {
 
-    data class FetchDepartmentReviewData(val time: String) : ReviewDataIntent()
-    data class FetchDepartmentTaskData(val time: String) : ReviewDataIntent()
-    data class LoadMoreDepartmentTaskData(val time: String) : ReviewDataIntent()
-    data class FetchManuscriptReviewData(val time: String) : ReviewDataIntent()
+    data object RefreshDepartmentReviewData : ReviewDataIntent()
+    data object LoadMoreDepartmentReviewData : ReviewDataIntent()
+
+    data object RefreshDepartmentTaskData : ReviewDataIntent()
+    data object LoadMoreDepartmentTaskData : ReviewDataIntent()
+
+    data object RefreshDepartmentTopRanking: ReviewDataIntent()
+    data object LoadMoreDepartmentTopRanking: ReviewDataIntent()
+
+    data object RefreshManuscriptReviewData : ReviewDataIntent()
+    data object LoadMoreManuscriptReviewData : ReviewDataIntent()
+
+    data object RefreshManuscriptTopranking: ReviewDataIntent()
+    data object LoadMoreManuscriptReview : ReviewDataIntent()
+
+    data object RefreshManuscriptDiffusion : ReviewDataIntent()
+    data object LoadMoreManuscriptDiffusion : ReviewDataIntent()
 }

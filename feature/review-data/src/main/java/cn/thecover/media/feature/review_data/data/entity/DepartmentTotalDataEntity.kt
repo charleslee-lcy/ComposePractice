@@ -1,4 +1,4 @@
-package cn.thecover.media.feature.review_data.data
+package cn.thecover.media.feature.review_data.data.entity
 
 /**
  *  Created by Wing at 15:55 on 2025/8/4
@@ -14,8 +14,3 @@ data class DepartmentTotalDataEntity(
     val totalPayment: Int = 0
 )
 
-data class DepartmentReviewState(
-    val departments: List<DepartmentTotalDataEntity> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null
-)

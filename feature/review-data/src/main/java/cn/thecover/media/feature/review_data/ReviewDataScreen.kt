@@ -40,8 +40,7 @@ import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
-import cn.thecover.media.feature.review_data.navigation.DepartmentReviewRoute
-import cn.thecover.media.feature.review_data.navigation.DepartmentTaskReviewRoute
+import cn.thecover.media.feature.review_data.navigation.ManuscriptReviewRoute
 import cn.thecover.media.feature.review_data.navigation.ReviewDataNavigationType
 import cn.thecover.media.feature.review_data.navigation.reviewDataPage
 
@@ -66,11 +65,13 @@ internal fun ReviewDataScreen(
     routeToMsgScreen: () -> Unit = {},
 ) {
     val reviewNavController = rememberNavController()
+    val actualStartDestination =  ManuscriptReviewRoute
+
     Column {
         TopBar(reviewNavController, routeToMsgScreen)
         NavHost(
             navController = reviewNavController,
-            startDestination = DepartmentReviewRoute,
+            startDestination = actualStartDestination,
             modifier = modifier.padding(top = 12.dp)
         ) {
             reviewDataPage()

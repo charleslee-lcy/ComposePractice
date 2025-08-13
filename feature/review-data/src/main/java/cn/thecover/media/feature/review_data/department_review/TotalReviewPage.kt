@@ -1,19 +1,15 @@
 package cn.thecover.media.feature.review_data.department_review
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import cn.thecover.media.core.widget.component.ItemScoreRow
+import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -62,32 +59,58 @@ internal fun DepartmentReviewScreen(
 ) {
     val depart by viewmodel.departmentReviewDataState.collectAsState()
     // 创建部门数据列表
+    // 父组件中存储选中的日期
+    var selectedDate by remember { mutableStateOf("") }
+    var selectedSort by remember { mutableStateOf("部门总稿费") }
 
-    // 构建屏幕UI布局
-    Surface(modifier = Modifier.padding(horizontal = 16.dp)) {
-        LazyColumn(
-            modifier = modifier
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
+    // 创建 MutableState 用于列表组件
+    val departmentList = remember { mutableStateOf(depart.departments) }
+    val isLoadingMore = remember { mutableStateOf(depart.isLoading) }
+    val isRefreshing = remember { mutableStateOf(depart.isRefreshing) }
+    val canLoadMore = remember { mutableStateOf(true) }
 
-            // 添加部门总览头部组件
-            item { DepartmentTotalHeader(viewmodel) }
+    // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
+    LaunchedEffect(depart) {
+        departmentList.value = depart.departments
+        isLoadingMore.value = depart.isLoading
+        isRefreshing.value = depart.isRefreshing
+    }
 
-            // 为每个部门数据项添加评审项组件
-            items(depart.departments) {
-                DepartmentReviewItem(
-                    it.departmentRanking,
-                    it.departmentName,
-                    it.totalPayment,
-                    it.totalPersons,
-                    it.averageScore,
-                    it.totalScore
-                )
+
+    YBNormalList(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxHeight(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        items = departmentList,
+        isLoadingMore = isLoadingMore,
+        isRefreshing = isRefreshing,
+        canLoadMore = canLoadMore,
+        onLoadMore = {
+            viewmodel.handleReviewDataIntent(
+                ReviewDataIntent.LoadMoreDepartmentReviewData
+            )
+        },
+        onRefresh = {
+            viewmodel.handleReviewDataIntent(
+                ReviewDataIntent.RefreshDepartmentReviewData
+            )
+        },
+        header = {
+            DepartmentTotalHeader(viewmodel){date,sort->
+                selectedDate = date
+                selectedSort=sort
             }
         }
-
+    ) { it, index ->
+        DepartmentReviewItem(
+            it.departmentRanking,
+            it.departmentName,
+            it.totalPayment,
+            it.totalPersons,
+            it.averageScore,
+            it.totalScore
+        )
     }
 }
 
@@ -100,7 +123,10 @@ internal fun DepartmentReviewScreen(
  *
  */
 @Composable
-private fun DepartmentTotalHeader(viewModel: ReviewDataViewModel= hiltViewModel<ReviewDataViewModel>()) {
+private fun DepartmentTotalHeader(
+    viewModel: ReviewDataViewModel = hiltViewModel<ReviewDataViewModel>(),
+    onDataChanged: (String, String) -> Unit = {_,_->}
+) {
 
     val currentDate = LocalDate.now()
     val currentMonthText = "${currentDate.year}年${currentDate.monthValue}月"
@@ -109,9 +135,11 @@ private fun DepartmentTotalHeader(viewModel: ReviewDataViewModel= hiltViewModel<
     var datePickedText by remember { mutableStateOf(currentMonthText) }
     val selectFilterChoice = remember { mutableStateOf("部门总稿费") }
 
-    LaunchedEffect(datePickedText,selectFilterChoice.value) {
-        viewModel.handleReviewDataIntent(ReviewDataIntent.FetchDepartmentReviewData(datePickedText))
+    LaunchedEffect(datePickedText, selectFilterChoice.value) {
+        onDataChanged(datePickedText, selectFilterChoice.value)
+        viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshDepartmentReviewData)
     }
+
 
     // 创建数据项卡片容器，包含排序指数和时间选择两个主要功能区域
     DataItemCard {
