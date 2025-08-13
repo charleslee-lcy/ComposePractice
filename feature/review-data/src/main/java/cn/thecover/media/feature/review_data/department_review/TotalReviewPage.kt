@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import cn.thecover.media.core.widget.component.ItemScoreRow
+import cn.thecover.media.core.widget.component.PrimaryItemScoreRow
+import cn.thecover.media.core.widget.component.ScoreItemType
 import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
@@ -32,6 +34,7 @@ import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
+import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemDropMenuView
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingRow
@@ -59,9 +62,6 @@ internal fun DepartmentReviewScreen(
 ) {
     val depart by viewmodel.departmentReviewDataState.collectAsState()
     // 创建部门数据列表
-    // 父组件中存储选中的日期
-    var selectedDate by remember { mutableStateOf("") }
-    var selectedSort by remember { mutableStateOf("部门总稿费") }
 
     // 创建 MutableState 用于列表组件
     val departmentList = remember { mutableStateOf(depart.departments) }
@@ -97,10 +97,7 @@ internal fun DepartmentReviewScreen(
             )
         },
         header = {
-            DepartmentTotalHeader(viewmodel){date,sort->
-                selectedDate = date
-                selectedSort=sort
-            }
+            DepartmentTotalHeader(viewmodel)
         }
     ) { it, index ->
         DepartmentReviewItem(
@@ -109,7 +106,8 @@ internal fun DepartmentReviewScreen(
             it.totalPayment,
             it.totalPersons,
             it.averageScore,
-            it.totalScore
+            it.totalScore,
+            viewmodel.departmentDataFilterState.collectAsState().value.sortField
         )
     }
 }
@@ -124,22 +122,34 @@ internal fun DepartmentReviewScreen(
  */
 @Composable
 private fun DepartmentTotalHeader(
-    viewModel: ReviewDataViewModel = hiltViewModel<ReviewDataViewModel>(),
-    onDataChanged: (String, String) -> Unit = {_,_->}
-) {
+    viewModel: ReviewDataViewModel ,
 
-    val currentDate = LocalDate.now()
-    val currentMonthText = "${currentDate.year}年${currentDate.monthValue}月"
+    ) {
+
+    val filterState by viewModel.departmentDataFilterState.collectAsState()
 
     var showDatePicker by remember { mutableStateOf(false) }
-    var datePickedText by remember { mutableStateOf(currentMonthText) }
-    val selectFilterChoice = remember { mutableStateOf("部门总稿费") }
 
-    LaunchedEffect(datePickedText, selectFilterChoice.value) {
-        onDataChanged(datePickedText, selectFilterChoice.value)
+    val selectFilterChoice = remember(filterState) {
+        mutableStateOf(filterState.sortField)
+    }
+
+    // 当用户更改选择时更新 ViewModel
+    LaunchedEffect(filterState) {
+        // 确保只有当值发生变化时才发送 intent
         viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshDepartmentReviewData)
     }
 
+    LaunchedEffect(selectFilterChoice.value) {
+        if(selectFilterChoice.value!=filterState.sortField){
+            viewModel.handleUIIntent(
+                ReviewUIIntent.UpdateDepartmentDataFilter(
+                    selectFilterChoice.value,
+                    filterState.selectedDate
+                )
+            )
+        }
+    }
 
     // 创建数据项卡片容器，包含排序指数和时间选择两个主要功能区域
     DataItemCard {
@@ -151,7 +161,10 @@ private fun DepartmentTotalHeader(
             Column(modifier = Modifier.weight(1f)) {
                 Text("排序指数", style = MaterialTheme.typography.labelMedium)
                 Spacer(Modifier.height(8.dp))
-                DataItemDropMenuView(data = selectFilterChoice)
+                DataItemDropMenuView(
+                    data = selectFilterChoice,
+                    dataList = listOf("部门总稿费", "部门总人数", "部门人员平均分", "部门总分")
+                )
             }
             Spacer(Modifier.width(12.dp))
 
@@ -159,7 +172,7 @@ private fun DepartmentTotalHeader(
             Column(modifier = Modifier.weight(1f)) {
                 Text("时间", style = MaterialTheme.typography.labelMedium)
                 Spacer(Modifier.height(8.dp))
-                DataItemSelectionView(label = datePickedText, onClick = {
+                DataItemSelectionView(label = filterState.selectedDate, onClick = {
                     showDatePicker = true
                 })
             }
@@ -171,8 +184,10 @@ private fun DepartmentTotalHeader(
         visible = showDatePicker,
         type = DateType.MONTH,
         onCancel = { showDatePicker = false },
+        end = LocalDate.now(),
+        start =LocalDate.of(2024, 1, 1),
         onChange = {
-            datePickedText = "${it.year}年${it.monthValue}月"
+            viewModel.handleUIIntent(ReviewUIIntent.UpdateDepartmentDataFilter(selectFilterChoice.value, "${it.year}年${it.monthValue}月"))
         }
     )
 }
@@ -192,6 +207,7 @@ private fun DepartmentReviewItem(
     totalPersonNumber: Int = 0,
     totalScore: Int = 0,
     averageScore: Int = 0,
+    filterText: String = ""
 ) {
     // 显示部门排名卡片
     DataItemCard {
@@ -200,22 +216,30 @@ private fun DepartmentReviewItem(
                 // 显示部门名称
                 Text(name, color = MainTextColor, style = MaterialTheme.typography.titleMedium)
                 // 显示评审数据项得分行，包含总稿费、总人数、人员平均分和总分
-                ItemScoreRow(
+                PrimaryItemScoreRow(
                     items = arrayOf(
-                        Pair(
-                            "总稿费", totalPayment.toString()
+                        Triple(
+                            "总稿费",
+                            totalPayment.toString(),
+                            if (filterText.contains("总稿费")) ScoreItemType.PRIMARY_WITH_BORDER else ScoreItemType.PRIMARY
                         ),
-                        Pair(
-                            "总人数", totalPersonNumber.toString()
+                        Triple(
+                            "总人数",
+                            totalPersonNumber.toString(),
+                            if (filterText.contains("总人数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                         ),
-                        Pair(
-                            "人员平均分", averageScore.toString()
+                        Triple(
+                            "人员平均分",
+                            averageScore.toString(),
+                            if (filterText.contains("人员平均分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                         ),
-                        Pair(
-                            "总分", totalScore.toString()
-                        )
+                        Triple(
+                            "总分",
+                            totalScore.toString(),
+                            if (filterText.contains("总分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                        ),
 
-                    )
+                        )
                 )
             }
         }

@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.review_data.manuscript_review.review
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -69,6 +70,7 @@ import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
 import cn.thecover.media.core.widget.component.popup.YBPopup
 import cn.thecover.media.core.widget.component.search.FilterSearchTextField
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
+import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
@@ -97,7 +99,7 @@ internal fun ManuscriptReviewPage(
     modifier: Modifier = Modifier,
     viewModel: ReviewDataViewModel = hiltViewModel()
 ) {
-    val splitsNum = 1
+    val splitsNum = 2
     val data by viewModel.manuscriptReviewState.collectAsState()
     // 使用 LazyColumn 垂直排列页面内容，item 之间间隔 12.dp
 
@@ -123,10 +125,10 @@ internal fun ManuscriptReviewPage(
         items = manus,
         isLoadingMore = isLoadingMore,
         isRefreshing = isRefreshing,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+
         canLoadMore = canLoadMore,
         header = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(modifier = Modifier.fillMaxWidth().background(color = MaterialTheme.colorScheme.background)){
                 ManuscriptTotalRankingHeader(viewModel = viewModel)
                 Text(
                     text = buildAnnotatedString {
@@ -287,19 +289,22 @@ private fun TotalRankingItem(
                         )
 
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            "改",
-                            modifier = Modifier
-                                .background(
-                                    shape = MaterialTheme.shapes.extraSmall,
-                                    color = MaterialTheme.colorScheme.error.copy(0.1f)
-                                )
-                                .size(16.dp)
-                                .padding(top = 2.dp),
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.labelSmall,
-                            textAlign = TextAlign.Center
-                        )
+                        AnimatedVisibility(data.isEdited){
+                            Text(
+                                "改",
+                                modifier = Modifier
+                                    .background(
+                                        shape = MaterialTheme.shapes.extraSmall,
+                                        color = MaterialTheme.colorScheme.error.copy(0.1f)
+                                    )
+                                    .size(16.dp)
+                                    .padding(top = 2.dp),
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.labelSmall,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+
                         Spacer(modifier = Modifier.weight(1f))
                         YBButton(
                             content = {
@@ -321,7 +326,7 @@ private fun TotalRankingItem(
                     qualityScore = data.qualityScore,
                     diffusionScore = data.diffusionScore
                 )
-            })
+            }, expandIconRes =if (rank < rankLine) YBIcons.Custom.Expand else YBIcons.Custom.ExpandVariant)
         }
     }
 }
@@ -415,7 +420,7 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
                     Spacer(Modifier.height(8.dp))
                     DataItemDropMenuView(
                         data = selectFilterChoice, dataList = listOf(
-                            "全部",
+                            "全部","分割线以上","分割线以下(清零)"
                         )
                     )
                 }
@@ -446,6 +451,8 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
         visible = showDatePicker,
         type = DateType.MONTH,
         onCancel = { showDatePicker = false },
+        end = LocalDate.now(),
+        start =LocalDate.of(2024, 1, 1),
         onChange = {
             datePickedText = "${it.year}年${it.monthValue}月"
         }

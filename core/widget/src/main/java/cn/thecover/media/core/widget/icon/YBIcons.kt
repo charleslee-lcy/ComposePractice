@@ -73,6 +73,7 @@ object YBIcons {
         val PasswordHide= R.drawable.icon_watch_banned
         val BackArrow= R.drawable.icon_back_arrow
         val Expand= R.drawable.icon_expand_down
+        val ExpandVariant= R.drawable.icon_expand_variant
         val Msg= R.drawable.icon_message
     }
     object Background {

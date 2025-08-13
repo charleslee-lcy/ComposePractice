@@ -1,10 +1,12 @@
 package cn.thecover.media.feature.review_data.navigation
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import cn.thecover.media.feature.review_data.ReviewDataRoute
+import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.department_review.DepartmentReviewScreen
 import cn.thecover.media.feature.review_data.department_review.DepartmentTaskReviewPage
 import cn.thecover.media.feature.review_data.department_review.DepartmentTopRankingPage
@@ -84,24 +86,24 @@ fun NavGraphBuilder.reviewDataScreen(routeToMsgScreen:()-> Unit) {
  * 在导航图中注册多个 ReviewData 相关子页面。
  * 包括部门和稿件相关的多个页面路由。
  */
-fun NavGraphBuilder.reviewDataPage() {
+fun NavGraphBuilder.reviewDataPage(viewModel: ReviewDataViewModel ) {
     composable<DepartmentReviewRoute> {
-        DepartmentReviewScreen()
+        DepartmentReviewScreen(viewmodel = viewModel)
     }
     composable<DepartmentTaskReviewRoute> {
-        DepartmentTaskReviewPage()
+        DepartmentTaskReviewPage(viewModel = viewModel)
     }
     composable<DepartmentTopRankingRoute> {
-        DepartmentTopRankingPage()
+        DepartmentTopRankingPage(viewModel = viewModel)
     }
     composable<ManuscriptTopRoute> {
-        ManuscriptTopRankingPage()
+        ManuscriptTopRankingPage(viewModel = viewModel)
     }
     composable<ManuscriptReviewRoute> {
-        ManuscriptReviewPage()
+        ManuscriptReviewPage(viewModel = viewModel)
     }
     composable<ManuscriptDiffusionRoute> {
-        ManuscriptDiffusionPage()
+        ManuscriptDiffusionPage(viewModel = viewModel)
     }
 }
 

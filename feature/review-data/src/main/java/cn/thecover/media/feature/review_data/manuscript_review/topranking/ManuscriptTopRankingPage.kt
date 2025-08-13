@@ -132,13 +132,24 @@ private fun ManuscriptTopRankingHeader(viewModel: ReviewDataViewModel) {
     val currentDate = LocalDate.now()
     val currentMonthText = "${currentDate.year}年${currentDate.monthValue}月"
 
+    val dataList=listOf(
+        "总分",
+        "基础分",
+        "传播分",
+        "质量分",
+    )
     var showDatePicker by remember { mutableStateOf(false) }
     var datePickedText by remember { mutableStateOf(currentMonthText) }
     val selectFilterChoice = remember { mutableStateOf("质量分") }
 
+
     LaunchedEffect(datePickedText, selectFilterChoice) {
+
         viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptTopRanking)
     }
+
+
+
     // 显示筛选条件卡片，包含排序指数下拉菜单和时间选择器
     DataItemCard {
         Row(
@@ -148,7 +159,7 @@ private fun ManuscriptTopRankingHeader(viewModel: ReviewDataViewModel) {
             Column(modifier = Modifier.weight(1f)) {
                 Text("排序指数", style = MaterialTheme.typography.labelMedium)
                 Spacer(Modifier.height(8.dp))
-                DataItemDropMenuView(data = selectFilterChoice)
+                DataItemDropMenuView(data = selectFilterChoice, dataList = dataList)
             }
             Spacer(Modifier.width(12.dp))
 
@@ -167,6 +178,8 @@ private fun ManuscriptTopRankingHeader(viewModel: ReviewDataViewModel) {
         visible = showDatePicker,
         type = DateType.MONTH,
         onCancel = { showDatePicker = false },
+        end = LocalDate.now(),
+        start =LocalDate.of(2024, 1, 1),
         onChange = {
             datePickedText = "${it.year}年${it.monthValue}月"
         }

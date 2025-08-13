@@ -86,7 +86,8 @@ internal fun DataItemCard(
 internal fun ExpandItemColumn(
     offset: Int = 0,
     content: @Composable () -> Unit,
-    foldContent: @Composable () -> Unit
+    foldContent: @Composable () -> Unit,
+    expandIconRes: Int= YBIcons.Custom.Expand
 ) {
     var expand by remember { mutableStateOf(false) }
     val animRotate = remember {
@@ -121,7 +122,7 @@ internal fun ExpandItemColumn(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                painter = painterResource(YBIcons.Custom.Expand),
+                painter = painterResource(expandIconRes),
                 "折叠展开按钮",
                 modifier = Modifier.rotate(animRotate.value),
                 tint = Color.Unspecified

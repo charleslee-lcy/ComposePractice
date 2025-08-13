@@ -10,6 +10,7 @@ data class ManuscriptReviewDataEntity(
     val title: String = "",
     val author: String = "",
     val editor: String = "",
+    val isEdited: Boolean = false,
     val score: Int = 0,//稿件总分
     val basicScore: Int = 0,//基础分
     val qualityScore: Int = 0,//质量分

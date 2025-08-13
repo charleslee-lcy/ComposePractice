@@ -56,13 +56,14 @@ internal fun ReviewDataRoute(
     viewModel: ReviewDataViewModel = hiltViewModel(),
     routeToMsgScreen: () -> Unit = {},
 ) {
-    ReviewDataScreen(modifier = modifier, routeToMsgScreen = routeToMsgScreen)
+    ReviewDataScreen(modifier = modifier, routeToMsgScreen = routeToMsgScreen,viewModel)
 }
 
 @Composable
 internal fun ReviewDataScreen(
     modifier: Modifier = Modifier,
     routeToMsgScreen: () -> Unit = {},
+    viewModel: ReviewDataViewModel = hiltViewModel(),
 ) {
     val reviewNavController = rememberNavController()
     val actualStartDestination =  ManuscriptReviewRoute
@@ -74,7 +75,7 @@ internal fun ReviewDataScreen(
             startDestination = actualStartDestination,
             modifier = modifier.padding(top = 12.dp)
         ) {
-            reviewDataPage()
+            reviewDataPage(viewModel = viewModel)
         }
     }
 }

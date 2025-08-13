@@ -4,8 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
+import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
 import cn.thecover.media.feature.review_data.data.DepartmentReviewState
 import cn.thecover.media.feature.review_data.data.DepartmentReviewTaskState
+import cn.thecover.media.feature.review_data.data.DepartmentFilterState
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewState
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
@@ -61,6 +63,9 @@ class ReviewDataViewModel @Inject constructor(
         MutableStateFlow(ManuscriptReviewState())
     val manuscriptDiffusionState: StateFlow<ManuscriptReviewState> =
         _manuscriptReviewDiffusionData
+
+    private val _departmentDataFilterState = MutableStateFlow(DepartmentFilterState())
+    val departmentDataFilterState = _departmentDataFilterState
 
 
     fun handleReviewDataIntent(intent: ReviewDataIntent) {
@@ -127,12 +132,26 @@ class ReviewDataViewModel @Inject constructor(
         }
     }
 
+
+    fun handleUIIntent(intent: ReviewUIIntent) {
+        when (intent) {
+            is ReviewUIIntent.UpdateDepartmentDataFilter -> {
+                _departmentDataFilterState.update {state ->
+                    state.copy(
+                        selectedDate = intent.time,
+                        sortField = intent.state
+                    )
+                }
+            }
+        }
+    }
+
     private fun updateManuscriptScore(id: Int, newScore: Int) {
         _manuscriptReviewData.update { currentState ->
             val updatedManuscripts = currentState.manuscripts.map { manuscript ->
                 if (manuscript.id == id) {
                     // 创建新的对象，更新分数
-                    manuscript.copy(score = newScore)
+                    manuscript.copy(score = newScore, isEdited = true)
                 } else {
                     manuscript
                 }
@@ -156,6 +175,19 @@ class ReviewDataViewModel @Inject constructor(
             diffusionScore = 5,
             diffusionDataEntity = DiffusionDataEntity(
                 28888, 288888, 222, 222, 222, 222, 222, 222, 222
+            )
+        ),
+        ManuscriptReviewDataEntity(
+            id = 11,
+            title = "流浪地球",
+            author = "刘慈欣",
+            editor = "王伟",
+            score = 4,
+            basicScore = 3,
+            qualityScore = 4,
+            diffusionScore = 5,
+            diffusionDataEntity = DiffusionDataEntity(
+                2888, 288888, 222, 222, 222, 222, 222, 222, 222
             )
         ),
         ManuscriptReviewDataEntity(
@@ -227,7 +259,7 @@ class ReviewDataViewModel @Inject constructor(
             val result = manuscriptTestData
 
             val manuscripts =
-                if (isLoadMore) _manuscriptReviewData.value.manuscripts + result else result
+                if (isLoadMore) (_manuscriptReviewData.value.manuscripts + result) else result
             _manuscriptReviewData.update {
                 it.copy(
                     isLoading = false,
