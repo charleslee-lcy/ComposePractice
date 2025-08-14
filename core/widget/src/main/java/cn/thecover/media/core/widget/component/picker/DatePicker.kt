@@ -1,7 +1,6 @@
 package cn.thecover.media.core.widget.component.picker
 
 
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
@@ -44,8 +43,8 @@ fun YBDatePicker(
     title: String = "选择日期",
     value: LocalDate? = null,
     type: DateType = DateType.DAY,
-    start: LocalDate = LocalDate.now().minusYears(50),
-    end: LocalDate = LocalDate.now().plusYears(10),
+    start: LocalDate = LocalDate.of(2024, 1, 1),
+    end: LocalDate = LocalDate.now(),
     onCancel: () -> Unit,
     onChange: (LocalDate) -> Unit
 ) {

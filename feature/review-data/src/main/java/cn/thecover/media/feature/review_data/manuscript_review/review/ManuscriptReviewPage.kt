@@ -10,7 +10,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,15 +19,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -50,7 +44,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,7 +51,6 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastCoerceAtLeast
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.YBButton
@@ -80,6 +72,7 @@ import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.basic_widget.ReviewDataImages
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
+import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemDropMenuView
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingRow
@@ -109,7 +102,6 @@ internal fun ManuscriptReviewPage(
     val isLoadingMore = remember { mutableStateOf(data.isLoading) }
     val isRefreshing = remember { mutableStateOf(data.isRefreshing) }
     val canLoadMore = remember { mutableStateOf(true) }
-
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(data) {
         manus.value = data.manuscripts
@@ -118,16 +110,20 @@ internal fun ManuscriptReviewPage(
     }
 
     YBNormalList(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp),
+        modifier = modifier
+            .fillMaxWidth(),
         items = manus,
         isLoadingMore = isLoadingMore,
         isRefreshing = isRefreshing,
 
         canLoadMore = canLoadMore,
         header = {
-            Column(modifier = Modifier.fillMaxWidth().background(color = MaterialTheme.colorScheme.background)){
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 12.dp)
+                    .fillMaxWidth()
+                    .background(color = MaterialTheme.colorScheme.background)
+            ) {
                 ManuscriptTotalRankingHeader(viewModel = viewModel)
                 Text(
                     text = buildAnnotatedString {
@@ -269,63 +265,68 @@ private fun TotalRankingItem(
         DataItemRankingRow(
             ranking = rank,
         ) {
-            ExpandItemColumn(offset = -12, content = {
-                Column {
-                    // 显示稿件头部信息：标题、作者、编辑
-                    ManuScriptItemHeader(
-                        title = data.title,
-                        author = data.author,
-                        editor = data.editor
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            data.score.toString(),
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.primary
+            ExpandItemColumn(
+                offset = -12,
+                content = {
+                    Column {
+                        // 显示稿件头部信息：标题、作者、编辑
+                        ManuScriptItemHeader(
+                            title = data.title,
+                            author = data.author,
+                            editor = data.editor
                         )
-
-                        Spacer(modifier = Modifier.width(8.dp))
-                        AnimatedVisibility(data.isEdited){
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
-                                "改",
-                                modifier = Modifier
-                                    .background(
-                                        shape = MaterialTheme.shapes.extraSmall,
-                                        color = MaterialTheme.colorScheme.error.copy(0.1f)
-                                    )
-                                    .size(16.dp)
-                                    .padding(top = 2.dp),
-                                color = MaterialTheme.colorScheme.error,
-                                style = MaterialTheme.typography.labelSmall,
-                                textAlign = TextAlign.Center
+                                data.score.toString(),
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.primary
                             )
-                        }
 
-                        Spacer(modifier = Modifier.weight(1f))
-                        YBButton(
-                            content = {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            AnimatedVisibility(data.isEdited) {
                                 Text(
-                                    "修改稿分",
-                                    style = MaterialTheme.typography.labelMedium
+                                    "改",
+                                    modifier = Modifier
+                                        .background(
+                                            shape = MaterialTheme.shapes.extraSmall,
+                                            color = MaterialTheme.colorScheme.error.copy(0.1f)
+                                        )
+                                        .size(16.dp)
+                                        .padding(top = 2.dp),
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    textAlign = TextAlign.Center
                                 )
-                            },
-                            onClick = {
-                                onItemClick.invoke(data.id)
-                            },
+                            }
 
-                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            YBButton(
+                                content = {
+                                    Text(
+                                        "修改稿分",
+                                        style = MaterialTheme.typography.labelMedium
+                                    )
+                                },
+                                onClick = {
+                                    onItemClick.invoke(data.id)
+                                },
+
+                                )
+                        }
                     }
-                }
-            }, foldContent = {
-                ItemFoldedView(
-                    basicScore = data.basicScore,
-                    qualityScore = data.qualityScore,
-                    diffusionScore = data.diffusionScore
-                )
-            }, expandIconRes =if (rank < rankLine) YBIcons.Custom.Expand else YBIcons.Custom.ExpandVariant)
+                },
+                foldContent = {
+                    ItemFoldedView(
+                        basicScore = data.basicScore,
+                        qualityScore = data.qualityScore,
+                        diffusionScore = data.diffusionScore
+                    )
+                },
+                expandIconRes = if (rank < rankLine) YBIcons.Custom.Expand else YBIcons.Custom.ExpandVariant
+            )
         }
     }
 }
@@ -388,22 +389,29 @@ private fun ItemFoldedView(
  */
 @Composable
 private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
-    // 获取当前日期并格式化为“年月”文本，作为默认显示的时间
-    val currentDate = LocalDate.now()
-    val currentMonthText = "${currentDate.year}年${currentDate.monthValue}月"
 
+    val filterState by viewModel.manuscriptReviewFilterState.collectAsState()
     // 控制日期选择器弹窗的显示状态
     var showDatePicker by remember { mutableStateOf(false) }
-    // 存储用户选择的日期文本
-    var datePickedText by remember { mutableStateOf(currentMonthText) }
-    // 存储用户选择的排序字段
-    val selectFilterChoice = remember { mutableStateOf("全部") }
-    // 存储用户选择的搜索字段
-    val selectSearchChoice = remember { mutableStateOf("稿件标题") }
 
-    var searchText by remember { mutableStateOf("") }
-    LaunchedEffect(selectFilterChoice, datePickedText, searchText) {
+    // 存储用户选择的排序字段
+    val selectFilterChoice = remember { mutableStateOf(filterState.sortField) }
+    // 存储用户选择的搜索字段
+    val selectSearchChoice = remember { mutableStateOf(filterState.searchField) }
+
+
+    LaunchedEffect(filterState) {
         viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptReviewData)
+    }
+
+    LaunchedEffect(selectFilterChoice.value) {
+        if (selectFilterChoice.value != filterState.sortField) {
+            viewModel.handleUIIntent(
+                ReviewUIIntent.UpdateManuscriptReviewFilter(
+                    state = selectFilterChoice.value,
+                )
+            )
+        }
     }
     // 主体内容卡片容器
     DataItemCard {
@@ -419,7 +427,7 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
                     Spacer(Modifier.height(8.dp))
                     DataItemDropMenuView(
                         data = selectFilterChoice, dataList = listOf(
-                            "全部","分割线以上","分割线以下(清零)"
+                            "全部", "分割线以上", "分割线以下(清零)"
                         )
                     )
                 }
@@ -429,7 +437,7 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text("时间", style = MaterialTheme.typography.labelMedium)
                     Spacer(Modifier.height(8.dp))
-                    DataItemSelectionView(label = datePickedText, onClick = {
+                    DataItemSelectionView(label = filterState.selectedDate, onClick = {
                         showDatePicker = true
                     })
                 }
@@ -440,7 +448,12 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
                 data = selectSearchChoice, label = "请输入搜索内容", dataList = listOf(
                     "稿件标题", "稿件作者", "稿件编辑"
                 ), onValueChange = { key, searchValue ->
-                    searchText = searchValue
+                    viewModel.handleUIIntent(
+                        ReviewUIIntent.UpdateManuscriptReviewFilter(
+                            searchType = key,
+                            searchText = searchValue
+                        )
+                    )
                 })
         }
     }
@@ -451,9 +464,9 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
         type = DateType.MONTH,
         onCancel = { showDatePicker = false },
         end = LocalDate.now(),
-        start =LocalDate.of(2024, 1, 1),
+        start = LocalDate.of(2024, 1, 1),
         onChange = {
-            datePickedText = "${it.year}年${it.monthValue}月"
+            viewModel.handleUIIntent(ReviewUIIntent.UpdateManuscriptReviewFilter(time = "${it.year}年${it.monthValue}月"))
         }
     )
 }
@@ -501,8 +514,7 @@ private fun FilterSearchView(
             )
             .fillMaxWidth()
             .background(
-                MaterialTheme.colorScheme.background,
-                shape = YBShapes.extraSmall
+                MaterialTheme.colorScheme.background, shape = YBShapes.extraSmall
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {

@@ -5,9 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
+import cn.thecover.media.feature.review_data.data.DepartmentFilterState
+import cn.thecover.media.feature.review_data.data.DepartmentReviewDateFilterState
 import cn.thecover.media.feature.review_data.data.DepartmentReviewState
 import cn.thecover.media.feature.review_data.data.DepartmentReviewTaskState
-import cn.thecover.media.feature.review_data.data.DepartmentFilterState
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewFilterState
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewState
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
@@ -67,12 +68,35 @@ class ReviewDataViewModel @Inject constructor(
 
     private val _departmentDataFilterState = MutableStateFlow(DepartmentFilterState())
     val departmentDataFilterState = _departmentDataFilterState
+
     private val _manuscriptTopFilterState = MutableStateFlow(
         ManuscriptReviewFilterState(
             sortField = "总分"
         )
     )
     val manuscriptTopFilterState = _manuscriptTopFilterState
+
+    private val _manuscriptDiffusionFilterState = MutableStateFlow(
+        ManuscriptReviewFilterState(
+            sortField = "公式传播分",
+            searchField = "稿件标题"
+        )
+    )
+    val manuscriptDiffusionFilterState = _manuscriptDiffusionFilterState
+
+    private val _manuscriptReviewFilterState = MutableStateFlow(
+        ManuscriptReviewFilterState(
+            sortField = "全部",
+            searchField = "稿件标题"
+        )
+    )
+    val manuscriptReviewFilterState = _manuscriptReviewFilterState
+
+    private val _departmentTopFilterState = MutableStateFlow(DepartmentReviewDateFilterState())
+    val departmentTopFilterState = _departmentTopFilterState
+
+    private val _departmentTaskFilterState = MutableStateFlow(DepartmentReviewDateFilterState())
+    val departmentTaskFilterState = _departmentTaskFilterState
 
 
     fun handleReviewDataIntent(intent: ReviewDataIntent) {
@@ -157,6 +181,40 @@ class ReviewDataViewModel @Inject constructor(
                         selectedDate = intent.time,
                         sortField = intent.state
                     )
+                }
+            }
+
+            is ReviewUIIntent.UpdateManuscriptDiffusionFilter -> {
+                _manuscriptDiffusionFilterState.update { state ->
+                    var newState = state
+                    intent.time?.let { newState = newState.copy(selectedDate = it) }
+                    intent.state?.let { newState = newState.copy(sortField = it) }
+                    intent.searchType?.let { newState = newState.copy(searchField = it) }
+                    intent.searchText?.let { newState = newState.copy(searchText = it) }
+                    newState
+                }
+            }
+
+            is ReviewUIIntent.UpdateManuscriptReviewFilter -> {
+                _manuscriptReviewFilterState.update { state ->
+                    var newState = state
+                    intent.time?.let { newState = newState.copy(selectedDate = it) }
+                    intent.state?.let { newState = newState.copy(sortField = it) }
+                    intent.searchType?.let { newState = newState.copy(searchField = it) }
+                    intent.searchText?.let { newState = newState.copy(searchText = it) }
+                    newState
+                }
+            }
+
+            is ReviewUIIntent.UpdateDepartmentTaskFilter -> {
+                _departmentTaskFilterState.update { newState ->
+                    newState.copy(intent.time)
+                }
+            }
+
+            is ReviewUIIntent.UpdateDepartmentTopFilter -> {
+                _departmentTopFilterState.update { newState ->
+                    newState.copy(intent.time)
                 }
             }
         }
@@ -276,7 +334,8 @@ class ReviewDataViewModel @Inject constructor(
 
             val result = manuscriptTestData
 
-            val manuscripts = if (isLoadMore) (_manuscriptReviewData.value.manuscripts + result) else result
+            val manuscripts =
+                if (isLoadMore) (_manuscriptReviewData.value.manuscripts + result) else result
             _manuscriptReviewData.update {
                 it.copy(
                     isLoading = false,
@@ -299,7 +358,8 @@ class ReviewDataViewModel @Inject constructor(
 
             val result = manuscriptTestData
 
-            val manuscripts = if (isLoadMore) (_manuscriptReviewDiffusionData.value.manuscripts + result) else result
+            val manuscripts =
+                if (isLoadMore) (_manuscriptReviewDiffusionData.value.manuscripts + result) else result
             _manuscriptReviewDiffusionData.update {
                 it.copy(
                     isLoading = false,
@@ -322,7 +382,8 @@ class ReviewDataViewModel @Inject constructor(
 
             val result = manuscriptTestData
 
-            val manuscripts = if (isLoadMore) (_manuscriptReviewTopData.value.manuscripts + result) else result
+            val manuscripts =
+                if (isLoadMore) (_manuscriptReviewTopData.value.manuscripts + result) else result
             _manuscriptReviewTopData.update {
                 it.copy(
                     isLoading = false,
