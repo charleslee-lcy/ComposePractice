@@ -32,6 +32,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -49,6 +50,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import cn.thecover.media.core.common.util.toLocalDate
+import cn.thecover.media.core.common.util.toMillisecond
 import cn.thecover.media.core.widget.GradientLeftBottom
 import cn.thecover.media.core.widget.GradientLeftTop
 import cn.thecover.media.core.widget.component.YBCoordinatorList
@@ -76,6 +79,8 @@ import cn.thecover.media.feature.review_manager.appeal.FilterType
 import cn.thecover.media.feature.review_manager.assign.FilterDropMenuView
 import cn.thecover.media.feature.review_manager.navigation.navigateToArchiveDetail
 import kotlinx.coroutines.launch
+import kotlinx.datetime.toKotlinLocalDate
+import java.time.LocalDate
 
 
 /**
@@ -392,8 +397,10 @@ private fun ArchiveScoreHeader() {
 
     var isStartDatePickerShow by remember { mutableStateOf(true) }
     var datePickerShow by remember { mutableStateOf(false) }
-    val startDate = remember { mutableStateOf("开始时间") }
-    val endDate = remember { mutableStateOf("结束时间") }
+    val startDateText = remember { mutableStateOf("开始时间") }
+    var startLocalDate by remember { mutableStateOf(LocalDate.now()) }
+    val endDateText = remember { mutableStateOf("结束时间") }
+    var endLocalDate by remember { mutableStateOf(LocalDate.now()) }
 
     val scoreStateFilters = listOf(
         FilterType(type = 1, desc = "全部"),
@@ -561,9 +568,9 @@ private fun ArchiveScoreHeader() {
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = startDate.value,
+                    text = startDateText.value,
                     style = MaterialTheme.typography.labelMedium,
-                    color = EditHintTextColor
+                    color = if (startDateText.value != "开始时间") MainTextColor else EditHintTextColor
                 )
                 Icon(
                     modifier = Modifier.size(18.dp),
@@ -586,9 +593,9 @@ private fun ArchiveScoreHeader() {
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = endDate.value,
+                    text = endDateText.value,
                     style = MaterialTheme.typography.labelMedium,
-                    color = EditHintTextColor
+                    color = if (endDateText.value != "结束时间") MainTextColor else EditHintTextColor
                 )
                 Icon(
                     modifier = Modifier.size(18.dp),
@@ -784,12 +791,15 @@ private fun ArchiveScoreHeader() {
         visible = datePickerShow,
         type = DateType.DAY,
         title = if (isStartDatePickerShow) "选择开始时间" else "选择结束时间",
+        value = if (isStartDatePickerShow) startLocalDate else endLocalDate,
         onCancel = { datePickerShow = false },
         onChange = {
             if (isStartDatePickerShow) {
-                startDate.value = "${it.year}-${it.monthValue}-${it.dayOfMonth}"
+                startDateText.value = "${it.year}-${it.monthValue}-${it.dayOfMonth}"
+                startLocalDate = it
             } else {
-                endDate.value = "${it.year}-${it.monthValue}-${it.dayOfMonth}"
+                endDateText.value = "${it.year}-${it.monthValue}-${it.dayOfMonth}"
+                endLocalDate = it
             }
         }
     )
