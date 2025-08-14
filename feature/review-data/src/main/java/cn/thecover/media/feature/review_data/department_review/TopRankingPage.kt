@@ -105,7 +105,7 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
             }
         }
     ) { item, index ->
-        TopRankingItem(item.departmentRanking, item.departmentName, item.averageScore)
+        TopRankingItem(index + 1, item.departmentName, item.averageScore)
     }
 
     // 月份选择器组件，用于选择查看排名的月份

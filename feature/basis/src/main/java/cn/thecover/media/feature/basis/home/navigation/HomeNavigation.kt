@@ -26,6 +26,7 @@ import cn.thecover.media.feature.basis.home.HomeRoute
 import cn.thecover.media.feature.basis.login.LoginRoute
 import cn.thecover.media.feature.basis.message.MessageDetailRoute
 import cn.thecover.media.feature.basis.message.MessageRoute
+import cn.thecover.media.feature.basis.message.data.entity.MessageDataEntity
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -41,10 +42,10 @@ data object HomeBaseRoute // route to base navigation graph
 data object MessageRoute // route to 消息通知 navigation graph
 
 @Serializable
-data class MessageDetailRoute(val id: Long = 0) // route to 消息详情 navigation graph
+data class MessageDetailRoute(val msg: Long = 0L) // route to 消息详情 navigation graph
 
-fun NavController.navigateToMessageDetail(id: Long) {
-    navigate(MessageDetailRoute(id = id))
+fun NavController.navigateToMessageDetail(msg: Long) {
+    navigate(MessageDetailRoute(msg = msg))
 }
 
 fun NavController.navigateToMessage(navOptions: NavOptions? = null) =
@@ -80,12 +81,12 @@ fun NavGraphBuilder.homeIndex(navController: NavController) {
 
     composable<MessageDetailRoute> { backStackEntry ->
         val args = backStackEntry.toRoute<MessageDetailRoute>()
-        MessageDetailRoute(args.id, onPopBack = { navController.popBackStack() })
+        MessageDetailRoute(args.msg, onPopBack = { navController.popBackStack() })
     }
 
     composable<MessageRoute> {
-        MessageRoute(routeToDetail = { id ->
-            navController.navigateToMessageDetail(id)
+        MessageRoute(routeToDetail = { msg ->
+            navController.navigateToMessageDetail(msg)
         }, onPopBack = {
             navController.popBackStack()
         })

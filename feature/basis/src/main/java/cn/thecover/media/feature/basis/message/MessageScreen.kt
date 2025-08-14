@@ -11,14 +11,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -27,6 +28,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
+import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.YBTopAppBar
 import cn.thecover.media.core.widget.component.search.FilterSearchTextField
 import cn.thecover.media.core.widget.icon.YBIcons
@@ -35,7 +39,8 @@ import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
 import cn.thecover.media.core.widget.theme.YBTheme
-import cn.thecover.media.feature.basis.home.data.MessageDataEntity
+import cn.thecover.media.feature.basis.message.intent.MessageIntent
+import cn.thecover.media.feature.basis.mine.MineViewModel
 
 /**
  *  Created by Wing at 09:33 on 2025/8/8
@@ -44,36 +49,40 @@ import cn.thecover.media.feature.basis.home.data.MessageDataEntity
 
 
 @Composable
-fun MessageRoute(routeToDetail: (Long) -> Unit, onPopBack: () -> Unit) {
-    MessageScreen(routeToDetail, onPopBack)
+fun MessageRoute(
+    viewModel: MineViewModel = hiltViewModel(),
+    routeToDetail: (Long) -> Unit,
+    onPopBack: () -> Unit
+) {
+    MessageScreen(viewModel, routeToDetail, onPopBack)
 }
 
-val messagetList = listOf(
-    MessageDataEntity(
-        messageId = 0,
-        title = "国家科技重大专项小麦育种新突破",
-        time = "2025-08-08 09:09",
-        type = 1,
-        content = "系统消息"
-    ),
-    MessageDataEntity(
-        messageId = 1,
-        title = "关于云南，你不知道的20个冷知识，带你了解最真实的云南风貌",
-        time = "2025-08-08 09:09",
-        type = 2,
-        content = "系统消息"
-    ),
-    MessageDataEntity(
-        messageId = 2,
-        title = "您有一条新的催办消息",
-    )
-)
 
 @Composable
-fun MessageScreen(routeToDetail: (Long) -> Unit = {}, onPopBack: () -> Unit = {}) {
+fun MessageScreen(
+    viewModel: MineViewModel,
+    routeToDetail: (Long) -> Unit = {},
+    onPopBack: () -> Unit = {}
+) {
 
     val messageTypeList = MessageType.entries.map { it.typeName }
     val searchType = remember { mutableStateOf(messageTypeList.first()) }
+    val messageListState by viewModel.messageListState.collectAsState()
+    val localList = remember { mutableStateOf(messageListState.messageDataList) }
+    val refresh = remember { mutableStateOf(messageListState.isRefreshing) }
+    val loadMore = remember { mutableStateOf(messageListState.isLoading) }
+
+    val canLoadMore = remember { mutableStateOf(false) }
+    LaunchedEffect(searchType) {
+        viewModel.handleMessageIntent(MessageIntent.FetchMessageList(false))
+    }
+
+    LaunchedEffect(messageListState) {
+        localList.value = messageListState.messageDataList
+        refresh.value = messageListState.isRefreshing
+        loadMore.value = messageListState.isLoading
+    }
+
     Column {
         YBTopAppBar(
             modifier = Modifier
@@ -91,35 +100,35 @@ fun MessageScreen(routeToDetail: (Long) -> Unit = {}, onPopBack: () -> Unit = {}
                 )
             })
 
-
-        LazyColumn(
+        YBNormalList(
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp)
-        ) {
-            stickyHeader {
+            items = localList,
+            isRefreshing = refresh,
+            isLoadingMore = loadMore,
+            canLoadMore = canLoadMore,
+            onRefresh = {
+                viewModel.handleMessageIntent(MessageIntent.FetchMessageList(false))
+            },
+            onLoadMore = { viewModel.handleMessageIntent(MessageIntent.FetchMessageList(true)) },
+            header = {
                 FilterSearchTextField(
                     dataList = messageTypeList,
                     data = searchType,
                     label = "请输入搜索内容",
                     backgroundColor = MaterialTheme.colorScheme.surface,
                     onValueChange = { type, searchText ->
-
+                        viewModel.handleMessageIntent(MessageIntent.SearchMessage(type, searchText))
                     }
                 )
             }
-
-            items(messagetList) { index ->
-                MessageItem(
-                    title = index.title,
-                    time = index.time,
-                    msgType = MessageType.entries.first { it.ordinal == index.type },
-
-                    ) {
-                    routeToDetail(1)
-                }
+        ) { item, position ->
+            MessageItem(
+                title = item.title,
+                time = item.time,
+                msgType = MessageType.entries.first { it.ordinal == item.type }) {
+                routeToDetail(item.messageId)
             }
-
-
         }
     }
 }
@@ -217,7 +226,7 @@ enum class MessageType(val typeName: String) {
 @Preview(showBackground = true)
 fun MessageScreenPreview() {
     YBTheme {
-        MessageScreen({})
+        MessageScreen(MineViewModel(SavedStateHandle()), {})
     }
 
 }
