@@ -79,7 +79,7 @@ fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel) {
         isRefreshing = isRefreshing,
         canLoadMore = canLoadMore,
         header = {
-            ManuscriptTopRankingHeader(viewModel,filterState)
+            ManuscriptTopRankingHeader(viewModel, filterState)
         },
         onLoadMore = {
             viewModel.handleReviewDataIntent(ReviewDataIntent.LoadMoreManuscriptReviewData)
@@ -88,7 +88,11 @@ fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel) {
             viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptReviewData)
         }
     ) { item, index ->
-        ManuscriptTopRankingItem(num = index + 1, data = data.manuscripts[index], filterChoice = filterState.sortField)
+        ManuscriptTopRankingItem(
+            num = index + 1,
+            data = data.manuscripts[index],
+            filterChoice = filterState.sortField
+        )
     }
 }
 
@@ -155,7 +159,10 @@ private fun ManuscriptTopRankingItem(
  *
  */
 @Composable
-private fun ManuscriptTopRankingHeader(viewModel: ReviewDataViewModel,filterState: ManuscriptReviewFilterState) {
+private fun ManuscriptTopRankingHeader(
+    viewModel: ReviewDataViewModel,
+    filterState: ManuscriptReviewFilterState
+) {
 
     val dataList = listOf(
         "总分",
@@ -168,7 +175,7 @@ private fun ManuscriptTopRankingHeader(viewModel: ReviewDataViewModel,filterStat
     val selectFilterChoice = remember { mutableStateOf(filterState.sortField) }
 
     LaunchedEffect(selectFilterChoice.value) {
-        if(selectFilterChoice.value!=filterState.sortField){
+        if (selectFilterChoice.value != filterState.sortField) {
             viewModel.handleUIIntent(
                 ReviewUIIntent.UpdateManuscriptTopFilter(
                     selectFilterChoice.value,
@@ -210,7 +217,12 @@ private fun ManuscriptTopRankingHeader(viewModel: ReviewDataViewModel,filterStat
         end = LocalDate.now(),
         start = LocalDate.of(2024, 1, 1),
         onChange = {
-           viewModel.handleUIIntent(ReviewUIIntent.UpdateManuscriptTopFilter(state = selectFilterChoice.value, time = "${it.year}年${it.monthValue}月"))
+            viewModel.handleUIIntent(
+                ReviewUIIntent.UpdateManuscriptTopFilter(
+                    state = selectFilterChoice.value,
+                    time = "${it.year}年${it.monthValue}月"
+                )
+            )
         }
     )
 }

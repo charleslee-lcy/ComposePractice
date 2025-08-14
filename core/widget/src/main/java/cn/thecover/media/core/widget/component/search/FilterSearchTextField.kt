@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,6 +30,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastCoerceAtLeast
@@ -55,9 +58,11 @@ import cn.thecover.media.core.widget.theme.YBShapes
 fun FilterSearchTextField(
     dataList: List<String> = listOf(
         "稿件标题", "稿件作者", "稿件编辑"
-    ), data: MutableState<String>, label: String = "请输入搜索内容",
+    ),
+    data: MutableState<String>, label: String = "请输入搜索内容",
     backgroundColor: Color = MaterialTheme.colorScheme.background,
-    onValueChange: (String, String) -> Unit,
+    onValueChange: (String, String) -> Unit = { _, _ -> },
+    onSearch: (String, String) -> Unit = { _, _ -> },
 ) {
     // 控制下拉菜单是否展开的状态
     val showDrop = remember { mutableStateOf(false) }
@@ -79,12 +84,14 @@ fun FilterSearchTextField(
 
     // 主容器布局：包含下拉菜单和输入框
     Row(
-        modifier = Modifier.border(
-            width = 0.5.dp,
-            shape = MaterialTheme.shapes.extraSmall,
-            color = MaterialTheme.colorScheme.outlineVariant
-        )
-            .fillMaxWidth().background(backgroundColor, shape = YBShapes.extraSmall),
+        modifier = Modifier
+            .border(
+                width = 0.5.dp,
+                shape = MaterialTheme.shapes.extraSmall,
+                color = MaterialTheme.colorScheme.outlineVariant
+            )
+            .fillMaxWidth()
+            .background(backgroundColor, shape = YBShapes.extraSmall),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // 下拉菜单组件，用于选择筛选类型
@@ -148,6 +155,12 @@ fun FilterSearchTextField(
                 textState.value = it
                 onValueChange(data.value, textState.value)
             },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    onSearch(data.value, textState.value)
+                }
+            ),
             modifier = Modifier.fillMaxWidth(),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
             decorationBox = { innerTextField ->

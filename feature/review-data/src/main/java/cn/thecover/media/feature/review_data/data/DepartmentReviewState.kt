@@ -1,6 +1,5 @@
 package cn.thecover.media.feature.review_data.data
 
-import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
 
 /**

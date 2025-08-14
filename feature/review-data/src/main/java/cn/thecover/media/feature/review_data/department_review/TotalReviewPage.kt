@@ -122,7 +122,7 @@ internal fun DepartmentReviewScreen(
  */
 @Composable
 private fun DepartmentTotalHeader(
-    viewModel: ReviewDataViewModel ,
+    viewModel: ReviewDataViewModel,
 
     ) {
 
@@ -141,7 +141,7 @@ private fun DepartmentTotalHeader(
     }
 
     LaunchedEffect(selectFilterChoice.value) {
-        if(selectFilterChoice.value!=filterState.sortField){
+        if (selectFilterChoice.value != filterState.sortField) {
             viewModel.handleUIIntent(
                 ReviewUIIntent.UpdateDepartmentDataFilter(
                     selectFilterChoice.value,
@@ -185,9 +185,14 @@ private fun DepartmentTotalHeader(
         type = DateType.MONTH,
         onCancel = { showDatePicker = false },
         end = LocalDate.now(),
-        start =LocalDate.of(2024, 1, 1),
+        start = LocalDate.of(2024, 1, 1),
         onChange = {
-            viewModel.handleUIIntent(ReviewUIIntent.UpdateDepartmentDataFilter(selectFilterChoice.value, "${it.year}年${it.monthValue}月"))
+            viewModel.handleUIIntent(
+                ReviewUIIntent.UpdateDepartmentDataFilter(
+                    selectFilterChoice.value,
+                    "${it.year}年${it.monthValue}月"
+                )
+            )
         }
     )
 }
