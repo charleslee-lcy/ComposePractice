@@ -1,12 +1,7 @@
 package cn.thecover.media.feature.review_data.manuscript_review.manuscript_diffusion
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,15 +10,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,39 +21,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastCoerceAtLeast
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
-import cn.thecover.media.core.widget.R
-import cn.thecover.media.core.widget.component.ItemScoreRow
+import cn.thecover.media.core.widget.component.PrimaryItemScoreRow
+import cn.thecover.media.core.widget.component.ScoreItemType
 import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
-import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
 import cn.thecover.media.core.widget.component.search.FilterSearchTextField
-import cn.thecover.media.core.widget.event.clickableWithoutRipple
-import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
-import cn.thecover.media.core.widget.theme.YBShapes
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
+import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemDropMenuView
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingRow
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
 import cn.thecover.media.feature.review_data.basic_widget.widget.ExpandItemColumn
 import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
+import cn.thecover.media.feature.review_data.data.ManuscriptReviewFilterState
 import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
 import java.time.LocalDate
 
@@ -83,8 +65,8 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
 
     // 模拟稿件传播数据列表
     val data by viewModel.manuscriptDiffusionState.collectAsState()
-    var selectedDate by remember { mutableStateOf("") }
-    var selectedSort by remember { mutableStateOf("") }
+
+    val filter by viewModel.manuscriptDiffusionFilterState.collectAsState()
 
     // 创建 MutableState 用于列表组件
     val manus = remember { mutableStateOf(data.manuscripts) }
@@ -106,8 +88,11 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
         items = manus,
         verticalArrangement = Arrangement.spacedBy(12.dp),
         header = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                ManuscriptDiffusionHeader(viewModel)
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.background(color = MaterialTheme.colorScheme.background)
+            ) {
+                ManuscriptDiffusionHeader(viewModel, filter)
                 Text(
                     text = buildAnnotatedString {
                         append("共 ")
@@ -136,7 +121,7 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
         }
     ) { item, index ->
 
-        DiffusionItem(index, item)
+        DiffusionItem(index, item, filter.sortField)
     }
 
 }
@@ -153,7 +138,7 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
  * @param data 稿件的详细传播数据实体，包含基本信息和各项统计数据
  */
 @Composable
-private fun DiffusionItem(rank: Int, data: ManuscriptReviewDataEntity) {
+private fun DiffusionItem(rank: Int, data: ManuscriptReviewDataEntity, filterChoice: String) {
     // 使用排名卡片包装整个内容区域
     DataItemCard {
         DataItemRankingRow(ranking = rank) {
@@ -167,15 +152,17 @@ private fun DiffusionItem(rank: Int, data: ManuscriptReviewDataEntity) {
                         editor = data.editor
                     )
                     // 显示传播评分数据行：公式传播分和最终传播分
-                    ItemScoreRow(
+                    PrimaryItemScoreRow(
                         items = arrayOf(
-                            Pair(
+                            Triple(
                                 "公式传播分",
-                                data.diffusionDataEntity.basicDiffusionScore.toString()
+                                data.diffusionDataEntity.basicDiffusionScore.toString(),
+                                if (filterChoice.contains("公式传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                             ),
-                            Pair(
+                            Triple(
                                 "最终传播分",
-                                data.diffusionDataEntity.ultimateDiffusionScore.toString()
+                                data.diffusionDataEntity.ultimateDiffusionScore.toString(),
+                                if (filterChoice.contains("最终传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                             ),
                         )
                     )
@@ -183,29 +170,48 @@ private fun DiffusionItem(rank: Int, data: ManuscriptReviewDataEntity) {
             }, foldContent = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     // 显示转载数据：核心媒体、一级媒体、二级媒体转载数
-                    ItemScoreRow(
+                    PrimaryItemScoreRow(
                         items = arrayOf(
-                            Pair(
+                            Triple(
                                 "核心媒体转载数",
-                                data.diffusionDataEntity.coreMediaReprint.toString()
+                                data.diffusionDataEntity.coreMediaReprint.toString(),
+                                if (filterChoice.contains("核心媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                             ),
-                            Pair(
+                            Triple(
                                 "一级媒体转载数",
-                                data.diffusionDataEntity.level1MediaReprint.toString()
+                                data.diffusionDataEntity.level1MediaReprint.toString(),
+                                if (filterChoice.contains("一级媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                             ),
-                            Pair(
+                            Triple(
                                 "二级媒体转载数",
-                                data.diffusionDataEntity.level2MediaReprint.toString()
+                                data.diffusionDataEntity.level2MediaReprint.toString(),
+                                if (filterChoice.contains("二级媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                             ),
                         )
                     )
                     // 显示用户互动数据：阅读数、分享数、点赞数、评论数
-                    ItemScoreRow(
+                    PrimaryItemScoreRow(
                         items = arrayOf(
-                            Pair("阅读数", data.diffusionDataEntity.readNumber.toString()),
-                            Pair("分享数", data.diffusionDataEntity.shareNumber.toString()),
-                            Pair("点赞数", data.diffusionDataEntity.thumbNumber.toString()),
-                            Pair("评论数", data.diffusionDataEntity.commentNumber.toString()),
+                            Triple(
+                                "阅读数",
+                                data.diffusionDataEntity.readNumber.toString(),
+                                if (filterChoice.contains("阅读数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                            ),
+                            Triple(
+                                "分享数",
+                                data.diffusionDataEntity.shareNumber.toString(),
+                                if (filterChoice.contains("分享数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                            ),
+                            Triple(
+                                "点赞数",
+                                data.diffusionDataEntity.thumbNumber.toString(),
+                                if (filterChoice.contains("点赞数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                            ),
+                            Triple(
+                                "评论数",
+                                data.diffusionDataEntity.commentNumber.toString(),
+                                if (filterChoice.contains("评论数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                            ),
                         )
                     )
                 }
@@ -225,24 +231,33 @@ private fun DiffusionItem(rank: Int, data: ManuscriptReviewDataEntity) {
  * 注意：此函数为私有函数，仅在当前文件内使用。
  */
 @Composable
-private fun ManuscriptDiffusionHeader(viewModel: ReviewDataViewModel) {
-    // 获取当前日期并格式化为“年月”文本，作为默认显示的时间
-    val currentDate = LocalDate.now()
-    val currentMonthText = "${currentDate.year}年${currentDate.monthValue}月"
+private fun ManuscriptDiffusionHeader(
+    viewModel: ReviewDataViewModel,
+    filterState: ManuscriptReviewFilterState
+) {
 
     // 控制日期选择器弹窗的显示状态
     var showDatePicker by remember { mutableStateOf(false) }
     // 存储用户选择的日期文本
-    var datePickedText by remember { mutableStateOf(currentMonthText) }
+    val datePickedText = filterState.selectedDate
     // 存储用户选择的排序字段
-    val selectFilterChoice = remember { mutableStateOf("一级媒体转载数") }
+    val selectFilterChoice = remember { mutableStateOf(filterState.sortField) }
     // 存储用户选择的搜索字段
-    val selectSearchChoice = remember { mutableStateOf("稿件标题") }
+    val selectSearchChoice = remember { mutableStateOf(filterState.searchField) }
 
-    var searchText by remember { mutableStateOf("") }
-
-    LaunchedEffect(selectSearchChoice, searchText, datePickedText) {
+    LaunchedEffect(filterState) {
         viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptDiffusion)
+    }
+
+    LaunchedEffect(selectFilterChoice.value) {
+        if (selectFilterChoice.value != filterState.sortField) {
+            viewModel.handleUIIntent(
+                ReviewUIIntent.UpdateManuscriptDiffusionFilter(
+                    state = selectFilterChoice.value,
+                    time = filterState.selectedDate
+                )
+            )
+        }
     }
 
     // 主体内容卡片容器
@@ -288,7 +303,12 @@ private fun ManuscriptDiffusionHeader(viewModel: ReviewDataViewModel) {
                 data = selectSearchChoice, label = "请输入搜索内容", dataList = listOf(
                     "稿件标题", "稿件作者", "稿件编辑"
                 ), onValueChange = { valueType, value ->
-                    searchText = value
+                    viewModel.handleUIIntent(
+                        ReviewUIIntent.UpdateManuscriptDiffusionFilter(
+                            searchType = valueType,
+                            searchText = value
+                        )
+                    )
                 })
         }
     }
@@ -301,147 +321,10 @@ private fun ManuscriptDiffusionHeader(viewModel: ReviewDataViewModel) {
         type = DateType.MONTH,
         onCancel = { showDatePicker = false },
         onChange = {
-            datePickedText = "${it.year}年${it.monthValue}月"
+            viewModel.handleUIIntent(ReviewUIIntent.UpdateManuscriptDiffusionFilter(time = "${it.year}年${it.monthValue}月"))
         }
     )
 }
-
-
-/**
- * 筛选搜索组合项，包含一个下拉筛选菜单和一个文本输入框。
- *
- * @param dataList 下拉菜单的数据列表，默认为 ["稿件标题", "稿件作者", "稿件编辑"]
- * @param data 当前选中的下拉菜单项，使用 MutableState 包装以便响应式更新
- * @param label 输入框的提示文本，默认显示当前选中的下拉项文本
- */
-@Composable
-private fun FilterSearchView(
-    dataList: List<String> = listOf(
-        "稿件标题", "稿件作者", "稿件编辑"
-    ), data: MutableState<String>, label: String = data.value
-) {
-    // 控制下拉菜单是否展开的状态
-    val showDrop = remember { mutableStateOf(false) }
-    // 动画旋转值，用于下拉箭头图标旋转效果
-    val animRotate = remember { Animatable(0f) }
-    // 文本输入框的内容状态
-    val textState = remember { mutableStateOf("") }
-
-    // 当菜单展开状态改变时，触发动画旋转箭头图标
-    LaunchedEffect(showDrop.value) {
-        animRotate.animateTo(
-            targetValue = if (showDrop.value) 180f else 0f,
-            animationSpec = tween(
-                durationMillis = 300,
-                easing = FastOutSlowInEasing
-            )
-        )
-    }
-
-    // 主容器布局：包含下拉菜单和输入框
-    Row(
-        modifier = Modifier
-            .padding(bottom = 2.dp)
-            .border(
-                width = 0.5.dp,
-                shape = MaterialTheme.shapes.extraSmall,
-                color = MaterialTheme.colorScheme.outlineVariant
-            )
-            .fillMaxWidth()
-            .background(
-                MaterialTheme.colorScheme.background,
-                shape = YBShapes.extraSmall
-            ),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // 下拉菜单组件，用于选择筛选类型
-        YBAlignDropdownMenu(
-            data = dataList,
-            expanded = showDrop,
-            initialIndex = dataList.indexOf(data.value).fastCoerceAtLeast(0),
-            isItemWidthAlign = true,
-            offset = DpOffset(0.dp, 0.dp),
-            onItemClick = { text, index ->
-                data.value = text
-            }
-        ) {
-            // 触发下拉菜单展开的点击区域
-            Row(
-                modifier = Modifier
-                    .background(
-                        MaterialTheme.colorScheme.background,
-                        shape = YBShapes.extraSmall
-                    )
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
-                    .clickableWithoutRipple {
-                        showDrop.value = !showDrop.value
-                    },
-                verticalAlignment = Alignment.CenterVertically,
-
-                ) {
-                // 显示当前选中的筛选项文本
-                Text(
-                    data.value,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MainTextColor
-                )
-                Spacer(Modifier.width(4.dp))
-                // 下拉箭头图标，根据菜单状态旋转
-                Icon(
-                    painterResource(R.mipmap.ic_arrow_down),
-                    contentDescription = "${label}下拉筛选按钮",
-                    tint = TertiaryTextColor,
-                    modifier = Modifier.rotate(animRotate.value)
-                )
-
-            }
-
-        }
-
-        // 分割线，分隔下拉菜单和输入框
-        VerticalDivider(
-            modifier = Modifier
-                .padding(end = 12.dp)
-                .width(0.5.dp)
-                .height(20.dp),
-            color = MaterialTheme.colorScheme.outline,
-        )
-
-        // 文本输入框，用于输入搜索关键词
-        BasicTextField(
-            value = textState.value,
-            onValueChange = { textState.value = it },
-            modifier = Modifier.fillMaxWidth(),
-            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-            decorationBox = { innerTextField ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.Transparent)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-
-                        Box(modifier = Modifier.weight(1f)) {
-                            // 当输入框为空时显示提示文本
-                            if (textState.value.isEmpty()) {
-                                Text(
-                                    label,
-                                    color = TertiaryTextColor,
-                                    style = MaterialTheme.typography.labelMedium
-                                )
-                            }
-                            // 实际的输入框内容
-                            innerTextField()
-                        }
-
-                    }
-                }
-            }
-        )
-    }
-
-}
-
 
 @Composable
 @Preview

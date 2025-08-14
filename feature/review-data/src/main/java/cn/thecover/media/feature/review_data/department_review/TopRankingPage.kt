@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +30,7 @@ import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
+import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRankingRow
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
@@ -56,13 +55,9 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
     val departmentTotalData by viewModel.departmentReviewTopState.collectAsState()
 
 
-    // 获取当前日期并格式化为年月文本
-    val currentDate = LocalDate.now()
-    val currentMonthText = "${currentDate.year}年${currentDate.monthValue}月"
-
     // 日期选择器显示状态和选中日期文本状态
     var showDatePicker by remember { mutableStateOf(false) }
-    var datePickedText by remember { mutableStateOf(currentMonthText) }
+    val datePickedState by viewModel.departmentTopFilterState.collectAsState()
 
 
     // 创建 MutableState 用于列表组件
@@ -79,12 +74,14 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
     }
 
 
-    LaunchedEffect(datePickedText) {
+    LaunchedEffect(datePickedState) {
         viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshDepartmentTopRanking)
     }
     // 构建页面布局，包含日期选择和部门排名列表
     YBNormalList(
-        modifier = Modifier.padding(horizontal = 16.dp).fillMaxHeight(),
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxHeight(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         items = departmentList,
         isLoadingMore = isLoadingMore,
@@ -101,13 +98,13 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
                 Column {
                     Text(text = "时间")
                     Spacer(modifier = Modifier.height(8.dp))
-                    DataItemSelectionView(label = datePickedText) {
+                    DataItemSelectionView(label = datePickedState.selectedDate) {
                         showDatePicker = true
                     }
                 }
             }
         }
-    ) {item, index ->
+    ) { item, index ->
         TopRankingItem(item.departmentRanking, item.departmentName, item.averageScore)
     }
 
@@ -117,9 +114,9 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
         type = DateType.MONTH,
         onCancel = { showDatePicker = false },
         end = LocalDate.now(),
-        start =LocalDate.of(2024, 1, 1),
+        start = LocalDate.of(2024, 1, 1),
         onChange = {
-            datePickedText = "${it.year}年${it.monthValue}月"
+            viewModel.handleUIIntent(ReviewUIIntent.UpdateDepartmentTopFilter("${it.year}年${it.monthValue}月"))
         }
     )
 }

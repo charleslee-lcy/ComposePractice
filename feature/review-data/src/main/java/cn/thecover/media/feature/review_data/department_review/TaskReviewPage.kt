@@ -1,6 +1,5 @@
 package cn.thecover.media.feature.review_data.department_review
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,6 +30,7 @@ import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
+import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemCard
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
 import java.time.LocalDate
@@ -50,15 +50,11 @@ import java.time.LocalDate
  */
 @Composable
 fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
-    // 获取当前日期并格式化为“年月”文本，用于初始化显示的时间
-    val currentDate = LocalDate.now()
-    val currentMonthText = "${currentDate.year}年${currentDate.monthValue}月"
-
     // 控制日期选择器是否显示的状态
     var showDatePicker by remember { mutableStateOf(false) }
 
     // 存储用户选择的日期文本（格式：yyyy年M月）
-    var datePickedText by remember { mutableStateOf(currentMonthText) }
+    val datePickedState by viewModel.departmentTaskFilterState.collectAsState()
 
     val taskState by viewModel.departmentTaskDataState.collectAsState()
     // 创建 MutableState 用于列表组件
@@ -73,7 +69,7 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
         isLoadingMore.value = taskState.isLoading
         isRefreshing.value = taskState.isRefreshing
     }
-    LaunchedEffect(datePickedText) {
+    LaunchedEffect(datePickedState) {
         viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshDepartmentTaskData)
     }
 
@@ -89,7 +85,7 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
                 Column {
                     Text(text = "时间")
                     Spacer(modifier = Modifier.height(8.dp))
-                    DataItemSelectionView(label = datePickedText, onClick = {
+                    DataItemSelectionView(label = datePickedState.selectedDate, onClick = {
                         showDatePicker = !showDatePicker
                     })
                 }
@@ -120,9 +116,9 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
         type = DateType.MONTH,
         onCancel = { showDatePicker = false },
         end = LocalDate.now(),
-        start =LocalDate.of(2024, 1, 1),
+        start = LocalDate.of(2024, 1, 1),
         onChange = {
-            datePickedText = "${it.year}年${it.monthValue}月"
+            viewModel.handleUIIntent(ReviewUIIntent.UpdateDepartmentTaskFilter("${it.year}年${it.monthValue}月"))
         }
     )
 }
