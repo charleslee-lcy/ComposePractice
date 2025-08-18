@@ -16,17 +16,34 @@
 
 package cn.thecover.media.core.network
 
+import cn.thecover.media.core.data.NetworkResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 
-sealed interface HttpResult<out T> {
-    data class Success<T>(val data: T) : HttpResult<T>
-    data class Error(val exception: Throwable) : HttpResult<Nothing>
-    data object Loading : HttpResult<Nothing>
+enum class HttpStatus {
+    NORMAL,
+    LOADING,
+    SUCCESS,
+    ERROR
 }
 
-fun <T> Flow<T>.asResult(): Flow<HttpResult<T>> = map<T, HttpResult<T>> { HttpResult.Success(it) }
-    .onStart { emit(HttpResult.Loading) }
-    .catch { emit(HttpResult.Error(it)) }
+fun <T> Flow<NetworkResponse<T>>.asResult(): Flow<BaseUiState<T>> =
+    map<NetworkResponse<T>, BaseUiState<T>> {
+        val result = if (it.errorCode == 0 && it.data != null) {
+            BaseUiState(it.data, HttpStatus.SUCCESS, 0, it.errorMsg)
+        } else {
+            BaseUiState(it.data, HttpStatus.ERROR, it.errorCode, it.errorMsg)
+        }
+        result
+    }
+        .onStart { emit(BaseUiState(null, HttpStatus.LOADING, -1, "")) }
+        .catch { emit(BaseUiState(null, HttpStatus.ERROR, -1, it.message ?: "")) }
+
+data class BaseUiState<T>(
+    val data: T? = null,
+    val status: HttpStatus = HttpStatus.NORMAL,
+    val errorCode: Int = 0,
+    val errorMsg: String = ""
+)

@@ -8,4 +8,5 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     api(libs.kotlinx.datetime)
     api(libs.webview)
+    api(libs.dataStore)
 }

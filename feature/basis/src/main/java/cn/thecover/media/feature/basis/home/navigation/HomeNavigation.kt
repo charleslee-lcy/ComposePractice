@@ -22,12 +22,16 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
+import cn.thecover.media.feature.basis.SplashRoute
 import cn.thecover.media.feature.basis.home.HomeRoute
 import cn.thecover.media.feature.basis.login.LoginRoute
 import cn.thecover.media.feature.basis.message.MessageDetailRoute
 import cn.thecover.media.feature.basis.message.MessageRoute
 import cn.thecover.media.feature.basis.message.data.entity.MessageDataEntity
 import kotlinx.serialization.Serializable
+
+@Serializable
+data object SplashRoute // route to ForYou screen
 
 @Serializable
 data object LoginRoute // route to base navigation graph
@@ -57,6 +61,10 @@ fun NavController.navigateToLogin(navOptions: NavOptions? = null) =
 fun NavController.navigateToHome(navOptions: NavOptions) = navigate(route = HomeRoute, navOptions)
 
 fun NavGraphBuilder.homeIndex(navController: NavController) {
+    composable<SplashRoute> {
+        SplashRoute(navController = navController)
+    }
+
     composable<LoginRoute> {
         LoginRoute(navController = navController)
     }
