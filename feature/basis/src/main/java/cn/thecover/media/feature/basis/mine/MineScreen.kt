@@ -22,10 +22,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +49,8 @@ import cn.thecover.media.core.widget.component.popup.YBAutoDismissDialog
 import cn.thecover.media.core.widget.component.popup.YBDialog
 import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.component.popup.YBPopup
+import cn.thecover.media.core.widget.datastore.Keys
+import cn.thecover.media.core.widget.datastore.clearData
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.state.rememberIconTipsDialogState
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
@@ -61,6 +65,8 @@ import cn.thecover.media.feature.basis.mine.intent.MineNavigationIntent
 import cn.thecover.media.feature.basis.mine.navigation.navigateToHelpCenter
 import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPassword
 import coil.compose.AsyncImage
+import cn.thecover.media.core.widget.theme.YBTheme
+import kotlinx.coroutines.launch
 
 
 /**
@@ -88,6 +94,8 @@ internal fun MineScreen(
     ) {
         val showLogoutDialog = remember { mutableStateOf(false) }
         val userAvatarState by viewModel.userAvatarState.collectAsState()
+        val scope = rememberCoroutineScope()
+        val context = LocalContext.current
         AsyncImage(
             model = YBIcons.Background.Mine,
             contentDescription = null,
@@ -134,13 +142,16 @@ internal fun MineScreen(
             },
             confirmText = "退出",
             onConfirm = {
-                navController.navigateToLogin(navOptions {
-                    // 清除所有之前的页面
-                    popUpTo(navController.graph.id) {
-                        inclusive = true
-                    }
-                    launchSingleTop = true
-                })
+                scope.launch {
+                    clearData(context, Keys.USER_INFO)
+                    navController.navigateToLogin(navOptions {
+                        // 清除所有之前的页面
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    })
+                }
             },
             cancelText = "取消",
             onCancel = {

@@ -23,7 +23,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
+import cn.thecover.media.core.widget.datastore.Keys
+import cn.thecover.media.core.widget.datastore.rememberDataStoreState
+import cn.thecover.media.feature.basis.home.navigation.HomeRoute
 import cn.thecover.media.feature.basis.home.navigation.LoginRoute
+import cn.thecover.media.feature.basis.home.navigation.SplashRoute
 import cn.thecover.media.feature.basis.home.navigation.homeIndex
 import cn.thecover.media.feature.basis.home.navigation.navigateToMessage
 import cn.thecover.media.feature.basis.mine.navigation.mineScreen
@@ -50,7 +54,7 @@ fun YBNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = LoginRoute,
+        startDestination = SplashRoute,
         modifier = modifier,
         enterTransition = {
             if (!isTopLevelDestination) {

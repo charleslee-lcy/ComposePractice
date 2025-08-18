@@ -3,10 +3,9 @@ package cn.thecover.media.feature.review_manager
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cn.thecover.media.core.network.HttpResult
+import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
@@ -33,10 +32,11 @@ class ReviewManageViewModel @Inject constructor(
         emit(list)
     }.asResult()
         .map { result ->
-            when (result) {
-                is HttpResult.Success -> ArchiveListUiState.Success(result.data.data.datas)
-                is HttpResult.Loading -> ArchiveListUiState.Loading
-                is HttpResult.Error -> ArchiveListUiState.Error
+            when (result.status) {
+                HttpStatus.SUCCESS -> ArchiveListUiState.Success(result.data?.datas ?: listOf())
+                HttpStatus.LOADING -> ArchiveListUiState.Loading
+                HttpStatus.ERROR -> ArchiveListUiState.Error
+                else -> ArchiveListUiState.Loading
             }
         }
         .onStart {

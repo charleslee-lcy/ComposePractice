@@ -431,6 +431,7 @@ fun AppealDetailScreen(modifier: Modifier = Modifier, navController: NavControll
                     showCount = true,
                     maxLength = 200,
                     contentPadding = 12.dp,
+                    contentAlignment = Alignment.TopStart,
                     onValueChange = {
 
                     }
