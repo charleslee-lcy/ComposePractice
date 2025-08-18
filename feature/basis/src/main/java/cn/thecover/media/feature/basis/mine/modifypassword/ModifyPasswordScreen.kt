@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import cn.thecover.media.core.widget.component.YBButton
+import cn.thecover.media.core.widget.component.YBTitleBar
 import cn.thecover.media.core.widget.component.YBTopAppBar
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -69,17 +71,15 @@ fun ModifyPasswordScreen(modifier: Modifier, navController: NavController) {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        YBTopAppBar(
-            title = "修改密码", navigationIcon = {
-                IconButton(onClick = {
-                    navController.popBackStack()
-                }) {
-                    Icon(
-                        painterResource(YBIcons.Custom.BackArrow),
-                        contentDescription = "返回",
-                        tint = MainTextColor
-                    )
-                }
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .statusBarsPadding()
+        )
+        YBTitleBar (
+            title = "修改密码", leftOnClick = {
+                navController.popBackStack()
             }, backgroundColor = MaterialTheme.colorScheme.background
         )
         HorizontalDivider(

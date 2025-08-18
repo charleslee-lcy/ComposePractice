@@ -1,7 +1,6 @@
 package cn.thecover.media.feature.basis.mine
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -42,26 +41,26 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
-import cn.thecover.media.core.widget.component.popup.YBAutoDismissDialog
-import cn.thecover.media.core.widget.component.popup.YBDialog
-import cn.thecover.media.core.widget.component.popup.YBAlertDialog
-import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.picker.YBTimePicker
+import cn.thecover.media.core.widget.component.popup.YBAutoDismissDialog
+import cn.thecover.media.core.widget.component.popup.YBDialog
+import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.component.popup.YBPopup
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.state.rememberIconTipsDialogState
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
+import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FAILED
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FINISHED
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_STARTED
 import cn.thecover.media.feature.basis.mine.intent.MineNavigationIntent
+import cn.thecover.media.feature.basis.mine.navigation.navigateToHelpCenter
 import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPassword
 import coil.compose.AsyncImage
-import cn.thecover.media.core.widget.theme.YBTheme
 
 
 /**
@@ -185,6 +184,7 @@ enum class MineFunctionType(
     HelpCenter(icon = YBIcons.Custom.MineHelpCenter, "帮助中心", "")
 }
 
+
 /**
  * 用户头像
  */
@@ -265,8 +265,7 @@ private fun MineFunctionList(
 
                         MineFunctionType.HelpCenter -> {
                             {
-                                timePickerShow = true
-                                //todo 跳转至帮助中心
+                                navController.navigateToHelpCenter()
                             }
                         }
 

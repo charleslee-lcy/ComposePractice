@@ -3,6 +3,7 @@ package cn.thecover.media.feature.basis.mine
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cn.thecover.media.feature.basis.message.MessageType
 import cn.thecover.media.feature.basis.message.data.MessageDataListState
 import cn.thecover.media.feature.basis.message.data.entity.MessageDataEntity
 import cn.thecover.media.feature.basis.message.intent.MessageIntent
@@ -42,6 +43,8 @@ class MineViewModel @Inject constructor(
     private val _messageListState: MutableStateFlow<MessageDataListState> =
         MutableStateFlow(MessageDataListState())
     val messageListState = _messageListState
+
+    private var currentMessageType = MessageType.ALL
 
 
     val messageTestList = listOf(

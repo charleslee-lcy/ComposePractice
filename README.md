@@ -70,6 +70,7 @@
 - FilterSearchTextField 待下拉筛选框的的搜索栏组件
 - CoordinatorLayout 拷贝开源项目源码，实现类似CoordinatorLayout的简单联动、吸顶效果等。还支持指定位置的吸顶效果
 - YBCoordinatorList 封装CoordinatorLayout + YBNormalList，快速实现刷新列表和顶部Card联动效果
+- YBWebViewPage 用于加载H5页面。默认使用网页返回的标题，网页返回为null时使用本地传入的title。
 
 ## 下拉菜单
 
