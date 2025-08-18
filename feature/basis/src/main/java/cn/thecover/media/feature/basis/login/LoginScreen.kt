@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.basis.login
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,19 +14,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -33,23 +34,31 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
+import cn.thecover.media.core.network.HttpStatus
+import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.YBImage
-import cn.thecover.media.core.widget.component.YBToast
-import cn.thecover.media.core.widget.component.showToast
+import cn.thecover.media.core.widget.component.YBInput
+import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
+import cn.thecover.media.core.widget.datastore.Keys
+import cn.thecover.media.core.widget.datastore.saveData
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
-import cn.thecover.media.core.widget.theme.DividerColor
+import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.EditHintTextColor
 import cn.thecover.media.core.widget.theme.MainColor
+import cn.thecover.media.core.widget.theme.MainTextColor
+import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
+import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.ComponentVisibility
 import cn.thecover.media.core.widget.ui.Visibility
 import cn.thecover.media.feature.basis.R
 import cn.thecover.media.feature.basis.home.HomeViewModel
 import cn.thecover.media.feature.basis.home.navigation.navigateToHome
-import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPassword
 import kotlinx.coroutines.launch
 
@@ -64,7 +73,6 @@ fun LoginRoute(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
-//    val feedState by viewModel.collectAsStateWithLifecycle()
     YBTheme {
         LoginScreen(modifier, navController)
     }
@@ -74,12 +82,41 @@ fun LoginRoute(
 @Composable
 internal fun LoginScreen(
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val userNameState = rememberTextFieldState("")
-    val passwordState = rememberTextFieldState("")
-    val loginScreenScope = rememberCoroutineScope()
-    val snackBarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
+    var nameText by remember { mutableStateOf("") }
+    var passwordText by remember { mutableStateOf("") }
+    val loginScope = rememberCoroutineScope()
+    val loadingState = rememberTipsDialogState()
+    var passwordVisible by remember { mutableStateOf(true) }
+
+    val loginState = viewModel.loginUiState.collectAsStateWithLifecycle().value
+
+    LaunchedEffect(loginState) {
+        when (loginState.status) {
+            HttpStatus.LOADING -> {
+                loadingState.show()
+            }
+            HttpStatus.SUCCESS -> {
+                loadingState.hide()
+                saveData(context, Keys.USER_INFO, nameText.toString())
+                navController.navigateToHome(
+                    navOptions = navOptions {
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                    }
+                )
+            }
+            HttpStatus.ERROR -> {
+                Toast.makeText(context, "登录失败", Toast.LENGTH_SHORT).show()
+            }
+            else -> {}
+        }
+    }
 
     Box(
         modifier = modifier
@@ -104,7 +141,7 @@ internal fun LoginScreen(
             )
             Spacer(Modifier.size(20.dp))
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().height(48.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -114,32 +151,22 @@ internal fun LoginScreen(
                         modifier = Modifier.padding(start = 20.dp),
                     )
                 }
-
-                TextField(
-                    state = userNameState,
-                    lineLimits = TextFieldLineLimits.MultiLine(maxHeightInLines = 1),
-                    placeholder = {
-                        Text(
-                            text = "请输入您的用户名",
-                            color = EditHintTextColor,
-                            fontSize = 15.sp,
-                            modifier = Modifier.padding(bottom = 1.dp)
-                        )
-                    },
-                    textStyle = TextStyle(color = Color(0xFF333333), fontSize = 15.sp),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        unfocusedIndicatorColor = DividerColor
+                YBInput(
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(
+                        fontSize = 15.sp, color = MainTextColor
                     ),
-                    contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(
-                        start = 0.dp, end = 0.dp
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
+                    text = nameText,
+                    hint = "请输入您的用户名",
+                    hintTextSize = 15.sp,
+                    hintTextColor = EditHintTextColor,
+                    onValueChange = {
+                        nameText = it
+                    })
             }
+            HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = OutlineColor, thickness = 0.8.dp)
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().height(48.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -149,28 +176,22 @@ internal fun LoginScreen(
                         modifier = Modifier.padding(start = 20.dp)
                     )
                 }
-                TextField(
-                    state = passwordState,
-                    lineLimits = TextFieldLineLimits.MultiLine(maxHeightInLines = 1),
-                    placeholder = {
-                        Text(
-                            text = "请输入密码",
-                            color = EditHintTextColor,
-                            fontSize = 15.sp
-                        )
-                    },
-                    textStyle = TextStyle(color = Color(0xFF333333), fontSize = 15.sp),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        unfocusedIndicatorColor = DividerColor
+                YBInput(
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(
+                        fontSize = 15.sp, color = MainTextColor
                     ),
-                    contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(
-                        start = 0.dp, end = 0.dp
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
+                    text = passwordText,
+                    hint = "请输入密码",
+                    hintTextSize = 15.sp,
+                    hintTextColor = EditHintTextColor,
+                    isPassword = true,
+                    showVisibleIcon = true,
+                    onValueChange = {
+                        passwordText = it
+                    })
             }
+            HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = OutlineColor, thickness = 0.8.dp)
             YBButton(
                 text = { Text("登录", fontSize = 16.sp, fontWeight = FontWeight.SemiBold) },
                 modifier = modifier
@@ -180,20 +201,19 @@ internal fun LoginScreen(
                     .height(44.dp),
                 shape = RoundedCornerShape(2.dp),
                 onClick = {
-                    navController.navigateToHome(navOptions {
-                        // 清除所有之前的页面
-                        popUpTo(navController.graph.id) {
-                            inclusive = true
-                        }
-                        launchSingleTop = true
+                    if (nameText.isEmpty()) {
+                        Toast.makeText(context, "用户名不能为空", Toast.LENGTH_SHORT).show()
+                        return@YBButton
+                    }
+                    if (passwordText.isEmpty()) {
+                        Toast.makeText(context, "密码不能为空", Toast.LENGTH_SHORT).show()
+                        return@YBButton
+                    }
 
-//                    anim {
-//                        enter = R.anim.slide_in_right
-//                        exit = R.anim.slide_out_left
-//                        popEnter = enter
-//                        popExit = exit
-//                    }
-                    })
+                    focusManager.clearFocus()
+                    loginScope.launch {
+                        viewModel.login()
+                    }
                 }
             )
 
@@ -211,13 +231,18 @@ internal fun LoginScreen(
         }
     }
 
-    YBToast(snackBarHostState = snackBarHostState)
+    YBLoadingDialog(loadingState, enableDismiss = true, onDismissRequest = { loadingState.hide() })
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun HomeScreenPreview() {
     YBTheme {
-        LoginScreen(navController = NavController(LocalContext.current))
+        LoginScreen(
+            navController = NavController(LocalContext.current),
+            viewModel = HomeViewModel(
+                SavedStateHandle(),
+                retrofit = dagger.Lazy { previewRetrofit }
+            ))
     }
 }

@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class NetworkResponse<T>(
-    val data: T,
+    val data: T? = null,
     val errorCode: Int = 0,
     val errorMsg: String = "",
 )

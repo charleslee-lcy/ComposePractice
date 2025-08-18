@@ -311,7 +311,7 @@ fun <T> YBCoordinatorList(
                     }
                 }
 
-                if (items.value.isEmpty()) {
+                if (items.value.isEmpty() && !isRefreshing.value) {
                     Box(
                         Modifier.fillMaxWidth().height(with(LocalDensity.current) { coordinatorState.emptyHeight.toDp() }),
                         contentAlignment = Alignment.Center
