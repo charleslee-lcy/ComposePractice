@@ -18,16 +18,13 @@
 
 package cn.thecover.media.core.widget.component
 
-import android.R.attr.left
-import android.R.attr.navigationIcon
-import android.R.attr.right
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -42,14 +39,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
-import okhttp3.Interceptor.Companion.invoke
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -158,9 +153,11 @@ fun YBTitleBar(
                 }
             }
         }
-        Box(modifier = Modifier
-            .align(Alignment.Center)
-            .padding(horizontal = 12.dp)) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = 12.dp)
+        ) {
             center?.apply {
                 invoke()
             } ?: kotlin.run {

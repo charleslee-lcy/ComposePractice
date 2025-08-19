@@ -1,7 +1,6 @@
 package cn.thecover.media.feature.basis.mine
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -23,7 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,29 +43,36 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
-import cn.thecover.media.core.widget.component.popup.YBAutoDismissDialog
-import cn.thecover.media.core.widget.component.popup.YBDialog
-import cn.thecover.media.core.widget.component.popup.YBAlertDialog
-import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.picker.YBTimePicker
+import cn.thecover.media.core.widget.component.popup.YBAutoDismissDialog
+import cn.thecover.media.core.widget.component.popup.YBDialog
+import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.component.popup.YBPopup
 import cn.thecover.media.core.widget.datastore.Keys
 import cn.thecover.media.core.widget.datastore.clearData
+import cn.thecover.media.core.widget.datastore.readData
+import cn.thecover.media.core.widget.datastore.saveData
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.state.rememberIconTipsDialogState
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
+import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.util.getCurrentTimeToMinute
 import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FAILED
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FINISHED
+import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_INITIAL
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_STARTED
 import cn.thecover.media.feature.basis.mine.intent.MineNavigationIntent
+import cn.thecover.media.feature.basis.mine.navigation.navigateToHelpCenter
 import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPassword
 import coil.compose.AsyncImage
-import cn.thecover.media.core.widget.theme.YBTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalTime
 
 
 /**
@@ -144,7 +150,7 @@ internal fun MineScreen(
             onConfirm = {
                 scope.launch {
                     clearData(context, Keys.USER_INFO)
-                    navController.navigateToLogin(navOptions {
+                     navController.navigateToLogin(navOptions {
                         // 清除所有之前的页面
                         popUpTo(navController.graph.id) {
                             inclusive = true
@@ -195,6 +201,7 @@ enum class MineFunctionType(
     HelpCenter(icon = YBIcons.Custom.MineHelpCenter, "帮助中心", "")
 }
 
+
 /**
  * 用户头像
  */
@@ -230,19 +237,24 @@ private fun MineFunctionList(
     viewModel: MineViewModel = hiltViewModel()
 ) {
     val loadingState = rememberTipsDialogState()
+    val context= LocalContext.current
+    val lastTimeForClearCache =readData(context, Keys.USER_CLEAR_CACHE_TIME,"").collectAsState("")
+    val scope= rememberCoroutineScope()
 
+    MineFunctionType.Cache.desc="上次清理 ${lastTimeForClearCache.value}"
     val statusState = rememberIconTipsDialogState()
-    val showClearCacheState = viewModel.cacheClearState.collectAsState()
+    var showClearCacheState by remember { mutableStateOf(CACHE_CLEAR_STATE_INITIAL) }
     val dialogState = remember { mutableStateOf(false) }
     var showpop by remember { mutableStateOf(false) }
     var timePickerShow by remember { mutableStateOf(false) }
-    if (showClearCacheState.value == CACHE_CLEAR_STATE_STARTED) {
+
+    if (showClearCacheState == CACHE_CLEAR_STATE_STARTED) {
         loadingState.show("清理中")
     } else {
         loadingState.hide()
-        if (showClearCacheState.value == CACHE_CLEAR_STATE_FINISHED) {
+        if (showClearCacheState == CACHE_CLEAR_STATE_FINISHED) {
             statusState.show("清理完成", cn.thecover.media.core.widget.R.drawable.icon_checked)
-        } else if (showClearCacheState.value == CACHE_CLEAR_STATE_FAILED) {
+        } else if (showClearCacheState == CACHE_CLEAR_STATE_FAILED) {
             statusState.show("清理失败")
         }
     }
@@ -259,7 +271,7 @@ private fun MineFunctionList(
         items(MineFunctionType.entries) { func ->
             MineFunctionItem(
                 icon = func.icon,
-                func.title, func.desc, clickAction =
+                 func.title, if(func== MineFunctionType.Cache)"上次清理 ${lastTimeForClearCache.value}" else func.desc, clickAction =
                     when (func) {
                         MineFunctionType.ModifyPassword -> {
                             {
@@ -269,14 +281,23 @@ private fun MineFunctionList(
 
                         MineFunctionType.Cache -> {
                             {
-                                viewModel.handleIntent(MineIntent.ClearCache)
+                                showClearCacheState=CACHE_CLEAR_STATE_STARTED
+                                scope.launch {
+
+                                    saveData(context, Keys.USER_CLEAR_CACHE_TIME,
+                                        getCurrentTimeToMinute()
+                                    )
+                                    delay(1000L)
+                                    showClearCacheState=CACHE_CLEAR_STATE_FINISHED
+                                    delay(1000L)
+                                    showClearCacheState=CACHE_CLEAR_STATE_INITIAL
+                                }
                             }
                         }
 
                         MineFunctionType.HelpCenter -> {
                             {
-                                timePickerShow = true
-                                //todo 跳转至帮助中心
+                                navController.navigateToHelpCenter()
                             }
                         }
 
