@@ -31,16 +31,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
+import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.YBBadge
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.popup.YBDropdownMenu
+import cn.thecover.media.core.widget.datastore.saveData
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 import cn.thecover.media.feature.review_manager.appeal.AppealManageScreen
 import cn.thecover.media.feature.review_manager.assign.DepartmentAssignScreen
+import dagger.Lazy
 
 
 /**
@@ -53,8 +58,9 @@ import cn.thecover.media.feature.review_manager.assign.DepartmentAssignScreen
 internal fun ReviewManageRoute(
     modifier: Modifier = Modifier,
     navController: NavController,
+    routeToMsgScreen: () -> Unit = {}
 ) {
-    ReviewManageScreen(modifier = modifier, navController = navController)
+    ReviewManageScreen(modifier = modifier, navController = navController, routeToMsgScreen = routeToMsgScreen)
 }
 
 internal enum class ReviewManageType(val index: Int) {
@@ -67,13 +73,17 @@ internal enum class ReviewManageType(val index: Int) {
 internal fun ReviewManageScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
+    routeToMsgScreen: () -> Unit = {},
+    viewModel: ReviewManageViewModel = hiltViewModel()
 ) {
     var pageType by remember { mutableIntStateOf(ReviewManageType.ARCHIVE_SCORE.index) }
 
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        TopBar(pageType) { text, index ->
+        TopBar(pageType, onMessageClick = {
+            routeToMsgScreen.invoke()
+        }) { text, index ->
             if (pageType != index) {
                 pageType = index
             }
@@ -89,14 +99,14 @@ internal fun ReviewManageScreen(
             }
             else -> {
                 // 稿件打分
-                ArchiveScoreScreen(navController = navController)
+                ArchiveScoreScreen(navController = navController, viewModel = viewModel)
             }
         }
     }
 }
 
 @Composable
-private fun TopBar(initialIndex: Int, titleClick: (String, Int) -> Unit = {_, _ -> }) {
+private fun TopBar(initialIndex: Int, onMessageClick: () -> Unit = {}, titleClick: (String, Int) -> Unit = {_, _ -> }) {
     val list = listOf("稿件打分", "部门内分配", "申诉管理")
     var expanded = remember { mutableStateOf(false) }
     var title by remember { mutableStateOf(list[initialIndex]) }
@@ -153,6 +163,9 @@ private fun TopBar(initialIndex: Int, titleClick: (String, Int) -> Unit = {_, _ 
         }
         YBBadge(
             modifier = Modifier
+                .clickableWithoutRipple {
+                    onMessageClick.invoke()
+                }
                 .padding(horizontal = 10.dp)
                 .align(Alignment.CenterEnd),
             msgCount = 10,
@@ -170,6 +183,9 @@ private fun TopBar(initialIndex: Int, titleClick: (String, Int) -> Unit = {_, _ 
 @Composable
 private fun ReviewManagePreview() {
     YBTheme {
-        ReviewManageScreen(navController = NavController(LocalContext.current))
+        ReviewManageScreen(navController = NavController(LocalContext.current), viewModel = ReviewManageViewModel(
+            savedStateHandle = SavedStateHandle(),
+            retrofit = Lazy { previewRetrofit }
+        ))
     }
 }

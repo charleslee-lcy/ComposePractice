@@ -2,6 +2,7 @@ package cn.thecover.media.feature.review_manager
 
 import android.R.attr.label
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -32,7 +33,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -49,9 +50,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import cn.thecover.media.core.common.util.toLocalDate
-import cn.thecover.media.core.common.util.toMillisecond
 import cn.thecover.media.core.widget.GradientLeftBottom
 import cn.thecover.media.core.widget.GradientLeftTop
 import cn.thecover.media.core.widget.component.YBCoordinatorList
@@ -78,8 +78,6 @@ import cn.thecover.media.feature.review_manager.appeal.FilterSearchBar
 import cn.thecover.media.feature.review_manager.appeal.FilterType
 import cn.thecover.media.feature.review_manager.assign.FilterDropMenuView
 import cn.thecover.media.feature.review_manager.navigation.navigateToArchiveDetail
-import kotlinx.coroutines.launch
-import kotlinx.datetime.toKotlinLocalDate
 import java.time.LocalDate
 
 
@@ -93,32 +91,25 @@ fun ArchiveScoreScreen(
     navController: NavController,
     viewModel: ReviewManageViewModel = hiltViewModel()
 ) {
-
+    val context = LocalContext.current
     var curPage = remember { mutableIntStateOf(0) }
     var isRefreshing = remember { mutableStateOf(false) }
     var isLoadingMore = remember { mutableStateOf(false) }
     var canLoadMore = remember { mutableStateOf(true) }
-    val scope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
     val loadingState = rememberTipsDialogState()
     var items = remember { mutableStateOf(listOf<ArchiveListData>()) }
+    val archiveListUiState by viewModel.archiveListDataState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         curPage.intValue = 0
-        viewModel.getArchiveList(curPage.intValue).collect {
-            when(it) {
-                is ArchiveListUiState.Loading -> {
-//                    loadingState.show()
-                    isRefreshing.value = true
-                }
-                is ArchiveListUiState.Success -> {
-                    loadingState.hide()
-                    items.value = it.list
-                    isRefreshing.value = false
-                    canLoadMore.value = true
-                }
-                else -> {}
-            }
-        }
+        viewModel.getArchiveList(page = curPage.intValue)
+    }
+
+    LaunchedEffect(archiveListUiState) {
+        isRefreshing.value = archiveListUiState.isRefreshing
+        isLoadingMore.value = archiveListUiState.isLoading
+        items.value = archiveListUiState.list
     }
 
     ArchiveScoreScreen(
@@ -128,29 +119,21 @@ fun ArchiveScoreScreen(
         isLoadingMore = isLoadingMore,
         canLoadMore = canLoadMore,
         onRefresh = {
-            scope.launch {
-                curPage.intValue = 0
-                viewModel.getArchiveList(curPage.intValue).collect {
-                    if (it is ArchiveListUiState.Success) {
-                        items.value = it.list
-                        isRefreshing.value = false
-                        canLoadMore.value = true
-                    }
-                }
-            }
+            curPage.intValue = 0
+            viewModel.getArchiveList(isRefresh = true, page = curPage.intValue)
         },
         onLoadMore = {
-            scope.launch {
-                curPage.intValue++
-                viewModel.getArchiveList(curPage.intValue).collect { state ->
-                    if (state is ArchiveListUiState.Success) {
-                        items.value = items.value + state.list
-                        isLoadingMore.value = false
-                        // 最后一页
-                        if (state.list.size < 10) canLoadMore.value = false
-                    }
-                }
+            curPage.intValue++
+            viewModel.getArchiveList(isRefresh = false, page = curPage.intValue)
+        },
+        onSearch = {
+            if (it.isEmpty()) {
+                Toast.makeText(context, "搜索内容不能为空", Toast.LENGTH_SHORT).show()
+                return@ArchiveScoreScreen
             }
+            curPage.intValue = 0
+            viewModel.getSearchData(isRefresh = true, page = curPage.intValue, keyword = it)
+            focusManager.clearFocus()
         }
     )
 
@@ -166,6 +149,7 @@ fun ArchiveScoreScreen(
     canLoadMore: MutableState<Boolean>,
     onRefresh: () -> Unit = {},
     onLoadMore: () -> Unit = {},
+    onSearch: (String) -> Unit = {},
 ) {
     var showScoreDialog = remember { mutableStateOf(false) }
 
@@ -183,10 +167,12 @@ fun ArchiveScoreScreen(
         },
         enableCollapsable = true,
         collapsableContent = {
-            ArchiveScoreHeader()
+            ArchiveScoreHeader(onSearch = onSearch)
         }) { item, index ->
         ArchiveListItem(
-            modifier = Modifier.padding(horizontal = 15.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = 15.dp)
+                .fillMaxWidth(),
             item = item,
             onDetailClick = {
                 navController.navigateToArchiveDetail(item)
@@ -392,7 +378,7 @@ private fun scoreTitleStyle(enable: Boolean) = TextStyle(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ArchiveScoreHeader() {
+private fun ArchiveScoreHeader(onSearch: (String) -> Unit = {}) {
     val showScoreDialog = remember { mutableStateOf(false) }
 
     var isStartDatePickerShow by remember { mutableStateOf(true) }
@@ -645,9 +631,12 @@ private fun ArchiveScoreHeader() {
                 .background(PageBackgroundColor)
                 .height(36.dp),
             initialIndex = 0,
-            filterData = searchFilters
-        ) { text, index ->
-            Log.d("CharlesLee", "filterType: ${searchFilters[index].type}")
+            filterData = searchFilters,
+            filterClick = { text, index ->
+                Log.d("CharlesLee", "filterType: ${searchFilters[index].type}")
+            }
+        ) {
+            onSearch.invoke(it)
         }
     }
 

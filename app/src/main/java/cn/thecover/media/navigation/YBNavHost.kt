@@ -90,7 +90,9 @@ fun YBNavHost(
         }
     ) {
         homeIndex(navController)
-        reviewManageScreen(navController)
+        reviewManageScreen(navController, routeToMsgScreen = {
+            navController.navigateToMessage()
+        })
         reviewDataScreen(routeToMsgScreen = {
             navController.navigateToMessage()
         })

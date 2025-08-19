@@ -1,6 +1,7 @@
 package cn.thecover.media.feature.review_manager.appeal
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -15,6 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -32,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -85,9 +89,12 @@ fun MyAppealContent(navController: NavController) {
                 .background(Color.White)
                 .height(36.dp),
             initialIndex = 0,
-            filterData = filters
-        ) { text, index ->
-            Log.d("CharlesLee", "filterType: ${filters[index].type}")
+            filterData = filters,
+            filterClick = { text, index ->
+                Log.d("CharlesLee", "filterType: ${filters[index].type}")
+            }
+        ) {
+
         }
 
         YBNormalList(
@@ -137,12 +144,13 @@ fun FilterSearchBar(
     modifier: Modifier = Modifier,
     initialIndex: Int = 0,
     filterData: List<FilterType>,
-    filterClick: (String, Int) -> Unit = { _, _ -> }
+    filterClick: (String, Int) -> Unit = { _, _ -> },
+    onSearch: (String) -> Unit = {}
 ) {
     var expanded = remember { mutableStateOf(false) }
     val animRotate = remember { Animatable(0f) }
     var title by remember { mutableStateOf(filterData[initialIndex].desc) }
-    val searchTextState = remember { mutableStateOf("") }
+    var searchText by remember { mutableStateOf("") }
 
     // 当菜单状态改变时触发动画
     LaunchedEffect(expanded.value) {
@@ -197,6 +205,7 @@ fun FilterSearchBar(
         }
         VerticalDivider(modifier = Modifier.height(20.dp), thickness = 0.5.dp, color = OutlineColor)
         YBInput(
+            text = searchText,
             modifier = Modifier
                 .weight(0.7f)
                 .padding(horizontal = 15.dp),
@@ -206,8 +215,16 @@ fun FilterSearchBar(
             hint = "请输入搜索内容",
             hintTextSize = 13.sp,
             hintTextColor = EditHintTextColor,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Search
+            ),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    onSearch.invoke(searchText)
+                }
+            ),
             onValueChange = {
-                Log.d("CharlesLee", it)
+                searchText = it
             })
     }
 }

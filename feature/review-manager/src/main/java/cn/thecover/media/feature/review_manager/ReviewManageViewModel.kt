@@ -6,12 +6,13 @@ import androidx.lifecycle.viewModelScope
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import javax.inject.Inject
 
@@ -22,35 +23,115 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class ReviewManageViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    val retrofit: dagger.Lazy<Retrofit>
+    private val savedStateHandle: SavedStateHandle, val retrofit: dagger.Lazy<Retrofit>
 ) : ViewModel() {
+    private val pageSize = 10
 
-    fun getArchiveList(page: Int = 0): StateFlow<ArchiveListUiState> = flow {
-        val apiService = retrofit.get().create(ReviewManagerApi::class.java)
-        val list = apiService.getArchiveList(page)
-        emit(list)
-    }.asResult()
-        .map { result ->
-            when (result.status) {
-                HttpStatus.SUCCESS -> ArchiveListUiState.Success(result.data?.datas ?: listOf())
-                HttpStatus.LOADING -> ArchiveListUiState.Loading
-                HttpStatus.ERROR -> ArchiveListUiState.Error
-                else -> ArchiveListUiState.Loading
+    // 稿件列表数据
+    private val _archiveListDataState = MutableStateFlow(ArchiveListUiState())
+    val archiveListDataState: StateFlow<ArchiveListUiState> = _archiveListDataState.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = ArchiveListUiState(),
+    )
+
+    fun getArchiveList(isRefresh: Boolean = true, page: Int = 0) {
+        viewModelScope.launch {
+            flow {
+                val apiService = retrofit.get().create(ReviewManagerApi::class.java)
+                val list = apiService.getArchiveList(page)
+                emit(list)
+            }.asResult().collect { result ->
+                    when (result.status) {
+                        HttpStatus.SUCCESS -> {
+                            val data = result.data?.datas ?: emptyList()
+                            _archiveListDataState.update {
+                                it.copy(
+                                    list = if (isRefresh) data else it.list + data,
+                                    isLoading = false,
+                                    isRefreshing = false,
+                                    canLoadMore = data.size >= pageSize,
+                                    msg = null
+                                )
+                            }
+                        }
+
+                        HttpStatus.LOADING -> {
+                            _archiveListDataState.update {
+                                if (isRefresh) it.copy(isRefreshing = true) else it.copy(
+                                    isLoading = true
+                                )
+                            }
+                        }
+
+                        HttpStatus.ERROR -> {
+                            _archiveListDataState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    isRefreshing = false,
+                                    canLoadMore = true,
+                                    msg = result.errorMsg
+                                )
+                            }
+                        }
+
+                        else -> {}
+                    }
+                }
+        }
+    }
+
+    fun getSearchData(isRefresh: Boolean = true, page: Int = 0, keyword: String) {
+        viewModelScope.launch {
+            flow {
+                val apiService = retrofit.get().create(ReviewManagerApi::class.java)
+                val list = apiService.searchArchiveList(page, keyword)
+                emit(list)
+            }.asResult().collect { result ->
+                when (result.status) {
+                    HttpStatus.SUCCESS -> {
+                        val data = result.data?.datas ?: emptyList()
+                        _archiveListDataState.update {
+                            it.copy(
+                                list = if (isRefresh) data else it.list + data,
+                                isLoading = false,
+                                isRefreshing = false,
+                                canLoadMore = data.size >= pageSize,
+                                msg = null
+                            )
+                        }
+                    }
+
+                    HttpStatus.LOADING -> {
+                        _archiveListDataState.update {
+                            if (isRefresh) it.copy(isRefreshing = true) else it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+
+                    HttpStatus.ERROR -> {
+                        _archiveListDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isRefreshing = false,
+                                canLoadMore = true,
+                                msg = result.errorMsg
+                            )
+                        }
+                    }
+
+                    else -> {}
+                }
             }
         }
-        .onStart {
-            emit(ArchiveListUiState.Loading)
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = ArchiveListUiState.Loading,
-        )
+    }
 }
 
-sealed interface ArchiveListUiState {
-    data class Success(val list: List<ArchiveListData>) : ArchiveListUiState
-    data object Error : ArchiveListUiState
-    data object Loading : ArchiveListUiState
-}
+data class ArchiveListUiState(
+    val list: List<ArchiveListData> = emptyList(),
+    val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
+    val canLoadMore: Boolean = true,
+    val msg: String? = null
+)

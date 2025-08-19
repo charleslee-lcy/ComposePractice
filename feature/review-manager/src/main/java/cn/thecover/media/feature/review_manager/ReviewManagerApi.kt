@@ -18,5 +18,5 @@ interface ReviewManagerApi {
     suspend fun getArchiveList(@Path("page") page: Int = 0): NetworkResponse<PageData<ArchiveListData>>
 
     @POST(value = "article/query/{page}/json")
-    suspend fun searchArchiveList(@Path("page") page: Int = 0, @Query("k") key: String): NetworkResponse<PageData<ArchiveListData>>
+    suspend fun searchArchiveList(@Path("page") page: Int = 0, @Query("k") keyword: String): NetworkResponse<PageData<ArchiveListData>>
 }

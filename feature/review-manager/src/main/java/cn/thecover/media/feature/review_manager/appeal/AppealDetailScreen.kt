@@ -549,7 +549,7 @@ private fun ApprovalProcessContent() {
                     )
                     Text(
                         modifier = Modifier.padding(end = 12.dp),
-                        text = "2025-06-24 09:32:52",
+                        text = "2025-06-11 11:32:11",
                         color = MainTextColor,
                         fontSize = 14.sp
                     )
