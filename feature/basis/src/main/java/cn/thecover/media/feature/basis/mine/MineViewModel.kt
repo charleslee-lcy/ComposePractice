@@ -3,6 +3,8 @@ package cn.thecover.media.feature.basis.mine
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cn.thecover.media.core.widget.datastore.Keys
+import cn.thecover.media.core.widget.datastore.saveData
 import cn.thecover.media.feature.basis.message.MessageType
 import cn.thecover.media.feature.basis.message.data.MessageDataListState
 import cn.thecover.media.feature.basis.message.data.entity.MessageDataEntity
@@ -79,7 +81,7 @@ class MineViewModel @Inject constructor(
                 }
                 viewModelScope.launch {
                     val result = messageTestList
-                    delay(2000)
+
                     val messageDataList =
                         if (messageIntent.loadMore) messageListState.value.messageDataList + result else result
                     _messageListState.update {
