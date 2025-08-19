@@ -105,9 +105,10 @@ internal fun LoginScreen(
                 saveData(context, Keys.USER_INFO, nameText.toString())
                 navController.navigateToHome(
                     navOptions = navOptions {
-                        popUpTo(navController.graph.startDestinationId) {
+                        popUpTo(navController.graph.id) {
                             inclusive = true
                         }
+                        launchSingleTop = true
                     }
                 )
             }

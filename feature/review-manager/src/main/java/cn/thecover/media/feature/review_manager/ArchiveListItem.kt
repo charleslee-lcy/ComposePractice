@@ -25,6 +25,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.text.HtmlCompat
+import androidx.core.text.toHtml
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.MainColor
@@ -60,7 +62,7 @@ fun ArchiveListItem(
             modifier = Modifier.padding(horizontal = 12.dp)
         ) {
             Text(
-                text = item.title,
+                text = HtmlCompat.fromHtml(item.title, HtmlCompat.FROM_HTML_MODE_COMPACT).toString(),
                 style = TextStyle(
                     color = MainTextColor,
                     fontSize = 15.sp,

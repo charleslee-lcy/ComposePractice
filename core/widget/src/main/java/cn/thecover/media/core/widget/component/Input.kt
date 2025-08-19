@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -83,7 +85,8 @@ fun YBInput(
     isPassword: Boolean = false,
     showVisibleIcon: Boolean = false,
     showCount: Boolean = false,
-    isDigitLimit: Boolean = false,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
     onValueChange: (String) -> Unit = {},
     contentPadding: Dp = 0.dp,
     contentAlignment: Alignment = Alignment.CenterStart
@@ -101,12 +104,17 @@ fun YBInput(
         textState.value = text
     }
 
-    Row(modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         BasicTextField(
             value = textState.value,
             onValueChange = {
-                val result = if (isDigitLimit) {
+                val result = if (keyboardOptions.keyboardType == KeyboardType.Number ||
+                    keyboardOptions.keyboardType == KeyboardType.Phone ||
+                    keyboardOptions.keyboardType == KeyboardType.NumberPassword
+                ) {
                     it.filter { it.isDigit() }
                 } else {
                     it
@@ -120,13 +128,16 @@ fun YBInput(
                 textState.value = result
                 onValueChange.invoke(result)
             },
-            modifier = Modifier.focusRequester(focusRequester).weight(1f),
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .weight(1f),
             textStyle = textStyle.copy(lineHeight = textStyle.fontSize * 1.5f),
             singleLine = singleLine,
             maxLines = maxLines,
             minLines = minLines,
             cursorBrush = SolidColor(MainColor),
-            keyboardOptions = if (isDigitLimit) KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number) else KeyboardOptions.Default,
+            keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
             visualTransformation = if (textVisible) {
                 VisualTransformation.None
             } else {
