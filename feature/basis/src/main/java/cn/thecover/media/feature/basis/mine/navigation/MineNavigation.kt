@@ -21,6 +21,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import cn.thecover.media.feature.basis.mine.MineRoute
+import cn.thecover.media.feature.basis.mine.help.HelpCenterRoute
 import cn.thecover.media.feature.basis.mine.intent.MineNavigationIntent
 import cn.thecover.media.feature.basis.mine.modifypassword.ModifyPasswordRoute
 import kotlinx.serialization.Serializable
@@ -29,11 +30,14 @@ import kotlinx.serialization.Serializable
 data object MineRoute
 
 
+
 fun NavController.navigateToMine(navOptions: NavOptions) = navigate(route = MineRoute, navOptions)
 
 fun NavController.navigateToModifyPassword(navOptions: NavOptions? = null) =
     navigate(MineNavigationIntent.ModifyPassword, navOptions)
 
+fun NavController.navigateToHelpCenter(navOptions: NavOptions? = null) =
+    navigate(MineNavigationIntent.HelpCenter, navOptions)
 
 fun NavGraphBuilder.mineScreen(navi: NavController) {
 
@@ -45,6 +49,12 @@ fun NavGraphBuilder.mineScreen(navi: NavController) {
     composable<MineNavigationIntent.ModifyPassword> {
         ModifyPasswordRoute(navController = navi) // 需要创建该页面组件
     }
+
+    composable<MineNavigationIntent.HelpCenter>{
+        HelpCenterRoute(onPopBack = {navi.popBackStack()})
+    }
+
+
 
 }
 

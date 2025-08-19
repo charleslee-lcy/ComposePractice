@@ -73,8 +73,8 @@ fun MessageScreen(
     val loadMore = remember { mutableStateOf(messageListState.isLoading) }
 
     val canLoadMore = remember { mutableStateOf(false) }
-    LaunchedEffect(searchType) {
-        viewModel.handleMessageIntent(MessageIntent.FetchMessageList(false))
+    LaunchedEffect(searchType.value) {
+        viewModel.handleMessageIntent(MessageIntent.UpdateMessageFilter(searchType.value))
     }
 
     LaunchedEffect(messageListState) {
