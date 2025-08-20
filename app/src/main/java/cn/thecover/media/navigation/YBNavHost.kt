@@ -23,16 +23,9 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
-import cn.thecover.media.core.widget.datastore.Keys
-import cn.thecover.media.core.widget.datastore.rememberDataStoreState
-import cn.thecover.media.feature.basis.home.navigation.HomeRoute
-import cn.thecover.media.feature.basis.home.navigation.LoginRoute
 import cn.thecover.media.feature.basis.home.navigation.SplashRoute
 import cn.thecover.media.feature.basis.home.navigation.homeIndex
-import cn.thecover.media.feature.basis.home.navigation.navigateToMessage
 import cn.thecover.media.feature.basis.mine.navigation.mineScreen
-import cn.thecover.media.feature.review_data.navigation.reviewDataScreen
-import cn.thecover.media.feature.review_manager.navigation.reviewManageScreen
 import cn.thecover.media.ui.YBAppState
 
 /**
@@ -90,12 +83,6 @@ fun YBNavHost(
         }
     ) {
         homeIndex(navController)
-        reviewManageScreen(navController, routeToMsgScreen = {
-            navController.navigateToMessage()
-        })
-        reviewDataScreen(routeToMsgScreen = {
-            navController.navigateToMessage()
-        })
         mineScreen(navController)
     }
 }

@@ -21,8 +21,6 @@ import cn.thecover.media.feature.basis.R
 import cn.thecover.media.feature.basis.home.navigation.HomeBaseRoute
 import cn.thecover.media.feature.basis.home.navigation.HomeRoute
 import cn.thecover.media.feature.basis.mine.navigation.MineRoute
-import cn.thecover.media.feature.review_data.navigation.ReviewDataRoute
-import cn.thecover.media.feature.review_manager.navigation.ReviewManageRoute
 import kotlin.reflect.KClass
 
 /**
@@ -54,20 +52,6 @@ enum class TopLevelDestination(
         titleTextId = R.string.feature_home_title,
         route = HomeRoute::class,
         baseRoute = HomeBaseRoute::class,
-    ),
-    REVIEW_MANAGE(
-        selectedIcon = R.mipmap.ic_tab_review_manage_normal,
-        unselectedIcon = R.mipmap.ic_tab_review_manage_checked,
-        iconTextId = R.string.feature_review_manage_title,
-        titleTextId = R.string.feature_review_manage_title,
-        route = ReviewManageRoute::class,
-    ),
-    REVIEW_DATA(
-        selectedIcon = R.mipmap.ic_tab_review_data_normal,
-        unselectedIcon = R.mipmap.ic_tab_review_data_checked,
-        iconTextId = R.string.feature_review_data_title,
-        titleTextId = R.string.feature_review_data_title,
-        route = ReviewDataRoute::class,
     ),
     MINE(
         selectedIcon = R.mipmap.ic_tab_mine_normal,

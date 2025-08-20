@@ -10,7 +10,7 @@ android {
     namespace = "cn.thecover.media"
 
     defaultConfig {
-        applicationId = "com.yndaily.review"
+        applicationId = "com.charleslee.compose"
         versionCode = 1
         versionName = "1.0.0"
 
@@ -51,8 +51,6 @@ dependencies {
     implementation(projects.core.widget)
 
     implementation(projects.feature.basis)
-    implementation(projects.feature.reviewManager)
-    implementation(projects.feature.reviewData)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
