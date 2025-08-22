@@ -1,6 +1,11 @@
 package cn.thecover.media.feature.basis.home
 
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -99,6 +104,14 @@ internal fun HomeScreen(
     val scrollState = rememberScrollState()
     var roleState by remember { mutableIntStateOf(1) }
 
+    val infiniteTransition = rememberInfiniteTransition(label = "infinite")
+    val animatedColor by infiniteTransition.animateColor(
+        initialValue = Color(0xFF60DDAD),
+        targetValue = Color(0xFF4285F4),
+        animationSpec = infiniteRepeatable(tween(1000), RepeatMode.Reverse),
+        label = "color"
+    )
+
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -116,7 +129,7 @@ internal fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Spacer(modifier = Modifier.height(1.dp))
-            AnimatedContent(roleState) {
+            Crossfade (roleState) {
                 if (it == 1) {
                     ReporterUserContent()
                 } else {
@@ -143,7 +156,7 @@ internal fun HomeScreen(
                 )
                 Text(
                     text = "稿件TOP榜单",
-                    color = MainTextColor,
+                    color = animatedColor,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(start = 5.dp)
