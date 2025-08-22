@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastCoerceAtLeast
-import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.YBInput
@@ -69,6 +69,7 @@ import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.review_data.PreviewReviewDataViewModelFactory
 import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.basic_widget.ReviewDataImages
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
@@ -98,13 +99,13 @@ internal fun ManuscriptReviewPage(
     var showEditScorePop by remember { mutableStateOf(false) }
     var editId by remember { mutableIntStateOf(0) }
     // 创建 MutableState 用于列表组件
-    val manus = remember { mutableStateOf(data.manuscripts) }
+    val manus = remember { mutableStateOf(data.dataList) }
     val isLoadingMore = remember { mutableStateOf(data.isLoading) }
     val isRefreshing = remember { mutableStateOf(data.isRefreshing) }
     val canLoadMore = remember { mutableStateOf(true) }
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(data) {
-        manus.value = data.manuscripts
+        manus.value = data.dataList
         isLoadingMore.value = data.isLoading
         isRefreshing.value = data.isRefreshing
     }
@@ -129,7 +130,7 @@ internal fun ManuscriptReviewPage(
                     text = buildAnnotatedString {
                         append("共 ")
                         withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                            append(data.manuscripts.size.toString())
+                            append(data.dataList.size.toString())
                         }
                         append(" 条记录")
                     },
@@ -609,7 +610,9 @@ private fun FilterSearchView(
 @Preview(showSystemUi = true)
 fun ManuscriptReviewScreenPreview() {
     YBTheme {
-        ManuscriptReviewPage(viewModel = ReviewDataViewModel(SavedStateHandle()))
+        ManuscriptReviewPage(viewModel = viewModel(
+            factory = PreviewReviewDataViewModelFactory()
+        ))
     }
 }
 

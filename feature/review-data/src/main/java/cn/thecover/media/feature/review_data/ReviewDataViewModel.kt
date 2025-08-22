@@ -7,14 +7,14 @@ import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataInten
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
 import cn.thecover.media.feature.review_data.data.DepartmentFilterState
 import cn.thecover.media.feature.review_data.data.DepartmentReviewDateFilterState
-import cn.thecover.media.feature.review_data.data.DepartmentReviewState
-import cn.thecover.media.feature.review_data.data.DepartmentReviewTaskState
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewFilterState
-import cn.thecover.media.feature.review_data.data.ManuscriptReviewState
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DiffusionDataEntity
 import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
+import cn.thecover.media.feature.review_data.data.params.PaginatedResult
+import cn.thecover.media.feature.review_data.data.params.RepositoryResult
+import cn.thecover.media.feature.review_data.repository.ReviewDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,38 +32,39 @@ import javax.inject.Inject
 @HiltViewModel
 class ReviewDataViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    val repository: ReviewDataRepository
 ) : ViewModel() {
 
 
     //部门考核页信息流数据
-    private val _departmentReviewDataState = MutableStateFlow(DepartmentReviewState())
-    val departmentReviewDataState: StateFlow<DepartmentReviewState> = _departmentReviewDataState
+    private val _departmentReviewDataState = MutableStateFlow(PaginatedResult<DepartmentTotalDataEntity>())
+    val departmentReviewDataState: StateFlow<PaginatedResult<DepartmentTotalDataEntity>> = _departmentReviewDataState
 
     //部门top排行页信息流数据
-    private val _departmentReviewTopState = MutableStateFlow(DepartmentReviewState())
-    val departmentReviewTopState: StateFlow<DepartmentReviewState> = _departmentReviewTopState
+    private val _departmentReviewTopState = MutableStateFlow(PaginatedResult<DepartmentTotalDataEntity>())
+    val departmentReviewTopState: StateFlow<PaginatedResult<DepartmentTotalDataEntity>> = _departmentReviewTopState
 
     //部门任务页信息流数据
-    private val _departmentTaskDataState = MutableStateFlow(DepartmentReviewTaskState())
-    val departmentTaskDataState: StateFlow<DepartmentReviewTaskState> = _departmentTaskDataState
+    private val _departmentTaskDataState = MutableStateFlow(PaginatedResult<DepartmentTaskDataEntity>())
+    val departmentTaskDataState: StateFlow<PaginatedResult<DepartmentTaskDataEntity>> = _departmentTaskDataState
 
     //稿件总排行页面数据
     private val _manuscriptReviewData =
-        MutableStateFlow(ManuscriptReviewState())
-    val manuscriptReviewState: StateFlow<ManuscriptReviewState> =
+        MutableStateFlow(PaginatedResult<ManuscriptReviewDataEntity>())
+    val manuscriptReviewState: StateFlow<PaginatedResult<ManuscriptReviewDataEntity>> =
         _manuscriptReviewData
 
 
     //稿件top排行页面数据
     private val _manuscriptReviewTopData =
-        MutableStateFlow(ManuscriptReviewState())
-    val manuscriptTopRankingState: StateFlow<ManuscriptReviewState> =
+        MutableStateFlow(PaginatedResult<ManuscriptReviewDataEntity>())
+    val manuscriptTopRankingState: StateFlow<PaginatedResult<ManuscriptReviewDataEntity>> =
         _manuscriptReviewTopData
 
     //稿件传播排行页面数据
     private val _manuscriptReviewDiffusionData =
-        MutableStateFlow(ManuscriptReviewState())
-    val manuscriptDiffusionState: StateFlow<ManuscriptReviewState> =
+        MutableStateFlow(PaginatedResult<ManuscriptReviewDataEntity>())
+    val manuscriptDiffusionState: StateFlow<PaginatedResult<ManuscriptReviewDataEntity>> =
         _manuscriptReviewDiffusionData
 
     private val _departmentDataFilterState = MutableStateFlow(DepartmentFilterState())
@@ -222,7 +223,7 @@ class ReviewDataViewModel @Inject constructor(
 
     private fun updateManuscriptScore(id: Int, newScore: Int) {
         _manuscriptReviewData.update { currentState ->
-            val updatedManuscripts = currentState.manuscripts.map { manuscript ->
+            val updatedManuscripts = currentState.dataList.map { manuscript ->
                 if (manuscript.id == id) {
                     // 创建新的对象，更新分数
                     manuscript.copy(score = newScore, isEdited = true)
@@ -232,7 +233,7 @@ class ReviewDataViewModel @Inject constructor(
             }
 
             currentState.copy(
-                manuscripts = updatedManuscripts
+                dataList = updatedManuscripts
             )
         }
     }
@@ -329,20 +330,47 @@ class ReviewDataViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
-            delay(1000)
-            // val result = repository.fetchManuscriptReviewData()
-
-            val result = manuscriptTestData
-
-            val manuscripts =
-                if (isLoadMore) (_manuscriptReviewData.value.manuscripts + result) else result
-            _manuscriptReviewData.update {
-                it.copy(
-                    isLoading = false,
-                    isRefreshing = false,
-                    manuscripts = manuscripts
-                )
+            val page = if (isLoadMore) {
+                _manuscriptReviewData.value.currentPage + 1
+            } else {
+                1
             }
+
+            val result = repository.fetchManuscriptsPage(page)
+
+            when (result) {
+                is RepositoryResult.Success -> {
+                    val manuscripts = if (isLoadMore) {
+                        _manuscriptReviewData.value.dataList + result.data.dataList
+                    } else {
+                        result.data.dataList
+                    }
+
+                    _manuscriptReviewData.update {
+                        it.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            dataList = manuscripts,
+                            currentPage = result.data.currentPage,
+                            totalPages = result.data.totalPages,
+                            hasNextPage = result.data.hasNextPage
+                        )
+                    }
+                }
+                is RepositoryResult.Error -> {
+                    _manuscriptReviewData.update {
+                        it.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            error = result.exception.message
+                        )
+                    }
+                }
+                is RepositoryResult.Loading -> {
+                    // 已在开始时处理
+                }
+            }
+
         }
     }
 
@@ -359,12 +387,12 @@ class ReviewDataViewModel @Inject constructor(
             val result = manuscriptTestData
 
             val manuscripts =
-                if (isLoadMore) (_manuscriptReviewDiffusionData.value.manuscripts + result) else result
+                if (isLoadMore) (_manuscriptReviewDiffusionData.value.dataList + result) else result
             _manuscriptReviewDiffusionData.update {
                 it.copy(
                     isLoading = false,
                     isRefreshing = false,
-                    manuscripts = manuscripts
+                    dataList = manuscripts
                 )
             }
         }
@@ -383,12 +411,12 @@ class ReviewDataViewModel @Inject constructor(
             val result = manuscriptTestData
 
             val manuscripts =
-                if (isLoadMore) (_manuscriptReviewTopData.value.manuscripts + result) else result
+                if (isLoadMore) (_manuscriptReviewTopData.value.dataList + result) else result
             _manuscriptReviewTopData.update {
                 it.copy(
                     isLoading = false,
                     isRefreshing = false,
-                    manuscripts = manuscripts
+                    dataList = manuscripts
                 )
             }
         }
@@ -408,10 +436,10 @@ class ReviewDataViewModel @Inject constructor(
             val result = taskTestData
 
             val departmentTaskData =
-                if (isLoadMore) _departmentTaskDataState.value.tasks + result else result
+                if (isLoadMore) _departmentTaskDataState.value.dataList + result else result
 
             _departmentTaskDataState.update {
-                it.copy(isRefreshing = false, isLoading = false, tasks = departmentTaskData)
+                it.copy(isRefreshing = false, isLoading = false, dataList = departmentTaskData)
             }
         }
 
@@ -430,12 +458,12 @@ class ReviewDataViewModel @Inject constructor(
             val result = departTestData
 
             val departmentData =
-                if (isLoadMore) _departmentReviewDataState.value.departments + result else result
+                if (isLoadMore) _departmentReviewDataState.value.dataList + result else result
 
             // 加载完成
             _departmentReviewDataState.update {
                 it.copy(
-                    departments = departmentData,
+                    dataList = departmentData,
                     isLoading = false,
                     isRefreshing = false
                 )
@@ -457,12 +485,12 @@ class ReviewDataViewModel @Inject constructor(
             val result = departTestData
 
             val departmentData =
-                if (isLoadMore) _departmentReviewTopState.value.departments + result else result
+                if (isLoadMore) _departmentReviewTopState.value.dataList + result else result
 
             // 加载完成
             _departmentReviewTopState.update {
                 it.copy(
-                    departments = departmentData,
+                    dataList = departmentData,
                     isLoading = false,
                     isRefreshing = false
                 )

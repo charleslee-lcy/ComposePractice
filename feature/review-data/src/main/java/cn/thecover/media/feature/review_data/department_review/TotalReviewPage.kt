@@ -23,8 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.SavedStateHandle
-import cn.thecover.media.core.widget.component.ItemScoreRow
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cn.thecover.media.core.widget.component.PrimaryItemScoreRow
 import cn.thecover.media.core.widget.component.ScoreItemType
 import cn.thecover.media.core.widget.component.YBNormalList
@@ -32,6 +31,7 @@ import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.review_data.PreviewReviewDataViewModelFactory
 import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
@@ -64,14 +64,14 @@ internal fun DepartmentReviewScreen(
     // 创建部门数据列表
 
     // 创建 MutableState 用于列表组件
-    val departmentList = remember { mutableStateOf(depart.departments) }
+    val departmentList = remember { mutableStateOf(depart.dataList) }
     val isLoadingMore = remember { mutableStateOf(depart.isLoading) }
     val isRefreshing = remember { mutableStateOf(depart.isRefreshing) }
     val canLoadMore = remember { mutableStateOf(true) }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(depart) {
-        departmentList.value = depart.departments
+        departmentList.value = depart.dataList
         isLoadingMore.value = depart.isLoading
         isRefreshing.value = depart.isRefreshing
     }
@@ -257,10 +257,11 @@ private fun DepartmentReviewItem(
 @Preview(showSystemUi = true)
 fun DepartmentReviewScreenPreview() {
     // 手动创建ViewModel实例，用于预览
-    val previewViewModel = ReviewDataViewModel(SavedStateHandle())
 
     YBTheme {
-        DepartmentReviewScreen(viewmodel = previewViewModel)
+        DepartmentReviewScreen(viewmodel = viewModel(
+            factory = PreviewReviewDataViewModelFactory()
+        ))
     }
 }
 

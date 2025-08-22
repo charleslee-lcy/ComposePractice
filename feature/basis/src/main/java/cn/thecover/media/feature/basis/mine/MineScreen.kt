@@ -22,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -71,8 +70,6 @@ import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPassword
 import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.LocalTime
 
 
 /**
@@ -150,7 +147,7 @@ internal fun MineScreen(
             onConfirm = {
                 scope.launch {
                     clearData(context, Keys.USER_INFO)
-                     navController.navigateToLogin(navOptions {
+                    navController.navigateToLogin(navOptions {
                         // 清除所有之前的页面
                         popUpTo(navController.graph.id) {
                             inclusive = true
@@ -237,11 +234,10 @@ private fun MineFunctionList(
     viewModel: MineViewModel = hiltViewModel()
 ) {
     val loadingState = rememberTipsDialogState()
-    val context= LocalContext.current
-    val lastTimeForClearCache =readData(context, Keys.USER_CLEAR_CACHE_TIME,"").collectAsState("")
-    val scope= rememberCoroutineScope()
-
-    MineFunctionType.Cache.desc="上次清理 ${lastTimeForClearCache.value}"
+    val context = LocalContext.current
+    val lastTimeForClearCache = readData(context, Keys.USER_CLEAR_CACHE_TIME, "").collectAsState("")
+    val scope = rememberCoroutineScope()
+    MineFunctionType.Cache.desc = "上次清理 ${lastTimeForClearCache.value}"
     val statusState = rememberIconTipsDialogState()
     var showClearCacheState by remember { mutableStateOf(CACHE_CLEAR_STATE_INITIAL) }
     val dialogState = remember { mutableStateOf(false) }
@@ -253,7 +249,7 @@ private fun MineFunctionList(
     } else {
         loadingState.hide()
         if (showClearCacheState == CACHE_CLEAR_STATE_FINISHED) {
-            statusState.show("清理完成", cn.thecover.media.core.widget.R.drawable.icon_checked)
+            statusState.show("清理完成", YBIcons.Custom.Checked)
         } else if (showClearCacheState == CACHE_CLEAR_STATE_FAILED) {
             statusState.show("清理失败")
         }
@@ -271,7 +267,9 @@ private fun MineFunctionList(
         items(MineFunctionType.entries) { func ->
             MineFunctionItem(
                 icon = func.icon,
-                 func.title, if(func== MineFunctionType.Cache)"上次清理 ${lastTimeForClearCache.value}" else func.desc, clickAction =
+                func.title,
+                if (func == MineFunctionType.Cache) "上次清理 ${lastTimeForClearCache.value}" else func.desc,
+                clickAction =
                     when (func) {
                         MineFunctionType.ModifyPassword -> {
                             {
@@ -281,16 +279,17 @@ private fun MineFunctionList(
 
                         MineFunctionType.Cache -> {
                             {
-                                showClearCacheState=CACHE_CLEAR_STATE_STARTED
+                                showClearCacheState = CACHE_CLEAR_STATE_STARTED
                                 scope.launch {
 
-                                    saveData(context, Keys.USER_CLEAR_CACHE_TIME,
+                                    saveData(
+                                        context, Keys.USER_CLEAR_CACHE_TIME,
                                         getCurrentTimeToMinute()
                                     )
                                     delay(1000L)
-                                    showClearCacheState=CACHE_CLEAR_STATE_FINISHED
+                                    showClearCacheState = CACHE_CLEAR_STATE_FINISHED
                                     delay(1000L)
-                                    showClearCacheState=CACHE_CLEAR_STATE_INITIAL
+                                    showClearCacheState = CACHE_CLEAR_STATE_INITIAL
                                 }
                             }
                         }

@@ -22,12 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.review_data.PreviewReviewDataViewModelFactory
 import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
@@ -61,14 +62,14 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
 
 
     // 创建 MutableState 用于列表组件
-    val departmentList = remember { mutableStateOf(departmentTotalData.departments) }
+    val departmentList = remember { mutableStateOf(departmentTotalData.dataList) }
     val isLoadingMore = remember { mutableStateOf(departmentTotalData.isLoading) }
     val isRefreshing = remember { mutableStateOf(departmentTotalData.isRefreshing) }
     val canLoadMore = remember { mutableStateOf(true) }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(departmentTotalData) {
-        departmentList.value = departmentTotalData.departments
+        departmentList.value = departmentTotalData.dataList
         isLoadingMore.value = departmentTotalData.isLoading
         isRefreshing.value = departmentTotalData.isRefreshing
     }
@@ -159,7 +160,9 @@ private fun TopRankingItem(ranking: Int, departmentName: String, score: Int) {
 @Preview(showBackground = true)
 fun TopRankingItemPreview() {
     YBTheme {
-        DepartmentTopRankingPage(ReviewDataViewModel(SavedStateHandle()))
+        DepartmentTopRankingPage(viewModel(
+            factory = PreviewReviewDataViewModelFactory()
+        ))
     }
 
 }
