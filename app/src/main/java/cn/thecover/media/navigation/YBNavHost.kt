@@ -16,12 +16,23 @@
 
 package cn.thecover.media.navigation
 
+import android.app.Activity
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import cn.thecover.media.core.widget.datastore.Keys
 import cn.thecover.media.core.widget.datastore.rememberDataStoreState
@@ -34,6 +45,7 @@ import cn.thecover.media.feature.basis.mine.navigation.mineScreen
 import cn.thecover.media.feature.review_data.navigation.reviewDataScreen
 import cn.thecover.media.feature.review_manager.navigation.reviewManageScreen
 import cn.thecover.media.ui.YBAppState
+import kotlinx.coroutines.launch
 
 /**
  * Top-level navigation graph. Navigation is organized as explained at
@@ -97,5 +109,26 @@ fun YBNavHost(
             navController.navigateToMessage()
         })
         mineScreen(navController)
+    }
+
+    // 全局拦截
+    DoubleBackExitHandler(isTopLevelDestination)
+}
+
+@Composable
+fun DoubleBackExitHandler(isTopLevelDestination: Boolean) {
+    val context = LocalContext.current
+    var lastBackPress by remember { mutableLongStateOf(0L) }
+    val exitDelay = 2000L // 2s
+
+    BackHandler(isTopLevelDestination) {
+        val now = System.currentTimeMillis()
+        if (now - lastBackPress < exitDelay) {
+            // 2 秒内再次按返回 → 真正退出
+            (context as Activity).finishAffinity()
+        } else {
+            lastBackPress = now
+            Toast.makeText(context, "再次返回退出应用", Toast.LENGTH_SHORT).show()
+        }
     }
 }
