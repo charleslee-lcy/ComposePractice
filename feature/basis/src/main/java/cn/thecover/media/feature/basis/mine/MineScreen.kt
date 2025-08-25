@@ -295,7 +295,6 @@ private fun MineFunctionList(
     val context = LocalContext.current
     val lastTimeForClearCache = readData(context, Keys.USER_CLEAR_CACHE_TIME, "").collectAsState("")
     val scope = rememberCoroutineScope()
-
     MineFunctionType.Cache.desc = "上次清理 ${lastTimeForClearCache.value}"
     val statusState = rememberIconTipsDialogState()
     var showClearCacheState by remember { mutableStateOf(CACHE_CLEAR_STATE_INITIAL) }
@@ -308,7 +307,7 @@ private fun MineFunctionList(
     } else {
         loadingState.hide()
         if (showClearCacheState == CACHE_CLEAR_STATE_FINISHED) {
-            statusState.show("清理完成", cn.thecover.media.core.widget.R.drawable.icon_checked)
+            statusState.show("清理完成", YBIcons.Custom.Checked)
         } else if (showClearCacheState == CACHE_CLEAR_STATE_FAILED) {
             statusState.show("清理失败")
         }

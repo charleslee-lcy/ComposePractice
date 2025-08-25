@@ -75,6 +75,7 @@ object YBIcons {
         val Expand= R.drawable.icon_expand_down
         val ExpandVariant= R.drawable.icon_expand_variant
         val Msg= R.drawable.icon_message
+        val Checked= R.drawable.icon_checked
     }
     object Background {
         val Mine = R.drawable.bg_mine

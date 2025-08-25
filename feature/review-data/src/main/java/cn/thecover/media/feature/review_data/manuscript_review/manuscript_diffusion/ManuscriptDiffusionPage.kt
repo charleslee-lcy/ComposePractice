@@ -27,7 +27,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cn.thecover.media.core.widget.component.PrimaryItemScoreRow
 import cn.thecover.media.core.widget.component.ScoreItemType
 import cn.thecover.media.core.widget.component.YBNormalList
@@ -36,6 +36,7 @@ import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.search.FilterSearchTextField
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.review_data.PreviewReviewDataViewModelFactory
 import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
@@ -69,14 +70,14 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     val filter by viewModel.manuscriptDiffusionFilterState.collectAsState()
 
     // 创建 MutableState 用于列表组件
-    val manus = remember { mutableStateOf(data.manuscripts) }
+    val manus = remember { mutableStateOf(data.dataList) }
     val isLoadingMore = remember { mutableStateOf(data.isLoading) }
     val isRefreshing = remember { mutableStateOf(data.isRefreshing) }
     val canLoadMore = remember { mutableStateOf(true) }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(data) {
-        manus.value = data.manuscripts
+        manus.value = data.dataList
         isLoadingMore.value = data.isLoading
         isRefreshing.value = data.isRefreshing
     }
@@ -97,7 +98,7 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
                     text = buildAnnotatedString {
                         append("共 ")
                         withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                            append(data.manuscripts.size.toString())
+                            append(data.dataList.size.toString())
                         }
                         append(" 条记录")
                     },
@@ -330,7 +331,9 @@ private fun ManuscriptDiffusionHeader(
 @Preview
 private fun ManuscriptDiffusionHeaderPreview() {
     YBTheme {
-        ManuscriptDiffusionPage(ReviewDataViewModel(SavedStateHandle()))
+        ManuscriptDiffusionPage(viewModel(
+            factory = PreviewReviewDataViewModelFactory()
+        ))
     }
 
 }
