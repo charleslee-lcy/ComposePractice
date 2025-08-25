@@ -91,7 +91,6 @@ internal fun LoginScreen(
     var passwordText by remember { mutableStateOf("") }
     val loginScope = rememberCoroutineScope()
     val loadingState = rememberTipsDialogState()
-    var passwordVisible by remember { mutableStateOf(true) }
 
     val loginState = viewModel.loginUiState.collectAsStateWithLifecycle().value
 

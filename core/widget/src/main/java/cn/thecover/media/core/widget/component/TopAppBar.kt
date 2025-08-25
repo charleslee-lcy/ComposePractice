@@ -126,6 +126,7 @@ fun YBTopAppBar(
 fun YBTitleBar(
     modifier: Modifier = Modifier,
     title: String = "标题",
+    titleColor: Color = MainTextColor,
     leftOnClick: () -> Unit = {},
     backgroundColor: Color = Color.White,
     left: @Composable (() -> Unit)? = null,
@@ -164,7 +165,7 @@ fun YBTitleBar(
                 Text(
                     text = title,
                     fontSize = 16.sp,
-                    color = MainTextColor,
+                    color = titleColor,
                     fontWeight = FontWeight.SemiBold
                 )
             }

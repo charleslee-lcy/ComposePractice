@@ -1,6 +1,12 @@
 package cn.thecover.media.feature.basis.mine
 
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -22,7 +28,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,7 +37,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -56,7 +65,13 @@ import cn.thecover.media.core.widget.datastore.saveData
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.state.rememberIconTipsDialogState
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
+import cn.thecover.media.core.widget.theme.Blue80
+import cn.thecover.media.core.widget.theme.Green80
 import cn.thecover.media.core.widget.theme.MainTextColor
+import cn.thecover.media.core.widget.theme.Orange80
+import cn.thecover.media.core.widget.theme.Purple80
+import cn.thecover.media.core.widget.theme.Red80
+import cn.thecover.media.core.widget.theme.Teal80
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.util.getCurrentTimeToMinute
@@ -71,8 +86,6 @@ import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPassword
 import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.LocalTime
 
 
 /**
@@ -150,7 +163,7 @@ internal fun MineScreen(
             onConfirm = {
                 scope.launch {
                     clearData(context, Keys.USER_INFO)
-                     navController.navigateToLogin(navOptions {
+                    navController.navigateToLogin(navOptions {
                         // 清除所有之前的页面
                         popUpTo(navController.graph.id) {
                             inclusive = true
@@ -201,17 +214,59 @@ enum class MineFunctionType(
     HelpCenter(icon = YBIcons.Custom.MineHelpCenter, "帮助中心", "")
 }
 
-
 /**
  * 用户头像
  */
 @Composable
 private fun UserAvatar(avatarUrl: String?, userName: String?) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val rotateAnimation = infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1500, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+    val rainbowColorsBrush = remember {
+        Brush.sweepGradient(
+            colorStops = arrayOf(
+                0.0f to Red80,
+                0.16f to Orange80,
+                0.33f to Green80,
+                0.5f to Blue80,
+                0.66f to Teal80,
+                0.83f to Purple80,
+                1.0f to Red80   // 闭环
+            )
+        )
+    }
+    val flashColorsBrush = remember {
+        Brush.sweepGradient(
+            colorStops = arrayOf(
+                0.0f to Color(0xAAFFFFFF),
+                0.16f to Color(0x22FFFFFF),
+                0.33f to Color(0x00FFFFFF),
+                0.5f to Color(0xAAFFFFFF),
+                0.66f to Color(0x00FFFFFF),
+                0.83f to Color(0x22FFFFFF),
+                1.0f to Color(0xAAFFFFFF)   // 闭环
+            )
+        )
+    }
+
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+        val borderWidth = 5.dp
         AsyncImage(
             model = avatarUrl,
             contentDescription = "用户头像",
             modifier = Modifier
+                .drawBehind {
+                    drawCircle(brush = rainbowColorsBrush, style = Stroke(width = borderWidth.toPx()))
+                    rotate(rotateAnimation.value) {
+                        drawCircle(brush = flashColorsBrush, style = Stroke(width = borderWidth.toPx()))
+                    }
+                }
                 .size(60.dp)
                 .clip(CircleShape)
                 .background(Color.LightGray),
@@ -237,11 +292,11 @@ private fun MineFunctionList(
     viewModel: MineViewModel = hiltViewModel()
 ) {
     val loadingState = rememberTipsDialogState()
-    val context= LocalContext.current
-    val lastTimeForClearCache =readData(context, Keys.USER_CLEAR_CACHE_TIME,"").collectAsState("")
-    val scope= rememberCoroutineScope()
+    val context = LocalContext.current
+    val lastTimeForClearCache = readData(context, Keys.USER_CLEAR_CACHE_TIME, "").collectAsState("")
+    val scope = rememberCoroutineScope()
 
-    MineFunctionType.Cache.desc="上次清理 ${lastTimeForClearCache.value}"
+    MineFunctionType.Cache.desc = "上次清理 ${lastTimeForClearCache.value}"
     val statusState = rememberIconTipsDialogState()
     var showClearCacheState by remember { mutableStateOf(CACHE_CLEAR_STATE_INITIAL) }
     val dialogState = remember { mutableStateOf(false) }
@@ -271,7 +326,9 @@ private fun MineFunctionList(
         items(MineFunctionType.entries) { func ->
             MineFunctionItem(
                 icon = func.icon,
-                 func.title, if(func== MineFunctionType.Cache)"上次清理 ${lastTimeForClearCache.value}" else func.desc, clickAction =
+                func.title,
+                if (func == MineFunctionType.Cache) "上次清理 ${lastTimeForClearCache.value}" else func.desc,
+                clickAction =
                     when (func) {
                         MineFunctionType.ModifyPassword -> {
                             {
@@ -281,16 +338,17 @@ private fun MineFunctionList(
 
                         MineFunctionType.Cache -> {
                             {
-                                showClearCacheState=CACHE_CLEAR_STATE_STARTED
+                                showClearCacheState = CACHE_CLEAR_STATE_STARTED
                                 scope.launch {
 
-                                    saveData(context, Keys.USER_CLEAR_CACHE_TIME,
+                                    saveData(
+                                        context, Keys.USER_CLEAR_CACHE_TIME,
                                         getCurrentTimeToMinute()
                                     )
                                     delay(1000L)
-                                    showClearCacheState=CACHE_CLEAR_STATE_FINISHED
+                                    showClearCacheState = CACHE_CLEAR_STATE_FINISHED
                                     delay(1000L)
-                                    showClearCacheState=CACHE_CLEAR_STATE_INITIAL
+                                    showClearCacheState = CACHE_CLEAR_STATE_INITIAL
                                 }
                             }
                         }
