@@ -91,7 +91,6 @@ internal fun LoginScreen(
     var passwordText by remember { mutableStateOf("") }
     val loginScope = rememberCoroutineScope()
     val loadingState = rememberTipsDialogState()
-    var passwordVisible by remember { mutableStateOf(true) }
 
     val loginState = viewModel.loginUiState.collectAsStateWithLifecycle().value
 
@@ -105,9 +104,10 @@ internal fun LoginScreen(
                 saveData(context, Keys.USER_INFO, nameText.toString())
                 navController.navigateToHome(
                     navOptions = navOptions {
-                        popUpTo(navController.graph.startDestinationId) {
+                        popUpTo(navController.graph.id) {
                             inclusive = true
                         }
+                        launchSingleTop = true
                     }
                 )
             }

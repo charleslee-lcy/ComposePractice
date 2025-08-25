@@ -41,9 +41,9 @@ fun NavController.navigateToArchiveDetail(archiveListData: ArchiveListData, navO
     }
 }
 
-fun NavGraphBuilder.reviewManageScreen(navController: NavController) {
+fun NavGraphBuilder.reviewManageScreen(navController: NavController, routeToMsgScreen: () -> Unit = {}) {
     composable<ReviewManageRoute> {
-        ReviewManageRoute(navController = navController)
+        ReviewManageRoute(navController = navController, routeToMsgScreen = routeToMsgScreen)
     }
     composable<AppealDetailRoute> {
         AppealDetailRoute(navController = navController)

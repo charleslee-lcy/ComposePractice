@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -32,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -204,7 +206,9 @@ internal fun DepartmentAssignScreen(
                             hint = "暂未输入",
                             hintTextSize = 14.sp,
                             singleLine = true,
-                            isDigitLimit = true,
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Number
+                            ),
                             onValueChange = {
 
                             }
@@ -345,9 +349,12 @@ private fun DepartmentAssignHeader() {
                 .background(PageBackgroundColor)
                 .height(36.dp),
             initialIndex = 0,
-            filterData = searchFilters
-        ) { text, index ->
-            Log.d("CharlesLee", "filterType: ${searchFilters[index].type}")
+            filterData = searchFilters,
+            filterClick = { text, index ->
+                Log.d("CharlesLee", "filterType: ${searchFilters[index].type}")
+            }
+        ) {
+
         }
     }
 

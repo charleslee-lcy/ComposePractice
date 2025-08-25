@@ -34,9 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.coordinator.CoordinatorLayout
 import cn.thecover.media.core.widget.component.coordinator.CoordinatorState
 import cn.thecover.media.core.widget.component.coordinator.rememberCoordinatorState
@@ -316,12 +318,9 @@ fun <T> YBCoordinatorList(
                         Modifier.fillMaxWidth().height(with(LocalDensity.current) { coordinatorState.emptyHeight.toDp() }),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            "暂无数据",
-                            Modifier.padding(12.dp),
-                            textAlign = TextAlign.Center,
-                            color = TertiaryTextColor,
-                            fontSize = 14.sp
+                        YBImage(
+                            modifier = Modifier.padding(12.dp),
+                            placeholder = painterResource(R.mipmap.img_empty_content)
                         )
                     }
                 }
