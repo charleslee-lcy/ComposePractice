@@ -17,22 +17,30 @@
 package cn.thecover.media.core.widget.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateZoom
+import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import cn.thecover.media.core.widget.theme.LocalTintTheme
 import coil.compose.AsyncImagePainter.State.Error
 import coil.compose.AsyncImagePainter.State.Loading
 import coil.compose.rememberAsyncImagePainter
-import cn.thecover.media.core.widget.theme.LocalTintTheme
 
 /**
  * 默认为加载本地图片，placeholder设置本地图片资源。
@@ -45,7 +53,8 @@ fun YBImage(
     modifier: Modifier = Modifier,
     imageUrl: String = "",
     placeholder: Painter = ColorPainter(Color.LightGray),
-    contentScale: ContentScale = ContentScale.Crop
+    contentScale: ContentScale = ContentScale.Crop,
+    enableZoom: Boolean = false
 ) {
     val iconTint = LocalTintTheme.current.iconTint
     var isLoading by remember { mutableStateOf(true) }
@@ -58,8 +67,79 @@ fun YBImage(
             isError = state is Error
         },
     )
+
+    var scale by remember { mutableFloatStateOf(1f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+
+    var width by remember { mutableFloatStateOf(0f) }
+    var height by remember { mutableFloatStateOf(0f) }
+    val state = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
+        scale = (scale * zoomChange).coerceIn(1f, 5f) // 放大倍数限制
+        val newOffset = offset + offsetChange * scale
+        // 可选：限制平移范围，让图片不能拖出屏幕太远
+        offset = if (scale >= 1f) {
+            Offset(
+                x = newOffset.x.coerceIn(
+                    -(width * (scale - 1f)) / 2,
+                    (width * (scale - 1f)) / 2
+                ),
+                y = newOffset.y.coerceIn(
+                    -(height * (scale - 1f)) / 2,
+                    (height * (scale - 1f)) / 2
+                )
+            )
+        } else {
+            Offset.Zero
+        }
+    }
+
     Image(
-        modifier = modifier,
+        modifier = modifier
+//            .transformable(state = state)
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    do {
+                        val event = awaitPointerEvent()
+                        val zoomChange = event.calculateZoom()
+                        val offsetChange = event.calculatePan()
+                        val pointers = event.changes.size
+
+                        if (pointers >= 2) {              // 只有双指及以上才消费
+                            scale = (scale * zoomChange).coerceIn(1f, 5f) // 放大倍数限制
+                            val newOffset = offset + offsetChange * scale
+                            // 可选：限制平移范围，让图片不能拖出屏幕太远
+                            offset = if (scale >= 1f) {
+                                Offset(
+                                    x = newOffset.x.coerceIn(
+                                        -(width * (scale - 1f)) / 2,
+                                        (width * (scale - 1f)) / 2
+                                    ),
+                                    y = newOffset.y.coerceIn(
+                                        -(height * (scale - 1f)) / 2,
+                                        (height * (scale - 1f)) / 2
+                                    )
+                                )
+                            } else {
+                                Offset.Zero
+                            }
+                            event.changes.forEach { it.consume() }   // 消费掉
+                        } else {
+                            // 单指 -> 不消费，Pager 能收到
+                        }
+                    } while (event.changes.any { it.pressed })
+                }
+            }
+            .graphicsLayer {
+                width = size.width
+                height = size.height
+                if (enableZoom) {
+                    scaleX = scale
+                    scaleY = scale
+                    translationX = offset.x
+                    translationY = offset.y
+//                    rotationZ = rotation
+                }
+            },
         contentScale = contentScale,
         painter = if (imageUrl.isNotEmpty()) imageLoader else placeholder,
         contentDescription = null,

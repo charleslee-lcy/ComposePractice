@@ -20,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -48,7 +47,6 @@ fun YBBanner(modifier: Modifier = Modifier, items: SnapshotStateList<String>, au
     val loopingCount = Int.MAX_VALUE
     val startIndex = loopingCount / 2
     val pagerState = rememberPagerState(initialPage = startIndex, pageCount = { loopingCount })
-    val bannerScope = rememberCoroutineScope()
 
     // 页码转换
     fun pageMapper(index: Int) = (index - startIndex).floorMod(pageCount)
@@ -88,6 +86,7 @@ fun YBBanner(modifier: Modifier = Modifier, items: SnapshotStateList<String>, au
                     }
                 }
             } catch (e: CancellationException) {
+                e.printStackTrace()
             }
         }
     }
