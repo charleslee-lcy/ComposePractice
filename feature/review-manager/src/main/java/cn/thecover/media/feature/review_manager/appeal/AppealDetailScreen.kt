@@ -59,14 +59,14 @@ import cn.thecover.media.core.widget.ui.PhonePreview
 @Composable
 internal fun AppealDetailRoute(
     modifier: Modifier = Modifier,
+    canEdit: Boolean,
     navController: NavController
 ) {
-    AppealDetailScreen(modifier, navController)
+    AppealDetailScreen(modifier, canEdit, navController)
 }
 
 @Composable
-fun AppealDetailScreen(modifier: Modifier = Modifier, navController: NavController) {
-    val onlyRead = false
+fun AppealDetailScreen(modifier: Modifier = Modifier, canEdit: Boolean, navController: NavController) {
     val scrollState = rememberScrollState()
     val showApprovalDialog = remember { mutableStateOf(false) }
     val showRejectDialog = remember { mutableStateOf(false) }
@@ -266,7 +266,7 @@ fun AppealDetailScreen(modifier: Modifier = Modifier, navController: NavControll
                     ApprovalProcessContent()
                 }
 
-                if (onlyRead) {
+                if (!canEdit) {
                     Card(
                         modifier = Modifier
                             .padding(bottom = 15.dp)
@@ -342,7 +342,7 @@ fun AppealDetailScreen(modifier: Modifier = Modifier, navController: NavControll
 
             }
 
-            if (!onlyRead) {
+            if (canEdit) {
                 Row(
                     modifier = Modifier
                         .padding(bottom = 30.dp)
@@ -619,7 +619,7 @@ private fun ApprovalProcessContent() {
 @Composable
 fun AppealDetailPreview() {
     YBTheme {
-        AppealDetailScreen(navController = NavController(LocalContext.current))
+        AppealDetailScreen(navController = NavController(LocalContext.current), canEdit = false)
     }
 }
 
