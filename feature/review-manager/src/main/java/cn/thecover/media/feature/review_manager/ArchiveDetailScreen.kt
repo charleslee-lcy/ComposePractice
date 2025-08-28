@@ -1,11 +1,5 @@
 package cn.thecover.media.feature.review_manager
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,13 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,19 +19,13 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import cn.thecover.media.core.widget.component.YBImage
+import cn.thecover.media.core.widget.component.PreviewImages
 import cn.thecover.media.core.widget.component.YBTitleBar
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -95,13 +78,7 @@ fun ArchiveDetailScreen(
 
     Box(modifier = modifier.fillMaxSize()) {
         WebViewContent(showImages, webViewState, data, navController)
-        AnimatedVisibility(
-            showImages.value,
-            enter = scaleIn() + fadeIn(),
-            exit = scaleOut() + fadeOut(),
-        ) {
-            PreviewImages(imagesData, showImages)
-        }
+        PreviewImages(imagesData, showImages)
     }
 }
 
@@ -113,10 +90,6 @@ private fun WebViewContent(
     navController: NavController
 ) {
     val scrollState = rememberScrollState()
-
-    BackHandler(showImages.value) {
-        showImages.value = false
-    }
 
     Column(
         modifier = Modifier
@@ -167,60 +140,6 @@ private fun WebViewContent(
                 modifier = Modifier.fillMaxSize()
             )
         }
-    }
-}
-
-@Composable
-private fun PreviewImages(
-    imagesData: List<String>,
-    showImages: MutableState<Boolean>,
-) {
-    val pagerState = rememberPagerState(initialPage = 0, pageCount = { imagesData.size })
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MainTextColor)
-    ) {
-        HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { pageIndex ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clipToBounds()
-            ) {
-                YBImage(
-                    imageUrl = imagesData[pageIndex],
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Fit,
-                    enableZoom = true
-                )
-            }
-        }
-        Icon(
-            modifier = Modifier
-                .statusBarsPadding()
-                .clickableWithoutRipple {
-                    showImages.value = false
-                }.padding(10.dp),
-            imageVector = Icons.Outlined.Close,
-            tint = Color.White,
-            contentDescription = "关闭"
-        )
-        Text(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(vertical = 15.dp),
-            text = "${pagerState.currentPage + 1}/${imagesData.size}",
-            style = TextStyle(
-                color = Color.White,
-                fontSize = 14.sp,
-                shadow = Shadow(
-                    color = Color(0x99000000),
-                    offset = Offset(4f, 4f),   // x, y 偏移
-                    blurRadius = 8f            // 模糊半径
-                )
-            )
-        )
     }
 }
 

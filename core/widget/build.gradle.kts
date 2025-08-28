@@ -20,6 +20,8 @@ dependencies {
     api(libs.androidx.compose.material3.navigationSuite)
     api(libs.androidx.compose.runtime)
     api(libs.androidx.compose.ui.util)
+    api(libs.androidx.activity.compose)
+    api(libs.androidx.constraintLayout)
     api(libs.coil.kt)
     api(libs.coil.kt.svg)
     api(libs.coil.kt.compose)
