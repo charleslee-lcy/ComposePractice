@@ -130,7 +130,7 @@ fun MyAppealContent(navController: NavController) {
                     .fillMaxWidth()
                     .clickableWithoutRipple {
                         // 跳转到申诉详情页
-                        navController.navigateToAppealDetail()
+                        navController.navigateToAppealDetail(index % 2 == 0)
                     }, index = index
             )
         }

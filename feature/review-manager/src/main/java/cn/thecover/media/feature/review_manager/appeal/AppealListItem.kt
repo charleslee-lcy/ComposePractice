@@ -29,6 +29,7 @@ import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
+import kotlinx.serialization.Serializable
 import kotlin.random.Random
 
 
@@ -150,6 +151,13 @@ private fun Modifier.labelStyle(type: Int = 0): Modifier {
         .width(66.dp)
         .height(32.dp)
 }
+
+@Serializable
+data class AppealListData(
+    val title: String = "",
+    val niceDate: String = "",
+    val canEdit: Boolean = false
+)
 
 private fun labelText(type: Int = 0) = when (type) {
     0 -> "审批中" // 审批中

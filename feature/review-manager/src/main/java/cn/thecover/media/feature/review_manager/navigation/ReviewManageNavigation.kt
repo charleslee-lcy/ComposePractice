@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.review_manager.navigation
 
+import android.R.attr.data
 import android.R.attr.type
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -14,6 +15,7 @@ import cn.thecover.media.feature.review_manager.ArchiveDetailRoute
 import cn.thecover.media.feature.review_manager.ArchiveListData
 import cn.thecover.media.feature.review_manager.ReviewManageRoute
 import cn.thecover.media.feature.review_manager.appeal.AppealDetailRoute
+import cn.thecover.media.feature.review_manager.appeal.AppealListData
 import kotlinx.serialization.Serializable
 import java.util.Map.entry
 
@@ -25,15 +27,15 @@ import java.util.Map.entry
  */
 
 @Serializable object ReviewManageRoute
-@Serializable object AppealDetailRoute
+@Serializable data class AppealDetailRoute(val canEdit: Boolean)
 @Serializable data class ArchiveDetailRoute(val link: String)
 
 
 fun NavController.navigateToReviewManage(navOptions: NavOptions? = null) =
     navigate(route = ReviewManageRoute, navOptions)
 
-fun NavController.navigateToAppealDetail(navOptions: NavOptions? = null) =
-    navigate(route = AppealDetailRoute, navOptions)
+fun NavController.navigateToAppealDetail(canEdit: Boolean, navOptions: NavOptionsBuilder.() -> Unit = {}) =
+    navigate(route = AppealDetailRoute(canEdit = canEdit), navOptions)
 
 fun NavController.navigateToArchiveDetail(archiveListData: ArchiveListData, navOptions: NavOptionsBuilder.() -> Unit = {}) {
     navigate(route = archiveListData) {
@@ -46,9 +48,10 @@ fun NavGraphBuilder.reviewManageScreen(navController: NavController, routeToMsgS
         ReviewManageRoute(navController = navController, routeToMsgScreen = routeToMsgScreen)
     }
     composable<AppealDetailRoute> {
-        AppealDetailRoute(navController = navController)
+        val data = it.toRoute<AppealDetailRoute>()
+        AppealDetailRoute(canEdit = data.canEdit, navController = navController)
     }
-    composable<ArchiveListData>() {
+    composable<ArchiveListData> {
         val data = it.toRoute<ArchiveListData>()
         ArchiveDetailRoute(data = data, navController = navController)
     }

@@ -2,7 +2,10 @@ package cn.thecover.media.core.widget.event
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 
@@ -14,13 +17,21 @@ import androidx.compose.ui.composed
 
 /**
  * 点击无水波纹
+ *
+ * @param waitTime 防重复点击间隔时间
  */
-fun Modifier.clickableWithoutRipple(enabled: Boolean = true, onClick: () -> Unit) = composed {
+fun Modifier.clickableWithoutRipple(waitTime: Long = 500, enabled: Boolean = true, onClick: () -> Unit) = composed {
+    var lastClick by remember { mutableLongStateOf(0L) }
+
     this.clickable(
         interactionSource = remember { MutableInteractionSource() },
         indication = null,
         enabled
     ) {
-        onClick()
+        val current = System.currentTimeMillis()
+        if (current - lastClick >= waitTime) {
+            lastClick = current
+            onClick()
+        }
     }
 }

@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -20,12 +21,12 @@ import cn.thecover.media.MainActivityUiState.Loading
 import cn.thecover.media.core.common.network.NetworkMonitor
 import cn.thecover.media.core.widget.event.EventConstants
 import cn.thecover.media.core.widget.event.FlowBus
+import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.LocalTimeZone
 import cn.thecover.media.core.widget.util.TimeZoneMonitor
 import cn.thecover.media.ui.YBApp
 import cn.thecover.media.ui.rememberYBAppState
 import cn.thecover.media.util.isSystemInDarkTheme
-import cn.thecover.media.core.widget.theme.YBTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
