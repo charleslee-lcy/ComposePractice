@@ -1,10 +1,9 @@
 package cn.thecover.media.core.widget.component.popup
 
-import android.app.Activity
-import android.content.Context
-import android.graphics.drawable.ColorDrawable
-import android.util.DisplayMetrics
+import android.os.Build
+import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,9 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
@@ -25,15 +22,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
@@ -42,8 +38,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
@@ -159,6 +155,7 @@ fun YBDialog(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun YBFullDialog(
     dialogState: MutableState<Boolean>,
@@ -168,19 +165,24 @@ fun YBFullDialog(
 ) {
     if(dialogState.value){
         // 取物理屏幕尺寸
-        val context = LocalContext.current
-        val metrics = remember {
-            val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-            DisplayMetrics().apply { wm.defaultDisplay.getRealMetrics(this) }
-        }
-        val widthDp = with(LocalDensity.current) { metrics.widthPixels.toDp() }
-        val heightDp = with(LocalDensity.current) { metrics.heightPixels.toDp() }
-
         Dialog(
             onDismissRequest = onDismissRequest,
             content = {
+                val view = LocalView.current
+                val window = (view.parent as DialogWindowProvider).window
+                SideEffect {
+                    window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                    window.setBackgroundDrawable(android.graphics.Color.TRANSPARENT.toDrawable())
+
+                    // 允许画到状态栏/导航栏区域
+                    window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+
+                    val controller = WindowCompat.getInsetsController(window, view)
+                    controller.isAppearanceLightStatusBars = false
+                }
+
                 Box(
-                    modifier = Modifier.requiredSize(widthDp, heightDp).background(backgroundColor)
+                    modifier = Modifier.fillMaxSize().background(backgroundColor)
                 ) {
                     content()
                 }
