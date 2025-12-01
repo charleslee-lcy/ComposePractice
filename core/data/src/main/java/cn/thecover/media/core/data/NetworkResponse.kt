@@ -15,12 +15,4 @@ data class NetworkResponse<T>(
     val message: String = "",
 )
 
-data class PageData<T>(
-    val curPage: Int,
-    val datas: List<T>,
-    val offset: Int,
-    val over: Boolean,
-    val pageCount: Int,
-    val size: Int,
-    val total: Int,
-)
+

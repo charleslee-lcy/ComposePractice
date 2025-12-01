@@ -4,7 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import cn.thecover.media.core.data.NetworkResponse
-import cn.thecover.media.core.data.PageData
+import cn.thecover.media.core.data.PaginatedResult
+
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
 import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
 import cn.thecover.media.feature.review_data.repository.ReviewDataRepository
@@ -26,15 +27,12 @@ class PreviewReviewDataViewModelFactory : ViewModelProvider.Factory {
 
 // 创建假的 ApiService
 class FakeReviewApiService : ReviewDataApiService {
-    override suspend fun getManuscriptReviewData(page: Int): NetworkResponse<PageData<ManuscriptReviewDataEntity>> {
+    override suspend fun getManuscriptReviewData(page: Int): NetworkResponse<PaginatedResult<ManuscriptReviewDataEntity>> {
         TODO("Not yet implemented")
     }
 
-
-    override suspend fun getDepartmentReviewData(
-        page: Int,
-        key: String
-    ): NetworkResponse<PageData<DepartmentTotalDataEntity>> {
+    override suspend fun getDepartmentReviewData(requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<DepartmentTotalDataEntity>> {
         TODO("Not yet implemented")
     }
+
 }

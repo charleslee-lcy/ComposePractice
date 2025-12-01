@@ -4,8 +4,9 @@ import cn.thecover.media.feature.review_data.ReviewDataApiService
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
 import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
-import cn.thecover.media.feature.review_data.data.params.PaginatedResult
+import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.feature.review_data.data.params.RepositoryResult
+import cn.thecover.media.feature.review_data.data.params.SortConditions
 import jakarta.inject.Inject
 
 /**
@@ -23,10 +24,10 @@ import jakarta.inject.Inject
                 val body = response.data ?: throw Exception("Empty response")
                 RepositoryResult.Success(
                     PaginatedResult(
-                        dataList = body.datas,
-                        currentPage = body.curPage,
+                        dataList = body.dataList,
+                        currentPage = body.currentPage,
                         totalPages = body.total,
-                        hasNextPage = body.curPage < body.total
+                        hasNextPage = body.currentPage < body.total
                     )
                 )
             } else {
@@ -46,6 +47,23 @@ import jakarta.inject.Inject
     // 部门任务数据
     suspend fun fetchDepartmentTaskPage(page: Int): RepositoryResult<PaginatedResult<DepartmentTaskDataEntity>> {
         // 实现部门任务数据获取逻辑
+        try {
+            val response = reviewApiService.getDepartmentReviewData(mapOf(
+                "year" to "2025",
+                "month" to "08",
+                "page" to "",
+                "page_size" to "20",
+                "sortConditions" to listOf<SortConditions>(
+                    SortConditions(
+                        field = "total_count",
+                        direction = "desc"
+                    )
+                )
+            ))
+
+        }catch (e: Exception){
+
+        }
         TODO("实现部门任务数据获取")
     }
 
