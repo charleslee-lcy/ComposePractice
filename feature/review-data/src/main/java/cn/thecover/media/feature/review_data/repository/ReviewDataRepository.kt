@@ -19,7 +19,7 @@ import jakarta.inject.Inject
      suspend fun fetchManuscriptsPage(page: Int): RepositoryResult<PaginatedResult<ManuscriptReviewDataEntity>> {
         return try {
             val response = reviewApiService.getManuscriptReviewData(page)
-            if (response.errorCode == 0) {
+            if (response.status == 0) {
                 val body = response.data ?: throw Exception("Empty response")
                 RepositoryResult.Success(
                     PaginatedResult(
@@ -30,7 +30,7 @@ import jakarta.inject.Inject
                     )
                 )
             } else {
-                RepositoryResult.Error(Exception(response.errorMsg))
+                RepositoryResult.Error(Exception(response.message))
             }
         } catch (e: Exception) {
             RepositoryResult.Error(e)

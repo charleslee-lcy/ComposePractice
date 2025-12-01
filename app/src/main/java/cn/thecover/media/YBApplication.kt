@@ -1,6 +1,8 @@
 package cn.thecover.media
 
 import android.app.Application
+import cn.thecover.media.core.network.BuildConfig
+import cn.thecover.media.core.network.LogUtil
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import dagger.hilt.android.HiltAndroidApp
@@ -18,6 +20,8 @@ class YBApplication : Application(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
+
+        LogUtil.init(BuildConfig.DEBUG)
     }
 
     override fun newImageLoader(): ImageLoader = imageLoader.get()

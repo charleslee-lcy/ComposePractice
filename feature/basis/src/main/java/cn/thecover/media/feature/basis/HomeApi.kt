@@ -1,7 +1,10 @@
 package cn.thecover.media.feature.basis
 
+import cn.thecover.media.core.data.LoginRequest
+import cn.thecover.media.core.data.LoginResponse
 import cn.thecover.media.core.data.NetworkResponse
-import retrofit2.http.GET
+import retrofit2.http.Body
+import retrofit2.http.POST
 
 
 /**
@@ -10,6 +13,9 @@ import retrofit2.http.GET
  * 15708478830@163.com
  */
 interface HomeApi {
-    @GET(value = "article/list/0/json?page_size=20")
-    suspend fun login(): NetworkResponse<Any>
+    @POST(value = "api/user/login")
+    suspend fun login(@Body requestData: LoginRequest): NetworkResponse<LoginResponse>
+
+    @POST(value = "api/user/logout")
+    suspend fun logout(): NetworkResponse<Any>
 }

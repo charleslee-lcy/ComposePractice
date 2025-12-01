@@ -36,12 +36,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun okHttpCallFactory(): Call.Factory = OkHttpClient.Builder()
-        .addInterceptor(
-            HttpLoggingInterceptor()
-                .apply {
-                    setLevel(HttpLoggingInterceptor.Level.BODY)
-                },
-        )
+        .addInterceptor(HttpLogInterceptor())
         .connectTimeout(30 * 1000, TimeUnit.MILLISECONDS)
         .readTimeout(30 * 1000, TimeUnit.MILLISECONDS)
         .writeTimeout(30 * 1000, TimeUnit.MILLISECONDS)

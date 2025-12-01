@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
  * 15708478830@163.com
  */
 object Keys {
+    val USER_TOKEN = stringPreferencesKey("user_token")
     val USER_INFO = stringPreferencesKey("user_info")
     val USER_CLEAR_CACHE_TIME = stringPreferencesKey("user_clear_cache_time")
 }

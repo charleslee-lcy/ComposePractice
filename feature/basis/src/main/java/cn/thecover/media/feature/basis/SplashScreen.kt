@@ -52,10 +52,10 @@ internal fun SplashScreen(
     navController: NavController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val userInfo = rememberDataStoreState(Keys.USER_INFO, "")
+    val userToken = rememberDataStoreState(Keys.USER_TOKEN, "")
 
-    LaunchedEffect(userInfo) {
-        userInfo?.apply {
+    LaunchedEffect(userToken) {
+        userToken?.apply {
             delay(2000)
             if (this.isEmpty()) {
                 navController.navigateToLogin(
