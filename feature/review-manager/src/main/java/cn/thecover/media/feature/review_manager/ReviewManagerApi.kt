@@ -1,7 +1,8 @@
 package cn.thecover.media.feature.review_manager
 
 import cn.thecover.media.core.data.NetworkResponse
-import cn.thecover.media.core.data.PageData
+
+import cn.thecover.media.core.data.PaginatedResult
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -15,8 +16,8 @@ import retrofit2.http.Query
  */
 interface ReviewManagerApi {
     @GET(value = "article/list/{page}/json?page_size=20")
-    suspend fun getArchiveList(@Path("page") page: Int = 0): NetworkResponse<PageData<ArchiveListData>>
+    suspend fun getArchiveList(@Path("page") page: Int = 0): NetworkResponse<PaginatedResult<ArchiveListData>>
 
     @POST(value = "article/query/{page}/json")
-    suspend fun searchArchiveList(@Path("page") page: Int = 0, @Query("k") keyword: String): NetworkResponse<PageData<ArchiveListData>>
+    suspend fun searchArchiveList(@Path("page") page: Int = 0, @Query("k") keyword: String): NetworkResponse<PaginatedResult<ArchiveListData>>
 }

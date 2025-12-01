@@ -1,13 +1,15 @@
 package cn.thecover.media.feature.review_data
 
 import cn.thecover.media.core.data.NetworkResponse
-import cn.thecover.media.core.data.PageData
+
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
 import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
+import cn.thecover.media.core.data.PaginatedResult
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
-import retrofit2.http.Query
+
 
 /**
  *  Created by Wing at 14:51 on 2025/8/21
@@ -16,8 +18,9 @@ import retrofit2.http.Query
 
 interface ReviewDataApiService {
     @GET(value = "article/list/{page}/json?page_size=20")
-    suspend fun getManuscriptReviewData(@Path("page") page: Int = 0): NetworkResponse<PageData<ManuscriptReviewDataEntity>>
+    suspend fun getManuscriptReviewData(@Path("page") page: Int = 0): NetworkResponse<PaginatedResult<ManuscriptReviewDataEntity>>
 
-    @POST(value = "article/query/{page}/json")
-    suspend fun getDepartmentReviewData(@Path("page") page: Int = 0, @Query("k") key: String): NetworkResponse<PageData<DepartmentTotalDataEntity>>
+    //部门数据-稿件总数据排行
+    @POST(value = "/api/data/department/rank")
+    suspend fun getDepartmentReviewData(@Body requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<DepartmentTotalDataEntity>>
 }

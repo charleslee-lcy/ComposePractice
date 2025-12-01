@@ -18,6 +18,7 @@ dependencies {
     api(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.json)
 
+    implementation(libs.retrofit.converter.gson)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.kotlinx.serialization.json)
 }
