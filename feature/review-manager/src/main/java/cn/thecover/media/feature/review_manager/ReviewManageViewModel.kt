@@ -44,7 +44,7 @@ class ReviewManageViewModel @Inject constructor(
             }.asResult().collect { result ->
                     when (result.status) {
                         HttpStatus.SUCCESS -> {
-                            val data = result.data?.datas ?: emptyList()
+                            val data = result.data?.dataList ?: emptyList()
                             _archiveListDataState.update {
                                 it.copy(
                                     list = if (isRefresh) data else it.list + data,
@@ -90,7 +90,7 @@ class ReviewManageViewModel @Inject constructor(
             }.asResult().collect { result ->
                 when (result.status) {
                     HttpStatus.SUCCESS -> {
-                        val data = result.data?.datas ?: emptyList()
+                        val data = result.data?.dataList ?: emptyList()
                         _archiveListDataState.update {
                             it.copy(
                                 list = if (isRefresh) data else it.list + data,
