@@ -13,6 +13,9 @@ data class NetworkResponse<T>(
     val data: T? = null,
     val errorCode: Int = 0,
     val errorMsg: String = "",
-)
+    val status: Int = 0
+){
+    fun isSuccess(): Boolean = status == 0
+}
 
 

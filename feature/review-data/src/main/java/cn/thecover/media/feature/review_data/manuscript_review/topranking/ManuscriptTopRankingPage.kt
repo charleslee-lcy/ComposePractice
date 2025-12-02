@@ -49,7 +49,7 @@ import java.time.LocalDate
 @Composable
 fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel) {
     val filterState by viewModel.manuscriptTopFilterState.collectAsState()
-    val data by viewModel.manuscriptTopRankingState.collectAsState()
+    val data by viewModel.manuscriptReviewTopPageState.collectAsState()
     // 创建 MutableState 用于列表组件
     val manus = remember { mutableStateOf(data.dataList) }
     val isLoadingMore = remember { mutableStateOf(data.isLoading) }

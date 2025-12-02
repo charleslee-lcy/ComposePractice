@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import cn.thecover.media.core.data.NetworkResponse
 import cn.thecover.media.core.data.PaginatedResult
+import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
 
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
 import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
@@ -32,6 +33,14 @@ class FakeReviewApiService : ReviewDataApiService {
     }
 
     override suspend fun getDepartmentReviewData(requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<DepartmentTotalDataEntity>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getDepartmentTopData(requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<DepartmentTotalDataEntity>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getDepartmentTaskData(requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<DepartmentTaskDataEntity>> {
         TODO("Not yet implemented")
     }
 

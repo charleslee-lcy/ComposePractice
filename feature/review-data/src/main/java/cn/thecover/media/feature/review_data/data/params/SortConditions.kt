@@ -17,5 +17,14 @@ data class SortConditions(
         const val DEPT_DATA_TOTAL_MONEY = "DEPT_DATA_TOTAL_MONEY"//-部门总稿费
         const val DEPT_DATA_TOTAL_SCORE = "DEPT_DATA_TOTAL_SCORE"//-部门总分
         const val DEPT_DATA_AVERAGE_SCORE = "DEPT_DATA_AVERAGE_SCORE"//-部门平均分
+
+        fun putSortConditions(conditions: String, direction: String="ASC") = {
+            when(conditions){
+                "部门总稿费" -> SortConditions(DEPT_DATA_TOTAL_MONEY,direction)
+                "部门总分" -> SortConditions(DEPT_DATA_TOTAL_SCORE,direction)
+                "部门人员平均分" -> SortConditions(DEPT_DATA_AVERAGE_SCORE,direction)
+                "部门总人数" -> SortConditions(DEPT_DATA_PERSON_COUNT,direction)
+            }
+        }
     }
 }

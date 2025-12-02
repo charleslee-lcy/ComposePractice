@@ -65,7 +65,7 @@ import java.time.LocalDate
 fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
 
     // 模拟稿件传播数据列表
-    val data by viewModel.manuscriptDiffusionState.collectAsState()
+    val data by viewModel.manuscriptReviewDiffusionPageState.collectAsState()
 
     val filter by viewModel.manuscriptDiffusionFilterState.collectAsState()
 

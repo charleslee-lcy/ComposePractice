@@ -96,7 +96,7 @@ internal fun ManuscriptReviewPage(
     viewModel: ReviewDataViewModel
 ) {
     val splitsNum = 2
-    val data by viewModel.manuscriptReviewState.collectAsState()
+    val data by viewModel.manuscriptReviewPageState.collectAsState()
 
     var showEditScorePop by remember { mutableStateOf(false) }
     var editId by remember { mutableIntStateOf(0) }
