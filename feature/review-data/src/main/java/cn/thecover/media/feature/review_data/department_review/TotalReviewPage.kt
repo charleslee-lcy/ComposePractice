@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,8 +28,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import cn.thecover.media.core.widget.component.PrimaryItemScoreRow
 import cn.thecover.media.core.widget.component.ScoreItemType
 import cn.thecover.media.core.widget.component.YBNormalList
+import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
+import cn.thecover.media.core.widget.component.showToast
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.review_data.PreviewReviewDataViewModelFactory
@@ -60,9 +63,9 @@ internal fun DepartmentReviewScreen(
     modifier: Modifier = Modifier,
     viewmodel: ReviewDataViewModel = hiltViewModel<ReviewDataViewModel>()
 ) {
-    val depart by viewmodel.departmentReviewDataState.collectAsState()
+    val depart by viewmodel.departmentReviewPageState.collectAsState()
     // 创建部门数据列表
-
+    var snackBarHostState  by remember { mutableStateOf(SnackbarHostState()) }
     // 创建 MutableState 用于列表组件
     val departmentList = remember { mutableStateOf(depart.dataList) }
     val isLoadingMore = remember { mutableStateOf(depart.isLoading) }
@@ -74,6 +77,9 @@ internal fun DepartmentReviewScreen(
         departmentList.value = depart.dataList
         isLoadingMore.value = depart.isLoading
         isRefreshing.value = depart.isRefreshing
+        depart.error?.let {
+            snackBarHostState.showToast(it)
+        }
     }
 
 
@@ -110,6 +116,8 @@ internal fun DepartmentReviewScreen(
             viewmodel.departmentDataFilterState.collectAsState().value.sortField
         )
     }
+
+    YBToast(snackBarHostState = snackBarHostState)
 }
 
 

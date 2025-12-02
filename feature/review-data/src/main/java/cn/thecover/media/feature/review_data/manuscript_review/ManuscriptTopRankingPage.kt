@@ -1,4 +1,4 @@
-package cn.thecover.media.feature.review_data.manuscript_review.topranking
+package cn.thecover.media.feature.review_data.manuscript_review
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,6 +39,7 @@ import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelecti
 import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewFilterState
 import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
+import cn.thecover.media.feature.review_data.data.entity.ReporterEntity
 import java.time.LocalDate
 
 /**
@@ -49,7 +50,7 @@ import java.time.LocalDate
 @Composable
 fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel) {
     val filterState by viewModel.manuscriptTopFilterState.collectAsState()
-    val data by viewModel.manuscriptTopRankingState.collectAsState()
+    val data by viewModel.manuscriptReviewTopPageState.collectAsState()
     // 创建 MutableState 用于列表组件
     val manus = remember { mutableStateOf(data.dataList) }
     val isLoadingMore = remember { mutableStateOf(data.isLoading) }
@@ -116,7 +117,7 @@ private fun ManuscriptTopRankingItem(
                 modifier = Modifier,
             ) {
                 // 显示稿件头部信息（标题、作者、编辑）
-                ManuScriptItemHeader(title = data.title, author = data.author, editor = data.editor)
+                ManuScriptItemHeader(title = data.title, author = data.reporter.joinToString(", ") { it.name })
                 Spacer(Modifier.height(8.dp))
                 // 显示稿件的各项评分数据行
                 PrimaryItemScoreRow(
@@ -245,8 +246,7 @@ fun ManuscriptTopRankingPreview() {
         ManuscriptTopRankingItem(
             1, ManuscriptReviewDataEntity(
                 title = "2025年12月份的云南省让“看一种云南生活”富饶世界云南生活富饶世界",
-                author = "张明明",
-                editor = "李华",
+                reporter = listOf(ReporterEntity(name = "张明明")),
                 score = 22,
                 basicScore = 3,
                 qualityScore = 4,

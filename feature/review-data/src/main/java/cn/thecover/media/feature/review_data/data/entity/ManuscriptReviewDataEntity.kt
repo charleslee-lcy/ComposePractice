@@ -1,23 +1,41 @@
 package cn.thecover.media.feature.review_data.data.entity
 
+import com.google.gson.annotations.SerializedName
+import java.io.Serializable
+
 /**
  *  Created by Wing at 09:47 on 2025/8/6
  *  稿件考核评分数据实体类
  */
 
 data class ManuscriptReviewDataEntity(
+    @SerializedName("newsId")
     val id: Int = 0,
+    @SerializedName("rank")
+    val rank : Int = 0,
+    @SerializedName("ynNewsId")
+    val ynNewsId : Int = 0,
+    @SerializedName("newsTitle")
     val title: String = "",
-    val author: String = "",
-    val editor: String = "",
-    val isEdited: Boolean = false,
+    @SerializedName("reporterList")
+    val reporter: List<ReporterEntity> = emptyList(),
+
+    @SerializedName("cutNews")
+    val isCutNews: Boolean = false,
+    val leaderScoreModified: Boolean = false,
+
+    @SerializedName("totalScore")
     val score: Int = 0,//稿件总分
+    @SerializedName("basicScore")
     val basicScore: Int = 0,//基础分
+    @SerializedName("qualityScore")
     val qualityScore: Int = 0,//质量分
+    @SerializedName("spreadScore")
     val diffusionScore: Int = 0,//传播分
+
     val diffusionDataEntity: DiffusionDataEntity = DiffusionDataEntity(
 
     )
-)
+): Serializable
 
 

@@ -1,6 +1,5 @@
 package cn.thecover.media.feature.review_data.navigation
 
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -10,9 +9,9 @@ import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.department_review.DepartmentReviewScreen
 import cn.thecover.media.feature.review_data.department_review.DepartmentTaskReviewPage
 import cn.thecover.media.feature.review_data.department_review.DepartmentTopRankingPage
-import cn.thecover.media.feature.review_data.manuscript_review.manuscript_diffusion.ManuscriptDiffusionPage
-import cn.thecover.media.feature.review_data.manuscript_review.review.ManuscriptReviewPage
-import cn.thecover.media.feature.review_data.manuscript_review.topranking.ManuscriptTopRankingPage
+import cn.thecover.media.feature.review_data.manuscript_review.ManuscriptDiffusionPage
+import cn.thecover.media.feature.review_data.manuscript_review.ManuscriptReviewPage
+import cn.thecover.media.feature.review_data.manuscript_review.ManuscriptTopRankingPage
 import kotlinx.serialization.Serializable
 
 

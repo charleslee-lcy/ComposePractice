@@ -56,7 +56,7 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     // 存储用户选择的日期文本（格式：yyyy年M月）
     val datePickedState by viewModel.departmentTaskFilterState.collectAsState()
 
-    val taskState by viewModel.departmentTaskDataState.collectAsState()
+    val taskState by viewModel.departmentTaskPageState.collectAsState()
     // 创建 MutableState 用于列表组件
     val departmentTaskList = remember { mutableStateOf(taskState.dataList) }
     val isLoadingMore = remember { mutableStateOf(taskState.isLoading) }
