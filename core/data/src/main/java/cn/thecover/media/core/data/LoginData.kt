@@ -15,3 +15,8 @@ data class LoginRequest(
     val password: String,
     val client: String = "android"
 )
+
+@kotlinx.serialization.Serializable
+data class LogoutRequest(
+    val client: String = "android"
+)

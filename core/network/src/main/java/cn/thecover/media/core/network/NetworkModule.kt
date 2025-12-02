@@ -35,7 +35,8 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun okHttpCallFactory(): Call.Factory = OkHttpClient.Builder()
+    fun okHttpCallFactory(@ApplicationContext application: Context): Call.Factory = OkHttpClient.Builder()
+        .addInterceptor(AuthInterceptor(application))
         .addInterceptor(HttpLogInterceptor())
         .connectTimeout(30 * 1000, TimeUnit.MILLISECONDS)
         .readTimeout(30 * 1000, TimeUnit.MILLISECONDS)

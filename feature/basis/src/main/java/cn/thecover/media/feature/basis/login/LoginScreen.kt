@@ -248,7 +248,7 @@ private fun HomeScreenPreview() {
             navController = NavController(LocalContext.current),
             viewModel = HomeViewModel(
                 SavedStateHandle(),
-                retrofit = dagger.Lazy { previewRetrofit }
+                retrofit = { previewRetrofit }
             ))
     }
 }

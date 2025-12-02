@@ -23,6 +23,9 @@ class HttpLogInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
+        if (!request.url.toString().startsWith(URLConstant.YB_BASE_URL))
+            return chain.proceed(request)
+
         val response = chain.proceed(request)
 
         // 打印请求到的信息
@@ -30,8 +33,11 @@ class HttpLogInterceptor : Interceptor {
         sb.append("********** Request **********\n")
             .append(request.method).append(" - ")
             // 打印的url中文显示不出来
-            .append(URLDecoder.decode(request.url.toString())).append("\n")
-            .append("--- headers ---").append("\n").append(request.headers)
+            .append(URLDecoder.decode(request.url.toString()))
+            .append("\n")
+            .append("--- headers ---")
+            .append("\n")
+            .append(request.headers)
 
         request.body?.let { requestBody ->
             when(requestBody) {
