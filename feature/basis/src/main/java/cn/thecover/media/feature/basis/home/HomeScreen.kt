@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -28,9 +27,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,17 +37,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.R
-import cn.thecover.media.core.widget.component.UploadMedia
 import cn.thecover.media.core.widget.component.YBBadge
-import cn.thecover.media.core.widget.component.YBBanner
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.component.picker.DateType
@@ -81,7 +82,7 @@ internal fun HomeRoute(navController: NavController) {
     }
     YBTheme {
         HomeScreen(
-            routeToMessageScreen = goToMessageRoute
+            routeToMessageScreen = goToMessageRoute, navController = navController
         )
     }
 }
@@ -90,18 +91,11 @@ internal fun HomeRoute(navController: NavController) {
 @Composable
 internal fun HomeScreen(
     modifier: Modifier = Modifier,
-    routeToMessageScreen:(()->Unit)?=null
+    routeToMessageScreen: (()->Unit) ?= null,
+    navController: NavController,
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val listData = remember {
-        mutableStateListOf(
-            "https://gips3.baidu.com/it/u=119870705,2790914505&fm=3028&app=3028&f=JPEG&fmt=auto?w=1280&h=720",
-            "https://gips2.baidu.com/it/u=195724436,3554684702&fm=3028&app=3028&f=JPEG&fmt=auto?w=1280&h=960",
-            "https://gips0.baidu.com/it/u=1490237218,4115737545&fm=3028&app=3028&f=JPEG&fmt=auto?w=1280&h=720",
-            "https://gips2.baidu.com/it/u=207216414,2485641185&fm=3028&app=3028&f=JPEG&fmt=auto?w=1280&h=720",
-            "https://gips2.baidu.com/it/u=828570294,3060139577&fm=3028&app=3028&f=JPEG&fmt=auto?w=1024&h=1024",
-        )
-    }
-
+    val context = LocalContext.current
     val mainScreenScope = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
     val scrollState = rememberScrollState()
@@ -114,11 +108,17 @@ internal fun HomeScreen(
         animationSpec = infiniteRepeatable(tween(1000), RepeatMode.Reverse),
         label = "color"
     )
+    val userInfo by viewModel.userUiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        // 获取用户信息
+        viewModel.getUserInfo(context, navController)
+    }
 
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        TopBar( {
+        TopBar(userInfo.nickname ,{
             roleState = if (roleState == 1) 2 else 1
         }, messageClick = {
             routeToMessageScreen?.invoke()
@@ -132,7 +132,6 @@ internal fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Spacer(modifier = Modifier.height(1.dp))
-//            UploadMedia(modifier = Modifier.heightIn(max = LocalConfiguration.current.screenHeightDp.dp - 100.dp))
             Crossfade (roleState) {
                 if (it == 1) {
                     ReporterUserContent()
@@ -140,12 +139,6 @@ internal fun HomeScreen(
                     LeaderUserContent()
                 }
             }
-            YBBanner(
-                modifier = Modifier.height(150.dp),
-                items = listData,
-                autoScroll = true,
-                autoScrollDelay = 3000L
-            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -202,7 +195,7 @@ internal fun HomeScreen(
 }
 
 @Composable
-private fun TopBar(titleClick: () -> Unit = {},messageClick: () -> Unit = {}) {
+private fun TopBar(userName: String, titleClick: () -> Unit = {},messageClick: () -> Unit = {}) {
     var datePickerShow by remember { mutableStateOf(false) }
     var datePickedText by remember { mutableStateOf("2025年8月") }
 
@@ -214,7 +207,7 @@ private fun TopBar(titleClick: () -> Unit = {},messageClick: () -> Unit = {}) {
             .height(40.dp)
     ) {
         Text(
-            text = "CharlesLee",
+            text = userName,
             color = MainTextColor,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
@@ -274,6 +267,11 @@ private fun TopBar(titleClick: () -> Unit = {},messageClick: () -> Unit = {}) {
 @Composable
 private fun HomeScreenPreview() {
     YBTheme {
-        HomeScreen()
+        HomeScreen(
+            navController = NavController(LocalContext.current),
+            viewModel = HomeViewModel(
+            SavedStateHandle(),
+            retrofit = { previewRetrofit }
+        ))
     }
 }

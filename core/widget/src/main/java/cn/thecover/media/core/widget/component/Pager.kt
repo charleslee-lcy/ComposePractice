@@ -40,7 +40,12 @@ import kotlinx.coroutines.delay
  */
 
 @Composable
-fun YBBanner(modifier: Modifier = Modifier, items: SnapshotStateList<String>, autoScroll: Boolean = false, autoScrollDelay: Long = 3000L) {
+fun YBBanner(
+    modifier: Modifier = Modifier,
+    items: SnapshotStateList<String>,
+    autoScroll: Boolean = false,
+    autoScrollDelay: Long = 3000L
+) {
     if (items.isEmpty()) return
 
     val pageCount = items.size

@@ -4,6 +4,7 @@ import cn.thecover.media.core.data.LoginRequest
 import cn.thecover.media.core.data.LoginResponse
 import cn.thecover.media.core.data.LogoutRequest
 import cn.thecover.media.core.data.NetworkResponse
+import cn.thecover.media.core.data.UserInfo
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -19,4 +20,7 @@ interface HomeApi {
 
     @POST(value = "api/user/logout")
     suspend fun logout(@Body requestData: LogoutRequest): NetworkResponse<Any>
+
+    @POST(value = "api/user/getUserInfo")
+    suspend fun getUserInfo(): NetworkResponse<UserInfo>
 }

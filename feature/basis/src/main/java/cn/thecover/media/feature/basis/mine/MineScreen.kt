@@ -2,12 +2,6 @@ package cn.thecover.media.feature.basis.mine
 
 import android.widget.Toast
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -39,14 +33,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,6 +46,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
+import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
@@ -66,17 +58,12 @@ import cn.thecover.media.core.widget.component.popup.YBPopup
 import cn.thecover.media.core.widget.datastore.Keys
 import cn.thecover.media.core.widget.datastore.clearData
 import cn.thecover.media.core.widget.datastore.readData
+import cn.thecover.media.core.widget.datastore.rememberDataStoreState
 import cn.thecover.media.core.widget.datastore.saveData
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.state.rememberIconTipsDialogState
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
-import cn.thecover.media.core.widget.theme.Blue80
-import cn.thecover.media.core.widget.theme.Green80
 import cn.thecover.media.core.widget.theme.MainTextColor
-import cn.thecover.media.core.widget.theme.Orange80
-import cn.thecover.media.core.widget.theme.Purple80
-import cn.thecover.media.core.widget.theme.Red80
-import cn.thecover.media.core.widget.theme.Teal80
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.util.getCurrentTimeToMinute
@@ -89,6 +76,7 @@ import cn.thecover.media.feature.basis.mine.intent.MineNavigationIntent
 import cn.thecover.media.feature.basis.mine.navigation.navigateToHelpCenter
 import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPassword
 import coil.compose.AsyncImage
+import com.google.gson.Gson
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -102,7 +90,7 @@ import kotlinx.coroutines.launch
 internal fun MineRoute(
     modifier: Modifier = Modifier,
     viewModel: MineViewModel = hiltViewModel(),
-    navController: NavController,
+    navController: NavController
 ) {
     MineScreen(modifier, navController = navController)
 }
@@ -117,11 +105,19 @@ internal fun MineScreen(
         modifier = modifier.fillMaxSize()
     ) {
         val showLogoutDialog = remember { mutableStateOf(false) }
-        val userAvatarState by viewModel.userAvatarState.collectAsState()
         val logoutLoadingState = rememberTipsDialogState()
         val logoutUiState = viewModel.logoutUiState.collectAsStateWithLifecycle().value
         val scope = rememberCoroutineScope()
         val context = LocalContext.current
+        val userInfoJson = rememberDataStoreState(Keys.USER_INFO, "")
+        var userLocalData by remember { mutableStateOf(UserInfo()) }
+
+        LaunchedEffect(userInfoJson) {
+            val userInfo = Gson().fromJson(userInfoJson, UserInfo::class.java)
+            userInfo?.apply {
+                userLocalData = this
+            }
+        }
 
         LaunchedEffect(logoutUiState) {
             when (logoutUiState.status) {
@@ -163,7 +159,7 @@ internal fun MineScreen(
                 .padding(start = 24.dp, end = 24.dp, top = 76.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            UserAvatar(userAvatarState.avatarUrl, userAvatarState.username)
+            UserAvatar(userLocalData.avatar, userLocalData.nickname)
             Spacer(modifier = Modifier.height(40.dp))
             MineFunctionList(navController, viewModel)
             Spacer(modifier = Modifier.height(16.dp))
@@ -248,54 +244,12 @@ enum class MineFunctionType(
  */
 @Composable
 private fun UserAvatar(avatarUrl: String?, userName: String?) {
-    val infiniteTransition = rememberInfiniteTransition()
-    val rotateAnimation = infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1500, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        )
-    )
-    val rainbowColorsBrush = remember {
-        Brush.sweepGradient(
-            colorStops = arrayOf(
-                0.0f to Red80,
-                0.16f to Orange80,
-                0.33f to Green80,
-                0.5f to Blue80,
-                0.66f to Teal80,
-                0.83f to Purple80,
-                1.0f to Red80   // 闭环
-            )
-        )
-    }
-    val flashColorsBrush = remember {
-        Brush.sweepGradient(
-            colorStops = arrayOf(
-                0.0f to Color(0xAAFFFFFF),
-                0.16f to Color(0x22FFFFFF),
-                0.33f to Color(0x00FFFFFF),
-                0.5f to Color(0xAAFFFFFF),
-                0.66f to Color(0x00FFFFFF),
-                0.83f to Color(0x22FFFFFF),
-                1.0f to Color(0xAAFFFFFF)   // 闭环
-            )
-        )
-    }
-
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         val borderWidth = 5.dp
         AsyncImage(
             model = avatarUrl,
             contentDescription = "用户头像",
             modifier = Modifier
-                .drawBehind {
-                    drawCircle(brush = rainbowColorsBrush, style = Stroke(width = borderWidth.toPx()))
-                    rotate(rotateAnimation.value) {
-                        drawCircle(brush = flashColorsBrush, style = Stroke(width = borderWidth.toPx()))
-                    }
-                }
                 .size(60.dp)
                 .clip(CircleShape)
                 .background(Color.LightGray),
@@ -307,7 +261,7 @@ private fun UserAvatar(avatarUrl: String?, userName: String?) {
             error = painterResource(YBIcons.Custom.DefaultAvatar),
         )
         Spacer(modifier = Modifier.width(16.dp))
-        Text(userName ?: "", modifier = Modifier.weight(1f), fontSize = 20.sp)
+        Text(userName ?: "", modifier = Modifier.weight(1f), fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
     }
 }
 

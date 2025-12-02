@@ -29,10 +29,13 @@ enum class HttpStatus {
     ERROR
 }
 
+const val HTTP_STATUS_SUCCESS = 0
+const val HTTP_STATUS_LOGOUT = 403
+
 fun <T> Flow<NetworkResponse<T>>.asResult(): Flow<BaseUiState<T>> =
     map<NetworkResponse<T>, BaseUiState<T>> {
-        val result = if (it.status == 0) {
-            BaseUiState(it.data, HttpStatus.SUCCESS, 0, it.message)
+        val result = if (it.status == HTTP_STATUS_SUCCESS) {
+            BaseUiState(it.data, HttpStatus.SUCCESS, HTTP_STATUS_SUCCESS, it.message)
         } else {
             BaseUiState(it.data, HttpStatus.ERROR, it.status, it.message.ifEmpty { "请求失败" })
         }
