@@ -15,6 +15,7 @@ import cn.thecover.media.feature.review_data.data.entity.DiffusionDataEntity
 import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
 
 import cn.thecover.media.feature.review_data.data.params.RepositoryResult
+import cn.thecover.media.feature.review_data.data.params.SortConditions
 import cn.thecover.media.feature.review_data.repository.ReviewDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -70,8 +71,8 @@ class ReviewDataViewModel @Inject constructor(
 
     //稿件传播排行页面数据
     private val _manuscriptReviewDiffusionPageState =
-        MutableStateFlow(PaginatedResult<ManuscriptReviewDataEntity>())
-    val manuscriptReviewDiffusionPageState: StateFlow<PaginatedResult<ManuscriptReviewDataEntity>> =
+        MutableStateFlow(PaginatedResult<DiffusionDataEntity>())
+    val manuscriptReviewDiffusionPageState: StateFlow<PaginatedResult<DiffusionDataEntity>> =
         _manuscriptReviewDiffusionPageState
 
     private val _departmentDataFilterState = MutableStateFlow(DepartmentFilterState())
@@ -233,7 +234,7 @@ class ReviewDataViewModel @Inject constructor(
             val updatedManuscripts = currentState.dataList.map { manuscript ->
                 if (manuscript.id == id) {
                     // 创建新的对象，更新分数
-                    manuscript.copy(score = newScore, isEdited = true)
+                    manuscript.copy(score = newScore, leaderScoreModified = true)
                 } else {
                     manuscript
                 }
@@ -245,90 +246,6 @@ class ReviewDataViewModel @Inject constructor(
         }
     }
 
-    val manuscriptTestData = listOf(
-        ManuscriptReviewDataEntity(
-            id = 1,
-            title = "《三体》",
-            author = "刘慈欣",
-            editor = "王伟",
-            score = 4,
-            basicScore = 3,
-            qualityScore = 4,
-            diffusionScore = 5,
-            diffusionDataEntity = DiffusionDataEntity(
-                28888, 288888, 222, 222, 222, 222, 222, 222, 222
-            )
-        ),
-        ManuscriptReviewDataEntity(
-            id = 11,
-            title = "流浪地球",
-            author = "刘慈欣",
-            editor = "王伟",
-            score = 4,
-            basicScore = 3,
-            qualityScore = 4,
-            diffusionScore = 5,
-            diffusionDataEntity = DiffusionDataEntity(
-                2888, 288888, 222, 222, 222, 222, 222, 222, 222
-            )
-        ),
-        ManuscriptReviewDataEntity(
-            id = 2,
-            title = "2025年12月份的云南省让“看一种云南生活”富饶世界云南生活富饶世界",
-            author = "张明明",
-            editor = "李华",
-            score = 22,
-            basicScore = 3,
-            qualityScore = 4,
-            diffusionScore = 5,
-            diffusionDataEntity = DiffusionDataEntity(
-                28888, 288888, 222, 222, 222, 222, 222, 222, 222
-            )
-        ),
-        ManuscriptReviewDataEntity(
-            id = 3,
-            title = "“看一种云南生活”富饶世界云南生活富饶世界",
-            author = "张明明",
-            editor = "李华",
-            score = 22,
-            basicScore = 3,
-            qualityScore = 4,
-            diffusionScore = 5,
-            diffusionDataEntity = DiffusionDataEntity(
-                28888, 288888, 222, 222, 222, 222, 222, 222, 222
-            )
-        )
-    )
-
-    val taskTestData = listOf(
-        DepartmentTaskDataEntity("${Clock.System.now()})", 150, 150, 1f, "扣系数0.1"),
-        DepartmentTaskDataEntity("社会新闻部", 23, 30, 23.toFloat() / 30, "扣系数0.1"),
-        DepartmentTaskDataEntity("财经新闻部", 66, 500, 243.toFloat() / 500, "扣系数0.1"),
-        DepartmentTaskDataEntity("国际新闻部", 22, 33, 3 / 100.toFloat(), "扣系数0.1"),
-    )
-
-    val departTestData = listOf(
-        DepartmentTotalDataEntity(
-            departmentRanking = 1,
-            departmentName = "部门1",
-            totalScore = 100,
-            totalPersons = 10,
-            averageScore = 10,
-            totalPayment = 1000
-        ),
-        DepartmentTotalDataEntity(
-            departmentRanking = 2,
-            departmentName = "部门2",
-            totalScore = 100,
-            totalPersons = 10,
-            averageScore = 10,
-            totalPayment = 1000
-        ),
-        DepartmentTotalDataEntity(
-            1,
-            departmentName = "社会新闻部",
-        )
-    )
 
     private fun loadManuScriptReviewData(isLoadMore: Boolean = false) {
         _manuscriptReviewPageState.update {
@@ -343,7 +260,22 @@ class ReviewDataViewModel @Inject constructor(
                 1
             }
 
-            val result = repository.fetchManuscriptsPage(page)
+            val result = repository.fetchManuscriptsPage(
+                year = manuscriptReviewFilterState.value.getYearAsInt(),
+                month = manuscriptReviewFilterState.value.getMonthAsInt(),
+                page = page,
+                rankType = when (manuscriptReviewFilterState.value.sortField) {
+                    "分割线以上" -> 1
+                    "分割线以下（清零）" -> 2
+                    else -> 0
+                },
+                title = if (manuscriptReviewFilterState.value.searchField.contains("标题"))
+                    manuscriptReviewFilterState.value.searchText else "",
+                reporter = if (manuscriptReviewFilterState.value.searchField.contains("记者"))
+                    manuscriptReviewFilterState.value.searchText else "",
+                id = if (manuscriptReviewFilterState.value.searchField.contains("id"))
+                    manuscriptReviewFilterState.value.searchText else "",
+                )
 
             when (result) {
                 is RepositoryResult.Success -> {
@@ -385,24 +317,46 @@ class ReviewDataViewModel @Inject constructor(
 
     private fun loadManuScriptReviewDiffusionData(isLoadMore: Boolean = false) {
         _manuscriptReviewDiffusionPageState.update {
-            if (isLoadMore) it.copy(isLoading = true) else it.copy(
-                isRefreshing = true
+            if (isLoadMore) it.copy(isLoading = true, error = null) else it.copy(
+                isRefreshing = true,
+                error = null
             )
         }
         viewModelScope.launch {
-            delay(1000)
-            // val result = repository.fetchManuscriptReviewData()
+            val result = repository.fetchManuscriptDiffusionData(
+                year = manuscriptReviewFilterState.value.getYearAsInt(),
+                month = manuscriptReviewFilterState.value.getMonthAsInt(),
+                page = manuscriptReviewDiffusionPageState.value.currentPage,
+                sortConditions = manuscriptDiffusionFilterState.value.sortField,
+                title = if (manuscriptDiffusionFilterState.value.searchField.contains("标题"))
+                    manuscriptDiffusionFilterState.value.searchText else "",
+                reporter = if (manuscriptDiffusionFilterState.value.searchField.contains("记者"))
+                    manuscriptDiffusionFilterState.value.searchText else "",
+                id = if (manuscriptDiffusionFilterState.value.searchField.contains("id"))
+                    manuscriptDiffusionFilterState.value.searchText else "",
+            )
 
-            val result = manuscriptTestData
+            if (result is RepositoryResult.Success) {
+                val manuscripts =
+                    if (isLoadMore) (_manuscriptReviewDiffusionPageState.value.dataList + result.data.dataList) else result.data.dataList
 
-            val manuscripts =
-                if (isLoadMore) (_manuscriptReviewDiffusionPageState.value.dataList + result) else result
-            _manuscriptReviewDiffusionPageState.update {
-                it.copy(
-                    isLoading = false,
-                    isRefreshing = false,
-                    dataList = manuscripts
-                )
+                _manuscriptReviewDiffusionPageState.update {
+                    it.copy(
+                        isLoading = false,
+                        isRefreshing = false,
+                        dataList = manuscripts
+                    )
+                }
+
+            } else if (result is RepositoryResult.Error) {
+
+                _manuscriptReviewDiffusionPageState.update {
+                    it.copy(
+                        isLoading = false,
+                        isRefreshing = false,
+                        error = result.exception.message
+                    )
+                }
             }
         }
     }
@@ -414,19 +368,51 @@ class ReviewDataViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
-            delay(1000)
-            // val result = repository.fetchManuscriptReviewData()
+            val result = repository.fetchManuscriptsTopPage(
+                year = manuscriptTopFilterState.value.getYearAsInt(),
+                month = manuscriptTopFilterState.value.getMonthAsInt(),
+                page = manuscriptReviewTopPageState.value.currentPage,
+                rankType = when (manuscriptTopFilterState.value.sortField) {
+                    "分割线以上" -> 1
+                    "分割线以下（清零）" -> 2
+                    else -> 0
+                },
+                title = if (manuscriptTopFilterState.value.searchField.contains("标题"))
+                    manuscriptTopFilterState.value.searchText else "",
+                reporter = if (manuscriptTopFilterState.value.searchField.contains("记者"))
+                    manuscriptTopFilterState.value.searchText else "",
+                id = if (manuscriptTopFilterState.value.searchField.contains("id"))
+                    manuscriptTopFilterState.value.searchText else "",
+            )
+            when (result) {
+                is RepositoryResult.Success -> {
+                    val manuscripts =
+                        if (isLoadMore) (_manuscriptReviewTopPageState.value.dataList + result.data.dataList) else result.data.dataList
+                    _manuscriptReviewTopPageState.update {
+                        it.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            dataList = manuscripts,
+                            currentPage = result.data.currentPage,
+                            totalPages = result.data.totalPages,
+                            hasNextPage = result.data.hasNextPage
+                        )
+                    }
+                }
 
-            val result = manuscriptTestData
+                is RepositoryResult.Error -> {
+                    _manuscriptReviewTopPageState.update {
+                        it.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            error = result.exception.message
+                        )
+                    }
+                }
 
-            val manuscripts =
-                if (isLoadMore) (_manuscriptReviewTopPageState.value.dataList + result) else result
-            _manuscriptReviewTopPageState.update {
-                it.copy(
-                    isLoading = false,
-                    isRefreshing = false,
-                    dataList = manuscripts
-                )
+                is RepositoryResult.Loading -> {
+                    // 已在开始时处理
+                }
             }
         }
     }

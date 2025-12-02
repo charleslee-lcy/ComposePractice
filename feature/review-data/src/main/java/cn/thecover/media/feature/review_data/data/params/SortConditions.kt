@@ -18,12 +18,31 @@ data class SortConditions(
         const val DEPT_DATA_TOTAL_SCORE = "DEPT_DATA_TOTAL_SCORE"//-部门总分
         const val DEPT_DATA_AVERAGE_SCORE = "DEPT_DATA_AVERAGE_SCORE"//-部门平均分
 
+        const val NEWS_DATA_READ_COUNT = "NEWS_DATA_READ_COUNT"//-阅读数
+        const val NEWS_DATA_SHARE_COUNT = "NEWS_DATA_SHARE_COUNT"//-分享数
+        const val NEWS_DATA_LIKE_COUNT = "NEWS_DATA_LIKE_COUNT"//-点赞数
+        const val NEWS_DATA_COMMENT_COUNT = "NEWS_DATA_COMMENT_COUNT"//-评论数
+        const val NEWS_DATA_CORE_MEDIA_REPRINT_COUNT = "NEWS_DATA_CORE_MEDIA_REPRINT_COUNT"//-核心媒体转载数
+        const val NEWS_DATA_LEVEL1_MEDIA_REPRINT_COUNT = "NEWS_DATA_LEVEL1_MEDIA_REPRINT_COUNT"//-一级媒体转载数
+        const val NEWS_DATA_LEVEL2_MEDIA_REPRINT_COUNT = "NEWS_DATA_LEVEL2_MEDIA_REPRINT_COUNT"//-二级媒体转载数
+        const val NEWS_DATA_FORMULA_SPREAD_SCORE = "NEWS_DATA_FORMULA_SPREAD_SCORE"//-公式传播分
+        const val NEWS_DATA_FINAL_SPREAD_SCORE = "NEWS_DATA_FINAL_SPREAD_SCORE"//-最终传播分
+
         fun putSortConditions(conditions: String, direction: String="ASC") = {
             when(conditions){
                 "部门总稿费" -> SortConditions(DEPT_DATA_TOTAL_MONEY,direction)
                 "部门总分" -> SortConditions(DEPT_DATA_TOTAL_SCORE,direction)
                 "部门人员平均分" -> SortConditions(DEPT_DATA_AVERAGE_SCORE,direction)
                 "部门总人数" -> SortConditions(DEPT_DATA_PERSON_COUNT,direction)
+                "阅读数" -> SortConditions(NEWS_DATA_READ_COUNT,direction)
+                "分享数" -> SortConditions(NEWS_DATA_SHARE_COUNT,direction)
+                "点赞数" -> SortConditions(NEWS_DATA_LIKE_COUNT,direction)
+                "评论数" -> SortConditions(NEWS_DATA_COMMENT_COUNT,direction)
+                "核心媒体转载数" -> SortConditions(NEWS_DATA_CORE_MEDIA_REPRINT_COUNT,direction)
+                "一级媒体转载数" -> SortConditions(NEWS_DATA_LEVEL1_MEDIA_REPRINT_COUNT,direction)
+                "二级媒体转载数" -> SortConditions(NEWS_DATA_LEVEL2_MEDIA_REPRINT_COUNT,direction)
+                "公式传播分" -> SortConditions(NEWS_DATA_FORMULA_SPREAD_SCORE,direction)
+                "最终传播分" -> SortConditions(NEWS_DATA_FINAL_SPREAD_SCORE,direction)
             }
         }
     }

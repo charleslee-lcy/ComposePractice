@@ -5,9 +5,11 @@ import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntit
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
 import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
 import cn.thecover.media.core.data.PaginatedResult
+import cn.thecover.media.feature.review_data.data.entity.DiffusionDataEntity
 import cn.thecover.media.feature.review_data.data.params.RepositoryResult
 import cn.thecover.media.feature.review_data.data.params.SortConditions
 import cn.thecover.media.feature.review_data.data.params.SortConditions.Companion.DEPT_DATA_AVERAGE_SCORE
+import cn.thecover.media.feature.review_data.data.params.SortConditions.Companion.NEWS_DATA_FORMULA_SPREAD_SCORE
 import jakarta.inject.Inject
 
 /**
@@ -18,10 +20,30 @@ class ReviewDataRepository @Inject constructor(
     private val reviewApiService: ReviewDataApiService
 ) {
     // 稿件相关数据
-    suspend fun fetchManuscriptsPage(page: Int): RepositoryResult<PaginatedResult<ManuscriptReviewDataEntity>> {
+    suspend fun fetchManuscriptsPage(
+        year: Int,
+        month: Int,
+        page: Int,
+        rankType: Int = 0,
+        reporter: String = "",
+        title: String = "",
+        id: String = ""
+    ): RepositoryResult<PaginatedResult<ManuscriptReviewDataEntity>> {
         return try {
-            val response = reviewApiService.getManuscriptReviewData(page)
-            if (response.status == 0) {
+            val response = reviewApiService.getManuscriptReviewData(
+                mapOf(
+                    "newsId" to id,
+                    "newsTitle" to title,
+                    "rankType" to rankType,
+                    "reporterName" to reporter,
+
+                    "year" to year,
+                    "month" to month,
+                    "page" to page,
+                    "page_size" to "20",
+                )
+            )
+            if (response.isSuccess()) {
                 val body = response.data ?: throw Exception("Empty response")
                 RepositoryResult.Success(
                     PaginatedResult(
@@ -34,6 +56,93 @@ class ReviewDataRepository @Inject constructor(
             } else {
                 RepositoryResult.Error(Exception(response.message))
             }
+        } catch (e: Exception) {
+            RepositoryResult.Error(e)
+        }
+    }
+
+    //稿件 TOP
+    suspend fun fetchManuscriptsTopPage(
+        year: Int,
+        month: Int,
+        page: Int,
+        rankType: Int = 0,
+        reporter: String = "",
+        title: String = "",
+        id: String = ""
+    ): RepositoryResult<PaginatedResult<ManuscriptReviewDataEntity>> {
+        return try {
+            val response = reviewApiService.getManuscriptReviewTopData(
+                mapOf(
+                    "newsId" to id,
+                    "newsTitle" to title,
+                    "rankType" to rankType,
+                    "reporterName" to reporter,
+
+                    "year" to year,
+                    "month" to month,
+                    "page" to page,
+                    "page_size" to "20",
+                )
+            )
+            if (response.isSuccess()) {
+                val body = response.data ?: throw Exception("Empty response")
+                RepositoryResult.Success(
+                    PaginatedResult(
+                        dataList = body.dataList,
+                        currentPage = body.currentPage,
+                        totalPages = body.total,
+                        hasNextPage = body.currentPage < body.total
+                    )
+                )
+            } else {
+                RepositoryResult.Error(Exception(response.message))
+            }
+        } catch (e: Exception) {
+            RepositoryResult.Error(e)
+        }
+    }
+
+    //稿件传播效果
+    suspend fun fetchManuscriptDiffusionData(
+        year: Int,
+        month: Int,
+        page: Int,
+        sortConditions: String = "",
+        reporter: String = "",
+        title: String = "",
+        id: String = ""
+    ): RepositoryResult<PaginatedResult<DiffusionDataEntity>> {
+        return try {
+            val response = reviewApiService.getManuscriptDiffusionData(
+                mapOf(
+                    "newsId" to id,
+                    "newsTitle" to title,
+                    "sortConditions" to listOf(
+                        SortConditions.putSortConditions(sortConditions)
+                    ),
+                    "reporterName" to reporter,
+
+                    "year" to year,
+                    "month" to month,
+                    "page" to page,
+                    "page_size" to "20",
+                )
+            )
+            if (response.isSuccess()) {
+                val body = response.data ?: throw Exception("Empty response")
+                RepositoryResult.Success(
+                    PaginatedResult(
+                        dataList = body.dataList,
+                        currentPage = body.currentPage,
+                        totalPages = body.total,
+                        hasNextPage = body.currentPage < body.total
+                    )
+                )
+            } else {
+                RepositoryResult.Error(Exception(response.message))
+            }
+
         } catch (e: Exception) {
             RepositoryResult.Error(e)
         }
@@ -71,7 +180,7 @@ class ReviewDataRepository @Inject constructor(
                     )
                 )
             } else {
-                RepositoryResult.Error(Exception(response.errorMsg))
+                RepositoryResult.Error(Exception(response.message))
             }
 
         } catch (e: Exception) {
@@ -92,7 +201,8 @@ class ReviewDataRepository @Inject constructor(
                     "year" to year,
                     "month" to month,
                     "page" to page,
-                    "page_size" to "20")
+                    "page_size" to "20"
+                )
             )
 
             if (response.isSuccess()) {
@@ -106,7 +216,7 @@ class ReviewDataRepository @Inject constructor(
                     )
                 )
             } else {
-                RepositoryResult.Error(Exception(response.errorMsg))
+                RepositoryResult.Error(Exception(response.message))
             }
 
         } catch (e: Exception) {
@@ -143,7 +253,7 @@ class ReviewDataRepository @Inject constructor(
                     )
                 )
             } else {
-                RepositoryResult.Error(Exception(response.errorMsg))
+                RepositoryResult.Error(Exception(response.message))
             }
 
         } catch (e: Exception) {

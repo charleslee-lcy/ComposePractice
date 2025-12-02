@@ -8,6 +8,7 @@ import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
 
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
+import cn.thecover.media.feature.review_data.data.entity.DiffusionDataEntity
 import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
 import cn.thecover.media.feature.review_data.repository.ReviewDataRepository
 
@@ -28,7 +29,17 @@ class PreviewReviewDataViewModelFactory : ViewModelProvider.Factory {
 
 // 创建假的 ApiService
 class FakeReviewApiService : ReviewDataApiService {
-    override suspend fun getManuscriptReviewData(page: Int): NetworkResponse<PaginatedResult<ManuscriptReviewDataEntity>> {
+
+
+    override suspend fun getManuscriptReviewData(requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<ManuscriptReviewDataEntity>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getManuscriptReviewTopData(requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<ManuscriptReviewDataEntity>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getManuscriptDiffusionData(requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<DiffusionDataEntity>> {
         TODO("Not yet implemented")
     }
 

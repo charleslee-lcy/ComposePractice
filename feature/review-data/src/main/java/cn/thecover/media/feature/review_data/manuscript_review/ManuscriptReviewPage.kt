@@ -1,4 +1,4 @@
-package cn.thecover.media.feature.review_data.manuscript_review.review
+package cn.thecover.media.feature.review_data.manuscript_review
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -277,8 +277,7 @@ private fun TotalRankingItem(
                         // 显示稿件头部信息：标题、作者、编辑
                         ManuScriptItemHeader(
                             title = data.title,
-                            author = data.author,
-                            editor = data.editor
+                            author = data.reporter.joinToString(", ") { it.name },
                         )
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -291,7 +290,7 @@ private fun TotalRankingItem(
                             )
 
                             Spacer(modifier = Modifier.width(8.dp))
-                            AnimatedVisibility(data.isEdited) {
+                            AnimatedVisibility(data.leaderScoreModified) {
                                 Text(
                                     "改",
                                     modifier = Modifier
