@@ -7,5 +7,5 @@ package cn.thecover.media.core.network
  * 15708478830@163.com
  */
 object URLConstant {
-    const val YB_BASE_URL = "https://www.wanandroid.com/"
+    const val YB_BASE_URL = "https://test-ynrb-api.yndaily.com/pms-api/"
 }

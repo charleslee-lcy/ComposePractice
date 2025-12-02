@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
+import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.YBTopAppBar
 import cn.thecover.media.core.widget.component.search.FilterSearchTextField
@@ -226,7 +227,7 @@ enum class MessageType(val typeName: String) {
 @Preview(showBackground = true)
 fun MessageScreenPreview() {
     YBTheme {
-        MessageScreen(MineViewModel(SavedStateHandle()), {})
+        MessageScreen(MineViewModel(SavedStateHandle(), retrofit = { previewRetrofit }), {})
     }
 
 }

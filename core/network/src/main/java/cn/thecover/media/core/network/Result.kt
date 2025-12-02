@@ -31,10 +31,10 @@ enum class HttpStatus {
 
 fun <T> Flow<NetworkResponse<T>>.asResult(): Flow<BaseUiState<T>> =
     map<NetworkResponse<T>, BaseUiState<T>> {
-        val result = if (it.errorCode == 0 && it.data != null) {
-            BaseUiState(it.data, HttpStatus.SUCCESS, 0, it.errorMsg)
+        val result = if (it.status == 0) {
+            BaseUiState(it.data, HttpStatus.SUCCESS, 0, it.message)
         } else {
-            BaseUiState(it.data, HttpStatus.ERROR, it.errorCode, it.errorMsg)
+            BaseUiState(it.data, HttpStatus.ERROR, it.status, it.message.ifEmpty { "请求失败" })
         }
         result
     }

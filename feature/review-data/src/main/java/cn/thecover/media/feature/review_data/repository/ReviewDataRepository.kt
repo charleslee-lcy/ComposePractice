@@ -21,7 +21,7 @@ class ReviewDataRepository @Inject constructor(
     suspend fun fetchManuscriptsPage(page: Int): RepositoryResult<PaginatedResult<ManuscriptReviewDataEntity>> {
         return try {
             val response = reviewApiService.getManuscriptReviewData(page)
-            if (response.errorCode == 0) {
+            if (response.status == 0) {
                 val body = response.data ?: throw Exception("Empty response")
                 RepositoryResult.Success(
                     PaginatedResult(
@@ -32,7 +32,7 @@ class ReviewDataRepository @Inject constructor(
                     )
                 )
             } else {
-                RepositoryResult.Error(Exception(response.errorMsg))
+                RepositoryResult.Error(Exception(response.message))
             }
         } catch (e: Exception) {
             RepositoryResult.Error(e)

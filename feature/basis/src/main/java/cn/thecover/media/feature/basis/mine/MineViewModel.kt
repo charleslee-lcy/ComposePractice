@@ -3,8 +3,10 @@ package cn.thecover.media.feature.basis.mine
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cn.thecover.media.core.widget.datastore.Keys
-import cn.thecover.media.core.widget.datastore.saveData
+import cn.thecover.media.core.data.LogoutRequest
+import cn.thecover.media.core.network.BaseUiState
+import cn.thecover.media.core.network.asResult
+import cn.thecover.media.feature.basis.HomeApi
 import cn.thecover.media.feature.basis.message.MessageType
 import cn.thecover.media.feature.basis.message.data.MessageDataListState
 import cn.thecover.media.feature.basis.message.data.entity.MessageDataEntity
@@ -14,8 +16,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.Retrofit
 import javax.inject.Inject
 
 /**
@@ -26,6 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MineViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    val retrofit: dagger.Lazy<Retrofit>
 ) : ViewModel() {
 
     companion object {
@@ -34,6 +39,9 @@ class MineViewModel @Inject constructor(
         const val CACHE_CLEAR_STATE_INITIAL = 0
         const val CACHE_CLEAR_STATE_FAILED = -1
     }
+
+    private val logoutUiData = MutableStateFlow(BaseUiState<Any>())
+    val logoutUiState = logoutUiData
 
     private val _userAvatarState = MutableStateFlow(UserAvatarEntity("用户名", ""))
     val userAvatarState: StateFlow<UserAvatarEntity> = _userAvatarState
@@ -125,5 +133,16 @@ class MineViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    suspend fun logout() {
+        flow {
+            val apiService = retrofit.get().create(HomeApi::class.java)
+            val result = apiService.logout(LogoutRequest())
+            emit(result)
+        }.asResult()
+            .collect { result ->
+                logoutUiData.value = result
+            }
     }
 }

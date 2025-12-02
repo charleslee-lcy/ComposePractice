@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.basis.mine
 
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -28,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,8 +52,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
+import cn.thecover.media.core.network.HttpStatus
+import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.picker.YBTimePicker
 import cn.thecover.media.core.widget.component.popup.YBAutoDismissDialog
@@ -113,8 +118,38 @@ internal fun MineScreen(
     ) {
         val showLogoutDialog = remember { mutableStateOf(false) }
         val userAvatarState by viewModel.userAvatarState.collectAsState()
+        val logoutLoadingState = rememberTipsDialogState()
+        val logoutUiState = viewModel.logoutUiState.collectAsStateWithLifecycle().value
         val scope = rememberCoroutineScope()
         val context = LocalContext.current
+
+        LaunchedEffect(logoutUiState) {
+            when (logoutUiState.status) {
+                HttpStatus.LOADING -> {
+                    logoutLoadingState.show()
+                }
+                HttpStatus.SUCCESS -> {
+                    logoutLoadingState.hide()
+                    // 清楚token和用户信息缓存
+                    clearData(context, Keys.USER_TOKEN)
+                    clearData(context, Keys.USER_INFO)
+                    navController.navigateToLogin(navOptions {
+                        // 清除所有之前的页面
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    })
+                }
+                HttpStatus.ERROR -> {
+                    logoutLoadingState.hide()
+                    Toast.makeText(context, logoutUiState.errorMsg, Toast.LENGTH_SHORT).show()
+                }
+                else -> {}
+            }
+        }
+
+
         AsyncImage(
             model = YBIcons.Background.Mine,
             contentDescription = null,
@@ -162,14 +197,7 @@ internal fun MineScreen(
             confirmText = "退出",
             onConfirm = {
                 scope.launch {
-                    clearData(context, Keys.USER_INFO)
-                    navController.navigateToLogin(navOptions {
-                        // 清除所有之前的页面
-                        popUpTo(navController.graph.id) {
-                            inclusive = true
-                        }
-                        launchSingleTop = true
-                    })
+                    viewModel.logout()
                 }
             },
             cancelText = "取消",
@@ -178,6 +206,7 @@ internal fun MineScreen(
             }
         )
 
+        YBLoadingDialog(logoutLoadingState, enableDismiss = true, onDismissRequest = { logoutLoadingState.hide() })
 
     }
 }
@@ -187,7 +216,7 @@ internal fun MineScreen(
 private fun MineScreenPreview() {
     YBTheme {
         // 手动创建ViewModel实例，用于预览
-        val previewViewModel = MineViewModel(SavedStateHandle())
+        val previewViewModel = MineViewModel(SavedStateHandle(), retrofit = { previewRetrofit })
 
         MineScreen(
             viewModel = previewViewModel, navController = NavController(LocalContext.current)
