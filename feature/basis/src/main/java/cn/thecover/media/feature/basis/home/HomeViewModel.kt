@@ -2,6 +2,8 @@ package cn.thecover.media.feature.basis.home
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import cn.thecover.media.core.data.LoginRequest
+import cn.thecover.media.core.data.LoginResponse
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.asResult
 import cn.thecover.media.feature.basis.HomeApi
@@ -21,17 +23,19 @@ class HomeViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     val retrofit: dagger.Lazy<Retrofit>
 ) : ViewModel() {
-    private val loginUiData = MutableStateFlow(BaseUiState<Any>())
+    private val loginUiData = MutableStateFlow(BaseUiState<LoginResponse>())
     val loginUiState = loginUiData
 
-    suspend fun login() {
+    suspend fun login(username: String, password: String) {
         flow {
             val apiService = retrofit.get().create(HomeApi::class.java)
-            val result = apiService.login()
+            val result = apiService.login(
+                LoginRequest(username, password)
+            )
             emit(result)
         }.asResult()
-           .collect { result ->
-               loginUiData.value = result
+            .collect { result ->
+                loginUiData.value = result
             }
     }
 }

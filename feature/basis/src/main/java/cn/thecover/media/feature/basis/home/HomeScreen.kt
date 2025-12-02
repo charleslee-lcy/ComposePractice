@@ -132,7 +132,7 @@ internal fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Spacer(modifier = Modifier.height(1.dp))
-            UploadMedia(modifier = Modifier.heightIn(max = LocalConfiguration.current.screenHeightDp.dp - 100.dp))
+//            UploadMedia(modifier = Modifier.heightIn(max = LocalConfiguration.current.screenHeightDp.dp - 100.dp))
             Crossfade (roleState) {
                 if (it == 1) {
                     ReporterUserContent()

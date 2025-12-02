@@ -19,6 +19,7 @@ android {
 dependencies {
     implementation(projects.core.common)
     implementation(projects.core.data)
+    implementation(projects.core.widget)
 
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.coil.kt)

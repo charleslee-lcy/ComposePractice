@@ -9,4 +9,5 @@ dependencies {
     api(libs.kotlinx.datetime)
     api(libs.webview)
     api(libs.dataStore)
+    api(libs.logger)
 }

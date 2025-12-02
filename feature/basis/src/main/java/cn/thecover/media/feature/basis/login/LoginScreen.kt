@@ -38,6 +38,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
+import cn.thecover.media.core.common.util.DESUtil
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.YBButton
@@ -101,18 +102,23 @@ internal fun LoginScreen(
             }
             HttpStatus.SUCCESS -> {
                 loadingState.hide()
-                saveData(context, Keys.USER_INFO, nameText.toString())
-                navController.navigateToHome(
-                    navOptions = navOptions {
-                        popUpTo(navController.graph.id) {
-                            inclusive = true
+                loginState.data?.token?.let {
+                    saveData(context, Keys.USER_TOKEN, it)
+                    navController.navigateToHome(
+                        navOptions = navOptions {
+                            popUpTo(navController.graph.id) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
                         }
-                        launchSingleTop = true
-                    }
-                )
+                    )
+                } ?: kotlin.run {
+                    Toast.makeText(context, loginState.errorMsg, Toast.LENGTH_SHORT).show()
+                }
             }
             HttpStatus.ERROR -> {
-                Toast.makeText(context, "登录失败", Toast.LENGTH_SHORT).show()
+                loadingState.hide()
+                Toast.makeText(context, loginState.errorMsg, Toast.LENGTH_SHORT).show()
             }
             else -> {}
         }
@@ -212,7 +218,7 @@ internal fun LoginScreen(
 
                     focusManager.clearFocus()
                     loginScope.launch {
-                        viewModel.login()
+                        viewModel.login(DESUtil.simpleEncrypt(nameText), DESUtil.simpleEncrypt(passwordText))
                     }
                 }
             )
@@ -242,7 +248,7 @@ private fun HomeScreenPreview() {
             navController = NavController(LocalContext.current),
             viewModel = HomeViewModel(
                 SavedStateHandle(),
-                retrofit = dagger.Lazy { previewRetrofit }
+                retrofit = { previewRetrofit }
             ))
     }
 }

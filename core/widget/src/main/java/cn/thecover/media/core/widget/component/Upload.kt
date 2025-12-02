@@ -1,11 +1,9 @@
 package cn.thecover.media.core.widget.component
 
 import android.Manifest
-import android.app.Activity
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -38,7 +36,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
-import androidx.fragment.app.FragmentActivity
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.YBTheme
@@ -56,7 +53,7 @@ fun UploadMedia(
     items: List<Uri> = emptyList()
 ) {
     val context = LocalContext.current
-    var listData = remember { mutableStateListOf<Uri>() }
+    val listData = remember { mutableStateListOf<Uri>() }
     val showAdd by remember { mutableStateOf(true) }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
