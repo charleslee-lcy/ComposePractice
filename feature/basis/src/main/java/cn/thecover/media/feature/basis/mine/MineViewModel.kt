@@ -43,9 +43,6 @@ class MineViewModel @Inject constructor(
     private val logoutUiData = MutableStateFlow(BaseUiState<Any>())
     val logoutUiState = logoutUiData
 
-    private val _userAvatarState = MutableStateFlow(UserAvatarEntity("用户名", ""))
-    val userAvatarState: StateFlow<UserAvatarEntity> = _userAvatarState
-
     private val _cacheClearState = MutableStateFlow(CACHE_CLEAR_STATE_INITIAL)
     val cacheClearState: StateFlow<Int> = _cacheClearState
 

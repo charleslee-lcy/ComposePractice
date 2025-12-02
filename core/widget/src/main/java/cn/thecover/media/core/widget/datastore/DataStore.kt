@@ -8,7 +8,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -49,12 +48,12 @@ fun <T> readData(
 ): Flow<T> = context.dataStore.data
     .map { it[key] ?: default }
 
+suspend fun <T> clearData(context: Context, key: Preferences.Key<T>) {
+    context.dataStore.edit { it.remove(key) }
+}
+
 fun getToken(context: Context): String = runBlocking {
     context.dataStore.data
         .map { it[Keys.USER_TOKEN] ?: "" }.first()
-}
-
-suspend fun <T> clearData(context: Context, key: Preferences.Key<T>) {
-    context.dataStore.edit { it.remove(key) }
 }
 
