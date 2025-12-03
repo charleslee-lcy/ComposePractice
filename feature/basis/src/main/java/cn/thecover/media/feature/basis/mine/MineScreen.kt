@@ -253,10 +253,8 @@ private fun UserAvatar(avatarUrl: String?, userName: String?) {
                 .size(60.dp)
                 .clip(CircleShape)
                 .background(Color.LightGray),
-
             contentScale = ContentScale.Crop,
             placeholder = painterResource(YBIcons.Custom.DefaultAvatar),
-
             // 加载失败/异常占位图
             error = painterResource(YBIcons.Custom.DefaultAvatar),
         )

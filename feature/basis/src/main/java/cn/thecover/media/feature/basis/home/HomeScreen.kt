@@ -113,13 +113,19 @@ internal fun HomeScreen(
     LaunchedEffect(Unit) {
         // 获取用户信息
         viewModel.getUserInfo(context, navController)
+        // 获取首页信息
+        viewModel.getHomeInfo(2025, 12)
     }
 
     Column(
         modifier = modifier.fillMaxSize()
     ) {
         TopBar(userInfo.nickname ,{
-            roleState = if (roleState == 1) 2 else 1
+            roleState = if (roleState == 3) 1 else 3
+        }, onDatePick = { year, month ->
+            mainScreenScope.launch {
+                viewModel.getHomeInfo(year, month)
+            }
         }, messageClick = {
             routeToMessageScreen?.invoke()
         })
@@ -133,10 +139,10 @@ internal fun HomeScreen(
         ) {
             Spacer(modifier = Modifier.height(1.dp))
             Crossfade (roleState) {
-                if (it == 1) {
-                    ReporterUserContent()
-                } else {
+                if (it == 3) {
                     LeaderUserContent()
+                } else {
+                    ReporterUserContent()
                 }
             }
             Row(
@@ -195,7 +201,12 @@ internal fun HomeScreen(
 }
 
 @Composable
-private fun TopBar(userName: String, titleClick: () -> Unit = {},messageClick: () -> Unit = {}) {
+private fun TopBar(
+    userName: String,
+    titleClick: () -> Unit = {},
+    onDatePick: (year: Int, month: Int) -> Unit = {_, _ -> },
+    messageClick: () -> Unit = {}
+) {
     var datePickerShow by remember { mutableStateOf(false) }
     var datePickedText by remember { mutableStateOf("2025年8月") }
 
@@ -259,6 +270,7 @@ private fun TopBar(userName: String, titleClick: () -> Unit = {},messageClick: (
         onCancel = { datePickerShow = false },
         onChange = {
             datePickedText = "${it.year}年${it.monthValue}月"
+            onDatePick.invoke(it.year, it.monthValue)
         }
     )
 }

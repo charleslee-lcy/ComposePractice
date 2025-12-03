@@ -1,17 +1,19 @@
 package cn.thecover.media.feature.basis.home
 
+import android.R.attr.password
 import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
+import cn.thecover.media.core.data.HomeInfo
+import cn.thecover.media.core.data.HomeRequest
 import cn.thecover.media.core.data.LoginRequest
 import cn.thecover.media.core.data.LoginResponse
 import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HTTP_STATUS_LOGOUT
-import cn.thecover.media.core.network.HTTP_STATUS_SUCCESS
 import cn.thecover.media.core.network.asResult
 import cn.thecover.media.core.widget.datastore.Keys
 import cn.thecover.media.core.widget.datastore.clearData
@@ -20,7 +22,6 @@ import cn.thecover.media.feature.basis.HomeApi
 import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import retrofit2.Retrofit
@@ -39,6 +40,7 @@ class HomeViewModel @Inject constructor(
     private val apiService = retrofit.get().create(HomeApi::class.java)
     val loginUiState = MutableStateFlow(BaseUiState<LoginResponse>())
     val userUiState = MutableStateFlow(UserInfo())
+    val homeUiState = MutableStateFlow(BaseUiState<HomeInfo>())
 
     suspend fun login(username: String, password: String) {
         flow {
@@ -79,6 +81,21 @@ class HomeViewModel @Inject constructor(
                     userUiState.value = it
                     saveData(context, Keys.USER_INFO, Gson().toJson(it))
                 }
+            }
+    }
+
+    /**
+     * 首页数据
+     */
+    suspend fun getHomeInfo(year: Int, month: Int) {
+        flow {
+            val result = apiService.getHomeInfo(
+                HomeRequest(year, month)
+            )
+            emit(result)
+        }.asResult()
+            .collect { result ->
+                homeUiState.value = result
             }
     }
 }

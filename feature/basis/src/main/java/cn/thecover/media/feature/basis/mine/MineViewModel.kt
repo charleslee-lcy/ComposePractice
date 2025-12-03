@@ -3,7 +3,7 @@ package cn.thecover.media.feature.basis.mine
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cn.thecover.media.core.data.LogoutRequest
+import cn.thecover.media.core.data.NetworkRequest
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.asResult
 import cn.thecover.media.feature.basis.HomeApi
@@ -11,7 +11,6 @@ import cn.thecover.media.feature.basis.message.MessageType
 import cn.thecover.media.feature.basis.message.data.MessageDataListState
 import cn.thecover.media.feature.basis.message.data.entity.MessageDataEntity
 import cn.thecover.media.feature.basis.message.intent.MessageIntent
-import cn.thecover.media.feature.basis.mine.data.UserAvatarEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -135,7 +134,7 @@ class MineViewModel @Inject constructor(
     suspend fun logout() {
         flow {
             val apiService = retrofit.get().create(HomeApi::class.java)
-            val result = apiService.logout(LogoutRequest())
+            val result = apiService.logout(NetworkRequest())
             emit(result)
         }.asResult()
             .collect { result ->
