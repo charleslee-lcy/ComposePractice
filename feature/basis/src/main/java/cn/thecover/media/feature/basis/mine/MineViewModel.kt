@@ -131,14 +131,16 @@ class MineViewModel @Inject constructor(
         }
     }
 
-    suspend fun logout() {
-        flow {
-            val apiService = retrofit.get().create(HomeApi::class.java)
-            val result = apiService.logout(NetworkRequest())
-            emit(result)
-        }.asResult()
-            .collect { result ->
-                logoutUiData.value = result
-            }
+    fun logout() {
+        viewModelScope.launch {
+            flow {
+                val apiService = retrofit.get().create(HomeApi::class.java)
+                val result = apiService.logout(NetworkRequest())
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    logoutUiData.value = result
+                }
+        }
     }
 }

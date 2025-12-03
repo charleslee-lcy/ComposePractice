@@ -1,5 +1,8 @@
 package cn.thecover.media.feature.basis.home
 
+import android.R.attr.type
+import android.R.attr.visible
+import android.widget.Toast
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.RepeatMode
@@ -23,11 +26,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Poll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +55,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.YBBadge
@@ -67,6 +76,7 @@ import cn.thecover.media.feature.basis.home.ui.LeaderUserContent
 import cn.thecover.media.feature.basis.home.ui.ManuscriptTopRankingItem
 import cn.thecover.media.feature.basis.home.ui.ReporterUserContent
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 
 /**
@@ -77,7 +87,7 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun HomeRoute(navController: NavController) {
 //    val feedState by viewModel..collectAsStateWithLifecycle()
-    val goToMessageRoute= {
+    val goToMessageRoute = {
         navController.navigateToMessage()
     }
     YBTheme {
@@ -88,10 +98,11 @@ internal fun HomeRoute(navController: NavController) {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HomeScreen(
     modifier: Modifier = Modifier,
-    routeToMessageScreen: (()->Unit) ?= null,
+    routeToMessageScreen: (() -> Unit)? = null,
     navController: NavController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -99,6 +110,8 @@ internal fun HomeScreen(
     val mainScreenScope = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
     val scrollState = rememberScrollState()
+    val refreshState = rememberPullToRefreshState()
+    val isRefreshing = remember { mutableStateOf(false) }
     var roleState by remember { mutableIntStateOf(1) }
 
     val infiniteTransition = rememberInfiniteTransition(label = "infinite")
@@ -109,91 +122,132 @@ internal fun HomeScreen(
         label = "color"
     )
     val userInfo by viewModel.userUiState.collectAsStateWithLifecycle()
+    val homeInfo by viewModel.homeUiState.collectAsStateWithLifecycle()
+    val curYear = remember {
+        mutableStateOf(LocalDate.now().year)
+    }
+    val curMonth = remember {
+        mutableStateOf(LocalDate.now().monthValue)
+    }
 
-    LaunchedEffect(Unit) {
+    fun fetchHomeData() {
         // 获取用户信息
         viewModel.getUserInfo(context, navController)
         // 获取首页信息
-        viewModel.getHomeInfo(2025, 12)
+        viewModel.getHomeInfo(curYear.value, curMonth.value)
+    }
+
+    LaunchedEffect(Unit) {
+        isRefreshing.value = true
+        fetchHomeData()
+    }
+
+    LaunchedEffect(homeInfo) {
+        isRefreshing.value = homeInfo.status == HttpStatus.LOADING
+
+        if (homeInfo.status == HttpStatus.ERROR) {
+            Toast.makeText(context, homeInfo.errorMsg, Toast.LENGTH_SHORT).show()
+        }
     }
 
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        TopBar(userInfo.nickname ,{
-            roleState = if (roleState == 3) 1 else 3
-        }, onDatePick = { year, month ->
-            mainScreenScope.launch {
-                viewModel.getHomeInfo(year, month)
-            }
-        }, messageClick = {
-            routeToMessageScreen?.invoke()
-        })
+        TopBar(
+            userInfo.nickname,
+            curYear,
+            curMonth,
+            titleClick = {
+                roleState = if (roleState == 3) 1 else 3
+            }, onDatePick = {
+                isRefreshing.value = true
+                viewModel.getHomeInfo(curYear.value, curMonth.value)
+            }, messageClick = {
+                routeToMessageScreen?.invoke()
+            })
 
-        Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .verticalScroll(scrollState)
-                .background(PageBackgroundColor),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Spacer(modifier = Modifier.height(1.dp))
-            Crossfade (roleState) {
-                if (it == 3) {
-                    LeaderUserContent()
-                } else {
-                    ReporterUserContent()
-                }
+        PullToRefreshBox(
+            state = refreshState,
+            isRefreshing = isRefreshing.value,
+            onRefresh = {
+                isRefreshing.value = true
+                fetchHomeData()
+            },
+            modifier = modifier,
+            indicator = {
+                Indicator(
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    isRefreshing = isRefreshing.value,
+                    containerColor = Color.White,
+                    color = MainColor,
+                    state = refreshState
+                )
             }
-            Row(
-                modifier = Modifier
+        ) {
+            Column(
+                modifier = modifier
                     .fillMaxWidth()
-                    .padding(start = 15.dp, end = 5.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .verticalScroll(scrollState)
+                    .background(PageBackgroundColor),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Poll,
-                    tint = MainColor,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
-                Text(
-                    text = "稿件TOP榜单",
-                    color = animatedColor,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 5.dp)
-                )
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.height(1.dp))
+                Crossfade(roleState) {
+                    if (it == 3) {
+                        LeaderUserContent()
+                    } else {
+                        ReporterUserContent()
+                    }
+                }
                 Row(
                     modifier = Modifier
-                        .padding(10.dp)
-                        .clickable {
-                            mainScreenScope.launch {
-                                snackBarHostState.showToast("查看更多排行数据")
-                            }
-                        },
+                        .fillMaxWidth()
+                        .padding(start = 15.dp, end = 5.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "查看更多",
-                        color = TertiaryTextColor,
-                        lineHeight = 14.sp,
-                        fontSize = 14.sp,
-                    )
                     Icon(
-                        painterResource(R.drawable.icon_right_arrow),
-                        contentDescription = "Localized description",
-                        Modifier
-                            .size(18.dp)
-                            .padding(2.dp),
-                        tint = TertiaryTextColor
+                        imageVector = Icons.Filled.Poll,
+                        tint = MainColor,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
                     )
+                    Text(
+                        text = "稿件TOP榜单",
+                        color = animatedColor,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(start = 5.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Row(
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .clickable {
+                                mainScreenScope.launch {
+                                    snackBarHostState.showToast("查看更多排行数据")
+                                }
+                            },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "查看更多",
+                            color = TertiaryTextColor,
+                            lineHeight = 14.sp,
+                            fontSize = 14.sp,
+                        )
+                        Icon(
+                            painterResource(R.drawable.icon_right_arrow),
+                            contentDescription = "Localized description",
+                            Modifier
+                                .size(18.dp)
+                                .padding(2.dp),
+                            tint = TertiaryTextColor
+                        )
+                    }
                 }
+
+                ManuscriptTopRankingItem()
             }
-
-            ManuscriptTopRankingItem()
-
         }
     }
 
@@ -203,12 +257,13 @@ internal fun HomeScreen(
 @Composable
 private fun TopBar(
     userName: String,
+    currentYear: MutableState<Int>,
+    currentMonth: MutableState<Int>,
     titleClick: () -> Unit = {},
-    onDatePick: (year: Int, month: Int) -> Unit = {_, _ -> },
+    onDatePick: () -> Unit = {},
     messageClick: () -> Unit = {}
 ) {
     var datePickerShow by remember { mutableStateOf(false) }
-    var datePickedText by remember { mutableStateOf("2025年8月") }
 
     Box(
         modifier = Modifier
@@ -238,7 +293,7 @@ private fun TopBar(
                 .align(Alignment.Center), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = datePickedText,
+                text = "${currentYear.value}年${currentMonth.value}月",
                 color = MainTextColor,
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center
@@ -256,9 +311,11 @@ private fun TopBar(
             showNumber = false
         ) {
             YBImage(
-                modifier = Modifier.size(20.dp).clickable{
-                    messageClick()
-                },
+                modifier = Modifier
+                    .size(20.dp)
+                    .clickable {
+                        messageClick()
+                    },
                 placeholder = painterResource(R.mipmap.ic_home_msg)
             )
         }
@@ -269,8 +326,9 @@ private fun TopBar(
         type = DateType.MONTH,
         onCancel = { datePickerShow = false },
         onChange = {
-            datePickedText = "${it.year}年${it.monthValue}月"
-            onDatePick.invoke(it.year, it.monthValue)
+            currentYear.value = it.year
+            currentMonth.value = it.monthValue
+            onDatePick.invoke()
         }
     )
 }
@@ -282,8 +340,8 @@ private fun HomeScreenPreview() {
         HomeScreen(
             navController = NavController(LocalContext.current),
             viewModel = HomeViewModel(
-            SavedStateHandle(),
-            retrofit = { previewRetrofit }
-        ))
+                SavedStateHandle(),
+                retrofit = { previewRetrofit }
+            ))
     }
 }

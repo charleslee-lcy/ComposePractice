@@ -192,9 +192,7 @@ internal fun MineScreen(
             },
             confirmText = "退出",
             onConfirm = {
-                scope.launch {
-                    viewModel.logout()
-                }
+                viewModel.logout()
             },
             cancelText = "取消",
             onCancel = {
