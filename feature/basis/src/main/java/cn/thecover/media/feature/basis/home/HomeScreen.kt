@@ -138,15 +138,19 @@ internal fun HomeScreen(
     }
 
     LaunchedEffect(Unit) {
-        isRefreshing.value = true
-        fetchHomeData()
+        if (!viewModel.hasHomeDataFetched) {
+            isRefreshing.value = true
+            fetchHomeData()
+            viewModel.hasHomeDataFetched = true
+        }
     }
 
     LaunchedEffect(homeInfo) {
         isRefreshing.value = homeInfo.status == HttpStatus.LOADING
 
-        if (homeInfo.status == HttpStatus.ERROR) {
-            Toast.makeText(context, homeInfo.errorMsg, Toast.LENGTH_SHORT).show()
+        if (homeInfo.status == HttpStatus.ERROR && viewModel.canShowToast) {
+            snackBarHostState.showToast(homeInfo.errorMsg)
+            viewModel.canShowToast = false
         }
     }
 
@@ -251,7 +255,7 @@ internal fun HomeScreen(
         }
     }
 
-    YBToast(snackBarHostState = snackBarHostState)
+    YBToast(snackBarHostState = snackBarHostState, verticalRate = 0.9f)
 }
 
 @Composable

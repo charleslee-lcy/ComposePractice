@@ -3,6 +3,9 @@ package cn.thecover.media.feature.basis.home
 import android.R.attr.password
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -45,12 +48,22 @@ class HomeViewModel @Inject constructor(
     val userUiState = MutableStateFlow(UserInfo())
     val homeUiState = MutableStateFlow(BaseUiState<HomeInfo>())
 
+    var hasHomeDataFetched by mutableStateOf(false)
+    var canShowToast by mutableStateOf(true)
+
     fun login(username: String, password: String) {
         viewModelScope.launch {
             flow {
+                val start = System.currentTimeMillis()
                 val result = apiService.login(
                     LoginRequest(username, password)
                 )
+
+                val timeInterval = System.currentTimeMillis() - start
+
+                if (timeInterval < 500L) {
+                    delay(500L - timeInterval)
+                }
                 emit(result)
             }.asResult()
                 .collect { result ->
@@ -110,6 +123,7 @@ class HomeViewModel @Inject constructor(
                 emit(result)
             }.asResult()
                 .collect { result ->
+                    canShowToast = true
                     homeUiState.value = result
                 }
         }
