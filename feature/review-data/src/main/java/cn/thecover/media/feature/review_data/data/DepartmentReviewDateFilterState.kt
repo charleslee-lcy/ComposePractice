@@ -9,5 +9,5 @@ import java.time.LocalDate
  */
 
 data class DepartmentReviewDateFilterState(
-    val selectedDate: String = "${LocalDate.now().year}年${LocalDate.now().monthValue}月",
-)
+    override val selectedDate: String = "${LocalDate.now().year}年${LocalDate.now().monthValue}月",
+): FilterState()

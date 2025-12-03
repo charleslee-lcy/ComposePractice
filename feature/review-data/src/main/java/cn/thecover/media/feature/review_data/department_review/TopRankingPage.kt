@@ -53,7 +53,7 @@ import java.time.LocalDate
 @Composable
 internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewModel<ReviewDataViewModel>()) {
     // 部门总数据列表，包含部门ID、名称和平均分数
-    val departmentTotalData by viewModel.departmentReviewTopState.collectAsState()
+    val departmentTotalData by viewModel.departmentReviewTopPageState.collectAsState()
 
 
     // 日期选择器显示状态和选中日期文本状态

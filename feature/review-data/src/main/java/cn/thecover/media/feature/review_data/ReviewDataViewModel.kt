@@ -15,6 +15,7 @@ import cn.thecover.media.feature.review_data.data.entity.DiffusionDataEntity
 import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
 
 import cn.thecover.media.feature.review_data.data.params.RepositoryResult
+import cn.thecover.media.feature.review_data.data.params.SortConditions
 import cn.thecover.media.feature.review_data.repository.ReviewDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -38,35 +39,41 @@ class ReviewDataViewModel @Inject constructor(
 
 
     //部门考核页信息流数据
-    private val _departmentReviewDataState = MutableStateFlow(PaginatedResult<DepartmentTotalDataEntity>())
-    val departmentReviewDataState: StateFlow<PaginatedResult<DepartmentTotalDataEntity>> = _departmentReviewDataState
+    private val _departmentReviewPageState =
+        MutableStateFlow(PaginatedResult<DepartmentTotalDataEntity>())
+    val departmentReviewPageState: StateFlow<PaginatedResult<DepartmentTotalDataEntity>> =
+        _departmentReviewPageState
 
     //部门top排行页信息流数据
-    private val _departmentReviewTopState = MutableStateFlow(PaginatedResult<DepartmentTotalDataEntity>())
-    val departmentReviewTopState: StateFlow<PaginatedResult<DepartmentTotalDataEntity>> = _departmentReviewTopState
+    private val _departmentReviewTopPageState =
+        MutableStateFlow(PaginatedResult<DepartmentTotalDataEntity>())
+    val departmentReviewTopPageState: StateFlow<PaginatedResult<DepartmentTotalDataEntity>> =
+        _departmentReviewTopPageState
 
     //部门任务页信息流数据
-    private val _departmentTaskDataState = MutableStateFlow(PaginatedResult<DepartmentTaskDataEntity>())
-    val departmentTaskDataState: StateFlow<PaginatedResult<DepartmentTaskDataEntity>> = _departmentTaskDataState
+    private val _departmentTaskPageState =
+        MutableStateFlow(PaginatedResult<DepartmentTaskDataEntity>())
+    val departmentTaskPageState: StateFlow<PaginatedResult<DepartmentTaskDataEntity>> =
+        _departmentTaskPageState
 
     //稿件总排行页面数据
-    private val _manuscriptReviewData =
+    private val _manuscriptReviewPageState =
         MutableStateFlow(PaginatedResult<ManuscriptReviewDataEntity>())
-    val manuscriptReviewState: StateFlow<PaginatedResult<ManuscriptReviewDataEntity>> =
-        _manuscriptReviewData
+    val manuscriptReviewPageState: StateFlow<PaginatedResult<ManuscriptReviewDataEntity>> =
+        _manuscriptReviewPageState
 
 
     //稿件top排行页面数据
-    private val _manuscriptReviewTopData =
+    private val _manuscriptReviewTopPageState =
         MutableStateFlow(PaginatedResult<ManuscriptReviewDataEntity>())
-    val manuscriptTopRankingState: StateFlow<PaginatedResult<ManuscriptReviewDataEntity>> =
-        _manuscriptReviewTopData
+    val manuscriptReviewTopPageState: StateFlow<PaginatedResult<ManuscriptReviewDataEntity>> =
+        _manuscriptReviewTopPageState
 
     //稿件传播排行页面数据
-    private val _manuscriptReviewDiffusionData =
-        MutableStateFlow(PaginatedResult<ManuscriptReviewDataEntity>())
-    val manuscriptDiffusionState: StateFlow<PaginatedResult<ManuscriptReviewDataEntity>> =
-        _manuscriptReviewDiffusionData
+    private val _manuscriptReviewDiffusionPageState =
+        MutableStateFlow(PaginatedResult<DiffusionDataEntity>())
+    val manuscriptReviewDiffusionPageState: StateFlow<PaginatedResult<DiffusionDataEntity>> =
+        _manuscriptReviewDiffusionPageState
 
     private val _departmentDataFilterState = MutableStateFlow(DepartmentFilterState())
     val departmentDataFilterState = _departmentDataFilterState
@@ -210,24 +217,24 @@ class ReviewDataViewModel @Inject constructor(
 
             is ReviewUIIntent.UpdateDepartmentTaskFilter -> {
                 _departmentTaskFilterState.update { newState ->
-                    newState.copy(intent.time)
+                    newState.copy(selectedDate = intent.time)
                 }
             }
 
             is ReviewUIIntent.UpdateDepartmentTopFilter -> {
                 _departmentTopFilterState.update { newState ->
-                    newState.copy(intent.time)
+                    newState.copy(selectedDate = intent.time)
                 }
             }
         }
     }
 
     private fun updateManuscriptScore(id: Int, newScore: Int) {
-        _manuscriptReviewData.update { currentState ->
+        _manuscriptReviewPageState.update { currentState ->
             val updatedManuscripts = currentState.dataList.map { manuscript ->
                 if (manuscript.id == id) {
                     // 创建新的对象，更新分数
-                    manuscript.copy(score = newScore, isEdited = true)
+                    manuscript.copy(score = newScore, leaderScoreModified = true)
                 } else {
                     manuscript
                 }
@@ -239,115 +246,46 @@ class ReviewDataViewModel @Inject constructor(
         }
     }
 
-    val manuscriptTestData = listOf(
-        ManuscriptReviewDataEntity(
-            id = 1,
-            title = "《三体》",
-            author = "刘慈欣",
-            editor = "王伟",
-            score = 4,
-            basicScore = 3,
-            qualityScore = 4,
-            diffusionScore = 5,
-            diffusionDataEntity = DiffusionDataEntity(
-                28888, 288888, 222, 222, 222, 222, 222, 222, 222
-            )
-        ),
-        ManuscriptReviewDataEntity(
-            id = 11,
-            title = "流浪地球",
-            author = "刘慈欣",
-            editor = "王伟",
-            score = 4,
-            basicScore = 3,
-            qualityScore = 4,
-            diffusionScore = 5,
-            diffusionDataEntity = DiffusionDataEntity(
-                2888, 288888, 222, 222, 222, 222, 222, 222, 222
-            )
-        ),
-        ManuscriptReviewDataEntity(
-            id = 2,
-            title = "2025年12月份的云南省让“看一种云南生活”富饶世界云南生活富饶世界",
-            author = "张明明",
-            editor = "李华",
-            score = 22,
-            basicScore = 3,
-            qualityScore = 4,
-            diffusionScore = 5,
-            diffusionDataEntity = DiffusionDataEntity(
-                28888, 288888, 222, 222, 222, 222, 222, 222, 222
-            )
-        ),
-        ManuscriptReviewDataEntity(
-            id = 3,
-            title = "“看一种云南生活”富饶世界云南生活富饶世界",
-            author = "张明明",
-            editor = "李华",
-            score = 22,
-            basicScore = 3,
-            qualityScore = 4,
-            diffusionScore = 5,
-            diffusionDataEntity = DiffusionDataEntity(
-                28888, 288888, 222, 222, 222, 222, 222, 222, 222
-            )
-        )
-    )
-
-    val taskTestData = listOf(
-        DepartmentTaskDataEntity("${Clock.System.now()})", 150, 150, 1f, "扣系数0.1"),
-        DepartmentTaskDataEntity("社会新闻部", 23, 30, 23.toFloat() / 30, "扣系数0.1"),
-        DepartmentTaskDataEntity("财经新闻部", 66, 500, 243.toFloat() / 500, "扣系数0.1"),
-        DepartmentTaskDataEntity("国际新闻部", 22, 33, 3 / 100.toFloat(), "扣系数0.1"),
-    )
-
-    val departTestData = listOf(
-        DepartmentTotalDataEntity(
-            departmentRanking = 1,
-            departmentName = "部门1",
-            totalScore = 100,
-            totalPersons = 10,
-            averageScore = 10,
-            totalPayment = 1000
-        ),
-        DepartmentTotalDataEntity(
-            departmentRanking = 2,
-            departmentName = "部门2",
-            totalScore = 100,
-            totalPersons = 10,
-            averageScore = 10,
-            totalPayment = 1000
-        ),
-        DepartmentTotalDataEntity(
-            1,
-            departmentName = "社会新闻部",
-        )
-    )
 
     private fun loadManuScriptReviewData(isLoadMore: Boolean = false) {
-        _manuscriptReviewData.update {
+        _manuscriptReviewPageState.update {
             if (isLoadMore) it.copy(isLoading = true) else it.copy(
                 isRefreshing = true
             )
         }
         viewModelScope.launch {
             val page = if (isLoadMore) {
-                _manuscriptReviewData.value.currentPage + 1
+                _manuscriptReviewPageState.value.currentPage + 1
             } else {
                 1
             }
 
-            val result = repository.fetchManuscriptsPage(page)
+            val result = repository.fetchManuscriptsPage(
+                year = manuscriptReviewFilterState.value.getYearAsInt(),
+                month = manuscriptReviewFilterState.value.getMonthAsInt(),
+                page = page,
+                rankType = when (manuscriptReviewFilterState.value.sortField) {
+                    "分割线以上" -> 1
+                    "分割线以下（清零）" -> 2
+                    else -> 0
+                },
+                title = if (manuscriptReviewFilterState.value.searchField.contains("标题"))
+                    manuscriptReviewFilterState.value.searchText else "",
+                reporter = if (manuscriptReviewFilterState.value.searchField.contains("记者"))
+                    manuscriptReviewFilterState.value.searchText else "",
+                id = if (manuscriptReviewFilterState.value.searchField.contains("id"))
+                    manuscriptReviewFilterState.value.searchText else "",
+                )
 
             when (result) {
                 is RepositoryResult.Success -> {
                     val manuscripts = if (isLoadMore) {
-                        _manuscriptReviewData.value.dataList + result.data.dataList
+                        _manuscriptReviewPageState.value.dataList + result.data.dataList
                     } else {
                         result.data.dataList
                     }
 
-                    _manuscriptReviewData.update {
+                    _manuscriptReviewPageState.update {
                         it.copy(
                             isLoading = false,
                             isRefreshing = false,
@@ -358,8 +296,9 @@ class ReviewDataViewModel @Inject constructor(
                         )
                     }
                 }
+
                 is RepositoryResult.Error -> {
-                    _manuscriptReviewData.update {
+                    _manuscriptReviewPageState.update {
                         it.copy(
                             isLoading = false,
                             isRefreshing = false,
@@ -367,6 +306,7 @@ class ReviewDataViewModel @Inject constructor(
                         )
                     }
                 }
+
                 is RepositoryResult.Loading -> {
                     // 已在开始时处理
                 }
@@ -376,125 +316,240 @@ class ReviewDataViewModel @Inject constructor(
     }
 
     private fun loadManuScriptReviewDiffusionData(isLoadMore: Boolean = false) {
-        _manuscriptReviewDiffusionData.update {
-            if (isLoadMore) it.copy(isLoading = true) else it.copy(
-                isRefreshing = true
+        _manuscriptReviewDiffusionPageState.update {
+            if (isLoadMore) it.copy(isLoading = true, error = null) else it.copy(
+                isRefreshing = true,
+                error = null
             )
         }
         viewModelScope.launch {
-            delay(1000)
-            // val result = repository.fetchManuscriptReviewData()
+            val result = repository.fetchManuscriptDiffusionData(
+                year = manuscriptReviewFilterState.value.getYearAsInt(),
+                month = manuscriptReviewFilterState.value.getMonthAsInt(),
+                page = manuscriptReviewDiffusionPageState.value.currentPage,
+                sortConditions = manuscriptDiffusionFilterState.value.sortField,
+                title = if (manuscriptDiffusionFilterState.value.searchField.contains("标题"))
+                    manuscriptDiffusionFilterState.value.searchText else "",
+                reporter = if (manuscriptDiffusionFilterState.value.searchField.contains("记者"))
+                    manuscriptDiffusionFilterState.value.searchText else "",
+                id = if (manuscriptDiffusionFilterState.value.searchField.contains("id"))
+                    manuscriptDiffusionFilterState.value.searchText else "",
+            )
 
-            val result = manuscriptTestData
+            if (result is RepositoryResult.Success) {
+                val manuscripts =
+                    if (isLoadMore) (_manuscriptReviewDiffusionPageState.value.dataList + result.data.dataList) else result.data.dataList
 
-            val manuscripts =
-                if (isLoadMore) (_manuscriptReviewDiffusionData.value.dataList + result) else result
-            _manuscriptReviewDiffusionData.update {
-                it.copy(
-                    isLoading = false,
-                    isRefreshing = false,
-                    dataList = manuscripts
-                )
+                _manuscriptReviewDiffusionPageState.update {
+                    it.copy(
+                        isLoading = false,
+                        isRefreshing = false,
+                        dataList = manuscripts
+                    )
+                }
+
+            } else if (result is RepositoryResult.Error) {
+
+                _manuscriptReviewDiffusionPageState.update {
+                    it.copy(
+                        isLoading = false,
+                        isRefreshing = false,
+                        error = result.exception.message
+                    )
+                }
             }
         }
     }
 
     private fun loadManuScriptReviewTopData(isLoadMore: Boolean = false) {
-        _manuscriptReviewTopData.update {
+        _manuscriptReviewTopPageState.update {
             if (isLoadMore) it.copy(isLoading = true) else it.copy(
                 isRefreshing = true
             )
         }
         viewModelScope.launch {
-            delay(1000)
-            // val result = repository.fetchManuscriptReviewData()
+            val result = repository.fetchManuscriptsTopPage(
+                year = manuscriptTopFilterState.value.getYearAsInt(),
+                month = manuscriptTopFilterState.value.getMonthAsInt(),
+                page = manuscriptReviewTopPageState.value.currentPage,
+                rankType = when (manuscriptTopFilterState.value.sortField) {
+                    "分割线以上" -> 1
+                    "分割线以下（清零）" -> 2
+                    else -> 0
+                },
+                title = if (manuscriptTopFilterState.value.searchField.contains("标题"))
+                    manuscriptTopFilterState.value.searchText else "",
+                reporter = if (manuscriptTopFilterState.value.searchField.contains("记者"))
+                    manuscriptTopFilterState.value.searchText else "",
+                id = if (manuscriptTopFilterState.value.searchField.contains("id"))
+                    manuscriptTopFilterState.value.searchText else "",
+            )
+            when (result) {
+                is RepositoryResult.Success -> {
+                    val manuscripts =
+                        if (isLoadMore) (_manuscriptReviewTopPageState.value.dataList + result.data.dataList) else result.data.dataList
+                    _manuscriptReviewTopPageState.update {
+                        it.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            dataList = manuscripts,
+                            currentPage = result.data.currentPage,
+                            totalPages = result.data.totalPages,
+                            hasNextPage = result.data.hasNextPage
+                        )
+                    }
+                }
 
-            val result = manuscriptTestData
+                is RepositoryResult.Error -> {
+                    _manuscriptReviewTopPageState.update {
+                        it.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            error = result.exception.message
+                        )
+                    }
+                }
 
-            val manuscripts =
-                if (isLoadMore) (_manuscriptReviewTopData.value.dataList + result) else result
-            _manuscriptReviewTopData.update {
-                it.copy(
-                    isLoading = false,
-                    isRefreshing = false,
-                    dataList = manuscripts
-                )
+                is RepositoryResult.Loading -> {
+                    // 已在开始时处理
+                }
             }
         }
     }
 
     private fun loadDepartmentTaskData(isLoadMore: Boolean = false) {
         // 开始加载
-        _departmentTaskDataState.update {
-            if (isLoadMore) it.copy(isLoading = true) else it.copy(
-                isRefreshing = true
+        _departmentTaskPageState.update {
+            if (isLoadMore) it.copy(isLoading = true, error = null) else it.copy(
+                isRefreshing = true,
+                error = null
             )
         }
 
         viewModelScope.launch {
-            delay(500L)
 
-            val result = taskTestData
+            val result = repository.fetchDepartmentTaskPage(
+                departmentDataFilterState.value.getYearAsInt(),
+                departmentDataFilterState.value.getMonthAsInt(),
+                departmentTaskPageState.value.currentPage
+            )
 
-            val departmentTaskData =
-                if (isLoadMore) _departmentTaskDataState.value.dataList + result else result
+            when (result) {
+                is RepositoryResult.Success -> {
+                    val departmentTaskData =
+                        if (isLoadMore) _departmentTaskPageState.value.dataList + result.data.dataList else result.data.dataList
 
-            _departmentTaskDataState.update {
-                it.copy(isRefreshing = false, isLoading = false, dataList = departmentTaskData)
+                    _departmentTaskPageState.update {
+                        it.copy(
+                            isRefreshing = false,
+                            isLoading = false,
+                            dataList = departmentTaskData,
+                            currentPage = result.data.currentPage,
+                            totalPages = result.data.totalPages,
+                            hasNextPage = result.data.hasNextPage
+                        )
+                    }
+                }
+
+                is RepositoryResult.Error -> {
+                    _departmentTaskPageState.update {
+                        it.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            error = result.exception.message
+                        )
+                    }
+                }
+
+                is RepositoryResult.Loading -> {
+                    // 已在开始时处理
+                }
             }
         }
 
     }
 
+
+    //获取部门排行总数据
     private fun loadDepartmentData(isLoadMore: Boolean = false) {
         // 开始加载
-        _departmentReviewDataState.update {
+        _departmentReviewPageState.update {
             if (isLoadMore) it.copy(isLoading = true) else it.copy(
                 isRefreshing = true
             )
         }
         viewModelScope.launch {
-            delay(500L)
+            val result = repository.fetchDepartmentReviewPage(
+                departmentDataFilterState.value.sortField,
+                departmentDataFilterState.value.getYearAsInt(),
+                departmentDataFilterState.value.getMonthAsInt(),
+                departmentReviewPageState.value.currentPage
+            )
+            if (result is RepositoryResult.Success) {
+                val departmentData =
+                    if (isLoadMore) _departmentReviewPageState.value.dataList + result.data.dataList else result.data.dataList
 
-            val result = departTestData
-
-            val departmentData =
-                if (isLoadMore) _departmentReviewDataState.value.dataList + result else result
-
-            // 加载完成
-            _departmentReviewDataState.update {
-                it.copy(
-                    dataList = departmentData,
-                    isLoading = false,
-                    isRefreshing = false
-                )
+                // 加载完成
+                _departmentReviewPageState.update {
+                    it.copy(
+                        dataList = departmentData,
+                        isLoading = false,
+                        isRefreshing = false,
+                        error = null,
+                        currentPage = result.data.currentPage
+                    )
+                }
+            } else if (result is RepositoryResult.Error) {
+                _departmentReviewPageState.update {
+                    it.copy(
+                        isLoading = false,
+                        isRefreshing = false,
+                        error = result.exception.message
+                    )
+                }
             }
+
+
         }
     }
 
 
     private fun loadDepartmentTopData(isLoadMore: Boolean = false) {
         // 开始加载
-        _departmentReviewTopState.update {
-            if (isLoadMore) it.copy(isLoading = true) else it.copy(
-                isRefreshing = true
+        _departmentReviewTopPageState.update {
+            if (isLoadMore) it.copy(isLoading = true, error = null) else it.copy(
+                isRefreshing = true,
+                error = null
             )
         }
         viewModelScope.launch {
-            delay(500L)
+            val result = repository.fetchDepartmentTopPage(
+                departmentTopFilterState.value.getYearAsInt(),
+                departmentTopFilterState.value.getMonthAsInt(),
+                departmentReviewTopPageState.value.currentPage
+            )
+            if (result is RepositoryResult.Success) {
+                val departmentData =
+                    if (isLoadMore) _departmentReviewTopPageState.value.dataList + result.data.dataList else result.data.dataList
 
-            val result = departTestData
-
-            val departmentData =
-                if (isLoadMore) _departmentReviewTopState.value.dataList + result else result
-
-            // 加载完成
-            _departmentReviewTopState.update {
-                it.copy(
-                    dataList = departmentData,
-                    isLoading = false,
-                    isRefreshing = false
-                )
+                // 加载完成
+                _departmentReviewTopPageState.update {
+                    it.copy(
+                        dataList = departmentData,
+                        isLoading = false,
+                        isRefreshing = false,
+                        error = null,
+                        currentPage = result.data.currentPage
+                    )
+                }
+            } else if (result is RepositoryResult.Error) {
+                _departmentReviewTopPageState.update {
+                    it.copy(
+                        isLoading = false,
+                        isRefreshing = false,
+                        error = result.exception.message
+                    )
+                }
             }
         }
     }

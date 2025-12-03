@@ -1,4 +1,4 @@
-package cn.thecover.media.feature.review_data.manuscript_review.manuscript_diffusion
+package cn.thecover.media.feature.review_data.manuscript_review
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +47,7 @@ import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelecti
 import cn.thecover.media.feature.review_data.basic_widget.widget.ExpandItemColumn
 import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewFilterState
+import cn.thecover.media.feature.review_data.data.entity.DiffusionDataEntity
 import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
 import java.time.LocalDate
 
@@ -65,7 +66,7 @@ import java.time.LocalDate
 fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
 
     // 模拟稿件传播数据列表
-    val data by viewModel.manuscriptDiffusionState.collectAsState()
+    val data by viewModel.manuscriptReviewDiffusionPageState.collectAsState()
 
     val filter by viewModel.manuscriptDiffusionFilterState.collectAsState()
 
@@ -139,7 +140,7 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
  * @param data 稿件的详细传播数据实体，包含基本信息和各项统计数据
  */
 @Composable
-private fun DiffusionItem(rank: Int, data: ManuscriptReviewDataEntity, filterChoice: String) {
+private fun DiffusionItem(rank: Int, data: DiffusionDataEntity, filterChoice: String) {
     // 使用排名卡片包装整个内容区域
     DataItemCard {
         DataItemRankingRow(ranking = rank) {
@@ -149,20 +150,19 @@ private fun DiffusionItem(rank: Int, data: ManuscriptReviewDataEntity, filterCho
                     // 显示稿件头部信息：标题、作者、编辑
                     ManuScriptItemHeader(
                         title = data.title,
-                        author = data.author,
-                        editor = data.editor
+                        author = data.reporter.joinToString(", ") { it.name },
                     )
                     // 显示传播评分数据行：公式传播分和最终传播分
                     PrimaryItemScoreRow(
                         items = arrayOf(
                             Triple(
                                 "公式传播分",
-                                data.diffusionDataEntity.basicDiffusionScore.toString(),
+                                data.formulaSpreadScore.toString(),
                                 if (filterChoice.contains("公式传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                             ),
                             Triple(
                                 "最终传播分",
-                                data.diffusionDataEntity.ultimateDiffusionScore.toString(),
+                                data.spreadScore.toString(),
                                 if (filterChoice.contains("最终传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                             ),
                         )
@@ -175,17 +175,17 @@ private fun DiffusionItem(rank: Int, data: ManuscriptReviewDataEntity, filterCho
                         items = arrayOf(
                             Triple(
                                 "核心媒体转载数",
-                                data.diffusionDataEntity.coreMediaReprint.toString(),
+                                data.coreMediaReprintCount.toString(),
                                 if (filterChoice.contains("核心媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                             ),
                             Triple(
                                 "一级媒体转载数",
-                                data.diffusionDataEntity.level1MediaReprint.toString(),
+                                data.level1MediaReprintCount.toString(),
                                 if (filterChoice.contains("一级媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                             ),
                             Triple(
                                 "二级媒体转载数",
-                                data.diffusionDataEntity.level2MediaReprint.toString(),
+                                data.level2MediaReprintCount.toString(),
                                 if (filterChoice.contains("二级媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                             ),
                         )
@@ -195,22 +195,22 @@ private fun DiffusionItem(rank: Int, data: ManuscriptReviewDataEntity, filterCho
                         items = arrayOf(
                             Triple(
                                 "阅读数",
-                                data.diffusionDataEntity.readNumber.toString(),
+                                data.readCount.toString(),
                                 if (filterChoice.contains("阅读数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                             ),
                             Triple(
                                 "分享数",
-                                data.diffusionDataEntity.shareNumber.toString(),
+                                data.shareCount.toString(),
                                 if (filterChoice.contains("分享数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                             ),
                             Triple(
                                 "点赞数",
-                                data.diffusionDataEntity.thumbNumber.toString(),
+                                data.likeCount.toString(),
                                 if (filterChoice.contains("点赞数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                             ),
                             Triple(
                                 "评论数",
-                                data.diffusionDataEntity.commentNumber.toString(),
+                                data.commentCount.toString(),
                                 if (filterChoice.contains("评论数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                             ),
                         )

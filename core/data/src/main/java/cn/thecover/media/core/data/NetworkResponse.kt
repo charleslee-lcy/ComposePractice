@@ -12,7 +12,8 @@ import kotlinx.serialization.Serializable
 data class NetworkResponse<T>(
     val data: T? = null,
     val status: Int = 0,
-    val message: String = "",
-)
+    val message: String = ""){
+    fun isSuccess(): Boolean = status == 0
+}
 
 
