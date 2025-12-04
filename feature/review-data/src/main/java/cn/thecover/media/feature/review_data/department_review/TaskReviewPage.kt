@@ -57,17 +57,18 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     val datePickedState by viewModel.departmentTaskFilterState.collectAsState()
 
     val taskState by viewModel.departmentTaskPageState.collectAsState()
-    // 创建 MutableState 用于列表组件
-    val departmentTaskList = remember { mutableStateOf(taskState.dataList) }
+    // 创建 MutableState 用于列表组件，将可空列表转换为非空列表
+    val departmentTaskList = remember { mutableStateOf(taskState.dataList ?: emptyList()) }
     val isLoadingMore = remember { mutableStateOf(taskState.isLoading) }
     val isRefreshing = remember { mutableStateOf(taskState.isRefreshing) }
-    val canLoadMore = remember { mutableStateOf(true) }
+    val canLoadMore = remember { mutableStateOf(taskState.hasNextPage) }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(taskState) {
-        departmentTaskList.value = taskState.dataList
+        departmentTaskList.value = taskState.dataList ?: emptyList()
         isLoadingMore.value = taskState.isLoading
         isRefreshing.value = taskState.isRefreshing
+        canLoadMore.value = taskState.hasNextPage
     }
     LaunchedEffect(datePickedState) {
         viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshDepartmentTaskData)

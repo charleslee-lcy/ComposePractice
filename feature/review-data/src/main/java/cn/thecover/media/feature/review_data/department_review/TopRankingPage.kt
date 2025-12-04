@@ -61,17 +61,18 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
     val datePickedState by viewModel.departmentTopFilterState.collectAsState()
 
 
-    // 创建 MutableState 用于列表组件
-    val departmentList = remember { mutableStateOf(departmentTotalData.dataList) }
+    // 创建 MutableState 用于列表组件，将可空列表转换为非空列表
+    val departmentList = remember { mutableStateOf(departmentTotalData.dataList ?: emptyList()) }
     val isLoadingMore = remember { mutableStateOf(departmentTotalData.isLoading) }
     val isRefreshing = remember { mutableStateOf(departmentTotalData.isRefreshing) }
-    val canLoadMore = remember { mutableStateOf(true) }
+    val canLoadMore = remember { mutableStateOf(departmentTotalData.hasNextPage) }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(departmentTotalData) {
-        departmentList.value = departmentTotalData.dataList
+        departmentList.value = departmentTotalData.dataList ?: emptyList()
         isLoadingMore.value = departmentTotalData.isLoading
         isRefreshing.value = departmentTotalData.isRefreshing
+        canLoadMore.value = departmentTotalData.hasNextPage
     }
 
 
@@ -131,13 +132,13 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
  * @param score 部门人均得分
  */
 @Composable
-private fun TopRankingItem(ranking: Int, departmentName: String, score: Int) {
+private fun TopRankingItem(ranking: Int, departmentName: String, score: Double) {
     // 使用排名卡片包装器显示排名信息
     DataItemCard {
         DataItemRankingRow(ranking) {
             // 水平排列部门名称和得分信息
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = departmentName, style = MaterialTheme.typography.titleSmall)
+                Text(text = departmentName, style = MaterialTheme.typography.titleSmall, maxLines = 1, modifier = Modifier.weight(1f))
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
                     "部门人均得分",

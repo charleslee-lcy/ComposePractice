@@ -144,7 +144,7 @@ internal fun DataItemRankingRow(ranking: Int = 0, content: @Composable () -> Uni
             text = ranking.toString(),
             style = MaterialTheme.typography.titleSmall,
             color = ranking.chooseRankingColor(),
-            modifier = Modifier.padding(top = 0.dp, end = 10.dp)
+            modifier = Modifier.padding(top = 0.dp, end = 6.dp)
         )
         content()
     }

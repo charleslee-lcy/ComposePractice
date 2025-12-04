@@ -10,7 +10,7 @@ import java.io.Serializable
 
 data class PaginatedResult<T>(
     @SerializedName("list")
-    val dataList: List<T> = emptyList<T>(),
+    val dataList: List<T>? = null,
     @SerializedName("page")
     val currentPage: Int = 0,
     @SerializedName("pages")

@@ -18,8 +18,11 @@ data class DiffusionDataEntity(
     val title: String = "",
     @SerializedName("reporterList")
     val reporter: List<ReporterEntity> = emptyList(),
-    val formulaSpreadScore: Int = 0,//公式传播分
-    val spreadScore: Int = 0,//最终传播分
+    @SerializedName("editorList")
+    val editor: List<ReporterEntity> = emptyList(),
+
+    val formulaSpreadScore: Double = 0.0,//公式传播分
+    val spreadScore: Double = 0.0,//最终传播分
     val coreMediaReprintCount: Int = 0,//核心媒体转载
     val level1MediaReprintCount: Int = 0,//一级媒体转载数
     val level2MediaReprintCount: Int = 0,//二级媒体转载

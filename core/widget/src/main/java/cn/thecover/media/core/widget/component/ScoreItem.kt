@@ -187,7 +187,7 @@ fun PrimaryItemScoreRow(
 ){
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         // 遍历所有数据项，为每个项创建数据评分视图
         items.forEach { item ->

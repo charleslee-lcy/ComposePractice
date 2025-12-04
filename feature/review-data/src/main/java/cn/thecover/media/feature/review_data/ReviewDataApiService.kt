@@ -7,6 +7,7 @@ import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEnt
 import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DiffusionDataEntity
+import cn.thecover.media.feature.review_data.data.params.*
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -20,26 +21,30 @@ import retrofit2.http.Path
 
 interface ReviewDataApiService {
     //稿件数据-稿件总数据排行
-    @POST(value = "/api/data/news/rank")
-    suspend fun getManuscriptReviewData(@Body requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<ManuscriptReviewDataEntity>>
+    @POST(value = "api/data/news/rank")
+    suspend fun getManuscriptReviewData(@Body requestBody: ManuscriptReviewRequest): NetworkResponse<PaginatedResult<ManuscriptReviewDataEntity>>
 
     //稿件数据-稿件TOP榜单
-    @POST(value = "/api/data/news/top")
-    suspend fun getManuscriptReviewTopData(@Body requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<ManuscriptReviewDataEntity>>
+    @POST(value = "api/data/news/top")
+    suspend fun getManuscriptReviewTopData(@Body requestBody: ManuscriptTopRequest): NetworkResponse<PaginatedResult<ManuscriptReviewDataEntity>>
 
     //稿件数据-传播效果
-    @POST(value = "/api/data/news/spreadInfo")
-    suspend fun getManuscriptDiffusionData(@Body requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<DiffusionDataEntity>>
+    @POST(value = "api/data/news/spreadInfo")
+    suspend fun getManuscriptDiffusionData(@Body requestBody: ManuscriptDiffusionRequest): NetworkResponse<PaginatedResult<DiffusionDataEntity>>
 
     //部门数据-稿件总数据排行
-    @POST(value = "/api/data/department/rank")
-    suspend fun getDepartmentReviewData(@Body requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<DepartmentTotalDataEntity>>
+    @POST(value = "api/data/department/rank")
+    suspend fun getDepartmentReviewData(@Body requestBody: DepartmentReviewRequest): NetworkResponse<PaginatedResult<DepartmentTotalDataEntity>>
 
     //部门数据-稿件TOP榜单
-    @POST(value = "/api/data/department/top")
-    suspend fun getDepartmentTopData(@Body requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<DepartmentTotalDataEntity>>
+    @POST(value = "api/data/department/top")
+    suspend fun getDepartmentTopData(@Body requestBody: DepartmentTopRequest): NetworkResponse<PaginatedResult<DepartmentTotalDataEntity>>
 
     //部门数据-任务完成情况
-    @POST(value = "/api/data/department/taskInfo")
-    suspend fun getDepartmentTaskData(@Body requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<DepartmentTaskDataEntity>>
+    @POST(value = "api/data/department/taskInfo")
+    suspend fun getDepartmentTaskData(@Body requestBody: DepartmentTaskRequest): NetworkResponse<PaginatedResult<DepartmentTaskDataEntity>>
+
+    //修改稿分
+    @POST(value = "api/data/news/modifyScore")
+    suspend fun modifyManuscriptScore(@Body requestBody: ModifyManuscriptScoreRequest): NetworkResponse<Nothing>
 }

@@ -67,16 +67,17 @@ internal fun DepartmentReviewScreen(
     // 创建部门数据列表
     var snackBarHostState  by remember { mutableStateOf(SnackbarHostState()) }
     // 创建 MutableState 用于列表组件
-    val departmentList = remember { mutableStateOf(depart.dataList) }
+    val departmentList = remember { mutableStateOf(depart.dataList ?: emptyList()) }
     val isLoadingMore = remember { mutableStateOf(depart.isLoading) }
     val isRefreshing = remember { mutableStateOf(depart.isRefreshing) }
-    val canLoadMore = remember { mutableStateOf(true) }
+    val canLoadMore = remember { mutableStateOf(depart.hasNextPage) }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(depart) {
-        departmentList.value = depart.dataList
+        departmentList.value = depart.dataList ?: emptyList()
         isLoadingMore.value = depart.isLoading
         isRefreshing.value = depart.isRefreshing
+        canLoadMore.value = depart.hasNextPage
         depart.error?.let {
             snackBarHostState.showToast(it)
         }
@@ -216,10 +217,10 @@ private fun DepartmentTotalHeader(
 private fun DepartmentReviewItem(
     ranking: Int,
     name: String,
-    totalPayment: Int = 0,
+    totalPayment: Double = 0.0,
     totalPersonNumber: Int = 0,
-    totalScore: Int = 0,
-    averageScore: Int = 0,
+    totalScore: Double = 0.0,
+    averageScore: Double = 0.0,
     filterText: String = ""
 ) {
     // 显示部门排名卡片

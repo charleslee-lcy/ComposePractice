@@ -16,12 +16,12 @@ data class DepartmentTotalDataEntity(
     @SerializedName("departmentName")
     val departmentName: String,
     @SerializedName("totalScore")
-    val totalScore: Int = 0,
+    val totalScore: Double = 0.0,
     @SerializedName("totalPersonCount")
     val totalPersons: Int = 0,
     @SerializedName("averageScore")
-    val averageScore: Int = 0,
+    val averageScore: Double = 0.0,
     @SerializedName("totalMoney")
-    val totalPayment: Int = 0
+    val totalPayment: Double = 0.0
 ) : Serializable
 
