@@ -248,10 +248,10 @@ fun ManuscriptTopRankingPreview() {
             1, ManuscriptReviewDataEntity(
                 title = "2025年12月份的云南省让“看一种云南生活”富饶世界云南生活富饶世界",
                 reporter = listOf(ReporterEntity(name = "张明明")),
-                score = 22,
-                basicScore = 3,
-                qualityScore = 4,
-                diffusionScore = 5
+                score = 22.0,
+                basicScore = 3.0,
+                qualityScore = 4.0,
+                diffusionScore = 5.0
             )
         )
     }

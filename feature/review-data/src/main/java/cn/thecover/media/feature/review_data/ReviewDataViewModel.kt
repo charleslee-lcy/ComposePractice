@@ -13,6 +13,7 @@ import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntit
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DiffusionDataEntity
 import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
+import cn.thecover.media.feature.review_data.data.params.ModifyManuscriptScoreRequest
 
 import cn.thecover.media.feature.review_data.data.params.RepositoryResult
 import cn.thecover.media.feature.review_data.data.params.SortConditions
@@ -229,21 +230,35 @@ class ReviewDataViewModel @Inject constructor(
         }
     }
 
-    private fun updateManuscriptScore(id: Int, newScore: Int) {
-        _manuscriptReviewPageState.update { currentState ->
-            val updatedManuscripts = currentState.dataList?.map { manuscript ->
-                if (manuscript.id == id) {
-                    // 创建新的对象，更新分数
-                    manuscript.copy(score = newScore, leaderScoreModified = true)
-                } else {
-                    manuscript
+    private fun updateManuscriptScore(id: Int, newScore: Double) {
+
+        viewModelScope.launch {
+            val result = repository.modifyManuscriptScore(
+                newsId = id,
+                score = newScore,
+                year=manuscriptReviewFilterState.value.getYearAsInt(),
+                month=manuscriptReviewFilterState.value.getMonthAsInt()
+            )
+
+            if (result is RepositoryResult.Success) {
+                // 刷新数据
+                _manuscriptReviewPageState.update { currentState ->
+                    val updatedManuscripts = currentState.dataList?.map { manuscript ->
+                        if (manuscript.id == id) {
+                            // 创建新的对象，更新分数
+                            manuscript.copy(score = newScore, leaderScoreModified = true)
+                        } else {
+                            manuscript
+                        }
+                    }
+
+                    currentState.copy(
+                        dataList = updatedManuscripts
+                    )
                 }
             }
-
-            currentState.copy(
-                dataList = updatedManuscripts
-            )
         }
+
     }
 
 
@@ -397,17 +412,7 @@ class ReviewDataViewModel @Inject constructor(
                 year = manuscriptTopFilterState.value.getYearAsInt(),
                 month = manuscriptTopFilterState.value.getMonthAsInt(),
                 page = page,
-                rankType = when (manuscriptTopFilterState.value.sortField) {
-                    "分割线以上" -> 1
-                    "分割线以下（清零）" -> 2
-                    else -> 0
-                },
-                title = if (manuscriptTopFilterState.value.searchField.contains("标题"))
-                    manuscriptTopFilterState.value.searchText else "",
-                reporter = if (manuscriptTopFilterState.value.searchField.contains("记者"))
-                    manuscriptTopFilterState.value.searchText else "",
-                id = if (manuscriptTopFilterState.value.searchField.contains("id"))
-                    manuscriptTopFilterState.value.searchText else "",
+                sortConditions = manuscriptTopFilterState.value.sortField ,
             )
             when (result) {
                 is RepositoryResult.Success -> {

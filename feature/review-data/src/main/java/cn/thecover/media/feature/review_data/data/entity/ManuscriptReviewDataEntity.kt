@@ -25,13 +25,13 @@ data class ManuscriptReviewDataEntity(
     val leaderScoreModified: Boolean = false,
 
     @SerializedName("totalScore")
-    val score: Int = 0,//稿件总分
+    val score: Double = 0.0,//稿件总分
     @SerializedName("basicScore")
-    val basicScore: Int = 0,//基础分
+    val basicScore: Double = 0.0,//基础分
     @SerializedName("qualityScore")
-    val qualityScore: Int = 0,//质量分
+    val qualityScore: Double = 0.0,//质量分
     @SerializedName("spreadScore")
-    val diffusionScore: Int = 0,//传播分
+    val diffusionScore: Double = 0.0,//传播分
 
     val diffusionDataEntity: DiffusionDataEntity = DiffusionDataEntity(
 

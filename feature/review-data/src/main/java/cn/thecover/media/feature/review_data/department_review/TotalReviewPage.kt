@@ -217,10 +217,10 @@ private fun DepartmentTotalHeader(
 private fun DepartmentReviewItem(
     ranking: Int,
     name: String,
-    totalPayment: Int = 0,
+    totalPayment: Double = 0.0,
     totalPersonNumber: Int = 0,
-    totalScore: Int = 0,
-    averageScore: Int = 0,
+    totalScore: Double = 0.0,
+    averageScore: Double = 0.0,
     filterText: String = ""
 ) {
     // 显示部门排名卡片

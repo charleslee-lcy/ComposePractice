@@ -132,13 +132,13 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
  * @param score 部门人均得分
  */
 @Composable
-private fun TopRankingItem(ranking: Int, departmentName: String, score: Int) {
+private fun TopRankingItem(ranking: Int, departmentName: String, score: Double) {
     // 使用排名卡片包装器显示排名信息
     DataItemCard {
         DataItemRankingRow(ranking) {
             // 水平排列部门名称和得分信息
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = departmentName, style = MaterialTheme.typography.titleSmall)
+                Text(text = departmentName, style = MaterialTheme.typography.titleSmall, maxLines = 1, modifier = Modifier.weight(1f))
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
                     "部门人均得分",

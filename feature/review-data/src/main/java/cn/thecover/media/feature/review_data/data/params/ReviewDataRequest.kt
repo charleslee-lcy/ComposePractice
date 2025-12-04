@@ -20,7 +20,7 @@ data class ManuscriptReviewRequest(
 data class ManuscriptTopRequest(
     val newsId: String = "",
     val newsTitle: String = "",
-    val rankType: Int = 0,
+    val sortConditions: List<SortConditions> = emptyList(),
     val reporterName: String = "",
     val year: Int,
     val month: Int,
@@ -71,5 +71,15 @@ data class DepartmentTopRequest(
     val month: Int,
     val page: Int,
     val page_size: String = "10",
-    val sortConditions: String = ""
+    val sortConditions: List<SortConditions> = emptyList()
+)
+
+/**
+ * 修改稿分请求参数
+ */
+data class ModifyManuscriptScoreRequest(
+    val newsId: Int,
+    val modifyScore: Double,
+    val year: Int,
+    val month: Int,
 )

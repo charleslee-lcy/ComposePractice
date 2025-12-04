@@ -153,7 +153,8 @@ private fun DiffusionItem(data: DiffusionDataEntity, filterChoice: String) {
                     // 显示稿件头部信息：标题、作者、编辑
                     ManuScriptItemHeader(
                         title = data.title,
-                        author = data.reporter.joinToString(", ") { it.name },
+                        author = data.reporter.joinToString("、") { it.name },
+                        editor = data.editor.joinToString("、") { it.name },
                     )
                     // 显示传播评分数据行：公式传播分和最终传播分
                     PrimaryItemScoreRow(

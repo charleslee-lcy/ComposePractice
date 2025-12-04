@@ -63,7 +63,7 @@ class ReviewDataRepository @Inject constructor(
         year: Int,
         month: Int,
         page: Int,
-        rankType: Int = 0,
+        sortConditions: String = "",
         reporter: String = "",
         title: String = "",
         id: String = ""
@@ -73,7 +73,9 @@ class ReviewDataRepository @Inject constructor(
                 ManuscriptTopRequest(
                     newsId = id,
                     newsTitle = title,
-                    rankType = rankType,
+                    sortConditions = listOf(
+                        SortConditions.putSortConditions(sortConditions)
+                    ),
                     reporterName = reporter,
                     year = year,
                     month = month,
@@ -221,6 +223,7 @@ class ReviewDataRepository @Inject constructor(
         month: Int,
         page: Int
     ): RepositoryResult<PaginatedResult<DepartmentTotalDataEntity>> {
+
         // 实现部门考核数据获取逻辑
         return try {
             val response = reviewApiService.getDepartmentTopData(
@@ -228,7 +231,9 @@ class ReviewDataRepository @Inject constructor(
                     year = year,
                     month = month,
                     page = page,
-                    sortConditions = DEPT_DATA_AVERAGE_SCORE
+                    sortConditions = listOf(
+                        SortConditions.putSortConditions(DEPT_DATA_AVERAGE_SCORE)
+                    )
                 )
             )
 
@@ -250,5 +255,35 @@ class ReviewDataRepository @Inject constructor(
             RepositoryResult.Error(e)
         }
     }
+
+    suspend fun modifyManuscriptScore(
+            newsId: Int,
+        score: Double,
+        year: Int,
+        month: Int
+    ): RepositoryResult<Boolean> {
+        return try {
+            val response = reviewApiService.modifyManuscriptScore(
+                ModifyManuscriptScoreRequest(
+                    newsId = newsId,
+                    modifyScore = score,
+                    year = year,
+                    month = month
+                )
+            )
+
+            if (response.isSuccess()) {
+                RepositoryResult.Success(
+                    true
+                )
+            } else {
+                RepositoryResult.Error(Exception(response.message))
+            }
+
+        } catch (e: Exception) {
+            RepositoryResult.Error(e)
+        }
+    }
+
 }
 

@@ -61,10 +61,12 @@ import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
+import cn.thecover.media.core.widget.component.popup.YBDialog
 import cn.thecover.media.core.widget.component.popup.YBPopup
 import cn.thecover.media.core.widget.component.search.FilterSearchTextField
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.icon.YBIcons
+import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
@@ -98,7 +100,8 @@ internal fun ManuscriptReviewPage(
     val splitsNum = 2
     val data by viewModel.manuscriptReviewPageState.collectAsState()
 
-    var showEditScorePop by remember { mutableStateOf(false) }
+    val showEditScorePop = remember { mutableStateOf(false) }
+
     var editId by remember { mutableIntStateOf(0) }
     // 创建 MutableState 用于列表组件
     val manus = remember { mutableStateOf(data.dataList ?: emptyList()) }
@@ -176,7 +179,7 @@ internal fun ManuscriptReviewPage(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 TotalRankingItem(index + 1, rankLine = splitsNum + 1, item, onItemClick = {
-                    showEditScorePop = true
+                    showEditScorePop.value = true
                     editId = it
                 })
             }
@@ -186,25 +189,24 @@ internal fun ManuscriptReviewPage(
     var textFiledState by remember { mutableStateOf("") }
 
     LaunchedEffect(showEditScorePop) {
-        if (showEditScorePop) {
+        if (showEditScorePop.value) {
             val item = manus.value.firstOrNull { it.id == editId }
             if (item != null) {
                 textFiledState = item.score.toString()
             }
         }
     }
-    YBPopup(
-        visible = showEditScorePop,
-        isShowTopActionBar = true,
-        draggable = false,
+    YBDialog (
+        dialogState = showEditScorePop,
+        title = "修改稿分",
         onConfirm = {
-            showEditScorePop = false
+            showEditScorePop.value = false
 
             if (textFiledState.isNotEmpty()) {
                 viewModel.handleReviewDataIntent(
                     ReviewDataIntent.EditManuscriptScore(
                         editId,
-                        textFiledState.toInt()
+                        textFiledState.toDouble()
                     )
                 )
             }
@@ -215,24 +217,19 @@ internal fun ManuscriptReviewPage(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 32.dp, end = 32.dp, top = 40.dp, bottom = 65.dp)
             ) {
-                Text(
-                    text = "修改稿分",
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-
                 YBInput(
                     text = textFiledState,
                     onValueChange = {
                         textFiledState = it
                     },
                     modifier = Modifier
-                        .padding(top = 16.dp)
                         .fillMaxWidth()
-                        .border(0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                        .height(44.dp)
+                        .border(0.5.dp, color = MaterialTheme.colorScheme.outlineVariant, shape = YBShapes.medium)
                         .background(
-                            PageBackgroundColor
+                            PageBackgroundColor,
+                            shape = YBShapes.medium
                         ),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number
@@ -240,16 +237,16 @@ internal fun ManuscriptReviewPage(
                     hint = "请输入稿分",
                     maxLines = 1,
                     textStyle = TextStyle(
-                        textAlign = TextAlign.Center,
+
                         fontSize = 14.sp, color = MainTextColor
                     ),
-                    contentAlignment = Alignment.Center,
+                    contentAlignment = Alignment.CenterStart,
                     contentPadding = 8.dp
                 )
             }
         },
-        onClose = {
-            showEditScorePop = false
+        onDismissRequest = {
+            showEditScorePop.value = false
             textFiledState = ""
         }
     )
@@ -337,9 +334,9 @@ private fun TotalRankingItem(
 
 @Composable
 private fun ItemFoldedView(
-    basicScore: Int = 0,
-    qualityScore: Int = 0,
-    diffusionScore: Int = 0
+    basicScore: Double = 0.0,
+    qualityScore: Double = 0.0,
+    diffusionScore: Double = 0.0
 ) {
     Column {
         HorizontalDivider(
