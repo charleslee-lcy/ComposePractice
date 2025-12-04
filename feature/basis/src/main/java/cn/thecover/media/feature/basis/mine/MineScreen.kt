@@ -192,9 +192,7 @@ internal fun MineScreen(
             },
             confirmText = "退出",
             onConfirm = {
-                scope.launch {
-                    viewModel.logout()
-                }
+                viewModel.logout()
             },
             cancelText = "取消",
             onCancel = {
@@ -253,10 +251,8 @@ private fun UserAvatar(avatarUrl: String?, userName: String?) {
                 .size(60.dp)
                 .clip(CircleShape)
                 .background(Color.LightGray),
-
             contentScale = ContentScale.Crop,
             placeholder = painterResource(YBIcons.Custom.DefaultAvatar),
-
             // 加载失败/异常占位图
             error = painterResource(YBIcons.Custom.DefaultAvatar),
         )

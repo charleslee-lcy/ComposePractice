@@ -90,7 +90,6 @@ internal fun LoginScreen(
     val focusManager = LocalFocusManager.current
     var nameText by remember { mutableStateOf("") }
     var passwordText by remember { mutableStateOf("") }
-    val loginScope = rememberCoroutineScope()
     val loadingState = rememberTipsDialogState()
 
     val loginState = viewModel.loginUiState.collectAsStateWithLifecycle().value
@@ -215,11 +214,9 @@ internal fun LoginScreen(
                         Toast.makeText(context, "密码不能为空", Toast.LENGTH_SHORT).show()
                         return@YBButton
                     }
-
                     focusManager.clearFocus()
-                    loginScope.launch {
-                        viewModel.login(DESUtil.simpleEncrypt(nameText), DESUtil.simpleEncrypt(passwordText))
-                    }
+
+                    viewModel.login(DESUtil.simpleEncrypt(nameText), DESUtil.simpleEncrypt(passwordText))
                 }
             )
 

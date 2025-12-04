@@ -91,13 +91,13 @@ fun ArchiveScoreScreen(
     viewModel: ReviewManageViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    var curPage = remember { mutableIntStateOf(0) }
-    var isRefreshing = remember { mutableStateOf(false) }
-    var isLoadingMore = remember { mutableStateOf(false) }
-    var canLoadMore = remember { mutableStateOf(true) }
+    val curPage = remember { mutableIntStateOf(0) }
+    val isRefreshing = remember { mutableStateOf(false) }
+    val isLoadingMore = remember { mutableStateOf(false) }
+    val canLoadMore = remember { mutableStateOf(true) }
     val focusManager = LocalFocusManager.current
     val loadingState = rememberTipsDialogState()
-    var items = remember { mutableStateOf(listOf<ArchiveListData>()) }
+    val items = remember { mutableStateOf(listOf<ArchiveListData>()) }
     val archiveListUiState by viewModel.archiveListDataState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {

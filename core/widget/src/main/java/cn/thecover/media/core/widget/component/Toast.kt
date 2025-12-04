@@ -35,10 +35,15 @@ suspend fun SnackbarHostState.showToast(message: String) {
     showSnackbar(message, actionLabel = null, duration = SnackbarDuration.Indefinite)
 }
 
+/**
+ * 自定义toast
+ * @param verticalRate 纵向显示的位置，默认为父容器高度的85%
+ */
 @Composable
 fun YBToast(
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    duration: Long = 2000L
+    duration: Long = 2000L,
+    verticalRate: Float = 0.85f
 ) {
     LaunchedEffect(snackBarHostState.currentSnackbarData) {
         delay(duration)
@@ -47,7 +52,7 @@ fun YBToast(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Spacer(Modifier.fillMaxHeight(0.8f))
+        Spacer(Modifier.fillMaxHeight(verticalRate))
         // 手动放置 SnackBarHost 到中央
         SnackbarHost(
             hostState = snackBarHostState,

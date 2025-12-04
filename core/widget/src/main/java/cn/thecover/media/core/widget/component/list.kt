@@ -163,17 +163,14 @@ fun <T> YBNormalList(
             }
         }
 
-        if (items.value.isEmpty()) {
+        if (items.value.isEmpty() && !isRefreshing.value) {
             Box(
                 Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    "暂无数据",
-                    Modifier.padding(12.dp),
-                    textAlign = TextAlign.Center,
-                    color = TertiaryTextColor,
-                    fontSize = 14.sp
+                YBImage(
+                    modifier = Modifier.padding(12.dp),
+                    placeholder = painterResource(R.mipmap.img_empty_content)
                 )
             }
         }

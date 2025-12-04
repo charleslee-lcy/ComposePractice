@@ -592,7 +592,7 @@ internal fun LeaderUserContent() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "定额基数分",
+                        text = "定额系数",
                         color = MainTextColor,
                         fontSize = 14.sp,
                     )
@@ -608,7 +608,7 @@ internal fun LeaderUserContent() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "实际完成",
+                        text = "实际系数",
                         color = MainTextColor,
                         fontSize = 14.sp,
                     )
