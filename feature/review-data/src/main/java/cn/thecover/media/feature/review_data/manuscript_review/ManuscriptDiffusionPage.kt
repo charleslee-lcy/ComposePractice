@@ -74,13 +74,14 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     val manus = remember { mutableStateOf(data.dataList) }
     val isLoadingMore = remember { mutableStateOf(data.isLoading) }
     val isRefreshing = remember { mutableStateOf(data.isRefreshing) }
-    val canLoadMore = remember { mutableStateOf(true) }
+    val canLoadMore = remember { mutableStateOf(data.hasNextPage) }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(data) {
         manus.value = data.dataList
         isLoadingMore.value = data.isLoading
         isRefreshing.value = data.isRefreshing
+        canLoadMore.value = data.hasNextPage
     }
 
     YBNormalList(
@@ -95,20 +96,22 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
                 modifier = Modifier.background(color = MaterialTheme.colorScheme.background)
             ) {
                 ManuscriptDiffusionHeader(viewModel, filter)
-                Text(
-                    text = buildAnnotatedString {
-                        append("共 ")
-                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                            append(data.dataList.size.toString())
-                        }
-                        append(" 条记录")
-                    },
-                    style = MaterialTheme.typography.labelMedium,
-                    color = TertiaryTextColor,
-                    modifier = Modifier
-                        .padding(start = 12.dp)
-                        .offset(y = (-4).dp)
-                )
+                if (data.dataList.isNotEmpty()) {
+                    Text(
+                        text = buildAnnotatedString {
+                            append("共 ")
+                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                                append(data.dataList.size.toString())
+                            }
+                            append(" 条记录")
+                        },
+                        style = MaterialTheme.typography.labelMedium,
+                        color = TertiaryTextColor,
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+                            .offset(y = (-4).dp)
+                    )
+                }
             }
 
         },
@@ -123,7 +126,7 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
         }
     ) { item, index ->
 
-        DiffusionItem(index, item, filter.sortField)
+        DiffusionItem(item, filter.sortField)
     }
 
 }
@@ -136,14 +139,14 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
  * 折叠显示详细的转载数据（核心媒体、一级媒体、二级媒体转载数）
  * 展示用户互动数据（阅读数、分享数、点赞数、评论数）
  *
- * @param rank 稿件在列表中的排名序号，用于展示排名信息
  * @param data 稿件的详细传播数据实体，包含基本信息和各项统计数据
+ * @param filterChoice 当前选择的排序字段
  */
 @Composable
-private fun DiffusionItem(rank: Int, data: DiffusionDataEntity, filterChoice: String) {
+private fun DiffusionItem(data: DiffusionDataEntity, filterChoice: String) {
     // 使用排名卡片包装整个内容区域
     DataItemCard {
-        DataItemRankingRow(ranking = rank) {
+        DataItemRankingRow(ranking = data.rank) {
             // 可折叠的内容区域，包含基础信息和详细数据
             ExpandItemColumn(offset = -12, content = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {

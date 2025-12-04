@@ -6,8 +6,7 @@ import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEnti
 import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
 import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.feature.review_data.data.entity.DiffusionDataEntity
-import cn.thecover.media.feature.review_data.data.params.RepositoryResult
-import cn.thecover.media.feature.review_data.data.params.SortConditions
+import cn.thecover.media.feature.review_data.data.params.*
 import cn.thecover.media.feature.review_data.data.params.SortConditions.Companion.DEPT_DATA_AVERAGE_SCORE
 import cn.thecover.media.feature.review_data.data.params.SortConditions.Companion.NEWS_DATA_FORMULA_SPREAD_SCORE
 import jakarta.inject.Inject
@@ -31,16 +30,14 @@ class ReviewDataRepository @Inject constructor(
     ): RepositoryResult<PaginatedResult<ManuscriptReviewDataEntity>> {
         return try {
             val response = reviewApiService.getManuscriptReviewData(
-                mapOf(
-                    "newsId" to id,
-                    "newsTitle" to title,
-                    "rankType" to rankType,
-                    "reporterName" to reporter,
-
-                    "year" to year,
-                    "month" to month,
-                    "page" to page,
-                    "page_size" to "20",
+                ManuscriptReviewRequest(
+                    newsId = id,
+                    newsTitle = title,
+                    rankType = rankType,
+                    reporterName = reporter,
+                    year = year,
+                    month = month,
+                    page = page
                 )
             )
             if (response.isSuccess()) {
@@ -73,16 +70,14 @@ class ReviewDataRepository @Inject constructor(
     ): RepositoryResult<PaginatedResult<ManuscriptReviewDataEntity>> {
         return try {
             val response = reviewApiService.getManuscriptReviewTopData(
-                mapOf(
-                    "newsId" to id,
-                    "newsTitle" to title,
-                    "rankType" to rankType,
-                    "reporterName" to reporter,
-
-                    "year" to year,
-                    "month" to month,
-                    "page" to page,
-                    "page_size" to "20",
+                ManuscriptTopRequest(
+                    newsId = id,
+                    newsTitle = title,
+                    rankType = rankType,
+                    reporterName = reporter,
+                    year = year,
+                    month = month,
+                    page = page
                 )
             )
             if (response.isSuccess()) {
@@ -115,18 +110,16 @@ class ReviewDataRepository @Inject constructor(
     ): RepositoryResult<PaginatedResult<DiffusionDataEntity>> {
         return try {
             val response = reviewApiService.getManuscriptDiffusionData(
-                mapOf(
-                    "newsId" to id,
-                    "newsTitle" to title,
-                    "sortConditions" to listOf(
+                ManuscriptDiffusionRequest(
+                    newsId = id,
+                    newsTitle = title,
+                    sortConditions = listOf(
                         SortConditions.putSortConditions(sortConditions)
                     ),
-                    "reporterName" to reporter,
-
-                    "year" to year,
-                    "month" to month,
-                    "page" to page,
-                    "page_size" to "20",
+                    reporterName = reporter,
+                    year = year,
+                    month = month,
+                    page = page
                 )
             )
             if (response.isSuccess()) {
@@ -158,12 +151,11 @@ class ReviewDataRepository @Inject constructor(
         // 实现部门考核数据获取逻辑
         return try {
             val response = reviewApiService.getDepartmentReviewData(
-                mapOf(
-                    "year" to year,
-                    "month" to month,
-                    "page" to page,
-                    "page_size" to "20",
-                    "sortConditions" to listOf(
+                DepartmentReviewRequest(
+                    year = year,
+                    month = month,
+                    page = page,
+                    sortConditions = listOf(
                         SortConditions.putSortConditions(filter)
                     )
                 )
@@ -197,11 +189,10 @@ class ReviewDataRepository @Inject constructor(
 
         return try {
             val response = reviewApiService.getDepartmentTaskData(
-                mapOf(
-                    "year" to year,
-                    "month" to month,
-                    "page" to page,
-                    "page_size" to "20"
+                DepartmentTaskRequest(
+                    year = year,
+                    month = month,
+                    page = page
                 )
             )
 
@@ -233,12 +224,11 @@ class ReviewDataRepository @Inject constructor(
         // 实现部门考核数据获取逻辑
         return try {
             val response = reviewApiService.getDepartmentTopData(
-                mapOf(
-                    "year" to year,
-                    "month" to month,
-                    "page" to page,
-                    "page_size" to "10",
-                    "sortConditions" to DEPT_DATA_AVERAGE_SCORE
+                DepartmentTopRequest(
+                    year = year,
+                    month = month,
+                    page = page,
+                    sortConditions = DEPT_DATA_AVERAGE_SCORE
                 )
             )
 

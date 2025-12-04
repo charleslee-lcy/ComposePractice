@@ -65,13 +65,14 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
     val departmentList = remember { mutableStateOf(departmentTotalData.dataList) }
     val isLoadingMore = remember { mutableStateOf(departmentTotalData.isLoading) }
     val isRefreshing = remember { mutableStateOf(departmentTotalData.isRefreshing) }
-    val canLoadMore = remember { mutableStateOf(true) }
+    val canLoadMore = remember { mutableStateOf(departmentTotalData.hasNextPage) }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(departmentTotalData) {
         departmentList.value = departmentTotalData.dataList
         isLoadingMore.value = departmentTotalData.isLoading
         isRefreshing.value = departmentTotalData.isRefreshing
+        canLoadMore.value = departmentTotalData.hasNextPage
     }
 
 

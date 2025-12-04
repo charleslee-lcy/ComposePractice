@@ -11,6 +11,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.Call
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -51,9 +52,6 @@ object NetworkModule {
     ): Retrofit = Retrofit.Builder()
         .baseUrl(URLConstant.YB_BASE_URL)
         .callFactory { okHttpCallFactory.get().newCall(it) }
-//        .addConverterFactory(
-//            networkJson.asConverterFactory("application/json".toMediaType()),
-//        )
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 

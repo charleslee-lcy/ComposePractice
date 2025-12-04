@@ -61,13 +61,14 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     val departmentTaskList = remember { mutableStateOf(taskState.dataList) }
     val isLoadingMore = remember { mutableStateOf(taskState.isLoading) }
     val isRefreshing = remember { mutableStateOf(taskState.isRefreshing) }
-    val canLoadMore = remember { mutableStateOf(true) }
+    val canLoadMore = remember { mutableStateOf(taskState.hasNextPage) }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(taskState) {
         departmentTaskList.value = taskState.dataList
         isLoadingMore.value = taskState.isLoading
         isRefreshing.value = taskState.isRefreshing
+        canLoadMore.value = taskState.hasNextPage
     }
     LaunchedEffect(datePickedState) {
         viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshDepartmentTaskData)

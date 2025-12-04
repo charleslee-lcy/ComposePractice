@@ -55,13 +55,14 @@ fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel) {
     val manus = remember { mutableStateOf(data.dataList) }
     val isLoadingMore = remember { mutableStateOf(data.isLoading) }
     val isRefreshing = remember { mutableStateOf(data.isRefreshing) }
-    val canLoadMore = remember { mutableStateOf(true) }
+    val canLoadMore = remember { mutableStateOf(data.hasNextPage) }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(data) {
         manus.value = data.dataList
         isLoadingMore.value = data.isLoading
         isRefreshing.value = data.isRefreshing
+        canLoadMore.value = data.hasNextPage
     }
 
     LaunchedEffect(filterState) {

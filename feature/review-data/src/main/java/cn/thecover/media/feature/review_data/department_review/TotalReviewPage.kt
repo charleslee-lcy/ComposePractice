@@ -70,13 +70,14 @@ internal fun DepartmentReviewScreen(
     val departmentList = remember { mutableStateOf(depart.dataList) }
     val isLoadingMore = remember { mutableStateOf(depart.isLoading) }
     val isRefreshing = remember { mutableStateOf(depart.isRefreshing) }
-    val canLoadMore = remember { mutableStateOf(true) }
+    val canLoadMore = remember { mutableStateOf(depart.hasNextPage) }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(depart) {
         departmentList.value = depart.dataList
         isLoadingMore.value = depart.isLoading
         isRefreshing.value = depart.isRefreshing
+        canLoadMore.value = depart.hasNextPage
         depart.error?.let {
             snackBarHostState.showToast(it)
         }

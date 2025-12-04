@@ -149,7 +149,8 @@ fun <T> YBNormalList(
                     }
                 }
 
-                !canLoadMore.value -> item {
+                // 当数据不为空且不能加载更多时显示页脚
+                !canLoadMore.value && items.value.isNotEmpty() -> item {
                     Text(
                         "没有更多数据了",
                         Modifier
@@ -296,7 +297,8 @@ fun <T> YBCoordinatorList(
                             }
                         }
 
-                        !canLoadMore.value -> item {
+                        // 当数据不为空且不能加载更多时显示页脚
+                        !canLoadMore.value && items.value.isNotEmpty() -> item {
                             Text(
                                 "没有更多数据了",
                                 Modifier

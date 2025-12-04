@@ -274,13 +274,14 @@ class ReviewDataViewModel @Inject constructor(
                 reporter = if (manuscriptReviewFilterState.value.searchField.contains("记者"))
                     manuscriptReviewFilterState.value.searchText else "",
                 id = if (manuscriptReviewFilterState.value.searchField.contains("id"))
-                    manuscriptReviewFilterState.value.searchText else "",
-                )
+                    manuscriptReviewFilterState.value.searchText else ""
+            )
 
             when (result) {
                 is RepositoryResult.Success -> {
                     val manuscripts = if (isLoadMore) {
-                        _manuscriptReviewPageState.value.dataList + result.data.dataList
+                        _manuscriptReviewPageState.value.dataList?.plus(result.data.dataList)
+                            ?: result.data.dataList
                     } else {
                         result.data.dataList
                     }
@@ -323,10 +324,16 @@ class ReviewDataViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
+            val page = if (isLoadMore) {
+                _manuscriptReviewDiffusionPageState.value.currentPage + 1
+            } else {
+                1
+            }
+            
             val result = repository.fetchManuscriptDiffusionData(
-                year = manuscriptReviewFilterState.value.getYearAsInt(),
-                month = manuscriptReviewFilterState.value.getMonthAsInt(),
-                page = manuscriptReviewDiffusionPageState.value.currentPage,
+                year = manuscriptDiffusionFilterState.value.getYearAsInt(),
+                month = manuscriptDiffusionFilterState.value.getMonthAsInt(),
+                page = page,
                 sortConditions = manuscriptDiffusionFilterState.value.sortField,
                 title = if (manuscriptDiffusionFilterState.value.searchField.contains("标题"))
                     manuscriptDiffusionFilterState.value.searchText else "",
@@ -336,26 +343,38 @@ class ReviewDataViewModel @Inject constructor(
                     manuscriptDiffusionFilterState.value.searchText else "",
             )
 
-            if (result is RepositoryResult.Success) {
-                val manuscripts =
-                    if (isLoadMore) (_manuscriptReviewDiffusionPageState.value.dataList + result.data.dataList) else result.data.dataList
+            when (result) {
+                is RepositoryResult.Success -> {
+                    val manuscripts = if (isLoadMore) {
+                        _manuscriptReviewDiffusionPageState.value.dataList + result.data.dataList
+                    } else {
+                        result.data.dataList
+                    }
 
-                _manuscriptReviewDiffusionPageState.update {
-                    it.copy(
-                        isLoading = false,
-                        isRefreshing = false,
-                        dataList = manuscripts
-                    )
+                    _manuscriptReviewDiffusionPageState.update {
+                        it.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            dataList = manuscripts,
+                            currentPage = result.data.currentPage,
+                            totalPages = result.data.totalPages,
+                            hasNextPage = result.data.hasNextPage
+                        )
+                    }
                 }
 
-            } else if (result is RepositoryResult.Error) {
+                is RepositoryResult.Error -> {
+                    _manuscriptReviewDiffusionPageState.update {
+                        it.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            error = result.exception.message
+                        )
+                    }
+                }
 
-                _manuscriptReviewDiffusionPageState.update {
-                    it.copy(
-                        isLoading = false,
-                        isRefreshing = false,
-                        error = result.exception.message
-                    )
+                is RepositoryResult.Loading -> {
+                    // 已在开始时处理
                 }
             }
         }
@@ -368,10 +387,16 @@ class ReviewDataViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
+            val page = if (isLoadMore) {
+                _manuscriptReviewTopPageState.value.currentPage + 1
+            } else {
+                1
+            }
+            
             val result = repository.fetchManuscriptsTopPage(
                 year = manuscriptTopFilterState.value.getYearAsInt(),
                 month = manuscriptTopFilterState.value.getMonthAsInt(),
-                page = manuscriptReviewTopPageState.value.currentPage,
+                page = page,
                 rankType = when (manuscriptTopFilterState.value.sortField) {
                     "分割线以上" -> 1
                     "分割线以下（清零）" -> 2
@@ -386,8 +411,11 @@ class ReviewDataViewModel @Inject constructor(
             )
             when (result) {
                 is RepositoryResult.Success -> {
-                    val manuscripts =
-                        if (isLoadMore) (_manuscriptReviewTopPageState.value.dataList + result.data.dataList) else result.data.dataList
+                    val manuscripts = if (isLoadMore) {
+                        _manuscriptReviewTopPageState.value.dataList + result.data.dataList
+                    } else {
+                        result.data.dataList
+                    }
                     _manuscriptReviewTopPageState.update {
                         it.copy(
                             isLoading = false,
@@ -427,11 +455,16 @@ class ReviewDataViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            val page = if (isLoadMore) {
+                _departmentTaskPageState.value.currentPage + 1
+            } else {
+                1
+            }
 
             val result = repository.fetchDepartmentTaskPage(
                 departmentDataFilterState.value.getYearAsInt(),
                 departmentDataFilterState.value.getMonthAsInt(),
-                departmentTaskPageState.value.currentPage
+                page
             )
 
             when (result) {
@@ -479,11 +512,17 @@ class ReviewDataViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
+            val page = if (isLoadMore) {
+                _departmentReviewPageState.value.currentPage + 1
+            } else {
+                1
+            }
+            
             val result = repository.fetchDepartmentReviewPage(
                 departmentDataFilterState.value.sortField,
                 departmentDataFilterState.value.getYearAsInt(),
                 departmentDataFilterState.value.getMonthAsInt(),
-                departmentReviewPageState.value.currentPage
+                page
             )
             if (result is RepositoryResult.Success) {
                 val departmentData =
@@ -523,10 +562,16 @@ class ReviewDataViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
+            val page = if (isLoadMore) {
+                _departmentReviewTopPageState.value.currentPage + 1
+            } else {
+                1
+            }
+            
             val result = repository.fetchDepartmentTopPage(
                 departmentTopFilterState.value.getYearAsInt(),
                 departmentTopFilterState.value.getMonthAsInt(),
-                departmentReviewTopPageState.value.currentPage
+                page
             )
             if (result is RepositoryResult.Success) {
                 val departmentData =

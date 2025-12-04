@@ -10,6 +10,12 @@ import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntit
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DiffusionDataEntity
 import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
+import cn.thecover.media.feature.review_data.data.params.DepartmentReviewRequest
+import cn.thecover.media.feature.review_data.data.params.DepartmentTaskRequest
+import cn.thecover.media.feature.review_data.data.params.DepartmentTopRequest
+import cn.thecover.media.feature.review_data.data.params.ManuscriptDiffusionRequest
+import cn.thecover.media.feature.review_data.data.params.ManuscriptReviewRequest
+import cn.thecover.media.feature.review_data.data.params.ManuscriptTopRequest
 import cn.thecover.media.feature.review_data.repository.ReviewDataRepository
 
 // 创建一个简单的 ViewModel 工厂用于 Preview
@@ -31,27 +37,27 @@ class PreviewReviewDataViewModelFactory : ViewModelProvider.Factory {
 class FakeReviewApiService : ReviewDataApiService {
 
 
-    override suspend fun getManuscriptReviewData(requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<ManuscriptReviewDataEntity>> {
+    override suspend fun getManuscriptReviewData(requestBody: ManuscriptReviewRequest): NetworkResponse<PaginatedResult<ManuscriptReviewDataEntity>> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getManuscriptReviewTopData(requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<ManuscriptReviewDataEntity>> {
+    override suspend fun getManuscriptReviewTopData(requestBody: ManuscriptTopRequest): NetworkResponse<PaginatedResult<ManuscriptReviewDataEntity>> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getManuscriptDiffusionData(requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<DiffusionDataEntity>> {
+    override suspend fun getManuscriptDiffusionData(requestBody: ManuscriptDiffusionRequest): NetworkResponse<PaginatedResult<DiffusionDataEntity>> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getDepartmentReviewData(requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<DepartmentTotalDataEntity>> {
+    override suspend fun getDepartmentReviewData(requestBody: DepartmentReviewRequest): NetworkResponse<PaginatedResult<DepartmentTotalDataEntity>> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getDepartmentTopData(requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<DepartmentTotalDataEntity>> {
+    override suspend fun getDepartmentTopData(requestBody: DepartmentTopRequest): NetworkResponse<PaginatedResult<DepartmentTotalDataEntity>> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getDepartmentTaskData(requestBody: Map<String, Any>): NetworkResponse<PaginatedResult<DepartmentTaskDataEntity>> {
+    override suspend fun getDepartmentTaskData(requestBody: DepartmentTaskRequest): NetworkResponse<PaginatedResult<DepartmentTaskDataEntity>> {
         TODO("Not yet implemented")
     }
 

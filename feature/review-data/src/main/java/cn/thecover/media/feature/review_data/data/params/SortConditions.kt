@@ -28,8 +28,8 @@ data class SortConditions(
         const val NEWS_DATA_FORMULA_SPREAD_SCORE = "NEWS_DATA_FORMULA_SPREAD_SCORE"//-公式传播分
         const val NEWS_DATA_FINAL_SPREAD_SCORE = "NEWS_DATA_FINAL_SPREAD_SCORE"//-最终传播分
 
-        fun putSortConditions(conditions: String, direction: String="ASC") = {
-            when(conditions){
+        fun putSortConditions(conditions: String, direction: String="ASC"): SortConditions {
+            return when(conditions){
                 "部门总稿费" -> SortConditions(DEPT_DATA_TOTAL_MONEY,direction)
                 "部门总分" -> SortConditions(DEPT_DATA_TOTAL_SCORE,direction)
                 "部门人员平均分" -> SortConditions(DEPT_DATA_AVERAGE_SCORE,direction)
@@ -43,6 +43,7 @@ data class SortConditions(
                 "二级媒体转载数" -> SortConditions(NEWS_DATA_LEVEL2_MEDIA_REPRINT_COUNT,direction)
                 "公式传播分" -> SortConditions(NEWS_DATA_FORMULA_SPREAD_SCORE,direction)
                 "最终传播分" -> SortConditions(NEWS_DATA_FINAL_SPREAD_SCORE,direction)
+                else -> SortConditions(conditions, direction)
             }
         }
     }
