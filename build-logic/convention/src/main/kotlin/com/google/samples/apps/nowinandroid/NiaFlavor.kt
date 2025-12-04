@@ -7,7 +7,7 @@ import com.android.build.api.dsl.ProductFlavor
 
 @Suppress("EnumEntryName")
 enum class FlavorDimension {
-    contentType
+    apiType
 }
 
 // The content for the app can either come from local static data which is useful for demo
@@ -15,8 +15,8 @@ enum class FlavorDimension {
 // These two product flavors reflect this behaviour.
 @Suppress("EnumEntryName")
 enum class NiaFlavor(val dimension: FlavorDimension, val applicationIdSuffix: String? = null) {
-    online(FlavorDimension.contentType, applicationIdSuffix = ".online"),
-    qa(FlavorDimension.contentType, applicationIdSuffix = ".qa")
+    online(FlavorDimension.apiType),
+    qa(FlavorDimension.apiType, applicationIdSuffix = ".qa")
 }
 
 fun configureFlavors(
@@ -42,9 +42,11 @@ fun configureFlavors(
                     when (niaFlavor) {
                         NiaFlavor.qa -> {
                             buildConfigField("int", "ENV_CONFIG", "1")
+                            resValue("string", "app_name", "云报绩效(qa)")
                         }
                         NiaFlavor.online -> {
                             buildConfigField("int", "ENV_CONFIG", "2")
+                            resValue("string", "app_name", "云报绩效")
                         }
                     }
                 }
