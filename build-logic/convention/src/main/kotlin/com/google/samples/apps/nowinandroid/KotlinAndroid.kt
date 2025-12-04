@@ -48,6 +48,10 @@ internal fun Project.configureKotlinAndroid(
             targetCompatibility = JavaVersion.VERSION_11
             isCoreLibraryDesugaringEnabled = true
         }
+
+        buildFeatures {
+            buildConfig = true
+        }
     }
 
     configureKotlin<KotlinAndroidProjectExtension>()

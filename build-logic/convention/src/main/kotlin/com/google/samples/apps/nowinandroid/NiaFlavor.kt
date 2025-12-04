@@ -15,8 +15,8 @@ enum class FlavorDimension {
 // These two product flavors reflect this behaviour.
 @Suppress("EnumEntryName")
 enum class NiaFlavor(val dimension: FlavorDimension, val applicationIdSuffix: String? = null) {
-    demo(FlavorDimension.contentType, applicationIdSuffix = ".demo"),
-    prod(FlavorDimension.contentType),
+    online(FlavorDimension.contentType, applicationIdSuffix = ".online"),
+    qa(FlavorDimension.contentType, applicationIdSuffix = ".qa")
 }
 
 fun configureFlavors(
@@ -36,6 +36,15 @@ fun configureFlavors(
                     if (this@apply is ApplicationExtension && this is ApplicationProductFlavor) {
                         if (niaFlavor.applicationIdSuffix != null) {
                             applicationIdSuffix = niaFlavor.applicationIdSuffix
+                        }
+                    }
+
+                    when (niaFlavor) {
+                        NiaFlavor.qa -> {
+                            buildConfigField("int", "ENV_CONFIG", "1")
+                        }
+                        NiaFlavor.online -> {
+                            buildConfigField("int", "ENV_CONFIG", "2")
                         }
                     }
                 }
