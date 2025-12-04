@@ -231,7 +231,7 @@ class ReviewDataViewModel @Inject constructor(
 
     private fun updateManuscriptScore(id: Int, newScore: Int) {
         _manuscriptReviewPageState.update { currentState ->
-            val updatedManuscripts = currentState.dataList.map { manuscript ->
+            val updatedManuscripts = currentState.dataList?.map { manuscript ->
                 if (manuscript.id == id) {
                     // 创建新的对象，更新分数
                     manuscript.copy(score = newScore, leaderScoreModified = true)
@@ -280,10 +280,10 @@ class ReviewDataViewModel @Inject constructor(
             when (result) {
                 is RepositoryResult.Success -> {
                     val manuscripts = if (isLoadMore) {
-                        _manuscriptReviewPageState.value.dataList?.plus(result.data.dataList)
-                            ?: result.data.dataList
+                        _manuscriptReviewPageState.value.dataList?.plus(result.data.dataList ?: emptyList())
+                            ?: (result.data.dataList ?: emptyList())
                     } else {
-                        result.data.dataList
+                        result.data.dataList ?: emptyList()
                     }
 
                     _manuscriptReviewPageState.update {
@@ -346,9 +346,9 @@ class ReviewDataViewModel @Inject constructor(
             when (result) {
                 is RepositoryResult.Success -> {
                     val manuscripts = if (isLoadMore) {
-                        _manuscriptReviewDiffusionPageState.value.dataList + result.data.dataList
+                        (_manuscriptReviewDiffusionPageState.value.dataList ?: emptyList()) + (result.data.dataList ?: emptyList())
                     } else {
-                        result.data.dataList
+                        result.data.dataList ?: emptyList()
                     }
 
                     _manuscriptReviewDiffusionPageState.update {
@@ -412,9 +412,9 @@ class ReviewDataViewModel @Inject constructor(
             when (result) {
                 is RepositoryResult.Success -> {
                     val manuscripts = if (isLoadMore) {
-                        _manuscriptReviewTopPageState.value.dataList + result.data.dataList
+                        (_manuscriptReviewTopPageState.value.dataList ?: emptyList()) + (result.data.dataList ?: emptyList())
                     } else {
-                        result.data.dataList
+                        result.data.dataList ?: emptyList()
                     }
                     _manuscriptReviewTopPageState.update {
                         it.copy(
@@ -470,7 +470,7 @@ class ReviewDataViewModel @Inject constructor(
             when (result) {
                 is RepositoryResult.Success -> {
                     val departmentTaskData =
-                        if (isLoadMore) _departmentTaskPageState.value.dataList + result.data.dataList else result.data.dataList
+                        if (isLoadMore) (_departmentTaskPageState.value.dataList ?: emptyList()) + (result.data.dataList ?: emptyList()) else (result.data.dataList ?: emptyList())
 
                     _departmentTaskPageState.update {
                         it.copy(
@@ -526,7 +526,7 @@ class ReviewDataViewModel @Inject constructor(
             )
             if (result is RepositoryResult.Success) {
                 val departmentData =
-                    if (isLoadMore) _departmentReviewPageState.value.dataList + result.data.dataList else result.data.dataList
+                    if (isLoadMore) (_departmentReviewPageState.value.dataList ?: emptyList()) + (result.data.dataList ?: emptyList()) else (result.data.dataList ?: emptyList())
 
                 // 加载完成
                 _departmentReviewPageState.update {
@@ -575,7 +575,7 @@ class ReviewDataViewModel @Inject constructor(
             )
             if (result is RepositoryResult.Success) {
                 val departmentData =
-                    if (isLoadMore) _departmentReviewTopPageState.value.dataList + result.data.dataList else result.data.dataList
+                    if (isLoadMore) (_departmentReviewTopPageState.value.dataList ?: emptyList()) + (result.data.dataList ?: emptyList()) else (result.data.dataList ?: emptyList())
 
                 // 加载完成
                 _departmentReviewTopPageState.update {

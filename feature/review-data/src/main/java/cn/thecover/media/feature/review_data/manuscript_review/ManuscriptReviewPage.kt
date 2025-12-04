@@ -101,13 +101,13 @@ internal fun ManuscriptReviewPage(
     var showEditScorePop by remember { mutableStateOf(false) }
     var editId by remember { mutableIntStateOf(0) }
     // 创建 MutableState 用于列表组件
-    val manus = remember { mutableStateOf(data.dataList) }
+    val manus = remember { mutableStateOf(data.dataList ?: emptyList()) }
     val isLoadingMore = remember { mutableStateOf(data.isLoading) }
     val isRefreshing = remember { mutableStateOf(data.isRefreshing) }
     val canLoadMore = remember { mutableStateOf(true) }
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(data) {
-        manus.value = data.dataList
+        manus.value = data.dataList ?: emptyList()
         isLoadingMore.value = data.isLoading
         isRefreshing.value = data.isRefreshing
     }
@@ -132,7 +132,7 @@ internal fun ManuscriptReviewPage(
                     text = buildAnnotatedString {
                         append("共 ")
                         withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                            append(data.dataList.size.toString())
+                            append(data.dataList?.size.toString())
                         }
                         append(" 条记录")
                     },

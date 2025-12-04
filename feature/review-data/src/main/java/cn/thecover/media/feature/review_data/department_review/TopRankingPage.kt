@@ -61,15 +61,15 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
     val datePickedState by viewModel.departmentTopFilterState.collectAsState()
 
 
-    // 创建 MutableState 用于列表组件
-    val departmentList = remember { mutableStateOf(departmentTotalData.dataList) }
+    // 创建 MutableState 用于列表组件，将可空列表转换为非空列表
+    val departmentList = remember { mutableStateOf(departmentTotalData.dataList ?: emptyList()) }
     val isLoadingMore = remember { mutableStateOf(departmentTotalData.isLoading) }
     val isRefreshing = remember { mutableStateOf(departmentTotalData.isRefreshing) }
     val canLoadMore = remember { mutableStateOf(departmentTotalData.hasNextPage) }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(departmentTotalData) {
-        departmentList.value = departmentTotalData.dataList
+        departmentList.value = departmentTotalData.dataList ?: emptyList()
         isLoadingMore.value = departmentTotalData.isLoading
         isRefreshing.value = departmentTotalData.isRefreshing
         canLoadMore.value = departmentTotalData.hasNextPage
