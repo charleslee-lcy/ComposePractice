@@ -50,6 +50,9 @@ class MineViewModel @Inject constructor(
         MutableStateFlow(MessageDataListState())
     val messageListState = _messageListState
 
+    private val _helpCenterUrlUiData = MutableStateFlow<String?>(null)
+    val helpCenterUrlUiData: StateFlow<String?> = _helpCenterUrlUiData
+
     private var currentMessageType = MessageType.ALL
 
 
@@ -127,6 +130,23 @@ class MineViewModel @Inject constructor(
                         _cacheClearState.value = CACHE_CLEAR_STATE_FAILED
                     }
                 }
+            }
+
+            is MineIntent.GetHelpCenterUrl -> {
+                viewModelScope.launch {
+                    flow {
+                        val apiService = retrofit.get().create(HomeApi::class.java)
+
+                        val response = apiService.getHelpCenterUrl()
+                        emit(response)
+                    }.asResult()
+                        .collect { result ->
+                            _helpCenterUrlUiData.update {
+                                result.data
+                            }
+                        }
+                }
+
             }
         }
     }

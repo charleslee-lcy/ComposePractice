@@ -7,7 +7,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import cn.thecover.media.core.widget.component.YBWebViewPage
+import cn.thecover.media.feature.basis.mine.MineIntent
+import cn.thecover.media.feature.basis.mine.MineViewModel
+import cn.thecover.media.feature.basis.mine.intent.MineNavigationIntent
 
 /**
  *  Created by Wing at 16:21 on 2025/8/18
@@ -16,19 +20,20 @@ import cn.thecover.media.core.widget.component.YBWebViewPage
 @Composable
 internal fun HelpCenterRoute(
     modifier: Modifier = Modifier,
-    routeToDetail: (String) -> Unit = {},
+    viewModel: MineViewModel = hiltViewModel(),
     onPopBack: () -> Unit = {}
 ) {
-    HelpCenterPage(onPopBack)
+    viewModel.handleIntent(MineIntent.GetHelpCenterUrl)
+    HelpCenterPage(viewModel,onPopBack)
 }
 
 @Composable
-private fun HelpCenterPage(onPopBack: () -> Unit) {
-    var pageTitle by remember { mutableStateOf("") }
+private fun HelpCenterPage(viewModel: MineViewModel,onPopBack: () -> Unit) {
+    var pageTitle by remember { mutableStateOf(viewModel.helpCenterUrlUiData.value) }
 
     YBWebViewPage(
         modifier = Modifier.fillMaxSize(),
-        url = "https://www.ithome.com/0/876/220.htm",
+        url = viewModel.helpCenterUrlUiData.value ?: "",
             onReceivedTitle = { title ->
             pageTitle = title
         },

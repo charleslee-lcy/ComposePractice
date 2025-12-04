@@ -10,4 +10,6 @@ sealed class MineIntent {
     data class GetUserInfo(val username: String) : MineIntent()
 
     data object ClearCache : MineIntent()
+
+    data object GetHelpCenterUrl : MineIntent()
 }
