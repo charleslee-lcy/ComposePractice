@@ -89,7 +89,7 @@ fun MessageDetailScreen(msgDetail: MessageDataEntity, onPopBack: (() -> Unit)? =
             )
             Spacer(modifier = Modifier.width(20.dp))
             Text(
-                msgDetail.time,
+                msgDetail.createTime,
                 style = MaterialTheme.typography.labelMedium,
                 color = TertiaryTextColor
             )
@@ -104,9 +104,9 @@ fun MessageDetailScreenPreview() {
     YBTheme {
         MessageDetailScreen(
             MessageDataEntity(
-                messageId = 1,
+                id = 1,
                 content = "这是消息内容",
-                time = "2025-08-08 10:57:00",
+                createTime = "2025-08-08 10:57:00",
                 type = MessageType.SYSTEM.ordinal,
                 title = "系统消息",
 

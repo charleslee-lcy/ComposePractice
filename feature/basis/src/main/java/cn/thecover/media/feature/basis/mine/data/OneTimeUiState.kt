@@ -9,5 +9,6 @@ data class OneTimeUiState(
     val toastMessage: String? = null,
     val dialogMessage: String? = null,
     val successMessage: String? = null,
+    val unreadMessageCount: Int = 0,
     val time: Long = System.currentTimeMillis()
 )
