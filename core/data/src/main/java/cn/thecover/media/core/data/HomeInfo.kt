@@ -17,6 +17,7 @@ data class HomeInfo(
     val money: String = "-",   //稿费编辑费
     val showMoney: Boolean = true,  //是否展示稿费
     val quotaBasicScore: String = "-",  //定额基数分
+    val quotaFinishScore: String = "-",  //实际完成
     val assessmentResult: Boolean = false, //考核是否合格
     val participateAssessmentCount: Int = 0,  //部门参加考核的人数
     val passCount: Int = 0,   //部门合格人数

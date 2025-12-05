@@ -4,6 +4,7 @@ import android.R.attr.password
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
+import java.time.LocalDate
 import javax.inject.Inject
 
 /**
@@ -50,6 +52,8 @@ class HomeViewModel @Inject constructor(
 
     var hasHomeDataFetched by mutableStateOf(false)
     var canShowToast by mutableStateOf(true)
+    val curYear = mutableIntStateOf(LocalDate.now().year)
+    val curMonth = mutableIntStateOf(LocalDate.now().monthValue)
 
     fun login(username: String, password: String) {
         viewModelScope.launch {

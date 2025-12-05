@@ -121,18 +121,12 @@ internal fun HomeScreen(
     )
     val userInfo by viewModel.userUiState.collectAsStateWithLifecycle()
     val homeInfo by viewModel.homeUiState.collectAsStateWithLifecycle()
-    val curYear = remember {
-        mutableIntStateOf(LocalDate.now().year)
-    }
-    val curMonth = remember {
-        mutableIntStateOf(LocalDate.now().monthValue)
-    }
 
     fun fetchHomeData() {
         // 获取用户信息
         viewModel.getUserInfo(context, navController)
         // 获取首页信息
-        viewModel.getHomeInfo(curYear.intValue, curMonth.intValue)
+        viewModel.getHomeInfo(viewModel.curYear.intValue, viewModel.curMonth.intValue)
     }
 
     LaunchedEffect(Unit) {
@@ -163,13 +157,13 @@ internal fun HomeScreen(
     ) {
         TopBar(
             userInfo.nickname,
-            curYear,
-            curMonth,
+            viewModel.curYear,
+            viewModel.curMonth,
             titleClick = {
                 roleState = if (roleState == 3) 1 else 3
             }, onDatePick = {
                 isRefreshing.value = true
-                viewModel.getHomeInfo(curYear.intValue, curMonth.intValue)
+                viewModel.getHomeInfo(viewModel.curYear.intValue, viewModel.curMonth.intValue)
             }, messageClick = {
                 routeToMessageScreen?.invoke()
             })
@@ -331,6 +325,7 @@ private fun TopBar(
 
     YBDatePicker(
         visible = datePickerShow,
+        value = LocalDate.of(currentYear.value, currentMonth.value, 1),
         type = DateType.MONTH,
         onCancel = { datePickerShow = false },
         onChange = {
