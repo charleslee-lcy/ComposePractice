@@ -182,7 +182,9 @@ private fun TopBar(initialIndex: Int, onMessageClick: () -> Unit = {}, titleClic
 @Composable
 private fun ReviewManagePreview() {
     YBTheme {
-        ReviewManageScreen(navController = NavController(LocalContext.current), viewModel = ReviewManageViewModel(
+        ReviewManageScreen(
+            navController = NavController(LocalContext.current),
+            viewModel = ReviewManageViewModel(
             savedStateHandle = SavedStateHandle(),
             retrofit = Lazy { previewRetrofit }
         ))

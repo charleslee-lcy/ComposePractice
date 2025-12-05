@@ -1,8 +1,5 @@
 package cn.thecover.media.feature.basis.home
 
-import android.R.attr.type
-import android.R.attr.visible
-import android.widget.Toast
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.RepeatMode
@@ -55,6 +52,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import cn.thecover.media.core.data.HomeInfo
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.R
@@ -124,17 +122,17 @@ internal fun HomeScreen(
     val userInfo by viewModel.userUiState.collectAsStateWithLifecycle()
     val homeInfo by viewModel.homeUiState.collectAsStateWithLifecycle()
     val curYear = remember {
-        mutableStateOf(LocalDate.now().year)
+        mutableIntStateOf(LocalDate.now().year)
     }
     val curMonth = remember {
-        mutableStateOf(LocalDate.now().monthValue)
+        mutableIntStateOf(LocalDate.now().monthValue)
     }
 
     fun fetchHomeData() {
         // 获取用户信息
         viewModel.getUserInfo(context, navController)
         // 获取首页信息
-        viewModel.getHomeInfo(curYear.value, curMonth.value)
+        viewModel.getHomeInfo(curYear.intValue, curMonth.intValue)
     }
 
     LaunchedEffect(Unit) {
@@ -152,6 +150,12 @@ internal fun HomeScreen(
             snackBarHostState.showToast(homeInfo.errorMsg)
             viewModel.canShowToast = false
         }
+
+        if (homeInfo.status == HttpStatus.SUCCESS) {
+            homeInfo.data?.jobType?.apply {
+                roleState = this
+            }
+        }
     }
 
     Column(
@@ -165,7 +169,7 @@ internal fun HomeScreen(
                 roleState = if (roleState == 3) 1 else 3
             }, onDatePick = {
                 isRefreshing.value = true
-                viewModel.getHomeInfo(curYear.value, curMonth.value)
+                viewModel.getHomeInfo(curYear.intValue, curMonth.intValue)
             }, messageClick = {
                 routeToMessageScreen?.invoke()
             })
@@ -198,9 +202,9 @@ internal fun HomeScreen(
                 Spacer(modifier = Modifier.height(1.dp))
                 Crossfade(roleState) {
                     if (it == 3) {
-                        LeaderUserContent()
+                        LeaderUserContent(homeInfo.data ?: HomeInfo())
                     } else {
-                        ReporterUserContent()
+                        ReporterUserContent(homeInfo.data ?: HomeInfo())
                     }
                 }
                 Row(
