@@ -9,4 +9,7 @@ sealed class MessageIntent {
     data class FetchMessageList(val loadMore: Boolean = false) : MessageIntent()
     data class UpdateMessageFilter(val type: String) : MessageIntent()
     data class SearchMessage(val type: String, val keyword: String) : MessageIntent()
+    data class ReadMessage(val id: Long) : MessageIntent()
+    data object GetUnreadMessageCount : MessageIntent()
+
 }

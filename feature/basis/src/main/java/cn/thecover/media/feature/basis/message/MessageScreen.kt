@@ -126,9 +126,12 @@ fun MessageScreen(
         ) { item, position ->
             MessageItem(
                 title = item.title,
-                time = item.time,
+                time = item.createTime,
                 msgType = MessageType.entries.first { it.ordinal == item.type }) {
-                routeToDetail(item.messageId)
+                routeToDetail(item.id)
+                if (item.read) {
+                    viewModel.handleMessageIntent(MessageIntent.ReadMessage(item.id))
+                }
             }
         }
     }

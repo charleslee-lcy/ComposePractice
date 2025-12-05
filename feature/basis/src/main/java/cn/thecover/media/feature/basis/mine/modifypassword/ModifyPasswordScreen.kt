@@ -20,8 +20,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +38,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.YBTitleBar
@@ -44,6 +47,7 @@ import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
+import cn.thecover.media.feature.basis.mine.MineIntent
 import cn.thecover.media.feature.basis.mine.MineViewModel
 
 /**
@@ -57,12 +61,24 @@ internal fun ModifyPasswordRoute(
     viewModel: MineViewModel = hiltViewModel(),
     navController: NavController
 ) {
-    ModifyPasswordScreen(modifier, navController)
+    val snackBarHostState: SnackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(viewModel.oneTimeUiState) {
+        if(viewModel.oneTimeUiState.value.successMessage == "修改密码成功") {
+            snackBarHostState.showSnackbar("修改密码成功")
+            navController.popBackStack()
+        }else if(viewModel.oneTimeUiState.value.toastMessage?.isNotEmpty() == true){
+            snackBarHostState.showSnackbar(viewModel.oneTimeUiState.value.toastMessage?:"")
+        }
+    }
+
+    ModifyPasswordScreen(modifier, navController){ old, new, confirm ->
+        viewModel.handleIntent(MineIntent.ModifyPassword(old, new, confirm))
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ModifyPasswordScreen(modifier: Modifier, navController: NavController) {
+fun ModifyPasswordScreen(modifier: Modifier, navController: NavController,commit: (String, String, String) -> Unit){
     val oldPass = remember { mutableStateOf("") }
     val newPass = remember { mutableStateOf("") }
     val confirmPass = remember { mutableStateOf("") }
@@ -108,7 +124,9 @@ fun ModifyPasswordScreen(modifier: Modifier, navController: NavController) {
             YBButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = { Text("提交") },
-                onClick = {},
+                onClick = {
+                    commit(oldPass.value, newPass.value, confirmPass.value)
+                },
                 shape = RoundedCornerShape(2.dp)
             )
         }
