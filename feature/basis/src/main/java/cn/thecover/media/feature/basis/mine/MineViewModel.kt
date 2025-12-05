@@ -1,16 +1,20 @@
 package cn.thecover.media.feature.basis.mine
 
+import android.R.attr.password
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.thecover.media.core.data.NetworkRequest
 import cn.thecover.media.core.network.BaseUiState
+import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
 import cn.thecover.media.feature.basis.HomeApi
 import cn.thecover.media.feature.basis.message.MessageType
 import cn.thecover.media.feature.basis.message.data.MessageDataListState
 import cn.thecover.media.feature.basis.message.data.entity.MessageDataEntity
 import cn.thecover.media.feature.basis.message.intent.MessageIntent
+import cn.thecover.media.feature.basis.mine.data.OneTimeUiState
+import cn.thecover.media.feature.basis.mine.data.requestParams.ModifyPasswordRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,6 +56,10 @@ class MineViewModel @Inject constructor(
 
     private val _helpCenterUrlUiData = MutableStateFlow<String?>(null)
     val helpCenterUrlUiData: StateFlow<String?> = _helpCenterUrlUiData
+
+    //一次性 UI事件如 toast、弹窗等状态
+    private val _oneTimeUiState = MutableStateFlow(OneTimeUiState())
+    val oneTimeUiState: StateFlow<OneTimeUiState> = _oneTimeUiState
 
     private var currentMessageType = MessageType.ALL
 
@@ -135,8 +143,7 @@ class MineViewModel @Inject constructor(
             is MineIntent.GetHelpCenterUrl -> {
                 viewModelScope.launch {
                     flow {
-                        val apiService = retrofit.get().create(HomeApi::class.java)
-
+                        val apiService = retrofit.get().create(MineApi::class.java)
                         val response = apiService.getHelpCenterUrl()
                         emit(response)
                     }.asResult()
@@ -146,8 +153,31 @@ class MineViewModel @Inject constructor(
                             }
                         }
                 }
-
             }
+
+            is MineIntent.ModifyPassword -> {
+                viewModelScope.launch {
+                    flow {
+                        val apiService = retrofit.get().create(MineApi::class.java)
+                        val response = apiService.modifyPassword(
+                            ModifyPasswordRequest(
+                                oldPassword = mineIntent.oldPassword,
+                                password = mineIntent.password,
+                                passwordVerify = mineIntent.passwordVerify,
+//                                client = "android"
+                            )
+                        )
+                        emit(response)
+                    }.asResult()
+                        .collect { result ->
+                            if(result.status== HttpStatus.SUCCESS){
+                                _oneTimeUiState.update {   OneTimeUiState(toastMessage = "修改密码成功")}
+                                logout()
+                            }else{
+                                _oneTimeUiState.update {   OneTimeUiState(toastMessage = result.errorMsg)}
+                            }
+                        }
+                }}
         }
     }
 

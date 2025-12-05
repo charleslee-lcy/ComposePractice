@@ -2,6 +2,7 @@ package cn.thecover.media.feature.basis.mine.help
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,7 +24,10 @@ internal fun HelpCenterRoute(
     viewModel: MineViewModel = hiltViewModel(),
     onPopBack: () -> Unit = {}
 ) {
-    viewModel.handleIntent(MineIntent.GetHelpCenterUrl)
+    LaunchedEffect(Unit) {
+        viewModel.handleIntent(MineIntent.GetHelpCenterUrl)
+    }
+
     HelpCenterPage(viewModel,onPopBack)
 }
 

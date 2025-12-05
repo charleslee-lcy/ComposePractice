@@ -29,6 +29,4 @@ interface HomeApi {
     @POST(value = "api/data/personal/detail")
     suspend fun getHomeInfo(@Body requestData: HomeRequest): NetworkResponse<HomeInfo>
 
-    @POST(value = "api/user/helpCenterUrl")
-    suspend fun getHelpCenterUrl(): NetworkResponse<String?>
 }
