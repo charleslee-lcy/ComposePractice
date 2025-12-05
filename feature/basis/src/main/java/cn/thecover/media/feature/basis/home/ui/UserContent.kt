@@ -25,6 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cn.thecover.media.core.data.HomeInfo
+import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.widget.theme.HintTextColor
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -44,7 +46,7 @@ import cn.thecover.media.core.widget.ui.ComponentPreview
 val normalCardElevation = 0.5.dp
 
 @Composable
-internal fun ReporterUserContent() {
+internal fun ReporterUserContent(homeInfo: HomeInfo) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -95,7 +97,7 @@ internal fun ReporterUserContent() {
                     modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                 )
                 Text(
-                    text = "240",
+                    text = homeInfo.finalScore,
                     color = MainTextColor,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -117,7 +119,7 @@ internal fun ReporterUserContent() {
                     modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                 )
                 Text(
-                    text = "32000",
+                    text = homeInfo.money,
                     color = MainTextColor,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -146,7 +148,7 @@ internal fun ReporterUserContent() {
                     modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                 )
                 Text(
-                    text = "280",
+                    text = homeInfo.quotaBasicScore,
                     color = MainTextColor,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -168,7 +170,7 @@ internal fun ReporterUserContent() {
                     modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                 )
                 Text(
-                    text = "不合格",
+                    text = if (homeInfo.assessmentResult) "合格" else "不合格",
                     color = MsgColor,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -237,7 +239,7 @@ internal fun ReporterUserContent() {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = "140",
+                        text = homeInfo.quotaBasicScore,
                         color = MainTextColor,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -253,7 +255,7 @@ internal fun ReporterUserContent() {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = "75",
+                        text = homeInfo.finalScore,
                         color = MsgColor,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -323,7 +325,7 @@ internal fun ReporterUserContent() {
 }
 
 @Composable
-internal fun LeaderUserContent() {
+internal fun LeaderUserContent(homeInfo: HomeInfo) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -746,7 +748,7 @@ internal fun LeaderUserContent() {
 @Composable
 private fun ReporterUserContentPreview() {
     YBTheme {
-        ReporterUserContent()
+        ReporterUserContent(HomeInfo())
     }
 }
 
@@ -754,6 +756,6 @@ private fun ReporterUserContentPreview() {
 @Composable
 private fun LeaderUserContentPreview() {
     YBTheme {
-        LeaderUserContent()
+        LeaderUserContent(HomeInfo())
     }
 }
