@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.basis.message
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -26,6 +29,7 @@ import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.basis.message.data.entity.MessageDataEntity
+import cn.thecover.media.feature.basis.mine.MineViewModel
 
 /**
  *  Created by Wing at 10:57 on 2025/8/8
@@ -34,14 +38,22 @@ import cn.thecover.media.feature.basis.message.data.entity.MessageDataEntity
 
 
 @Composable
-fun MessageDetailRoute(msg: Long, onPopBack: () -> Unit) {
-    MessageDetailScreen(MessageDataEntity(), onPopBack = onPopBack)
-}
+fun MessageDetailScreen(
+    viewModel: MineViewModel,
+    message: MessageDataEntity,
+    onPopBack: (() -> Unit)? = null
+) {
+    val currentOnPopBack by rememberUpdatedState(onPopBack)
 
-@Composable
-fun MessageDetailScreen(msgDetail: MessageDataEntity, onPopBack: (() -> Unit)? = null) {
-    val msgType = MessageType.entries.first { msgDetail.type == it.ordinal }
-    Column(modifier = Modifier.fillMaxSize()) {
+    BackHandler(enabled = onPopBack != null) {
+        currentOnPopBack?.invoke()
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         YBTopAppBar(
             modifier = Modifier
                 .fillMaxWidth()
@@ -64,13 +76,15 @@ fun MessageDetailScreen(msgDetail: MessageDataEntity, onPopBack: (() -> Unit)? =
                 .height(0.25.dp),
             color = MaterialTheme.colorScheme.outline
         )
+
+        val msgType = MessageType.entries.first { message.type == it.ordinal }
+        
         Text(
-            msgDetail.title,
+            message.content ?: "",
             style = MaterialTheme.typography.bodyLarge,
             color = MainTextColor,
             modifier = Modifier.padding(16.dp)
         )
-
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -89,11 +103,10 @@ fun MessageDetailScreen(msgDetail: MessageDataEntity, onPopBack: (() -> Unit)? =
             )
             Spacer(modifier = Modifier.width(20.dp))
             Text(
-                msgDetail.createTime,
+                message.createTime ?: "",
                 style = MaterialTheme.typography.labelMedium,
                 color = TertiaryTextColor
             )
-
         }
     }
 }
@@ -102,16 +115,7 @@ fun MessageDetailScreen(msgDetail: MessageDataEntity, onPopBack: (() -> Unit)? =
 @Preview(showBackground = true)
 fun MessageDetailScreenPreview() {
     YBTheme {
-        MessageDetailScreen(
-            MessageDataEntity(
-                id = 1,
-                content = "这是消息内容",
-                createTime = "2025-08-08 10:57:00",
-                type = MessageType.SYSTEM.ordinal,
-                title = "系统消息",
 
-                )
-        )
     }
 
 }

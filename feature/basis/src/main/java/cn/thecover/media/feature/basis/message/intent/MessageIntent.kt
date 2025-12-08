@@ -7,8 +7,8 @@ package cn.thecover.media.feature.basis.message.intent
 
 sealed class MessageIntent {
     data class FetchMessageList(val loadMore: Boolean = false) : MessageIntent()
-    data class UpdateMessageFilter(val type: String) : MessageIntent()
-    data class SearchMessage(val type: String, val keyword: String) : MessageIntent()
+    data class UpdateMessageFilter(val type: Int) : MessageIntent()
+
     data class ReadMessage(val id: Long) : MessageIntent()
     data object GetUnreadMessageCount : MessageIntent()
 

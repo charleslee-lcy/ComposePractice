@@ -10,5 +10,5 @@ data class MessageListRequest(
     val pageSize: Int,
     val type: String = "",
     val allUser: Int = 2,
-    val keyword: String = ""
+    val lastId: Long = 0
 )

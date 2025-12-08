@@ -13,18 +13,13 @@ import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntit
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DiffusionDataEntity
 import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
-import cn.thecover.media.feature.review_data.data.params.ModifyManuscriptScoreRequest
-
 import cn.thecover.media.feature.review_data.data.params.RepositoryResult
-import cn.thecover.media.feature.review_data.data.params.SortConditions
 import cn.thecover.media.feature.review_data.repository.ReviewDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import javax.inject.Inject
 
 /**
@@ -37,7 +32,8 @@ class ReviewDataViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     val repository: ReviewDataRepository
 ) : ViewModel() {
-
+    private val _unreadMessageCount = MutableStateFlow(0)
+    val unreadMessageCount: StateFlow<Int> = _unreadMessageCount
 
     //部门考核页信息流数据
     private val _departmentReviewPageState =
@@ -169,6 +165,17 @@ class ReviewDataViewModel @Inject constructor(
             //修改稿分
             is ReviewDataIntent.EditManuscriptScore -> {
                 updateManuscriptScore(intent.id, intent.score)
+            }
+
+            is ReviewDataIntent.GetUnreadMessageCount -> {
+                viewModelScope.launch {
+                    val response = repository.getUnreadMessageCount()
+                    if (response is RepositoryResult.Success) {
+                        _unreadMessageCount.update { response.data }
+                    } else {
+                        _unreadMessageCount.update { 0 }
+                    }
+                }
             }
         }
     }

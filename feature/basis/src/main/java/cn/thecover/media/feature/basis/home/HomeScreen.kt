@@ -33,6 +33,7 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -121,12 +122,16 @@ internal fun HomeScreen(
     )
     val userInfo by viewModel.userUiState.collectAsStateWithLifecycle()
     val homeInfo by viewModel.homeUiState.collectAsStateWithLifecycle()
+    val unreadMessageCount by viewModel.unreadMessageCount.collectAsState()
 
     fun fetchHomeData() {
         // 获取用户信息
         viewModel.getUserInfo(context, navController)
         // 获取首页信息
         viewModel.getHomeInfo(viewModel.curYear.intValue, viewModel.curMonth.intValue)
+
+        // 获取首页信息
+        viewModel.getUnreadMessageCount()
     }
 
     LaunchedEffect(Unit) {
@@ -159,6 +164,7 @@ internal fun HomeScreen(
             userInfo.nickname,
             viewModel.curYear,
             viewModel.curMonth,
+            unreadMessageCount,
             titleClick = {
                 roleState = if (roleState == 3) 1 else 3
             }, onDatePick = {
@@ -261,6 +267,7 @@ private fun TopBar(
     userName: String,
     currentYear: MutableState<Int>,
     currentMonth: MutableState<Int>,
+    unreadMessageCount: Int,
     titleClick: () -> Unit = {},
     onDatePick: () -> Unit = {},
     messageClick: () -> Unit = {}
@@ -309,7 +316,7 @@ private fun TopBar(
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .align(Alignment.CenterEnd),
-            msgCount = 10,
+            msgCount = unreadMessageCount,
             showNumber = false
         ) {
             YBImage(

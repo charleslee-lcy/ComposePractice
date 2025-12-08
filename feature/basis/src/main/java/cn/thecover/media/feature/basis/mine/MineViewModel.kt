@@ -11,8 +11,8 @@ import cn.thecover.media.feature.basis.HomeApi
 import cn.thecover.media.feature.basis.message.MessageApi
 import cn.thecover.media.feature.basis.message.MessageType
 import cn.thecover.media.feature.basis.message.data.MessageDataListState
-import cn.thecover.media.feature.basis.message.data.entity.MessageDataEntity
 import cn.thecover.media.feature.basis.message.data.entity.MessageListRequest
+import cn.thecover.media.feature.basis.message.data.entity.ReadMessageRequest
 import cn.thecover.media.feature.basis.message.intent.MessageIntent
 import cn.thecover.media.feature.basis.mine.data.OneTimeUiState
 import cn.thecover.media.feature.basis.mine.data.requestParams.ModifyPasswordRequest
@@ -33,7 +33,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class MineViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    val savedStateHandle: SavedStateHandle,
     val retrofit: dagger.Lazy<Retrofit>
 ) : ViewModel() {
 
@@ -65,27 +65,6 @@ class MineViewModel @Inject constructor(
     private var currentMessageType = MessageType.ALL
 
 
-    val messageTestList = listOf(
-        MessageDataEntity(
-            id = 0,
-            title = "国家科技重大专项小麦育种新突破",
-            createTime = "2025-08-08 09:09",
-            type = 1,
-            content = "系统消息"
-        ),
-        MessageDataEntity(
-            id = 1,
-            title = "关于云南，你不知道的20个冷知识，带你了解最真实的云南风貌",
-            createTime = "2025-08-08 09:09",
-            type = 2,
-            content = "系统消息"
-        ),
-        MessageDataEntity(
-            id = 2,
-            title = "您有一条新的催办消息",
-        )
-    )
-
     fun handleMessageIntent(messageIntent: MessageIntent) {
         when (messageIntent) {
             is MessageIntent.FetchMessageList -> {
@@ -96,20 +75,14 @@ class MineViewModel @Inject constructor(
                         it.copy(isRefreshing = true)
                 }
 
-                getMessageList()
-            }
-
-            is MessageIntent.SearchMessage -> {
-
+                getMessageList(page = if (messageIntent.loadMore) messageListState.value.currentPage + 1 else 1)
             }
 
             is MessageIntent.UpdateMessageFilter -> {
                 _messageListState.update {
                     it.copy(isRefreshing = true)
                 }
-                currentMessageType = MessageType.entries.first {
-                    it.typeName == messageIntent.type
-                }
+                currentMessageType = MessageType.entries[messageIntent.type]
                 getMessageList()
             }
 
@@ -118,13 +91,22 @@ class MineViewModel @Inject constructor(
                     flow {
                         val apiService = retrofit.get().create(MessageApi::class.java)
                         val response = apiService.readMessage(
-                            messageId = messageIntent.id
+                            readMessageRequest = ReadMessageRequest(
+                                messageId = messageIntent.id
+                            )
                         )
                         emit(response)
                     }.asResult()
                         .collect { result ->
                             if (result.status == HttpStatus.SUCCESS) {
-
+                                _messageListState.update { state ->
+                                    state.copy(messageDataList = state.messageDataList.map {
+                                        if (it.id == messageIntent.id)
+                                            it.copy(read = true)
+                                        else
+                                            it
+                                    })
+                                }
                             }
                         }
                 }
@@ -220,9 +202,9 @@ class MineViewModel @Inject constructor(
                     MessageListRequest(
                         page = page,
                         pageSize = pageSize,
-                        type = if (type == 0) "" else type.toString(),
+                        lastId = messageListState.value.messageDataList.lastOrNull()?.id ?: 0,
+                        type = if (type == 0) "0" else type.toString(),
                         allUser = 2,
-                        keyword = ""
                     )
                 )
                 emit(result)
@@ -234,7 +216,10 @@ class MineViewModel @Inject constructor(
                             it.copy(
                                 messageDataList = if (page == 1) resultData else it.messageDataList + resultData,
                                 isLoading = false,
-                                isRefreshing = false
+                                isRefreshing = false,
+                                currentPage = result.data?.currentPage ?: 1,
+                                canLoadMore = (result.data?.currentPage
+                                    ?: 0) < (result.data?.totalPages ?: 0)
                             )
                         }
                     } else {
