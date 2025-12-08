@@ -1,5 +1,8 @@
 package cn.thecover.media.feature.review_manager
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,6 +28,7 @@ import javax.inject.Inject
 class ReviewManageViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle, val retrofit: dagger.Lazy<Retrofit>
 ) : ViewModel() {
+    var pageType by mutableIntStateOf(ReviewManageType.ARCHIVE_SCORE.index)
     private val pageSize = 10
 
     // 稿件列表数据

@@ -7,5 +7,9 @@ package cn.thecover.media.core.network
  * 15708478830@163.com
  */
 object URLConstant {
-    const val YB_BASE_URL = "https://test-ynrb-api.yndaily.com/pms-api/"
+    val YB_BASE_URL = when(BuildConfig.ENV_CONFIG) {
+        1 -> "https://test-ynrb-api.yndaily.com/pms-api/"  //测试
+        2 -> "https://ynrb-api.yndaily.com/pms-api/"  //正式
+        else -> ""
+    }
 }

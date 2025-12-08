@@ -105,14 +105,15 @@ internal fun ReviewManageScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        TopBar(pageType, unreadMessageCount, onMessageClick = {
+        TopBar(viewModel.pageType, unreadMessageCount, onMessageClick = {
             routeToMsgScreen.invoke()
         }) { text, index ->
-            if (pageType != index) {
-                pageType = index
+            if (viewModel.pageType != index) {
+                viewModel.pageType = index
+                viewModel.pageType = index
             }
         }
-        when(pageType) {
+        when(viewModel.pageType) {
             ReviewManageType.DEPARTMENT_ASSIGN.index -> {
                 // 部门内分配
                 DepartmentAssignScreen(navController = navController)
@@ -214,7 +215,9 @@ private fun TopBar(
 @Composable
 private fun ReviewManagePreview() {
     YBTheme {
-        ReviewManageScreen(navController = NavController(LocalContext.current), viewModel = ReviewManageViewModel(
+        ReviewManageScreen(
+            navController = NavController(LocalContext.current),
+            viewModel = ReviewManageViewModel(
             savedStateHandle = SavedStateHandle(),
             retrofit = Lazy { previewRetrofit }
         ))
