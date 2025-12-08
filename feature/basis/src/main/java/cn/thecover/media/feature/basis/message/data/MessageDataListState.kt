@@ -11,5 +11,7 @@ data class MessageDataListState(
     val messageDataList: List<MessageDataEntity> = emptyList(),
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
+    val canLoadMore: Boolean = true,
+    val currentPage: Int = 1,
     val error: String? = null
 )
