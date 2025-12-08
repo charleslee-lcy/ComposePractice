@@ -1,14 +1,21 @@
 package cn.thecover.media.feature.review_data.repository
 
+import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.feature.review_data.ReviewDataApiService
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
-import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
-import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.feature.review_data.data.entity.DiffusionDataEntity
-import cn.thecover.media.feature.review_data.data.params.*
+import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
+import cn.thecover.media.feature.review_data.data.params.DepartmentReviewRequest
+import cn.thecover.media.feature.review_data.data.params.DepartmentTaskRequest
+import cn.thecover.media.feature.review_data.data.params.DepartmentTopRequest
+import cn.thecover.media.feature.review_data.data.params.ManuscriptDiffusionRequest
+import cn.thecover.media.feature.review_data.data.params.ManuscriptReviewRequest
+import cn.thecover.media.feature.review_data.data.params.ManuscriptTopRequest
+import cn.thecover.media.feature.review_data.data.params.ModifyManuscriptScoreRequest
+import cn.thecover.media.feature.review_data.data.params.RepositoryResult
+import cn.thecover.media.feature.review_data.data.params.SortConditions
 import cn.thecover.media.feature.review_data.data.params.SortConditions.Companion.DEPT_DATA_AVERAGE_SCORE
-import cn.thecover.media.feature.review_data.data.params.SortConditions.Companion.NEWS_DATA_FORMULA_SPREAD_SCORE
 import jakarta.inject.Inject
 
 /**
@@ -280,6 +287,20 @@ class ReviewDataRepository @Inject constructor(
                 RepositoryResult.Error(Exception(response.message))
             }
 
+        } catch (e: Exception) {
+            RepositoryResult.Error(e)
+        }
+    }
+
+    suspend fun getUnreadMessageCount(): RepositoryResult<Int> {
+        return try {
+            val response = reviewApiService.getUnreadMessageCount()
+            if (response.isSuccess()) {
+                val body = response.data ?: throw Exception("Empty response")
+                RepositoryResult.Success(body)
+            } else {
+                RepositoryResult.Error(Exception(response.message))
+            }
         } catch (e: Exception) {
             RepositoryResult.Error(e)
         }

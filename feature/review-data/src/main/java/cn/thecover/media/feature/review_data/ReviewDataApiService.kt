@@ -1,17 +1,21 @@
 package cn.thecover.media.feature.review_data
 
 import cn.thecover.media.core.data.NetworkResponse
-
-import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
-import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
 import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
+import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DiffusionDataEntity
-import cn.thecover.media.feature.review_data.data.params.*
+import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
+import cn.thecover.media.feature.review_data.data.params.DepartmentReviewRequest
+import cn.thecover.media.feature.review_data.data.params.DepartmentTaskRequest
+import cn.thecover.media.feature.review_data.data.params.DepartmentTopRequest
+import cn.thecover.media.feature.review_data.data.params.ManuscriptDiffusionRequest
+import cn.thecover.media.feature.review_data.data.params.ManuscriptReviewRequest
+import cn.thecover.media.feature.review_data.data.params.ManuscriptTopRequest
+import cn.thecover.media.feature.review_data.data.params.ModifyManuscriptScoreRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Path
 
 
 /**
@@ -47,4 +51,8 @@ interface ReviewDataApiService {
     //修改稿分
     @POST(value = "api/data/news/modifyScore")
     suspend fun modifyManuscriptScore(@Body requestBody: ModifyManuscriptScoreRequest): NetworkResponse<Nothing>
+
+    //获取未读消息数
+    @GET(value = "mgr/unReadNotificationCount")
+    suspend fun getUnreadMessageCount(): NetworkResponse<Int>
 }

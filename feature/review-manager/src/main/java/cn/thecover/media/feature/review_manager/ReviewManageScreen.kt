@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -32,13 +34,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.YBBadge
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.popup.YBDropdownMenu
-import cn.thecover.media.core.widget.datastore.saveData
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
@@ -77,11 +81,31 @@ internal fun ReviewManageScreen(
     viewModel: ReviewManageViewModel = hiltViewModel()
 ) {
     var pageType by remember { mutableIntStateOf(ReviewManageType.ARCHIVE_SCORE.index) }
+    val unreadMessageCount by viewModel.unreadMessageCount.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    // 监听页面可见性变化
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    // 页面可见时获取未读消息数量
+                    viewModel.getUnreadMessageCount()
+                }
 
+                else -> {}
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        TopBar(pageType, onMessageClick = {
+        TopBar(pageType, unreadMessageCount, onMessageClick = {
             routeToMsgScreen.invoke()
         }) { text, index ->
             if (pageType != index) {
@@ -106,7 +130,12 @@ internal fun ReviewManageScreen(
 }
 
 @Composable
-private fun TopBar(initialIndex: Int, onMessageClick: () -> Unit = {}, titleClick: (String, Int) -> Unit = {_, _ -> }) {
+private fun TopBar(
+    initialIndex: Int,
+    unreadMessageCount: Int,
+    onMessageClick: () -> Unit = {},
+    titleClick: (String, Int) -> Unit = { _, _ -> }
+) {
     val list = listOf("稿件打分", "部门内分配", "申诉管理")
     var expanded = remember { mutableStateOf(false) }
     var title by remember { mutableStateOf(list[initialIndex]) }
@@ -156,7 +185,9 @@ private fun TopBar(initialIndex: Int, onMessageClick: () -> Unit = {}, titleClic
                     textAlign = TextAlign.Center
                 )
                 YBImage(
-                    modifier = Modifier.size(20.dp).rotate(animRotate.value),
+                    modifier = Modifier
+                        .size(20.dp)
+                        .rotate(animRotate.value),
                     placeholder = painterResource(cn.thecover.media.core.widget.R.mipmap.ic_arrow_down)
                 )
             }
@@ -168,7 +199,7 @@ private fun TopBar(initialIndex: Int, onMessageClick: () -> Unit = {}, titleClic
                 }
                 .padding(horizontal = 10.dp)
                 .align(Alignment.CenterEnd),
-            msgCount = 10,
+            msgCount = unreadMessageCount,
             showNumber = false
         ) {
             YBImage(

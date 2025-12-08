@@ -26,4 +26,5 @@ sealed class ReviewDataIntent {
     data object LoadMoreManuscriptDiffusion : ReviewDataIntent()
 
     data class EditManuscriptScore(val id: Int, val score: Double) : ReviewDataIntent()
+    data object GetUnreadMessageCount : ReviewDataIntent()
 }

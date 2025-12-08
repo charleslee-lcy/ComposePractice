@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,6 +30,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -40,6 +45,7 @@ import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
 import cn.thecover.media.feature.review_data.navigation.ManuscriptReviewRoute
 import cn.thecover.media.feature.review_data.navigation.ReviewDataNavigationType
 import cn.thecover.media.feature.review_data.navigation.reviewDataPage
@@ -68,8 +74,32 @@ internal fun ReviewDataScreen(
     val reviewNavController = rememberNavController()
     val actualStartDestination =  ManuscriptReviewRoute
 
+    val unreadMessageCount = viewModel.unreadMessageCount.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    // 监听页面可见性变化
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    // 页面可见时获取未读消息数量
+                    viewModel.handleReviewDataIntent(ReviewDataIntent.GetUnreadMessageCount)
+                }
+
+                else -> {}
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+
     Column {
-        TopBar(reviewNavController, routeToMsgScreen)
+        TopBar(reviewNavController, unreadMessageCount.value, routeToMsgScreen)
         NavHost(
             navController = reviewNavController,
             startDestination = actualStartDestination,
@@ -81,9 +111,14 @@ internal fun ReviewDataScreen(
 }
 
 @Composable
-private fun TopBar(navController: NavController, routeToMsgScreen: () -> Unit) {
+private fun TopBar(
+    navController: NavController,
+    unreadMessageCount: Int,
+    routeToMsgScreen: () -> Unit
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: ""
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -145,7 +180,7 @@ private fun TopBar(navController: NavController, routeToMsgScreen: () -> Unit) {
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .align(Alignment.CenterEnd),
-            msgCount = 10,
+            msgCount = unreadMessageCount,
 
             ) {
             YBImage(

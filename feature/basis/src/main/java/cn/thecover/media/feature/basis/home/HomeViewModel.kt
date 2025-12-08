@@ -1,6 +1,5 @@
 package cn.thecover.media.feature.basis.home
 
-import android.R.attr.password
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.getValue
@@ -18,12 +17,14 @@ import cn.thecover.media.core.data.LoginResponse
 import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HTTP_STATUS_LOGOUT
+import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
 import cn.thecover.media.core.widget.datastore.Keys
 import cn.thecover.media.core.widget.datastore.clearData
 import cn.thecover.media.core.widget.datastore.saveData
 import cn.thecover.media.feature.basis.HomeApi
 import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
+import cn.thecover.media.feature.basis.message.MessageApi
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -47,6 +48,7 @@ class HomeViewModel @Inject constructor(
     val loginUiState = MutableStateFlow(BaseUiState<LoginResponse>())
     val userUiState = MutableStateFlow(UserInfo())
     val homeUiState = MutableStateFlow(BaseUiState<HomeInfo>())
+    val unreadMessageCount = MutableStateFlow(0)
 
     var hasHomeDataFetched by mutableStateOf(false)
     var canShowToast by mutableStateOf(true)
@@ -128,4 +130,24 @@ class HomeViewModel @Inject constructor(
                 }
         }
     }
+
+    /**
+     * 获取未读消息数量
+     */
+    fun getUnreadMessageCount() {
+        viewModelScope.launch {
+            flow {
+                val apiService = retrofit.get().create(MessageApi::class.java)
+                val response = apiService.getUnreadMessageCount()
+                emit(response)
+            }.asResult()
+                .collect { result ->
+                    if (result.status == HttpStatus.SUCCESS) {
+                        unreadMessageCount.value = result.data ?: 0
+                    }
+                }
+        }
+    }
+
+
 }
