@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.only
@@ -149,7 +148,7 @@ internal fun YBApp(
                 modifier = Modifier.heightIn(60.dp, 80.dp)//部分手机系统小白条会占用一部分高度,故预留一部分buffer值.
             ) {
                 appState.topLevelDestinations.forEachIndexed { index, destination ->
-                    val hasUnreadMsg = index == 1 || index == 2
+                    val hasUnreadMsg = false
                     val showMsgCount = index == 2
                     val msgModifier = if (hasUnreadMsg) {
                         if (showMsgCount) {

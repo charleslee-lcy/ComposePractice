@@ -17,8 +17,7 @@ data class MessageDataEntity(
     val relatedId: Long = 0,
     val relatedType: Int = 0,
     val disable: Int = 0,
-    val title: String = "",
-    val createTime: String = "",
-    val updateTime: String = "",
-    val content: String = ""
-)
+    val createTime: String? = "",
+    val updateTime: String? = "",
+    val content: String? = ""
+) : java.io.Serializable

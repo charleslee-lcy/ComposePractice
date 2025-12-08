@@ -20,4 +20,8 @@ interface ReviewManagerApi {
 
     @POST(value = "article/query/{page}/json")
     suspend fun searchArchiveList(@Path("page") page: Int = 0, @Query("k") keyword: String): NetworkResponse<PaginatedResult<ArchiveListData>>
+
+    //获取未读消息数
+    @GET(value = "mgr/unReadNotificationCount")
+    suspend fun getUnreadMessageCount(): NetworkResponse<Int>
 }

@@ -39,6 +39,9 @@ class ReviewManageViewModel @Inject constructor(
         initialValue = ArchiveListUiState(),
     )
 
+    private val _unreadMessageCount = MutableStateFlow(0)
+    val unreadMessageCount: StateFlow<Int> = _unreadMessageCount
+
     fun getArchiveList(isRefresh: Boolean = true, page: Int = 0) {
         viewModelScope.launch {
             flow {
@@ -128,6 +131,23 @@ class ReviewManageViewModel @Inject constructor(
                     else -> {}
                 }
             }
+        }
+    }
+
+    fun getUnreadMessageCount() {
+        viewModelScope.launch {
+            flow {
+                val apiService = retrofit.get().create(ReviewManagerApi::class.java)
+                val response = apiService.getUnreadMessageCount()
+                emit(response)
+            }.asResult()
+                .collect { result ->
+                    if (result.status == HttpStatus.SUCCESS) {
+                        _unreadMessageCount.update { result.data ?: 0 }
+                    } else {
+                        _unreadMessageCount.update { 0 }
+                    }
+                }
         }
     }
 }
