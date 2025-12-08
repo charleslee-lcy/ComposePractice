@@ -47,6 +47,7 @@ val PageBackgroundColor = Color(0xFFFAFAFA)
 
 //辅助颜色
 val SecondaryAuxiliaryColor = Color(0xFFFFB833)
+val SecondaryAuxiliaryContainerColor = SecondaryAuxiliaryColor.copy(0.1f)
 val TertiaryAuxiliaryColor = Color(0xFFF1D66B)
 
 /**

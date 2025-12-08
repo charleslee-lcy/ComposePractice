@@ -1,23 +1,17 @@
 package cn.thecover.media.feature.review_manager.navigation
 
-import android.R.attr.data
-import android.R.attr.type
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.NavOptionsBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import androidx.navigation.navOptions
 import androidx.navigation.toRoute
+import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.feature.review_manager.ArchiveDetailRoute
-import cn.thecover.media.feature.review_manager.ArchiveListData
 import cn.thecover.media.feature.review_manager.ReviewManageRoute
 import cn.thecover.media.feature.review_manager.appeal.AppealDetailRoute
-import cn.thecover.media.feature.review_manager.appeal.AppealListData
+import com.google.gson.Gson
 import kotlinx.serialization.Serializable
-import java.util.Map.entry
 
 
 /**
@@ -28,7 +22,7 @@ import java.util.Map.entry
 
 @Serializable object ReviewManageRoute
 @Serializable data class AppealDetailRoute(val canEdit: Boolean)
-@Serializable data class ArchiveDetailRoute(val link: String)
+@Serializable data class ArchiveDetailRoute(val dataJsonStr: String)
 
 
 fun NavController.navigateToReviewManage(navOptions: NavOptions? = null) =
@@ -38,7 +32,7 @@ fun NavController.navigateToAppealDetail(canEdit: Boolean, navOptions: NavOption
     navigate(route = AppealDetailRoute(canEdit = canEdit), navOptions)
 
 fun NavController.navigateToArchiveDetail(archiveListData: ArchiveListData, navOptions: NavOptionsBuilder.() -> Unit = {}) {
-    navigate(route = archiveListData) {
+    navigate(route = ArchiveDetailRoute(dataJsonStr = Gson().toJson(archiveListData))) {
         navOptions()
     }
 }
@@ -51,8 +45,8 @@ fun NavGraphBuilder.reviewManageScreen(navController: NavController, routeToMsgS
         val data = it.toRoute<AppealDetailRoute>()
         AppealDetailRoute(canEdit = data.canEdit, navController = navController)
     }
-    composable<ArchiveListData> {
-        val data = it.toRoute<ArchiveListData>()
-        ArchiveDetailRoute(data = data, navController = navController)
+    composable<ArchiveDetailRoute> {
+        val data = it.toRoute<ArchiveDetailRoute>()
+        ArchiveDetailRoute(dataJsonStr = data.dataJsonStr, navController = navController)
     }
 }
