@@ -20,6 +20,11 @@ data class AppealManageRequest(
 )
 
 @Serializable
+data class AppealDetailRequest(
+    var id: Long? = 0
+)
+
+@Serializable
 data class AppealListData(
     val auditFlows: List<AuditFlow> = emptyList(),
     val content: String = "",
@@ -64,8 +69,8 @@ data class AuditFlow(
 
 @Serializable
 data class Material(
-    val name: String = "",
-    val url: String = ""
+    val key: String = "",
+    val fileName: String = ""
 )
 
 @Serializable

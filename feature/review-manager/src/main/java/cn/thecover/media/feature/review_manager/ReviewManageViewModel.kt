@@ -9,12 +9,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.thecover.media.core.common.util.formatToDateString
 import cn.thecover.media.core.common.util.toMillisecond
+import cn.thecover.media.core.data.AppealDetailRequest
 import cn.thecover.media.core.data.AppealListData
 import cn.thecover.media.core.data.AppealManageRequest
 import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.core.data.DepartmentAssignListData
 import cn.thecover.media.core.data.DepartmentAssignRequest
 import cn.thecover.media.core.data.ScoreArchiveListRequest
+import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -107,6 +109,8 @@ class ReviewManageViewModel @Inject constructor(
 
     private val myAppealRequest = AppealManageRequest()
     private val appealManageRequest = AppealManageRequest()
+
+    val appealDetailUiState = MutableStateFlow(BaseUiState<AppealListData>())
     // ======================================== 申诉管理 end ========================================
 
     private val _unreadMessageCount = MutableStateFlow(0)
@@ -250,7 +254,8 @@ class ReviewManageViewModel @Inject constructor(
         }
         when(appealManageSearchType.intValue) {
             0 -> { request.searchType = 1 }
-            else -> { request.searchType = 2 }
+            1 -> { request.searchType = 5 }
+            else -> { request.searchType = 3 }
         }
         request.searchKeyword = appealManageSearchKeyword.value.ifEmpty { null }
         viewModelScope.launch {
@@ -308,7 +313,8 @@ class ReviewManageViewModel @Inject constructor(
         }
         when(myAppealSearchType.intValue) {
             0 -> { request.searchType = 1 }
-            else -> { request.searchType = 2 }
+            1 -> { request.searchType = 5 }
+            else -> { request.searchType = 3 }
         }
         request.searchKeyword = myAppealSearchKeyword.value.ifEmpty { null }
         viewModelScope.launch {
@@ -355,6 +361,18 @@ class ReviewManageViewModel @Inject constructor(
                     else -> {}
                 }
             }
+        }
+    }
+
+    fun getAppealDetailInfo(id: Long) {
+        viewModelScope.launch {
+            flow {
+                val result = apiService.getAppealDetailInfo(AppealDetailRequest(id))
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    appealDetailUiState.value = result
+                }
         }
     }
 

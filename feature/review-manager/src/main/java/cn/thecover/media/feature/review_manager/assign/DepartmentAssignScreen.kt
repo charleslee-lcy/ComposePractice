@@ -377,6 +377,8 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
     YBDatePicker(
         visible = showDatePicker,
         type = DateType.YEAR,
+        start = LocalDate.of(LocalDate.now().year - 5, 1, 1),
+        end = LocalDate.of(LocalDate.now().year + 4, 1, 1),
         onCancel = { showDatePicker = false },
         onChange = {
             datePickedText = "${it.year}年"

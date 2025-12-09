@@ -133,7 +133,7 @@ fun MyAppealContent(viewModel: ReviewManageViewModel, navController: NavControll
                     .fillMaxWidth()
                     .clickableWithoutRipple {
                         // 跳转到申诉详情页
-                        navController.navigateToAppealDetail(index % 2 == 0)
+                        navController.navigateToAppealDetail(item.id, false)
                     }, item = item
             )
         }
