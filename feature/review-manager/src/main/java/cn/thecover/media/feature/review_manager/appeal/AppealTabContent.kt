@@ -143,14 +143,15 @@ data class FilterType(val type: Int, val desc: String)
 fun FilterSearchBar(
     modifier: Modifier = Modifier,
     initialIndex: Int = 0,
+    initialSearchText: String = "",
     filterData: List<FilterType>,
     filterClick: (String, Int) -> Unit = { _, _ -> },
     onSearch: (String) -> Unit = {}
 ) {
-    var expanded = remember { mutableStateOf(false) }
+    val expanded = remember { mutableStateOf(false) }
     val animRotate = remember { Animatable(0f) }
     var title by remember { mutableStateOf(filterData[initialIndex].desc) }
-    var searchText by remember { mutableStateOf("") }
+    var searchText by remember { mutableStateOf(initialSearchText) }
 
     // 当菜单状态改变时触发动画
     LaunchedEffect(expanded.value) {

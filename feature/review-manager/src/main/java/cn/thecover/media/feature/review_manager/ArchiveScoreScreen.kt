@@ -49,8 +49,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import cn.thecover.media.core.common.util.toMillisecond
+import cn.thecover.media.core.data.ArchiveListData
+import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.GradientLeftBottom
 import cn.thecover.media.core.widget.GradientLeftTop
 import cn.thecover.media.core.widget.component.YBCoordinatorList
@@ -77,11 +81,11 @@ import cn.thecover.media.feature.review_manager.appeal.FilterSearchBar
 import cn.thecover.media.feature.review_manager.appeal.FilterType
 import cn.thecover.media.feature.review_manager.assign.FilterDropMenuView
 import cn.thecover.media.feature.review_manager.navigation.navigateToArchiveDetail
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 
 /**
- *
+ * 稿件打分
  * <p> Created by CharlesLee on 2025/8/8
  * 15708478830@163.com
  */
@@ -91,7 +95,6 @@ fun ArchiveScoreScreen(
     viewModel: ReviewManageViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val curPage = remember { mutableIntStateOf(0) }
     val isRefreshing = remember { mutableStateOf(false) }
     val isLoadingMore = remember { mutableStateOf(false) }
     val canLoadMore = remember { mutableStateOf(true) }
@@ -100,38 +103,36 @@ fun ArchiveScoreScreen(
     val items = remember { mutableStateOf(listOf<ArchiveListData>()) }
     val archiveListUiState by viewModel.archiveListDataState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        curPage.intValue = 0
-        viewModel.getArchiveList(page = curPage.intValue)
+    LaunchedEffect(viewModel.startLocalDate, viewModel.endLocalDate) {
+        viewModel.getArchiveList(isRefresh = true)
     }
 
     LaunchedEffect(archiveListUiState) {
         isRefreshing.value = archiveListUiState.isRefreshing
         isLoadingMore.value = archiveListUiState.isLoading
+        canLoadMore.value = archiveListUiState.canLoadMore
         items.value = archiveListUiState.list
     }
 
     ArchiveScoreScreen(
+        viewModel = viewModel,
         navController = navController,
         items = items,
         isRefreshing = isRefreshing,
         isLoadingMore = isLoadingMore,
         canLoadMore = canLoadMore,
         onRefresh = {
-            curPage.intValue = 0
-            viewModel.getArchiveList(isRefresh = true, page = curPage.intValue)
+            viewModel.getArchiveList(isRefresh = true)
         },
         onLoadMore = {
-            curPage.intValue++
-            viewModel.getArchiveList(isRefresh = false, page = curPage.intValue)
+            viewModel.getArchiveList(isRefresh = false)
         },
         onSearch = {
-            if (it.isEmpty()) {
-                Toast.makeText(context, "搜索内容不能为空", Toast.LENGTH_SHORT).show()
-                return@ArchiveScoreScreen
-            }
-            curPage.intValue = 0
-            viewModel.getSearchData(isRefresh = true, page = curPage.intValue, keyword = it)
+//            if (it.isEmpty()) {
+//                Toast.makeText(context, "搜索内容不能为空", Toast.LENGTH_SHORT).show()
+//                return@ArchiveScoreScreen
+//            }
+            viewModel.getArchiveList(isRefresh = true)
             focusManager.clearFocus()
         }
     )
@@ -141,6 +142,7 @@ fun ArchiveScoreScreen(
 
 @Composable
 fun ArchiveScoreScreen(
+    viewModel: ReviewManageViewModel,
     navController: NavController,
     items: MutableState<List<ArchiveListData>>,
     isRefreshing: MutableState<Boolean>,
@@ -166,7 +168,7 @@ fun ArchiveScoreScreen(
         },
         enableCollapsable = true,
         collapsableContent = {
-            ArchiveScoreHeader(onSearch = onSearch)
+            ArchiveScoreHeader(viewModel, onSearch = onSearch)
         }) { item, index ->
         ArchiveListItem(
             modifier = Modifier
@@ -377,15 +379,11 @@ private fun scoreTitleStyle(enable: Boolean) = TextStyle(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ArchiveScoreHeader(onSearch: (String) -> Unit = {}) {
+private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (String) -> Unit = {}) {
     val showScoreDialog = remember { mutableStateOf(false) }
 
     var isStartDatePickerShow by remember { mutableStateOf(true) }
     var datePickerShow by remember { mutableStateOf(false) }
-    val startDateText = remember { mutableStateOf("开始时间") }
-    var startLocalDate by remember { mutableStateOf(LocalDate.now()) }
-    val endDateText = remember { mutableStateOf("结束时间") }
-    var endLocalDate by remember { mutableStateOf(LocalDate.now()) }
 
     val scoreStateFilters = listOf(
         FilterType(type = 1, desc = "全部"),
@@ -394,9 +392,9 @@ private fun ArchiveScoreHeader(onSearch: (String) -> Unit = {}) {
     )
 
     val searchFilters = listOf(
-        FilterType(type = 1, desc = "稿件标题"),
-        FilterType(type = 2, desc = "稿件id"),
-        FilterType(type = 3, desc = "稿件人员")
+        FilterType(type = 1, desc = "记者"),
+        FilterType(type = 2, desc = "稿件ID"),
+        FilterType(type = 3, desc = "稿件名称")
     )
 
     Card(
@@ -553,9 +551,9 @@ private fun ArchiveScoreHeader(onSearch: (String) -> Unit = {}) {
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = startDateText.value,
+                    text = viewModel.startDateText.value,
                     style = MaterialTheme.typography.labelMedium,
-                    color = if (startDateText.value != "开始时间") MainTextColor else EditHintTextColor
+                    color = if (viewModel.startDateText.value != "开始时间") MainTextColor else EditHintTextColor
                 )
                 Icon(
                     modifier = Modifier.size(18.dp),
@@ -578,9 +576,9 @@ private fun ArchiveScoreHeader(onSearch: (String) -> Unit = {}) {
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = endDateText.value,
+                    text = viewModel.endDateText.value,
                     style = MaterialTheme.typography.labelMedium,
-                    color = if (endDateText.value != "结束时间") MainTextColor else EditHintTextColor
+                    color = if (viewModel.endDateText.value != "结束时间") MainTextColor else EditHintTextColor
                 )
                 Icon(
                     modifier = Modifier.size(18.dp),
@@ -606,7 +604,10 @@ private fun ArchiveScoreHeader(onSearch: (String) -> Unit = {}) {
                     fontSize = 13.sp
                 )
                 Spacer(modifier = Modifier.height(6.dp))
-                FilterDropMenuView(filterData = scoreStateFilters, initialIndex = 1)
+                FilterDropMenuView(filterData = scoreStateFilters, initialIndex = viewModel.userScoreStatus.intValue) { _, index ->
+                    viewModel.userScoreStatus.intValue = index
+                    viewModel.getArchiveList(isRefresh = true)
+                }
             }
             Spacer(Modifier.width(12.dp))
             // 右侧时间选择区域
@@ -619,7 +620,10 @@ private fun ArchiveScoreHeader(onSearch: (String) -> Unit = {}) {
                     fontSize = 13.sp
                 )
                 Spacer(modifier = Modifier.height(6.dp))
-                FilterDropMenuView(filterData = scoreStateFilters)
+                FilterDropMenuView(filterData = scoreStateFilters, initialIndex = viewModel.newsScoreStatus.intValue) { _, index ->
+                    viewModel.newsScoreStatus.intValue = index
+                    viewModel.getArchiveList(isRefresh = true)
+                }
             }
         }
         FilterSearchBar(
@@ -629,12 +633,14 @@ private fun ArchiveScoreHeader(onSearch: (String) -> Unit = {}) {
                 .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(4.dp))
                 .background(PageBackgroundColor)
                 .height(36.dp),
-            initialIndex = 0,
+            initialIndex = viewModel.searchType.intValue,
+            initialSearchText = viewModel.searchKeyword.value,
             filterData = searchFilters,
-            filterClick = { text, index ->
-                Log.d("CharlesLee", "filterType: ${searchFilters[index].type}")
+            filterClick = { _, index ->
+                viewModel.searchType.intValue = index
             }
         ) {
+            viewModel.searchKeyword.value = it
             onSearch.invoke(it)
         }
     }
@@ -779,15 +785,15 @@ private fun ArchiveScoreHeader(onSearch: (String) -> Unit = {}) {
         visible = datePickerShow,
         type = DateType.DAY,
         title = if (isStartDatePickerShow) "选择开始时间" else "选择结束时间",
-        value = if (isStartDatePickerShow) startLocalDate else endLocalDate,
+        value = if (isStartDatePickerShow) viewModel.startLocalDate else viewModel.endLocalDate,
         onCancel = { datePickerShow = false },
         onChange = {
             if (isStartDatePickerShow) {
-                startDateText.value = "${it.year}-${it.monthValue}-${it.dayOfMonth}"
-                startLocalDate = it
+                viewModel.startDateText.value = "${it.year}-${it.monthValue}-${it.dayOfMonth}"
+                viewModel.startLocalDate = it
             } else {
-                endDateText.value = "${it.year}-${it.monthValue}-${it.dayOfMonth}"
-                endLocalDate = it
+                viewModel.endDateText.value = "${it.year}-${it.monthValue}-${it.dayOfMonth}"
+                viewModel.endLocalDate = it
             }
         }
     )
@@ -803,14 +809,18 @@ private data class ArchiveScoreRule(
 @Composable
 private fun ArchiveScoreScreenPreview() {
     YBTheme {
-        var isRefreshing = remember { mutableStateOf(false) }
-        var isLoadingMore = remember { mutableStateOf(false) }
-        var canLoadMore = remember { mutableStateOf(true) }
-        var items = remember { mutableStateOf(listOf<ArchiveListData>()) }
+        val isRefreshing = remember { mutableStateOf(false) }
+        val isLoadingMore = remember { mutableStateOf(false) }
+        val canLoadMore = remember { mutableStateOf(true) }
+        val items = remember { mutableStateOf(listOf<ArchiveListData>()) }
         repeat(10) {
-            items.value = items.value + ArchiveListData(title = "标题$it", niceDate = "2023-05-05")
+            items.value += ArchiveListData(title = "标题$it", publishTime = LocalDateTime.now().toMillisecond())
         }
         ArchiveScoreScreen(
+            viewModel = ReviewManageViewModel(
+                savedStateHandle = SavedStateHandle(),
+                retrofit = { previewRetrofit }
+            ),
             navController = NavController(LocalContext.current),
             items = items,
             isRefreshing = isRefreshing,

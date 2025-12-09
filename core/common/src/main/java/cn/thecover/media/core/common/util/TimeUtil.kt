@@ -2,7 +2,9 @@ package cn.thecover.media.core.common.util
 
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 
 /**
@@ -12,15 +14,24 @@ import java.time.ZoneId
  */
 
 fun LocalDate.toMillisecond(): Long {
-    return atStartOfDay(ZoneId.systemDefault())         // 当日 00:00
-        .toInstant()
-        .toEpochMilli()
+    return this.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+}
+
+fun LocalDateTime.toMillisecond(): Long {
+    return this.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 }
 
 fun Long.toLocalDate(): LocalDate {
-//    return LocalDate.ofInstant(
-//        Instant.ofEpochMilli(this),
-//        ZoneId.systemDefault()
-//    )
     return Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toLocalDate()
+}
+
+fun Long.toLocalDateTime(): LocalDateTime {
+    return Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toLocalDateTime()
+}
+
+fun Long.formatToDateString(format: String = "yyyy-MM-dd HH:mm"): String {
+    val instant = Instant.ofEpochMilli(this)
+    val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+    val formatter = DateTimeFormatter.ofPattern(format)
+    return localDateTime.format(formatter)
 }

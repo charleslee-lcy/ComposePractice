@@ -21,7 +21,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,7 +60,6 @@ import cn.thecover.media.feature.basis.R
 import cn.thecover.media.feature.basis.home.HomeViewModel
 import cn.thecover.media.feature.basis.home.navigation.navigateToHome
 import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPassword
-import kotlinx.coroutines.launch
 
 
 /**

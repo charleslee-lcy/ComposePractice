@@ -25,6 +25,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import cn.thecover.media.core.common.util.formatToDateString
+import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.core.widget.component.PreviewImages
 import cn.thecover.media.core.widget.component.YBTitleBar
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
@@ -32,6 +34,7 @@ import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
+import com.google.gson.Gson
 import com.mohamedrejeb.calf.ui.web.WebView
 import com.mohamedrejeb.calf.ui.web.WebViewState
 import com.mohamedrejeb.calf.ui.web.rememberWebViewState
@@ -39,9 +42,10 @@ import com.mohamedrejeb.calf.ui.web.rememberWebViewState
 @Composable
 internal fun ArchiveDetailRoute(
     modifier: Modifier = Modifier,
-    data: ArchiveListData,
+    dataJsonStr: String,
     navController: NavController
 ) {
+    val data = Gson().fromJson(dataJsonStr, ArchiveListData::class.java)
     ArchiveDetailScreen(modifier, data, navController)
 }
 
@@ -57,7 +61,7 @@ fun ArchiveDetailScreen(
     navController: NavController
 ) {
     val webViewState = rememberWebViewState(
-        url = data.link
+        url = data.wapUrl
     )
     val showImages = remember { mutableStateOf(false) }
     val imagesData = remember {
@@ -130,7 +134,7 @@ private fun WebViewContent(
                 )
                 Spacer(modifier = Modifier.width(20.dp))
                 Text(
-                    text = data.niceDate,
+                    text = data.publishTime.formatToDateString(),
                     color = SecondaryTextColor,
                     fontSize = 14.sp,
                 )
