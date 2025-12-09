@@ -1,8 +1,10 @@
 package cn.thecover.media.feature.review_manager.appeal
 
+import android.R.attr.type
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,13 +25,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cn.thecover.media.core.data.AppealListData
 import cn.thecover.media.core.widget.theme.HintTextColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
-import kotlinx.serialization.Serializable
 import kotlin.random.Random
 
 
@@ -41,10 +43,8 @@ import kotlin.random.Random
 @Composable
 fun AppealListItem(
     modifier: Modifier = Modifier,
-    index: Int = 0
+    item: AppealListData,
 ) {
-    val type = Random.nextInt(4)
-
     Box(
         modifier = modifier.padding(top = 12.dp)
     ) {
@@ -56,18 +56,22 @@ fun AppealListItem(
         ) {
             Text(
                 modifier = Modifier.padding(start = 12.dp, top = 12.dp),
-                text = "${index}申诉ID：298237821321",
+                text = "申诉ID：${item.id}",
                 style = TextStyle(
                     color = TertiaryTextColor, fontSize = 14.sp
                 )
             )
-            Text(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                text = "关于云南，你不知道的20个冷知识，带你了解最真实的云南风貌",
-                style = TextStyle(
-                    color = MainTextColor, fontSize = 14.sp, fontWeight = FontWeight.SemiBold
+            if (item.appealTitle.isNotEmpty()) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                    text = item.appealTitle,
+                    style = TextStyle(
+                        color = MainTextColor, fontSize = 14.sp, fontWeight = FontWeight.SemiBold
+                    )
                 )
-            )
+            } else {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -89,7 +93,7 @@ fun AppealListItem(
                         end = 12.dp,
                         bottom = 8.dp
                     ),
-                    text = "申诉内容最多两排超过申诉内容最多多两排超过申诉内容最多两排超过申诉内容最多两排超申诉内容最多两排超过申诉内容最多多两排超过申诉内容最多两排超过申诉内容最多两排超申诉内容最多两排超过申诉内容最多多两排超过申诉内容最多两排超过申诉内容最多两排超",
+                    text = item.content,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = TextStyle(
@@ -106,7 +110,7 @@ fun AppealListItem(
                         .clip(RoundedCornerShape(4.dp))
                         .background(HintTextColor)
                         .padding(horizontal = 4.dp, vertical = 1.dp),
-                    text = "稿件补录",
+                    text = item.typeName,
                     textAlign = TextAlign.Center,
                     style = TextStyle(
                         color = Color.White, fontSize = 12.sp
@@ -114,7 +118,7 @@ fun AppealListItem(
                 )
                 Text(
                     modifier = Modifier.padding(start = 12.dp),
-                    text = "2025-06-07 14:32",
+                    text = item.submitTime,
                     style = TextStyle(
                         color = TertiaryTextColor, fontSize = 14.sp
                     )
@@ -126,11 +130,11 @@ fun AppealListItem(
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .labelStyle(type)
+                .labelStyle(item.status)
         ) {
             Text(
                 modifier = Modifier.align(Alignment.Center),
-                text = labelText(type),
+                text = labelText(item.status),
                 color = Color.White, fontSize = 14.sp, textAlign = TextAlign.Center,
             )
         }
@@ -139,11 +143,12 @@ fun AppealListItem(
 
 private fun Modifier.labelStyle(type: Int = 0): Modifier {
     val containerColor = when (type) {
-        0 -> Color(0xFF306CFF) // 审批中
-        1 -> Color(0xFF52D988)   // 已回复
-        2 -> Color(0xFFF95252)   // 驳回
-        3 -> Color(0xFFBBD1E5)   // 已撤回
-        else -> Color(0xFFFFB833) // 待回复
+        1 -> Color(0xFF306CFF) // 审批中
+        2 -> Color(0xFFFFB833) // 待回复
+        3 -> Color(0xFF52D988)   // 已回复
+        4 -> Color(0xFFF95252)   // 驳回
+        5 -> Color(0xFFBBD1E5)   // 已撤回
+        else -> Color(0xFFFFB833) // 待处理
     }
     return this
         .clip(RoundedCornerShape(bottomStart = 8.dp, topEnd = 8.dp))
@@ -152,19 +157,19 @@ private fun Modifier.labelStyle(type: Int = 0): Modifier {
         .height(32.dp)
 }
 
-@Serializable
-data class AppealListData(
-    val title: String = "",
-    val niceDate: String = "",
-    val canEdit: Boolean = false
-)
-
 private fun labelText(type: Int = 0) = when (type) {
-    0 -> "审批中" // 审批中
-    1 -> "已回复"   // 已回复
-    2 -> "驳回"   // 驳回
-    3 -> "已撤回"   // 已撤回
-    else -> "待回复" // 待回复
+    1 -> "审批中" // 审批中
+    2 -> "待回复"   // 待回复
+    3 -> "已回复"   // 已回复
+    4 -> "驳回"   // 驳回
+    5 -> "已撤回"   // 已撤回
+    else -> "待处理" // 待回复
+}
+
+private fun handleAppealType(type: Int = 0) = when (type) {
+    2 -> "稿件加分"   // 驳回
+    3 -> "人员加分"   // 已撤回
+    else -> "稿件补录" // 待回复
 }
 
 @PhonePreview
@@ -174,7 +179,8 @@ fun AppealListItemPreview() {
         LazyColumn {
             repeat(5) {
                 item {
-                    AppealListItem()
+                    val item = AppealListData()
+                    AppealListItem(item = item)
                 }
             }
         }

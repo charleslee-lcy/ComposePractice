@@ -33,13 +33,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import cn.thecover.media.core.data.AppealListData
+import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.YBInput
@@ -51,30 +56,42 @@ import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
+import cn.thecover.media.feature.review_manager.ReviewManageViewModel
 import cn.thecover.media.feature.review_manager.navigation.navigateToAppealDetail
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 /**
- * 申诉管理Tab页卡
+ * 申诉审批Tab页卡
  * <p> Created by CharlesLee on 2025/8/4
  * 15708478830@163.com
  */
 @Composable
-fun MyAppealContent(navController: NavController) {
+fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavController) {
     val filters = listOf(
         FilterType(type = 0, desc = "稿件标题"),
-        FilterType(type = 1, desc = "稿件ID"),
-        FilterType(type = 2, desc = "申诉内容")
+        FilterType(type = 1, desc = "人员姓名"),
+        FilterType(type = 2, desc = "申诉理由")
     )
 
-    // 模拟数据
-    var items = remember { mutableStateOf((1..20).toList()) }
-    val scope = rememberCoroutineScope()
-    var isRefreshing = remember { mutableStateOf(false) }
-    var isLoadingMore = remember { mutableStateOf(false) }
-    var canLoadMore = remember { mutableStateOf(true) }
+    val items = remember { mutableStateOf(listOf<AppealListData>()) }
+    val isRefreshing = remember { mutableStateOf(false) }
+    val isLoadingMore = remember { mutableStateOf(false) }
+    val canLoadMore = remember { mutableStateOf(true) }
+    val focusManager = LocalFocusManager.current
+    val appealManageListUiState by viewModel.appealManageListDataState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.getAppealManageList(isRefresh = true)
+    }
+
+    LaunchedEffect(appealManageListUiState) {
+        isRefreshing.value = appealManageListUiState.isRefreshing
+        isLoadingMore.value = appealManageListUiState.isLoading
+        canLoadMore.value = appealManageListUiState.canLoadMore
+        items.value = appealManageListUiState.list
+    }
 
     Column(
         modifier = Modifier
@@ -88,13 +105,16 @@ fun MyAppealContent(navController: NavController) {
                 .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(4.dp))
                 .background(Color.White)
                 .height(36.dp),
-            initialIndex = 0,
+            initialIndex = viewModel.appealManageSearchType.intValue,
+            initialSearchText = viewModel.appealManageSearchKeyword.value,
             filterData = filters,
-            filterClick = { text, index ->
-                Log.d("CharlesLee", "filterType: ${filters[index].type}")
+            filterClick = { _, index ->
+                viewModel.appealManageSearchType.intValue = index
             }
         ) {
-
+            viewModel.appealManageSearchKeyword.value = it
+            viewModel.getAppealManageList(isRefresh = true)
+            focusManager.clearFocus()
         }
 
         YBNormalList(
@@ -106,24 +126,10 @@ fun MyAppealContent(navController: NavController) {
             isLoadingMore = isLoadingMore,
             canLoadMore = canLoadMore,
             onRefresh = {
-                scope.launch {
-                    // 模拟网络
-                    delay(1000)
-                    items.value = (1..20).toList()
-                    canLoadMore.value = true
-                    isRefreshing.value = false
-                }
+                viewModel.getAppealManageList(isRefresh = true)
             },
             onLoadMore = {
-                scope.launch {
-                    // 模拟网络
-                    delay(1000)
-                    val next = items.value.lastOrNull() ?: 0
-                    items.value = items.value + (next + 1..next + 10).toList()
-                    isLoadingMore.value = false
-                    // 模拟最后一页
-                    if (items.value.size >= 50) canLoadMore.value = false
-                }
+                viewModel.getAppealManageList(isRefresh = false)
             }) { item, index ->
             AppealListItem(
                 modifier = Modifier
@@ -131,7 +137,7 @@ fun MyAppealContent(navController: NavController) {
                     .clickableWithoutRipple {
                         // 跳转到申诉详情页
                         navController.navigateToAppealDetail(index % 2 == 0)
-                    }, index = index
+                    }, item = item
             )
         }
     }
@@ -234,6 +240,12 @@ fun FilterSearchBar(
 @Composable
 private fun AppealTabContentPreview() {
     YBTheme {
-        MyAppealContent(navController = NavController(LocalContext.current))
+        MyAppealContent(
+            viewModel = ReviewManageViewModel(
+                savedStateHandle = SavedStateHandle(),
+                retrofit = { previewRetrofit }
+            ),
+            navController = NavController(LocalContext.current)
+        )
     }
 }

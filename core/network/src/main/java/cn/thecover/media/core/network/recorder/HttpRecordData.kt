@@ -16,6 +16,6 @@ class HttpRecordData(
     var body: String? = null,
     var response: String? = null,
     var code: Int = 200,
-    var requestTimeStamp: Long = 0,
-    var responseTimeStamp: Long = 0
+    var requestTimeStamp: Long = 0L,
+    var responseTimeStamp: Long = 0L
 )

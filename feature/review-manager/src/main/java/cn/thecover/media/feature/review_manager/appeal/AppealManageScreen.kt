@@ -21,12 +21,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
+import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.YBTab
 import cn.thecover.media.core.widget.component.YBTabRow
 import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.review_manager.ReviewManageViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
@@ -39,7 +43,8 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun AppealManageScreen(
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    viewModel: ReviewManageViewModel = hiltViewModel()
 ) {
     val count = remember { mutableIntStateOf(10) }
     val tabs = listOf(
@@ -91,8 +96,8 @@ internal fun AppealManageScreen(
             modifier = Modifier.fillMaxSize()
         ) {pageIndex ->
             when (pageIndex) {
-                0 -> MyAppealContent(navController = navController)
-                1 -> MyAppealContent(navController = navController)
+                0 -> MyAppealContent(viewModel = viewModel, navController = navController)
+                1 -> AppealManageTabContent(viewModel = viewModel, navController = navController)
             }
         }
     }
@@ -102,6 +107,12 @@ internal fun AppealManageScreen(
 @Composable
 private fun AppealManagePreview() {
     YBTheme {
-        AppealManageScreen(navController = NavController(LocalContext.current))
+        AppealManageScreen(
+            viewModel = ReviewManageViewModel(
+                savedStateHandle = SavedStateHandle(),
+                retrofit = { previewRetrofit }
+            ),
+            navController = NavController(LocalContext.current)
+        )
     }
 }

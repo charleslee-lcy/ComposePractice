@@ -9,6 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.thecover.media.core.common.util.formatToDateString
 import cn.thecover.media.core.common.util.toMillisecond
+import cn.thecover.media.core.data.AppealListData
+import cn.thecover.media.core.data.AppealManageRequest
 import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.core.data.DepartmentAssignListData
 import cn.thecover.media.core.data.DepartmentAssignRequest
@@ -82,6 +84,30 @@ class ReviewManageViewModel @Inject constructor(
     )
     private val departmentRequest = DepartmentAssignRequest()
     // ====================================== 部门内分配 end =========================================
+
+    // ======================================== 申诉管理 start =======================================
+    val myAppealSearchType = mutableIntStateOf(0)
+    val myAppealSearchKeyword = mutableStateOf("")
+    val appealManageSearchType = mutableIntStateOf(0)
+    val appealManageSearchKeyword = mutableStateOf("")
+    var myAppealLastId: Long? = null
+    var appealManageLastId: Long? = null
+    private val _myAppealListDataState = MutableStateFlow(AppealListUiState())
+    val myAppealListDataState: StateFlow<AppealListUiState> = _myAppealListDataState.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = AppealListUiState(),
+    )
+    private val _appealManageListDataState = MutableStateFlow(AppealListUiState())
+    val appealManageListDataState: StateFlow<AppealListUiState> = _appealManageListDataState.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = AppealListUiState(),
+    )
+
+    private val myAppealRequest = AppealManageRequest()
+    private val appealManageRequest = AppealManageRequest()
+    // ======================================== 申诉管理 end ========================================
 
     private val _unreadMessageCount = MutableStateFlow(0)
     val unreadMessageCount: StateFlow<Int> = _unreadMessageCount
@@ -216,6 +242,122 @@ class ReviewManageViewModel @Inject constructor(
         }
     }
 
+    fun getAppealManageList(isRefresh: Boolean = true, request: AppealManageRequest = appealManageRequest) {
+        if (isRefresh) {
+            request.lastId = null
+        } else {
+            request.lastId = appealManageLastId
+        }
+        when(appealManageSearchType.intValue) {
+            0 -> { request.searchType = 1 }
+            else -> { request.searchType = 2 }
+        }
+        request.searchKeyword = appealManageSearchKeyword.value.ifEmpty { null }
+        viewModelScope.launch {
+            flow {
+                request.pageSize = pageSize
+                val list = apiService.getAppealManageList(request)
+                emit(list)
+            }.asResult().collect { result ->
+                when (result.status) {
+                    HttpStatus.SUCCESS -> {
+                        val data = result.data?.dataList ?: emptyList()
+                        appealManageLastId = result.data?.lastId ?: -1
+                        _appealManageListDataState.update {
+                            it.copy(
+                                list = if (isRefresh) data else it.list + data,
+                                isLoading = false,
+                                isRefreshing = false,
+                                canLoadMore = appealManageLastId?.let {id ->
+                                    id > 0
+                                } ?: kotlin.run {
+                                    false
+                                },
+                                msg = null
+                            )
+                        }
+                    }
+                    HttpStatus.LOADING -> {
+                        _appealManageListDataState.update {
+                            if (isRefresh) it.copy(isRefreshing = true) else it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    HttpStatus.ERROR -> {
+                        _appealManageListDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isRefreshing = false,
+                                canLoadMore = true,
+                                msg = result.errorMsg
+                            )
+                        }
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    fun getMyAppealList(isRefresh: Boolean = true, request: AppealManageRequest = myAppealRequest) {
+        if (isRefresh) {
+            request.lastId = null
+        } else {
+            request.lastId = myAppealLastId
+        }
+        when(myAppealSearchType.intValue) {
+            0 -> { request.searchType = 1 }
+            else -> { request.searchType = 2 }
+        }
+        request.searchKeyword = myAppealSearchKeyword.value.ifEmpty { null }
+        viewModelScope.launch {
+            flow {
+                request.pageSize = pageSize
+                val list = apiService.getMyAppealList(request)
+                emit(list)
+            }.asResult().collect { result ->
+                when (result.status) {
+                    HttpStatus.SUCCESS -> {
+                        val data = result.data?.dataList ?: emptyList()
+                        myAppealLastId = result.data?.lastId ?: -1
+                        _myAppealListDataState.update {
+                            it.copy(
+                                list = if (isRefresh) data else it.list + data,
+                                isLoading = false,
+                                isRefreshing = false,
+                                canLoadMore = myAppealLastId?.let {id ->
+                                    id > 0
+                                } ?: kotlin.run {
+                                    false
+                                },
+                                msg = null
+                            )
+                        }
+                    }
+                    HttpStatus.LOADING -> {
+                        _myAppealListDataState.update {
+                            if (isRefresh) it.copy(isRefreshing = true) else it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    HttpStatus.ERROR -> {
+                        _myAppealListDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isRefreshing = false,
+                                canLoadMore = true,
+                                msg = result.errorMsg
+                            )
+                        }
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
     fun getUnreadMessageCount() {
         viewModelScope.launch {
             flow {
@@ -247,6 +389,15 @@ data class ArchiveListUiState(
 @Serializable
 data class DepartmentAssignListUiState(
     val list: List<DepartmentAssignListData> = emptyList(),
+    val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
+    val canLoadMore: Boolean = true,
+    val msg: String? = null
+)
+
+@Serializable
+data class AppealListUiState(
+    val list: List<AppealListData> = emptyList(),
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val canLoadMore: Boolean = true,
