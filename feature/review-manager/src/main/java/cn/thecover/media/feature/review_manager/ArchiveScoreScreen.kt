@@ -33,7 +33,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,11 +51,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import cn.thecover.media.core.common.util.toMillisecond
 import cn.thecover.media.core.data.ArchiveListData
-import cn.thecover.media.core.data.ScoreArchiveListRequest
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.GradientLeftBottom
 import cn.thecover.media.core.widget.GradientLeftTop
@@ -84,8 +81,6 @@ import cn.thecover.media.feature.review_manager.appeal.FilterSearchBar
 import cn.thecover.media.feature.review_manager.appeal.FilterType
 import cn.thecover.media.feature.review_manager.assign.FilterDropMenuView
 import cn.thecover.media.feature.review_manager.navigation.navigateToArchiveDetail
-import retrofit2.Retrofit
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 
@@ -109,7 +104,7 @@ fun ArchiveScoreScreen(
     val archiveListUiState by viewModel.archiveListDataState.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel.startLocalDate, viewModel.endLocalDate) {
-        viewModel.getArchiveList()
+        viewModel.getArchiveList(isRefresh = true)
     }
 
     LaunchedEffect(archiveListUiState) {
@@ -133,10 +128,10 @@ fun ArchiveScoreScreen(
             viewModel.getArchiveList(isRefresh = false)
         },
         onSearch = {
-            if (it.isEmpty()) {
-                Toast.makeText(context, "搜索内容不能为空", Toast.LENGTH_SHORT).show()
-                return@ArchiveScoreScreen
-            }
+//            if (it.isEmpty()) {
+//                Toast.makeText(context, "搜索内容不能为空", Toast.LENGTH_SHORT).show()
+//                return@ArchiveScoreScreen
+//            }
             viewModel.getArchiveList(isRefresh = true)
             focusManager.clearFocus()
         }
@@ -397,9 +392,9 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
     )
 
     val searchFilters = listOf(
-        FilterType(type = 1, desc = "稿件标题"),
-        FilterType(type = 2, desc = "稿件id"),
-        FilterType(type = 3, desc = "稿件人员")
+        FilterType(type = 1, desc = "记者"),
+        FilterType(type = 2, desc = "稿件ID"),
+        FilterType(type = 3, desc = "稿件名称")
     )
 
     Card(
@@ -609,7 +604,10 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                     fontSize = 13.sp
                 )
                 Spacer(modifier = Modifier.height(6.dp))
-                FilterDropMenuView(filterData = scoreStateFilters, initialIndex = 1)
+                FilterDropMenuView(filterData = scoreStateFilters, initialIndex = viewModel.userScoreStatus.intValue) { _, index ->
+                    viewModel.userScoreStatus.intValue = index
+                    viewModel.getArchiveList(isRefresh = true)
+                }
             }
             Spacer(Modifier.width(12.dp))
             // 右侧时间选择区域
@@ -622,7 +620,10 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                     fontSize = 13.sp
                 )
                 Spacer(modifier = Modifier.height(6.dp))
-                FilterDropMenuView(filterData = scoreStateFilters)
+                FilterDropMenuView(filterData = scoreStateFilters, initialIndex = viewModel.newsScoreStatus.intValue) { _, index ->
+                    viewModel.newsScoreStatus.intValue = index
+                    viewModel.getArchiveList(isRefresh = true)
+                }
             }
         }
         FilterSearchBar(
@@ -632,12 +633,14 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                 .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(4.dp))
                 .background(PageBackgroundColor)
                 .height(36.dp),
-            initialIndex = 0,
+            initialIndex = viewModel.searchType.intValue,
+            initialSearchText = viewModel.searchKeyword.value,
             filterData = searchFilters,
-            filterClick = { text, index ->
-                Log.d("CharlesLee", "filterType: ${searchFilters[index].type}")
+            filterClick = { _, index ->
+                viewModel.searchType.intValue = index
             }
         ) {
+            viewModel.searchKeyword.value = it
             onSearch.invoke(it)
         }
     }

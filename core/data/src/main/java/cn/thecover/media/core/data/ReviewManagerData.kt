@@ -14,10 +14,10 @@ data class ScoreArchiveListRequest(
     var pageSize: Int = 10,
     var startPublishDate: String = "2025-11-08",
     var endPublishDate: String = "2025-12-08",
-    val searchType: Int = 3, //搜索类型 1-记者 2-稿件ID 3-稿件名称
+    var searchType: Int = 3, //搜索类型 1-记者 2-稿件ID 3-稿件名称
     var searchKeyword: String? = null, //搜索关键词
-    val newsScoreStatus: String = "", //稿件打分状态 0-未打分 1-已打分
-    val userScoreStatus: String = "" //本人打分状态 0-未打分 1-已打分
+    var newsScoreStatus: String = "", //稿件打分状态 0-未打分 1-已打分
+    var userScoreStatus: String = "" //本人打分状态 0-未打分 1-已打分
 )
 
 @Serializable

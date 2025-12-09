@@ -2,9 +2,7 @@ package cn.thecover.media.feature.review_manager
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -39,10 +37,20 @@ class ReviewManageViewModel @Inject constructor(
     private val apiService = retrofit.get().create(ReviewManagerApi::class.java)
     var pageType by mutableIntStateOf(ReviewManageType.ARCHIVE_SCORE.index)
     // ======================================== 稿件打分 ==========================================
+    // 开始时间
     val startDateText = mutableStateOf("开始时间")
     var startLocalDate by mutableStateOf(LocalDate.now())
+    // 结束时间
     val endDateText = mutableStateOf("结束时间")
     var endLocalDate by mutableStateOf(LocalDate.now())
+    // 本人打分状态
+    val userScoreStatus = mutableIntStateOf(0)
+    // 稿件打分状态
+    val newsScoreStatus = mutableIntStateOf(0)
+    // 搜索类型
+    val searchType = mutableIntStateOf(2)
+    // 搜索关键词
+    val searchKeyword = mutableStateOf("")
     private val pageSize = 10
     var lastId: Long? = null
     // 稿件列表数据
@@ -66,6 +74,22 @@ class ReviewManageViewModel @Inject constructor(
         }
         archiveRequest.startPublishDate = if (startDateText.value == "开始时间") "" else startLocalDate.toMillisecond().formatToDateString("yyyy-MM-dd")
         archiveRequest.endPublishDate = if (endDateText.value == "结束时间") "" else endLocalDate.toMillisecond().formatToDateString("yyyy-MM-dd")
+        when(userScoreStatus.intValue) {
+            1 -> { archiveRequest.userScoreStatus = "0" }
+            2 -> { archiveRequest.userScoreStatus = "1" }
+            else -> {}
+        }
+        when(newsScoreStatus.intValue) {
+            1 -> { archiveRequest.newsScoreStatus = "0" }
+            2 -> { archiveRequest.newsScoreStatus = "1" }
+            else -> {}
+        }
+        when(searchType.intValue) {
+            0 -> { archiveRequest.searchType = 1 }
+            1 -> { archiveRequest.searchType = 2 }
+            else -> { archiveRequest.searchType = 3 }
+        }
+        archiveRequest.searchKeyword = searchKeyword.value.ifEmpty { null }
         viewModelScope.launch {
             flow {
                 request.pageSize = pageSize
