@@ -21,15 +21,15 @@ import kotlinx.serialization.Serializable
  */
 
 @Serializable object ReviewManageRoute
-@Serializable data class AppealDetailRoute(val canEdit: Boolean)
+@Serializable data class AppealDetailRoute(val appealId: Long, val canEdit: Boolean)
 @Serializable data class ArchiveDetailRoute(val dataJsonStr: String)
 
 
 fun NavController.navigateToReviewManage(navOptions: NavOptions? = null) =
     navigate(route = ReviewManageRoute, navOptions)
 
-fun NavController.navigateToAppealDetail(canEdit: Boolean, navOptions: NavOptionsBuilder.() -> Unit = {}) =
-    navigate(route = AppealDetailRoute(canEdit = canEdit), navOptions)
+fun NavController.navigateToAppealDetail(appealId: Long, canEdit: Boolean, navOptions: NavOptionsBuilder.() -> Unit = {}) =
+    navigate(route = AppealDetailRoute(appealId = appealId, canEdit = canEdit), navOptions)
 
 fun NavController.navigateToArchiveDetail(archiveListData: ArchiveListData, navOptions: NavOptionsBuilder.() -> Unit = {}) {
     navigate(route = ArchiveDetailRoute(dataJsonStr = Gson().toJson(archiveListData))) {
@@ -43,7 +43,7 @@ fun NavGraphBuilder.reviewManageScreen(navController: NavController, routeToMsgS
     }
     composable<AppealDetailRoute> {
         val data = it.toRoute<AppealDetailRoute>()
-        AppealDetailRoute(canEdit = data.canEdit, navController = navController)
+        AppealDetailRoute(appealId = data.appealId, canEdit = data.canEdit, navController = navController)
     }
     composable<ArchiveDetailRoute> {
         val data = it.toRoute<ArchiveDetailRoute>()

@@ -9,8 +9,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.thecover.media.core.common.util.formatToDateString
 import cn.thecover.media.core.common.util.toMillisecond
+import cn.thecover.media.core.data.AppealDetailRequest
+import cn.thecover.media.core.data.AppealListData
+import cn.thecover.media.core.data.AppealManageRequest
 import cn.thecover.media.core.data.ArchiveListData
+import cn.thecover.media.core.data.DepartmentAssignListData
+import cn.thecover.media.core.data.DepartmentAssignRequest
 import cn.thecover.media.core.data.ScoreArchiveListRequest
+import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +27,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import retrofit2.Retrofit
 import java.time.LocalDate
 import javax.inject.Inject
@@ -36,7 +43,7 @@ class ReviewManageViewModel @Inject constructor(
 ) : ViewModel() {
     private val apiService = retrofit.get().create(ReviewManagerApi::class.java)
     var pageType by mutableIntStateOf(ReviewManageType.ARCHIVE_SCORE.index)
-    // ======================================== 稿件打分 ==========================================
+    // ======================================= 稿件打分 start ========================================
     // 开始时间
     val startDateText = mutableStateOf("开始时间")
     var startLocalDate by mutableStateOf(LocalDate.now())
@@ -61,7 +68,50 @@ class ReviewManageViewModel @Inject constructor(
         initialValue = ArchiveListUiState(),
     )
     private val archiveRequest = ScoreArchiveListRequest()
-    // ======================================== 稿件打分 ==========================================
+    // ======================================== 稿件打分 end =========================================
+
+    // ====================================== 部门内分配 start =======================================
+    // 年度
+    val departYear = mutableStateOf(LocalDate.now().year.toString())
+    // 搜索类型
+    val departSearchType = mutableIntStateOf(0)
+    // 搜索关键词
+    val departSearchKeyword = mutableStateOf("")
+    var departmentLastId: Long? = null
+    private val _departmentListDataState = MutableStateFlow(DepartmentAssignListUiState())
+    val departmentListDataState: StateFlow<DepartmentAssignListUiState> = _departmentListDataState.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = DepartmentAssignListUiState(),
+    )
+    private val departmentRequest = DepartmentAssignRequest()
+    // ====================================== 部门内分配 end =========================================
+
+    // ======================================== 申诉管理 start =======================================
+    val myAppealSearchType = mutableIntStateOf(0)
+    val myAppealSearchKeyword = mutableStateOf("")
+    val appealManageSearchType = mutableIntStateOf(0)
+    val appealManageSearchKeyword = mutableStateOf("")
+    var myAppealLastId: Long? = null
+    var appealManageLastId: Long? = null
+    private val _myAppealListDataState = MutableStateFlow(AppealListUiState())
+    val myAppealListDataState: StateFlow<AppealListUiState> = _myAppealListDataState.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = AppealListUiState(),
+    )
+    private val _appealManageListDataState = MutableStateFlow(AppealListUiState())
+    val appealManageListDataState: StateFlow<AppealListUiState> = _appealManageListDataState.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = AppealListUiState(),
+    )
+
+    private val myAppealRequest = AppealManageRequest()
+    private val appealManageRequest = AppealManageRequest()
+
+    val appealDetailUiState = MutableStateFlow(BaseUiState<AppealListData>())
+    // ======================================== 申诉管理 end ========================================
 
     private val _unreadMessageCount = MutableStateFlow(0)
     val unreadMessageCount: StateFlow<Int> = _unreadMessageCount
@@ -70,26 +120,26 @@ class ReviewManageViewModel @Inject constructor(
         if (isRefresh) {
             request.lastId = null
         } else {
-            archiveRequest.lastId = lastId
+            request.lastId = lastId
         }
-        archiveRequest.startPublishDate = if (startDateText.value == "开始时间") "" else startLocalDate.toMillisecond().formatToDateString("yyyy-MM-dd")
-        archiveRequest.endPublishDate = if (endDateText.value == "结束时间") "" else endLocalDate.toMillisecond().formatToDateString("yyyy-MM-dd")
+        request.startPublishDate = if (startDateText.value == "开始时间") "" else startLocalDate.toMillisecond().formatToDateString("yyyy-MM-dd")
+        request.endPublishDate = if (endDateText.value == "结束时间") "" else endLocalDate.toMillisecond().formatToDateString("yyyy-MM-dd")
         when(userScoreStatus.intValue) {
-            1 -> { archiveRequest.userScoreStatus = "0" }
-            2 -> { archiveRequest.userScoreStatus = "1" }
+            1 -> { request.userScoreStatus = "0" }
+            2 -> { request.userScoreStatus = "1" }
             else -> {}
         }
         when(newsScoreStatus.intValue) {
-            1 -> { archiveRequest.newsScoreStatus = "0" }
-            2 -> { archiveRequest.newsScoreStatus = "1" }
+            1 -> { request.newsScoreStatus = "0" }
+            2 -> { request.newsScoreStatus = "1" }
             else -> {}
         }
         when(searchType.intValue) {
-            0 -> { archiveRequest.searchType = 1 }
-            1 -> { archiveRequest.searchType = 2 }
-            else -> { archiveRequest.searchType = 3 }
+            0 -> { request.searchType = 1 }
+            1 -> { request.searchType = 2 }
+            else -> { request.searchType = 3 }
         }
-        archiveRequest.searchKeyword = searchKeyword.value.ifEmpty { null }
+        request.searchKeyword = searchKeyword.value.ifEmpty { null }
         viewModelScope.launch {
             flow {
                 request.pageSize = pageSize
@@ -137,6 +187,195 @@ class ReviewManageViewModel @Inject constructor(
         }
     }
 
+    fun getDepartmentAssignList(isRefresh: Boolean = true, request: DepartmentAssignRequest = departmentRequest) {
+        if (isRefresh) {
+            request.lastId = null
+        } else {
+            request.lastId = departmentLastId
+        }
+        request.year = departYear.value
+        when(departSearchType.intValue) {
+            0 -> { request.searchType = 1 }
+            else -> { request.searchType = 2 }
+        }
+        request.searchKeyword = departSearchKeyword.value
+        viewModelScope.launch {
+            flow {
+                request.pageSize = pageSize
+                val list = apiService.getDepartmentAssignList(request)
+                emit(list)
+            }.asResult().collect { result ->
+                when (result.status) {
+                    HttpStatus.SUCCESS -> {
+                        val data = result.data?.dataList ?: emptyList()
+                        departmentLastId = result.data?.lastId ?: -1
+                        _departmentListDataState.update {
+                            it.copy(
+                                list = if (isRefresh) data else it.list + data,
+                                isLoading = false,
+                                isRefreshing = false,
+                                canLoadMore = departmentLastId?.let {id ->
+                                    id > 0
+                                } ?: kotlin.run {
+                                    false
+                                },
+                                msg = null
+                            )
+                        }
+                    }
+                    HttpStatus.LOADING -> {
+                        _departmentListDataState.update {
+                            if (isRefresh) it.copy(isRefreshing = true) else it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    HttpStatus.ERROR -> {
+                        _departmentListDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isRefreshing = false,
+                                canLoadMore = true,
+                                msg = result.errorMsg
+                            )
+                        }
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    fun getAppealManageList(isRefresh: Boolean = true, request: AppealManageRequest = appealManageRequest) {
+        if (isRefresh) {
+            request.lastId = null
+        } else {
+            request.lastId = appealManageLastId
+        }
+        when(appealManageSearchType.intValue) {
+            0 -> { request.searchType = 1 }
+            1 -> { request.searchType = 5 }
+            else -> { request.searchType = 3 }
+        }
+        request.searchKeyword = appealManageSearchKeyword.value.ifEmpty { null }
+        viewModelScope.launch {
+            flow {
+                request.pageSize = pageSize
+                val list = apiService.getAppealManageList(request)
+                emit(list)
+            }.asResult().collect { result ->
+                when (result.status) {
+                    HttpStatus.SUCCESS -> {
+                        val data = result.data?.dataList ?: emptyList()
+                        appealManageLastId = result.data?.lastId ?: -1
+                        _appealManageListDataState.update {
+                            it.copy(
+                                list = if (isRefresh) data else it.list + data,
+                                isLoading = false,
+                                isRefreshing = false,
+                                canLoadMore = appealManageLastId?.let {id ->
+                                    id > 0
+                                } ?: kotlin.run {
+                                    false
+                                },
+                                msg = null
+                            )
+                        }
+                    }
+                    HttpStatus.LOADING -> {
+                        _appealManageListDataState.update {
+                            if (isRefresh) it.copy(isRefreshing = true) else it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    HttpStatus.ERROR -> {
+                        _appealManageListDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isRefreshing = false,
+                                canLoadMore = true,
+                                msg = result.errorMsg
+                            )
+                        }
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    fun getMyAppealList(isRefresh: Boolean = true, request: AppealManageRequest = myAppealRequest) {
+        if (isRefresh) {
+            request.lastId = null
+        } else {
+            request.lastId = myAppealLastId
+        }
+        when(myAppealSearchType.intValue) {
+            0 -> { request.searchType = 1 }
+            1 -> { request.searchType = 5 }
+            else -> { request.searchType = 3 }
+        }
+        request.searchKeyword = myAppealSearchKeyword.value.ifEmpty { null }
+        viewModelScope.launch {
+            flow {
+                request.pageSize = pageSize
+                val list = apiService.getMyAppealList(request)
+                emit(list)
+            }.asResult().collect { result ->
+                when (result.status) {
+                    HttpStatus.SUCCESS -> {
+                        val data = result.data?.dataList ?: emptyList()
+                        myAppealLastId = result.data?.lastId ?: -1
+                        _myAppealListDataState.update {
+                            it.copy(
+                                list = if (isRefresh) data else it.list + data,
+                                isLoading = false,
+                                isRefreshing = false,
+                                canLoadMore = myAppealLastId?.let {id ->
+                                    id > 0
+                                } ?: kotlin.run {
+                                    false
+                                },
+                                msg = null
+                            )
+                        }
+                    }
+                    HttpStatus.LOADING -> {
+                        _myAppealListDataState.update {
+                            if (isRefresh) it.copy(isRefreshing = true) else it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    HttpStatus.ERROR -> {
+                        _myAppealListDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isRefreshing = false,
+                                canLoadMore = true,
+                                msg = result.errorMsg
+                            )
+                        }
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    fun getAppealDetailInfo(id: Long) {
+        viewModelScope.launch {
+            flow {
+                val result = apiService.getAppealDetailInfo(AppealDetailRequest(id))
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    appealDetailUiState.value = result
+                }
+        }
+    }
+
     fun getUnreadMessageCount() {
         viewModelScope.launch {
             flow {
@@ -156,8 +395,27 @@ class ReviewManageViewModel @Inject constructor(
 
 }
 
+@Serializable
 data class ArchiveListUiState(
     val list: List<ArchiveListData> = emptyList(),
+    val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
+    val canLoadMore: Boolean = true,
+    val msg: String? = null
+)
+
+@Serializable
+data class DepartmentAssignListUiState(
+    val list: List<DepartmentAssignListData> = emptyList(),
+    val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
+    val canLoadMore: Boolean = true,
+    val msg: String? = null
+)
+
+@Serializable
+data class AppealListUiState(
+    val list: List<AppealListData> = emptyList(),
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val canLoadMore: Boolean = true,

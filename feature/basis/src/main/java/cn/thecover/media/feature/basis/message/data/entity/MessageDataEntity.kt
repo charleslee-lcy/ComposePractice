@@ -10,11 +10,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class MessageDataEntity(
     val type: Int = 0,
-    val id: Long = 0,
-    val senderId: Long = 0,
-    val receiverId: Long = 0,
+    val id: Long = 0L,
+    val senderId: Long = 0L,
+    val receiverId: Long = 0L,
     val read: Boolean = false,
-    val relatedId: Long = 0,
+    val relatedId: Long = 0L,
     val relatedType: Int = 0,
     val disable: Int = 0,
     val createTime: String? = "",

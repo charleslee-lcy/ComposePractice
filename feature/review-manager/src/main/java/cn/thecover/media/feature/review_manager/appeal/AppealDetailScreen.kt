@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.review_manager.appeal
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -34,7 +37,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.navOptions
+import cn.thecover.media.core.network.HttpStatus
+import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.GradientLeftBottom
 import cn.thecover.media.core.widget.GradientLeftTop
 import cn.thecover.media.core.widget.YBShape
@@ -43,6 +52,11 @@ import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.YBLabel
 import cn.thecover.media.core.widget.component.YBTitleBar
 import cn.thecover.media.core.widget.component.popup.YBDialog
+import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
+import cn.thecover.media.core.widget.component.showToast
+import cn.thecover.media.core.widget.datastore.Keys
+import cn.thecover.media.core.widget.datastore.saveData
+import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.MsgColor
@@ -50,6 +64,7 @@ import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
+import cn.thecover.media.feature.review_manager.ReviewManageViewModel
 
 /**
  * 申诉详情
@@ -59,17 +74,54 @@ import cn.thecover.media.core.widget.ui.PhonePreview
 @Composable
 internal fun AppealDetailRoute(
     modifier: Modifier = Modifier,
+    appealId: Long,
     canEdit: Boolean,
-    navController: NavController
+    navController: NavController,
 ) {
-    AppealDetailScreen(modifier, canEdit, navController)
+    AppealDetailScreen(modifier, appealId, canEdit, navController)
 }
 
 @Composable
-fun AppealDetailScreen(modifier: Modifier = Modifier, canEdit: Boolean, navController: NavController) {
+fun AppealDetailScreen(
+    modifier: Modifier = Modifier,
+    appealId: Long,
+    canEdit: Boolean,
+    navController: NavController,
+    viewModel: ReviewManageViewModel = hiltViewModel()
+) {
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
     val showApprovalDialog = remember { mutableStateOf(false) }
     val showRejectDialog = remember { mutableStateOf(false) }
+    val detailInfoStatus by viewModel.appealDetailUiState.collectAsStateWithLifecycle()
+    val loadingState = rememberTipsDialogState()
+
+    LaunchedEffect(Unit) {
+        viewModel.getAppealDetailInfo(appealId)
+    }
+
+    LaunchedEffect(detailInfoStatus) {
+        when (detailInfoStatus.status) {
+            HttpStatus.LOADING -> {
+                loadingState.show()
+            }
+            HttpStatus.SUCCESS -> {
+                loadingState.hide()
+                if (detailInfoStatus.data == null) {
+                    Toast.makeText(
+                        context,
+                        detailInfoStatus.errorMsg.ifEmpty { "获取申诉详情失败" },
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+            HttpStatus.ERROR -> {
+                loadingState.hide()
+                Toast.makeText(context, detailInfoStatus.errorMsg, Toast.LENGTH_SHORT).show()
+            }
+            else -> {}
+        }
+    }
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -138,7 +190,7 @@ fun AppealDetailScreen(modifier: Modifier = Modifier, canEdit: Boolean, navContr
                         label = {
                             Text(
                                 modifier = Modifier.weight(0.76f),
-                                text = "张馨文",
+                                text = detailInfoStatus.data?.creatorName ?: "",
                                 color = MainTextColor,
                                 fontSize = 14.sp
                             )
@@ -158,7 +210,7 @@ fun AppealDetailScreen(modifier: Modifier = Modifier, canEdit: Boolean, navContr
                         label = {
                             Text(
                                 modifier = Modifier.weight(0.76f),
-                                text = "稿件加分",
+                                text = detailInfoStatus.data?.typeName ?: "",
                                 color = MainTextColor,
                                 fontSize = 14.sp
                             )
@@ -170,7 +222,7 @@ fun AppealDetailScreen(modifier: Modifier = Modifier, canEdit: Boolean, navContr
                         leadingIcon = {
                             Text(
                                 modifier = Modifier.weight(0.24f),
-                                text = "稿件标题：",
+                                text = "申诉对象：",
                                 color = SecondaryTextColor,
                                 fontSize = 14.sp
                             )
@@ -178,7 +230,7 @@ fun AppealDetailScreen(modifier: Modifier = Modifier, canEdit: Boolean, navContr
                         label = {
                             Text(
                                 modifier = Modifier.weight(0.76f),
-                                text = "关于云南，你不知道的20个冷知识，带你了解最真实的云南风貌",
+                                text = detailInfoStatus.data?.appealTitle ?: "",
                                 color = MainTextColor,
                                 fontSize = 14.sp
                             )
@@ -200,7 +252,7 @@ fun AppealDetailScreen(modifier: Modifier = Modifier, canEdit: Boolean, navContr
                         label = {
                             Text(
                                 modifier = Modifier.weight(0.76f),
-                                text = "老师，这篇稿件分数我有疑问，获得了领导批示，分加漏了，请帮忙看看",
+                                text = detailInfoStatus.data?.content ?: "",
                                 color = MainTextColor,
                                 fontSize = 14.sp
                             )
@@ -221,16 +273,21 @@ fun AppealDetailScreen(modifier: Modifier = Modifier, canEdit: Boolean, navContr
                         },
                         label = {
                             Column(modifier = Modifier.weight(0.76f)) {
-                                Text(
-                                    text = "1. 申诉材料1",
-                                    color = MainTextColor,
-                                    fontSize = 14.sp
-                                )
-                                Text(
-                                    text = "2. 申诉材料2",
-                                    color = MainTextColor,
-                                    fontSize = 14.sp
-                                )
+                                if (detailInfoStatus.data?.materials.isNullOrEmpty()) {
+                                    Text(
+                                        text = "--",
+                                        color = MainTextColor,
+                                        fontSize = 14.sp
+                                    )
+                                } else {
+                                    detailInfoStatus.data?.materials?.forEachIndexed { index, item ->
+                                        Text(
+                                            text = "$index.${item.fileName}",
+                                            color = MainTextColor,
+                                            fontSize = 14.sp
+                                        )
+                                    }
+                                }
                             }
                         },
                         verticalAlignment = Alignment.Top
@@ -447,6 +504,8 @@ fun AppealDetailScreen(modifier: Modifier = Modifier, canEdit: Boolean, navContr
             showRejectDialog.value = false
         }
     )
+
+    YBLoadingDialog(loadingState, enableDismiss = true, onDismissRequest = { loadingState.hide() })
 }
 
 @Composable
@@ -619,7 +678,15 @@ private fun ApprovalProcessContent() {
 @Composable
 fun AppealDetailPreview() {
     YBTheme {
-        AppealDetailScreen(navController = NavController(LocalContext.current), canEdit = false)
+        AppealDetailScreen(
+            viewModel = ReviewManageViewModel(
+                savedStateHandle = SavedStateHandle(),
+                retrofit = { previewRetrofit }
+            ),
+            navController = NavController(LocalContext.current),
+            appealId = 1,
+            canEdit = false
+        )
     }
 }
 

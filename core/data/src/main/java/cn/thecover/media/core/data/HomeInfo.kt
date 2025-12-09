@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class HomeInfo(
-    val userId: Long = 0,
+    val userId: Long = 0L,
     val userName: String = "",
     val jobType: Int = 1,  //职务类型 1-记者，2-校检，3-领导
     val finalScore: String = "-",  //绩效最终得分

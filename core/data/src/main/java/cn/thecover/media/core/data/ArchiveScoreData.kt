@@ -23,11 +23,11 @@ data class ScoreArchiveListRequest(
 @Serializable
 data class ArchiveListData(
     val broadcastScore: String = "",
-    val categoryId: Long = 0,
+    val categoryId: Long = 0L,
     val categoryName: String = "",
     val content: String = "",
     val disable: Int = 0,
-    val id: Long = 0,
+    val id: Long = 0L,
     val img169: String = "",
     val img43: String = "",
     val listImg: String = "",
@@ -38,7 +38,7 @@ data class ArchiveListData(
     val newsScoreStatus: String = "",
     val newsSource: Int = 0,
     val newsSourceName: String = "",
-    val publishTime: Long = 0,
+    val publishTime: Long = 0L,
     val qualityScore: String = "",
     val reporters: List<Reporter> = listOf(),
     val scoreLevels: List<ScoreLevel> = listOf(),
@@ -48,30 +48,30 @@ data class ArchiveListData(
     val userScoreStatus: String = "",
     val wapUrl: String = "",
     val writeTimeType: Int = 0,
-    val ynNewsId: Long = 0
+    val ynNewsId: Long = 0L
 ): java.io.Serializable
 
 @Serializable
 data class Reporter(
-    val id: Long = 0,
-    val newsId: Long = 0,
-    val reporterId: Long = 0,
+    val id: Long = 0L,
+    val newsId: Long = 0L,
+    val reporterId: Long = 0L,
     val reporterName: String = "",
     val type: Int = 0
 ): java.io.Serializable
 
 @Serializable
 data class ScoreLevel(
-    val id: Long = 0,
-    val newsId: Long = 0,
+    val id: Long = 0L,
+    val newsId: Long = 0L,
     val score: String = "",
-    val scoreGroupId: Long = 0,
+    val scoreGroupId: Long = 0L,
     val scoreGroupName: String = "",
     val scoreLevel: String = "",
     val scoreLevelName: String = "",
     val scoreTime: String = "",
     val self: Boolean = false,
-    val userId: Long = 0,
+    val userId: Long = 0L,
     val userName: String = ""
 ): java.io.Serializable
 

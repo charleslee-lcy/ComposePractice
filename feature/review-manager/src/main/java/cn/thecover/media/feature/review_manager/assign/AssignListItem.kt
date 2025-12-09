@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -26,6 +25,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cn.thecover.media.core.data.DepartmentAssignListData
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.MainColor
@@ -46,7 +46,7 @@ import cn.thecover.media.core.widget.ui.PhonePreview
 @Composable
 fun AssignListItem(
     modifier: Modifier = Modifier,
-    index: Int = 0,
+    item: DepartmentAssignListData,
     onAssignClick: (() -> Unit)? = null
 ) {
     Card(
@@ -63,7 +63,7 @@ fun AssignListItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "周国庆$index",
+                    text = item.userName,
                     style = TextStyle(
                         color = MainTextColor,
                         fontSize = 18.sp,
@@ -71,7 +71,7 @@ fun AssignListItem(
                     )
                 )
                 Text(
-                    text = "ID:1002",
+                    text = "ID:${item.userId}",
                     style = TextStyle(
                         color = TertiaryTextColor,
                         fontSize = 12.sp
@@ -111,13 +111,13 @@ fun AssignListItem(
                 }
             }
 
-            DepartmentAnnualAssign()
+            DepartmentAnnualAssign(item)
         }
     }
 }
 
 @Composable
-fun DepartmentAnnualAssign() {
+fun DepartmentAnnualAssign(item: DepartmentAssignListData) {
     LazyVerticalGrid (
         modifier = Modifier.padding(top = 16.dp).height(136.dp),
         columns = GridCells.Fixed(6),
@@ -142,7 +142,7 @@ fun DepartmentAnnualAssign() {
                         fontSize = 14.sp
                     )
                     Text(
-                        text = "0",
+                        text = handleMonthData(item, it),
                         color = MainTextColor,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold
@@ -153,10 +153,51 @@ fun DepartmentAnnualAssign() {
     }
 }
 
+private fun handleMonthData(item: DepartmentAssignListData, index: Int): String {
+    return when(index + 1) {
+        1 -> item.janBudget.toString()
+        2 -> item.febBudget.toString()
+        3 -> item.marBudget.toString()
+        4 -> item.aprBudget.toString()
+        5 -> item.mayBudget.toString()
+        6 -> item.junBudget.toString()
+        7 -> item.julBudget.toString()
+        8 -> item.augBudget.toString()
+        9 -> item.sepBudget.toString()
+        10 -> item.octBudget.toString()
+        11 -> item.novBudget.toString()
+        else -> item.decBudget.toString()
+    }
+}
+
 @PhonePreview
 @Composable
 private fun AssignListItemPreview() {
     YBTheme {
-        AssignListItem()
+        val item = DepartmentAssignListData(
+            id = "1",
+            departmentId = 1,
+            departmentName = "部门1",
+            userDepartmentId = 1,
+            userDepartmentName = "部门1",
+            userId = 1,
+            userName = "用户1",
+            janBudget = 100,
+            febBudget = 100,
+            marBudget = 100,
+            aprBudget = 100,
+            mayBudget = 100,
+            junBudget = 100,
+            julBudget = 100,
+            augBudget = 100,
+            sepBudget = 100,
+            octBudget = 100,
+            novBudget = 100,
+            decBudget = 100,
+            yearTotalBudget = 100,
+            handleTime = "2021-01-01 00:00:00",
+            status = 1
+        )
+        AssignListItem(item = item)
     }
 }
