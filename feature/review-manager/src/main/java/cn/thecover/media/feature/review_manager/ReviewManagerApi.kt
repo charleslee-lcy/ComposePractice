@@ -1,6 +1,8 @@
 package cn.thecover.media.feature.review_manager
 
 import cn.thecover.media.core.data.ArchiveListData
+import cn.thecover.media.core.data.DepartmentAssignListData
+import cn.thecover.media.core.data.DepartmentAssignRequest
 import cn.thecover.media.core.data.NetworkResponse
 import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.core.data.ScoreArchiveListRequest
@@ -20,6 +22,13 @@ interface ReviewManagerApi {
      */
     @POST(value = "api/mgr/score/news/list")
     suspend fun getScoreArchiveList(@Body request: ScoreArchiveListRequest): NetworkResponse<PaginatedResult<ArchiveListData>>
+
+    /**
+     * 部门内分配管理列表数据
+     */
+    @POST(value = "api/mgr/department/employee/budgetList")
+    suspend fun getDepartmentAssignList(@Body request: DepartmentAssignRequest): NetworkResponse<PaginatedResult<DepartmentAssignListData>>
+
 
     //获取未读消息数
     @GET(value = "mgr/unReadNotificationCount")

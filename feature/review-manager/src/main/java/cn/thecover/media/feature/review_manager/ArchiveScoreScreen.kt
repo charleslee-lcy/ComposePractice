@@ -1,8 +1,6 @@
 package cn.thecover.media.feature.review_manager
 
 import android.R.attr.label
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
