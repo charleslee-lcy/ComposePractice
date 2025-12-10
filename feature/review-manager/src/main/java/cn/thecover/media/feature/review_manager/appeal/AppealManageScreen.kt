@@ -46,10 +46,9 @@ internal fun AppealManageScreen(
     navController: NavController,
     viewModel: ReviewManageViewModel = hiltViewModel()
 ) {
-    val count = remember { mutableIntStateOf(10) }
     val tabs = listOf(
         FilterType(0, "我的申诉"),
-        FilterType(1, "申诉审批${if (count.intValue > 0) "(${count.intValue})" else ""}")
+        FilterType(1, "申诉审批")
     )
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { tabs.size })
     val currentTabIndex = remember { mutableIntStateOf(0) }

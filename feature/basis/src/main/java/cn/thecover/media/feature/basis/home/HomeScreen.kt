@@ -333,6 +333,8 @@ private fun TopBar(
     YBDatePicker(
         visible = datePickerShow,
         value = LocalDate.of(currentYear.value, currentMonth.value, 1),
+        start = LocalDate.of(currentYear.value - 5, 1, 1),
+        end = LocalDate.of(currentYear.value + 4, 1, 1),
         type = DateType.MONTH,
         onCancel = { datePickerShow = false },
         onChange = {
