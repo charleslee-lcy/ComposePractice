@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -28,6 +31,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,7 +45,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.navOptions
+import cn.thecover.media.core.data.AppealListData
+import cn.thecover.media.core.data.AuditFlow
+import cn.thecover.media.core.data.Material
+import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.GradientLeftBottom
@@ -53,9 +60,6 @@ import cn.thecover.media.core.widget.component.YBLabel
 import cn.thecover.media.core.widget.component.YBTitleBar
 import cn.thecover.media.core.widget.component.popup.YBDialog
 import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
-import cn.thecover.media.core.widget.component.showToast
-import cn.thecover.media.core.widget.datastore.Keys
-import cn.thecover.media.core.widget.datastore.saveData
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -65,6 +69,7 @@ import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 import cn.thecover.media.feature.review_manager.ReviewManageViewModel
+import kotlinx.serialization.json.Json
 
 /**
  * 申诉详情
@@ -94,10 +99,11 @@ fun AppealDetailScreen(
     val showApprovalDialog = remember { mutableStateOf(false) }
     val showRejectDialog = remember { mutableStateOf(false) }
     val detailInfoStatus by viewModel.appealDetailUiState.collectAsStateWithLifecycle()
+    var attachments by remember { mutableStateOf(listOf<Material>()) }
     val loadingState = rememberTipsDialogState()
 
     LaunchedEffect(Unit) {
-        viewModel.getAppealDetailInfo(appealId)
+        viewModel.getAppealDetailInfo(410)
     }
 
     LaunchedEffect(detailInfoStatus) {
@@ -113,6 +119,17 @@ fun AppealDetailScreen(
                         detailInfoStatus.errorMsg.ifEmpty { "获取申诉详情失败" },
                         Toast.LENGTH_SHORT
                     ).show()
+                }
+
+                detailInfoStatus.data?.material?.let {
+                    try {
+                        if (it.isNotEmpty()) {
+                            attachments = Json.decodeFromString<List<Material>>(it)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
                 }
             }
             HttpStatus.ERROR -> {
@@ -190,7 +207,7 @@ fun AppealDetailScreen(
                         label = {
                             Text(
                                 modifier = Modifier.weight(0.76f),
-                                text = detailInfoStatus.data?.creatorName ?: "",
+                                text = detailInfoStatus.data?.creatorName.orEmpty().ifEmpty { "--" },
                                 color = MainTextColor,
                                 fontSize = 14.sp
                             )
@@ -210,7 +227,7 @@ fun AppealDetailScreen(
                         label = {
                             Text(
                                 modifier = Modifier.weight(0.76f),
-                                text = detailInfoStatus.data?.typeName ?: "",
+                                text = detailInfoStatus.data?.typeName.orEmpty().ifEmpty { "--" },
                                 color = MainTextColor,
                                 fontSize = 14.sp
                             )
@@ -230,7 +247,7 @@ fun AppealDetailScreen(
                         label = {
                             Text(
                                 modifier = Modifier.weight(0.76f),
-                                text = detailInfoStatus.data?.appealTitle ?: "",
+                                text = detailInfoStatus.data?.appealTitle.orEmpty().ifEmpty { "--" },
                                 color = MainTextColor,
                                 fontSize = 14.sp
                             )
@@ -252,7 +269,7 @@ fun AppealDetailScreen(
                         label = {
                             Text(
                                 modifier = Modifier.weight(0.76f),
-                                text = detailInfoStatus.data?.content ?: "",
+                                text = detailInfoStatus.data?.content.orEmpty().ifEmpty { "--" },
                                 color = MainTextColor,
                                 fontSize = 14.sp
                             )
@@ -273,18 +290,21 @@ fun AppealDetailScreen(
                         },
                         label = {
                             Column(modifier = Modifier.weight(0.76f)) {
-                                if (detailInfoStatus.data?.materials.isNullOrEmpty()) {
+                                if (attachments.isEmpty()) {
                                     Text(
                                         text = "--",
                                         color = MainTextColor,
                                         fontSize = 14.sp
                                     )
                                 } else {
-                                    detailInfoStatus.data?.materials?.forEachIndexed { index, item ->
+                                    attachments.forEach { item ->
                                         Text(
-                                            text = "$index.${item.fileName}",
+                                            modifier = Modifier.fillMaxWidth(),
+                                            text = item.fileName,
                                             color = MainTextColor,
-                                            fontSize = 14.sp
+                                            fontSize = 14.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.MiddleEllipsis
                                         )
                                     }
                                 }
@@ -320,10 +340,10 @@ fun AppealDetailScreen(
                             )
                         })
 
-                    ApprovalProcessContent()
+                    ApprovalProcessContent(detailInfoStatus)
                 }
 
-                if (!canEdit) {
+                if (!detailInfoStatus.data?.reply.isNullOrEmpty()) {
                     Card(
                         modifier = Modifier
                             .padding(bottom = 15.dp)
@@ -356,7 +376,7 @@ fun AppealDetailScreen(
                             leadingIcon = {
                                 Text(
                                     modifier = Modifier.weight(1f),
-                                    text = "申诉回复",
+                                    text = handleReplyUser(detailInfoStatus.data?.auditFlows),
                                     color = MainTextColor,
                                     fontSize = 14.sp
                                 )
@@ -364,7 +384,7 @@ fun AppealDetailScreen(
                             label = {
                                 Text(
                                     modifier = Modifier.weight(1f),
-                                    text = "申诉回复",
+                                    text = "已回复",
                                     color = MainTextColor,
                                     fontSize = 14.sp
                                 )
@@ -390,7 +410,7 @@ fun AppealDetailScreen(
                             modifier = Modifier
                                 .padding(start = 12.dp, end = 12.dp, top = 4.dp, bottom = 12.dp)
                                 .fillMaxWidth(),
-                            text = "回复内容这里是2节里面有问题回复内容这里是回复内容这111111111里是回复内容这里是回复内容这里是回复内容这里是回复。",
+                            text = detailInfoStatus.data?.reply.orEmpty().ifEmpty { "--" },
                             color = MainTextColor,
                             fontSize = 14.sp
                         )
@@ -508,167 +528,109 @@ fun AppealDetailScreen(
     YBLoadingDialog(loadingState, enableDismiss = true, onDismissRequest = { loadingState.hide() })
 }
 
+private fun handleReplyUser(flows: List<AuditFlow>?): String {
+    var result = "--"
+    flows?.forEach {
+        if (it.operation == 5) {
+            result = it.operatorName
+            return@forEach
+        }
+    }
+    return result
+}
+
 @Composable
-private fun ApprovalProcessContent() {
+private fun ApprovalProcessContent(detailInfoStatus: BaseUiState<AppealListData>) {
+    var count = 0
     Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(start = 11.dp, top = 8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Badge(
-                    modifier = Modifier
-                        .size(8.dp),
-                    containerColor = MainColor
+        Spacer(modifier = Modifier.height(7.dp))
+        detailInfoStatus.data?.auditFlows?.filter {
+            it.operation != 5
+        }?.also {
+            count = it.size
+        }?.forEachIndexed { index, flow ->
+            if (flow.operation != 5) {
+                ApprovalFlowItem(
+                    node = flow,
+                    index = index,
+                    count = count
                 )
+            }
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+    }
+}
+
+@Composable
+private fun ApprovalFlowItem(
+    node: AuditFlow,
+    index: Int,
+    count: Int
+) {
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(start = 11.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (index != 0) {
                 VerticalDivider(
                     modifier = Modifier
-                        .padding(top = 3.dp)
-                        .height(15.dp),
+                        .padding(bottom = 3.dp)
+                        .height(5.dp),
                     thickness = 1.dp,
                     color = MainColor
                 )
+            } else {
+                Spacer(modifier = Modifier.height(8.dp))
             }
-            Text(
+            Badge(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 6.dp),
-                text = "张馨文",
-                color = MainTextColor,
-                fontSize = 14.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                    .size(8.dp),
+                containerColor = MainColor
             )
-            Text(
-                modifier = Modifier.weight(1f),
-                text = "提交申诉",
-                color = MainTextColor,
-                fontSize = 14.sp
-            )
-            Text(
-                modifier = Modifier.padding(end = 12.dp),
-                text = "2025-06-24 09:32:52",
-                color = MainTextColor,
-                fontSize = 14.sp
-            )
-        }
-        Row(modifier = Modifier.fillMaxWidth()) {
-            Column(
-                modifier = Modifier.padding(start = 11.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                VerticalDivider(
-                    modifier = Modifier
-                        .padding(bottom = 3.dp)
-                        .height(5.dp),
-                    thickness = 1.dp,
-                    color = MainColor
-                )
-                Badge(
-                    modifier = Modifier
-                        .size(8.dp),
-                    containerColor = MainColor
-                )
+            if (index != count - 1) {
                 VerticalDivider(
                     modifier = Modifier
                         .padding(top = 3.dp)
-                        .height(40.dp),
+                        .height(if (index == 0) 20.dp else 40.dp),
                     thickness = 1.dp,
                     color = MainColor
                 )
-            }
-            Column {
-                Text(
-                    modifier = Modifier
-                        .padding(horizontal = 6.dp),
-                    text = "一审",
-                    color = SecondaryTextColor,
-                    fontSize = 14.sp
-                )
-                Row {
-                    Text(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 6.dp),
-                        text = "周国超",
-                        color = MainTextColor,
-                        fontSize = 14.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = "通过",
-                        color = MainTextColor,
-                        fontSize = 14.sp
-                    )
-                    Text(
-                        modifier = Modifier.padding(end = 12.dp),
-                        text = "2025-06-11 11:32:11",
-                        color = MainTextColor,
-                        fontSize = 14.sp
-                    )
-                }
             }
         }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 12.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(start = 11.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                VerticalDivider(
-                    modifier = Modifier
-                        .padding(bottom = 3.dp)
-                        .height(5.dp),
-                    thickness = 1.dp,
-                    color = MainColor
-                )
-                Badge(
-                    modifier = Modifier
-                        .size(8.dp),
-                    containerColor = MainColor
-                )
-            }
-            Column {
+        Column {
+            if (node.nodeName.isNotEmpty()) {
                 Text(
                     modifier = Modifier
                         .padding(horizontal = 6.dp),
-                    text = "二审",
+                    text = node.nodeName,
                     color = SecondaryTextColor,
                     fontSize = 14.sp
                 )
-                Row {
-                    Text(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 6.dp),
-                        text = "马化腾",
-                        color = MainTextColor,
-                        fontSize = 14.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = "通过",
-                        color = MainTextColor,
-                        fontSize = 14.sp
-                    )
-                    Text(
-                        modifier = Modifier.padding(end = 12.dp),
-                        text = "2025-06-24 09:32:52",
-                        color = MainTextColor,
-                        fontSize = 14.sp
-                    )
-                }
+            }
+            Row {
+                Text(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 6.dp),
+                    text = node.operatorName,
+                    color = MainTextColor,
+                    fontSize = 14.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = node.operationName,
+                    color = MainTextColor,
+                    fontSize = 14.sp
+                )
+                Text(
+                    modifier = Modifier.padding(end = 12.dp),
+                    text = node.createTime,
+                    color = MainTextColor,
+                    fontSize = 14.sp
+                )
             }
         }
     }
