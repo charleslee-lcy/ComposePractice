@@ -1,15 +1,16 @@
 package cn.thecover.media.feature.review_manager.appeal
 
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,15 +19,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +40,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,14 +56,13 @@ import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.EditHintTextColor
+import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 import cn.thecover.media.feature.review_manager.ReviewManageViewModel
 import cn.thecover.media.feature.review_manager.navigation.navigateToAppealDetail
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
 /**
@@ -81,8 +84,14 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
     val canLoadMore = remember { mutableStateOf(true) }
     val focusManager = LocalFocusManager.current
     val appealManageListUiState by viewModel.appealManageListDataState.collectAsStateWithLifecycle()
+    val tabInfoUiState by viewModel.tabInfoState.collectAsStateWithLifecycle()
+
+    var dealingCount by remember { mutableIntStateOf(0) }
+    var passCount by remember { mutableIntStateOf(0) }
+    var rejectCount by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
+        viewModel.getAppealTabInfo()
         viewModel.getAppealManageList(isRefresh = true)
     }
 
@@ -91,6 +100,16 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
         isLoadingMore.value = appealManageListUiState.isLoading
         canLoadMore.value = appealManageListUiState.canLoadMore
         items.value = appealManageListUiState.list
+    }
+
+    LaunchedEffect(tabInfoUiState) {
+        tabInfoUiState.forEachIndexed { index, value ->
+            when (index) {
+                0 -> dealingCount = value
+                1 -> passCount = value
+                2 -> rejectCount = value
+            }
+        }
     }
 
     Column(
@@ -113,8 +132,94 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
             }
         ) {
             viewModel.appealManageSearchKeyword.value = it
-            viewModel.getAppealManageList(isRefresh = true)
             focusManager.clearFocus()
+            viewModel.getAppealTabInfo()
+            viewModel.getAppealManageList(isRefresh = true)
+        }
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp)
+                .height(36.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+            shape = RoundedCornerShape(4.dp),
+            border = BorderStroke(0.6.dp, MainColor)
+        ) {
+            Row(modifier = Modifier.fillMaxHeight(), verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .background(color = if (viewModel.currentPos == 0) MainColor else Color.White)
+                        .clickableWithoutRipple {
+                            viewModel.currentPos = 0
+                            viewModel.getAppealManageList(isRefresh = true)
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "待审批（${dealingCount}）",
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            color = if (viewModel.currentPos == 0) Color.White else MainColor,
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                }
+                VerticalDivider(
+                    modifier = Modifier.fillMaxHeight(),
+                    color = MainColor,
+                    thickness = 0.6.dp
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .background(color = if (viewModel.currentPos == 1) MainColor else Color.White)
+                        .clickableWithoutRipple {
+                            viewModel.currentPos = 1
+                            viewModel.getAppealManageList(isRefresh = true)
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "通过（${passCount}）",
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            color = if (viewModel.currentPos == 1) Color.White else MainColor,
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                }
+                VerticalDivider(
+                    modifier = Modifier.fillMaxHeight(),
+                    color = MainColor,
+                    thickness = 0.6.dp
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .background(color = if (viewModel.currentPos == 2) MainColor else Color.White)
+                        .clickableWithoutRipple {
+                            viewModel.currentPos = 2
+                            viewModel.getAppealManageList(isRefresh = true)
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "驳回（${rejectCount}）",
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            color = if (viewModel.currentPos == 2) Color.White else MainColor,
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                }
+
+            }
         }
 
         YBNormalList(
@@ -130,7 +235,7 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
             },
             onLoadMore = {
                 viewModel.getAppealManageList(isRefresh = false)
-            }) { item, index ->
+            }) { item, _ ->
             AppealListItem(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -240,7 +345,7 @@ fun FilterSearchBar(
 @Composable
 private fun AppealTabContentPreview() {
     YBTheme {
-        MyAppealContent(
+        AppealManageTabContent(
             viewModel = ReviewManageViewModel(
                 savedStateHandle = SavedStateHandle(),
                 retrofit = { previewRetrofit }

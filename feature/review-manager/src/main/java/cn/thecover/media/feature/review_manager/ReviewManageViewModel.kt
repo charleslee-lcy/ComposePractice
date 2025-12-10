@@ -20,6 +20,7 @@ import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -91,6 +92,7 @@ class ReviewManageViewModel @Inject constructor(
     val myAppealSearchType = mutableIntStateOf(0)
     val myAppealSearchKeyword = mutableStateOf("")
     val appealManageSearchType = mutableIntStateOf(0)
+    var currentPos by mutableIntStateOf(0)
     val appealManageSearchKeyword = mutableStateOf("")
     var myAppealLastId: Long? = null
     var appealManageLastId: Long? = null
@@ -106,6 +108,7 @@ class ReviewManageViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = AppealListUiState(),
     )
+    val tabInfoState = MutableStateFlow(mutableListOf(0, 0, 0))
 
     private val myAppealRequest = AppealManageRequest()
     private val appealManageRequest = AppealManageRequest()
@@ -252,6 +255,11 @@ class ReviewManageViewModel @Inject constructor(
         } else {
             request.lastId = appealManageLastId
         }
+        request.status = when(currentPos) {
+            0 -> "1"
+            1 -> "2"
+            else -> "4"
+        }
         when(appealManageSearchType.intValue) {
             0 -> { request.searchType = 1 }
             1 -> { request.searchType = 5 }
@@ -301,6 +309,37 @@ class ReviewManageViewModel @Inject constructor(
                     }
                     else -> {}
                 }
+            }
+        }
+    }
+
+    fun getAppealTabInfo() {
+        val request = AppealManageRequest()
+        when(appealManageSearchType.intValue) {
+            0 -> { request.searchType = 1 }
+            1 -> { request.searchType = 5 }
+            else -> { request.searchType = 3 }
+        }
+        request.searchKeyword = appealManageSearchKeyword.value.ifEmpty { null }
+        viewModelScope.launch {
+            val dealingDeferred = async { apiService.getAppealManageList(request.copy(status = "1")) }
+            val passDeferred = async { apiService.getAppealManageList(request.copy(status = "2")) }
+            val rejectDeferred = async { apiService.getAppealManageList(request.copy(status = "4")) }
+
+            // 等待所有结果返回
+            val dealingResult = dealingDeferred.await()
+            val passResult = passDeferred.await()
+            val rejectResult = rejectDeferred.await()
+
+            // 统一处理数据条数
+            val resultList = mutableListOf<Int>()
+            resultList.add(dealingResult.data?.total ?: 0)
+            resultList.add(passResult.data?.total ?: 0)
+            resultList.add(rejectResult.data?.total ?: 0)
+
+            // 更新UI状态
+            tabInfoState.update {
+                resultList
             }
         }
     }

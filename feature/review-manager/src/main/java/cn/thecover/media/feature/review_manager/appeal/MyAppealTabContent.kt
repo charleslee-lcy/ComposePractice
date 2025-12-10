@@ -1,58 +1,30 @@
 package cn.thecover.media.feature.review_manager.appeal
 
-import android.util.Log
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import cn.thecover.media.core.data.AppealListData
-import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.core.network.previewRetrofit
-import cn.thecover.media.core.widget.R
-import cn.thecover.media.core.widget.component.YBImage
-import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.YBNormalList
-import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
-import cn.thecover.media.core.widget.theme.EditHintTextColor
-import cn.thecover.media.core.widget.theme.MainTextColor
-import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 import cn.thecover.media.feature.review_manager.ReviewManageViewModel
@@ -127,7 +99,7 @@ fun MyAppealContent(viewModel: ReviewManageViewModel, navController: NavControll
             },
             onLoadMore = {
                 viewModel.getMyAppealList(isRefresh = true)
-            }) { item, index ->
+            }) { item, _ ->
             AppealListItem(
                 modifier = Modifier
                     .fillMaxWidth()
