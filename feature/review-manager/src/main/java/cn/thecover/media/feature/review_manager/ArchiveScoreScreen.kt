@@ -80,6 +80,7 @@ import cn.thecover.media.feature.review_manager.appeal.FilterSearchBar
 import cn.thecover.media.feature.review_manager.appeal.FilterType
 import cn.thecover.media.feature.review_manager.assign.FilterDropMenuView
 import cn.thecover.media.feature.review_manager.navigation.navigateToArchiveDetail
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 
@@ -156,7 +157,7 @@ fun ArchiveScoreScreen(
 ) {
     val showScoreDialog = remember { mutableStateOf(false) }
 
-    YBCoordinatorList (
+    YBCoordinatorList(
         modifier = Modifier.fillMaxSize(),
         items = items,
         isRefreshing = isRefreshing,
@@ -178,7 +179,7 @@ fun ArchiveScoreScreen(
                 .fillMaxWidth(),
             item = item,
             onDetailClick = {
-                navController.navigateToArchiveDetail(item)
+                navController.navigateToArchiveDetail(item.wapUrl)
             },
             onScoreClick = {
                 showScoreDialog.value = true
@@ -609,7 +610,10 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                     fontSize = 13.sp
                 )
                 Spacer(modifier = Modifier.height(6.dp))
-                FilterDropMenuView(filterData = scoreStateFilters, initialIndex = viewModel.userScoreStatus.intValue) { _, index ->
+                FilterDropMenuView(
+                    filterData = scoreStateFilters,
+                    initialIndex = viewModel.userScoreStatus.intValue
+                ) { _, index ->
                     viewModel.userScoreStatus.intValue = index
                     viewModel.getArchiveList(isRefresh = true)
                 }
@@ -625,7 +629,10 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                     fontSize = 13.sp
                 )
                 Spacer(modifier = Modifier.height(6.dp))
-                FilterDropMenuView(filterData = scoreStateFilters, initialIndex = viewModel.newsScoreStatus.intValue) { _, index ->
+                FilterDropMenuView(
+                    filterData = scoreStateFilters,
+                    initialIndex = viewModel.newsScoreStatus.intValue
+                ) { _, index ->
                     viewModel.newsScoreStatus.intValue = index
                     viewModel.getArchiveList(isRefresh = true)
                 }
@@ -761,7 +768,10 @@ private fun ArchiveScoreScreenPreview() {
         val canLoadMore = remember { mutableStateOf(true) }
         val items = remember { mutableStateOf(listOf<ArchiveListData>()) }
         repeat(10) {
-            items.value += ArchiveListData(title = "标题$it", publishTime = LocalDateTime.now().toMillisecond())
+            items.value += ArchiveListData(
+                title = "标题$it",
+                publishTime = LocalDateTime.now().toMillisecond()
+            )
         }
         ArchiveScoreScreen(
             viewModel = ReviewManageViewModel(
