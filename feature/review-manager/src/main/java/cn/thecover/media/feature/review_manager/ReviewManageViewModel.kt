@@ -15,7 +15,9 @@ import cn.thecover.media.core.data.AppealManageRequest
 import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.core.data.DepartmentAssignListData
 import cn.thecover.media.core.data.DepartmentAssignRequest
+import cn.thecover.media.core.data.NetworkRequest
 import cn.thecover.media.core.data.ScoreArchiveListRequest
+import cn.thecover.media.core.data.ScoreRuleData
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
@@ -69,6 +71,7 @@ class ReviewManageViewModel @Inject constructor(
         initialValue = ArchiveListUiState(),
     )
     private val archiveRequest = ScoreArchiveListRequest()
+    val scoreRuleStatus = MutableStateFlow(listOf<ScoreRuleData>())
     // ======================================== 稿件打分 end =========================================
 
     // ====================================== 部门内分配 start =======================================
@@ -118,6 +121,18 @@ class ReviewManageViewModel @Inject constructor(
 
     private val _unreadMessageCount = MutableStateFlow(0)
     val unreadMessageCount: StateFlow<Int> = _unreadMessageCount
+
+    fun getScoreRuleInfo() {
+        viewModelScope.launch {
+            flow {
+                val result = apiService.getScoreRuleInfo(NetworkRequest())
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    scoreRuleStatus.value = result.data ?: emptyList()
+                }
+        }
+    }
 
     fun getArchiveList(isRefresh: Boolean = true, request: ScoreArchiveListRequest = archiveRequest) {
         if (isRefresh) {
@@ -338,9 +353,7 @@ class ReviewManageViewModel @Inject constructor(
             resultList.add(rejectResult.data?.total ?: 0)
 
             // 更新UI状态
-            tabInfoState.update {
-                resultList
-            }
+            tabInfoState.value = resultList
         }
     }
 

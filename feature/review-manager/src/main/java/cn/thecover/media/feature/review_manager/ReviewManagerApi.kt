@@ -6,9 +6,11 @@ import cn.thecover.media.core.data.AppealManageRequest
 import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.core.data.DepartmentAssignListData
 import cn.thecover.media.core.data.DepartmentAssignRequest
+import cn.thecover.media.core.data.NetworkRequest
 import cn.thecover.media.core.data.NetworkResponse
 import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.core.data.ScoreArchiveListRequest
+import cn.thecover.media.core.data.ScoreRuleData
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -23,6 +25,12 @@ interface ReviewManagerApi {
     //获取未读消息数
     @GET(value = "mgr/unReadNotificationCount")
     suspend fun getUnreadMessageCount(): NetworkResponse<Int>
+
+    /**
+     * 稿件打分等级情况
+     */
+    @POST(value = "api/mgr/score/news/statistics")
+    suspend fun getScoreRuleInfo(@Body request: NetworkRequest): NetworkResponse<List<ScoreRuleData>>
 
     /**
      * 获取稿件打分列表数据
