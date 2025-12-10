@@ -6,6 +6,7 @@ import cn.thecover.media.core.data.AppealManageRequest
 import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.core.data.DepartmentAssignListData
 import cn.thecover.media.core.data.DepartmentAssignRequest
+import cn.thecover.media.core.data.DepartmentRemainRequest
 import cn.thecover.media.core.data.NetworkRequest
 import cn.thecover.media.core.data.NetworkResponse
 import cn.thecover.media.core.data.PaginatedResult
@@ -37,6 +38,12 @@ interface ReviewManagerApi {
      */
     @POST(value = "api/mgr/score/news/list")
     suspend fun getScoreArchiveList(@Body request: ScoreArchiveListRequest): NetworkResponse<PaginatedResult<ArchiveListData>>
+
+    /**
+     * 部门年度和月度预算剩余
+     */
+    @POST(value = "api/mgr/department/employee/budgetRemain")
+    suspend fun getDepartmentAssignRemain(@Body request: DepartmentRemainRequest): NetworkResponse<DepartmentAssignListData>
 
     /**
      * 部门内分配管理列表数据

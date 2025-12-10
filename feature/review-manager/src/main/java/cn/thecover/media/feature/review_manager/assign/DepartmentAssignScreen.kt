@@ -86,6 +86,7 @@ internal fun DepartmentAssignScreen(
     val departmentListUiState by viewModel.departmentListDataState.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel.departYear.value) {
+        viewModel.getDepartmentAssignRemain()
         viewModel.getDepartmentAssignList(isRefresh = true)
     }
 
@@ -142,6 +143,7 @@ internal fun DepartmentAssignScreen(
         val currentMonthText = "${currentDate.monthValue}月"
         var showMonthPicker by remember { mutableStateOf(false) }
         var monthPickedText by remember { mutableStateOf(currentMonthText) }
+        val departmentRemainStatus by viewModel.assignRemainStatus.collectAsStateWithLifecycle()
 
         Column(
             modifier = Modifier
@@ -152,8 +154,8 @@ internal fun DepartmentAssignScreen(
                 LabelText("年度：", viewModel.departYear.value)
                 LabelText("部门：", departmentName)
                 LabelText("部门人员：", userName)
-                LabelText("部门年度预算剩余：", "${yearTotalBudget}分")
-                LabelText("年度已分配总分：", "${yearTotalBudget}分")
+                LabelText("部门年度预算剩余：", "${departmentRemainStatus.yearBudget}分")
+                LabelText("年度已分配总分：", "${departmentRemainStatus.yearTotalBudget}分")
 
                 HorizontalDivider(
                     modifier = Modifier
@@ -315,6 +317,8 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
     val showBudgetDialog = remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
     var datePickedText by remember { mutableStateOf(currentYearText) }
+    val departmentRemainState by viewModel.assignRemainStatus.collectAsStateWithLifecycle()
+
 
     Card(
         modifier = Modifier
@@ -408,7 +412,7 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
                     },
                     trailingIcon = {
                         Text(
-                            text = "382",
+                            text = "${departmentRemainState.yearBudget}",
                             fontSize = 16.sp,
                             color = MainColor,
                             fontWeight = FontWeight.SemiBold
@@ -430,31 +434,7 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
                         Text(text = "月度预算剩余：", fontSize = 16.sp, color = MainTextColor)
                     }
                 )
-                val item = DepartmentAssignListData(
-                    id = "1",
-                    departmentId = 1,
-                    departmentName = "部门1",
-                    userDepartmentId = 1,
-                    userDepartmentName = "部门1",
-                    userId = 1,
-                    userName = "用户1",
-                    janBudget = 100,
-                    febBudget = 100,
-                    marBudget = 100,
-                    aprBudget = 100,
-                    mayBudget = 100,
-                    junBudget = 100,
-                    julBudget = 100,
-                    augBudget = 100,
-                    sepBudget = 100,
-                    octBudget = 100,
-                    novBudget = 100,
-                    decBudget = 100,
-                    yearTotalBudget = 100,
-                    handleTime = "2021-01-01 00:00:00",
-                    status = 1
-                )
-                DepartmentAnnualAssign(item)
+                DepartmentAnnualAssign(departmentRemainState)
             }
 
         },

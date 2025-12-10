@@ -20,6 +20,12 @@ data class DepartmentAssignRequest(
 )
 
 @Serializable
+data class DepartmentRemainRequest(
+    var year: String = "",
+    var departmentId: Long = 4
+)
+
+@Serializable
 data class DepartmentAssignListData(
     val id: String = "",
     val departmentId: Long = 0L,
@@ -40,6 +46,7 @@ data class DepartmentAssignListData(
     val octBudget: Int = 0,
     val novBudget: Int = 0,
     val decBudget: Int = 0,
+    val yearBudget: Int = 0,
     val yearTotalBudget: Int = 0,
     val handleTime: String = "",
     val status: Int = 0

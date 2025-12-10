@@ -15,6 +15,7 @@ import cn.thecover.media.core.data.AppealManageRequest
 import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.core.data.DepartmentAssignListData
 import cn.thecover.media.core.data.DepartmentAssignRequest
+import cn.thecover.media.core.data.DepartmentRemainRequest
 import cn.thecover.media.core.data.NetworkRequest
 import cn.thecover.media.core.data.ScoreArchiveListRequest
 import cn.thecover.media.core.data.ScoreRuleData
@@ -89,6 +90,7 @@ class ReviewManageViewModel @Inject constructor(
         initialValue = DepartmentAssignListUiState(),
     )
     private val departmentRequest = DepartmentAssignRequest()
+    val assignRemainStatus = MutableStateFlow(DepartmentAssignListData())
     // ====================================== 部门内分配 end =========================================
 
     // ======================================== 申诉管理 start =======================================
@@ -201,6 +203,20 @@ class ReviewManageViewModel @Inject constructor(
                         }
                         else -> {}
                     }
+                }
+        }
+    }
+
+    fun getDepartmentAssignRemain() {
+        viewModelScope.launch {
+            flow {
+                val request = DepartmentRemainRequest()
+                request.year = departYear.value
+                val result = apiService.getDepartmentAssignRemain(request)
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    assignRemainStatus.value = result.data ?: DepartmentAssignListData()
                 }
         }
     }
