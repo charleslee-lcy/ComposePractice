@@ -99,7 +99,7 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                 Text(
                     text = homeInfo.finalScore,
                     color = MainTextColor,
-                    fontSize = 14.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
                 )
@@ -121,7 +121,7 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                 Text(
                     text = homeInfo.money,
                     color = MainTextColor,
-                    fontSize = 14.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
                 )
@@ -150,7 +150,7 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                 Text(
                     text = homeInfo.quotaBasicScore,
                     color = MainTextColor,
-                    fontSize = 14.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
                 )
@@ -170,8 +170,12 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                     modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                 )
                 Text(
-                    text = if (homeInfo.assessmentResult) "合格" else "不合格",
-                    color = MsgColor,
+                    text = when(homeInfo.assessmentResult) {
+                        null -> "--"
+                        true -> "合格"
+                        else -> "不合格"
+                    },
+                    color = if (homeInfo.assessmentResult == null) MainTextColor else MsgColor,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(start = 12.dp)
@@ -256,7 +260,7 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                     )
                     Text(
                         text = homeInfo.finalScore,
-                        color = MsgColor,
+                        color = if (homeInfo.finalScore == "--") MainTextColor else MsgColor,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -297,7 +301,7 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = "${homeInfo.innerTaskGoalNum}条",
+                        text = if (homeInfo.innerTaskGoalNum.isNotEmpty()) "${homeInfo.innerTaskGoalNum}条" else "--",
                         color = MainTextColor,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -313,8 +317,8 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = "${homeInfo.innerTaskFinishedNum}条",
-                        color = MsgColor,
+                        text = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) "${homeInfo.innerTaskFinishedNum}条" else "--",
+                        color = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) MsgColor else MainTextColor,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -376,9 +380,9 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                     modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                 )
                 Text(
-                    text = "${homeInfo.participateAssessmentCount}",
+                    text = homeInfo.participateAssessmentCount,
                     color = MainTextColor,
-                    fontSize = 14.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
                 )
@@ -398,9 +402,9 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                     modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                 )
                 Text(
-                    text = "${homeInfo.passCount}",
+                    text = homeInfo.passCount,
                     color = MainTextColor,
-                    fontSize = 14.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
                 )
@@ -429,7 +433,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                 Text(
                     text = homeInfo.passRate,
                     color = MainTextColor,
-                    fontSize = 14.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
                 )
@@ -480,7 +484,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                 Text(
                     text = homeInfo.finalCoefficient,
                     color = MainTextColor,
-                    fontSize = 14.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
                 )
@@ -531,7 +535,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                 Text(
                     text = homeInfo.money,
                     color = MainTextColor,
-                    fontSize = 14.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
                 )
@@ -616,7 +620,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                     )
                     Text(
                         text = homeInfo.finalCoefficient,
-                        color = MsgColor,
+                        color = if (homeInfo.finalCoefficient == "--") MainTextColor else MsgColor,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -657,7 +661,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = "${homeInfo.innerTaskGoalNum}条",
+                        text = if (homeInfo.innerTaskGoalNum.isNotEmpty()) "${homeInfo.innerTaskGoalNum}条" else "--",
                         color = MainTextColor,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -673,8 +677,8 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = "${homeInfo.innerTaskFinishedNum}条",
-                        color = MsgColor,
+                        text = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) "${homeInfo.innerTaskFinishedNum}条" else "--",
+                        color = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) MsgColor else MainTextColor,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -695,7 +699,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                     text = "客户端\n" +
                             "“拉新”任务",
                     textAlign = TextAlign.Center,
-                    lineHeight = 20.sp,
+                    lineHeight = 18.sp,
                     color = SecondaryTextColor,
                     fontSize = 14.sp,
                     modifier = Modifier.weight(0.8f)
@@ -717,7 +721,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = "2场",
+                        text = "0场",
                         color = MainTextColor,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -733,7 +737,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = "1场",
+                        text = "0场",
                         color = MsgColor,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
