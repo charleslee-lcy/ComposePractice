@@ -3,15 +3,18 @@ package cn.thecover.media.feature.review_manager
 import cn.thecover.media.core.data.AppealDetailRequest
 import cn.thecover.media.core.data.AppealListData
 import cn.thecover.media.core.data.AppealManageRequest
+import cn.thecover.media.core.data.AppealSwitchInfo
 import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.core.data.DepartmentAssignListData
 import cn.thecover.media.core.data.DepartmentAssignRequest
 import cn.thecover.media.core.data.DepartmentRemainRequest
 import cn.thecover.media.core.data.NetworkRequest
 import cn.thecover.media.core.data.NetworkResponse
+import cn.thecover.media.core.data.NextNodeRequest
 import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.core.data.ScoreArchiveListRequest
 import cn.thecover.media.core.data.ScoreRuleData
+import cn.thecover.media.core.data.AuditDetailRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -68,4 +71,22 @@ interface ReviewManagerApi {
      */
     @POST(value = "api/mgr/appeal/detail")
     suspend fun getAppealDetailInfo(@Body request: AppealDetailRequest): NetworkResponse<AppealListData>
+
+    /**
+     * 获取下一个结点信息
+     */
+    @POST(value = "api/mgr/appeal/getNextNodeId")
+    suspend fun getNextNodeInfo(@Body request: NextNodeRequest): NetworkResponse<Long>
+
+    /**
+     * 申诉时间节点开关
+     */
+    @POST(value = "api/mgr/appeal/timelineSwitch")
+    suspend fun getAuditEnable(@Body request: NetworkRequest = NetworkRequest()): NetworkResponse<AppealSwitchInfo>
+
+    /**
+     * 更新申诉
+     */
+    @POST(value = "api/mgr/appeal/audit")
+    suspend fun auditAppealDetailInfo(@Body request: AuditDetailRequest): NetworkResponse<Any>
 }

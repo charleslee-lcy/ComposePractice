@@ -21,7 +21,16 @@ data class AppealManageRequest(
 
 @Serializable
 data class AppealDetailRequest(
-    var id: Long? = 0
+    var id: Long? = 0L
+)
+
+@Serializable
+data class AuditDetailRequest(
+    var id: Long = 0L,
+    var curNodeId: Long? = null,
+    var nextNodeId: Long? = null,
+    var operation: Int = 0,
+    var reasons: String? = null
 )
 
 @Serializable
@@ -47,6 +56,8 @@ data class AppealListData(
     val typeName: String = "",
     val updateTime: String = "",
     val updater: Long = 0L,
+    var curNodeId: Long = 0L,
+    var nextNodeId: Long = 0L,
     val users: List<User> = emptyList()
 )
 
@@ -77,4 +88,25 @@ data class Material(
 data class User(
     val userId: Long = 0L,
     val userName: String = ""
+)
+
+@Serializable
+data class NextNodeRequest(
+    val id: Long = 0L,
+    val curNodeId: Long = 0L,
+)
+
+@Serializable
+data class AppealSwitchInfo(
+    val appealAuditFlowStatus: Int,
+    val `data`: String,
+    val id: Long,
+    val inEffect: Boolean = false,
+    val key: String,
+    val keyDesc: String,
+    val remark: String,
+    val showType: Int,
+    val type: Int,
+    val value: Int = 0,
+    var operation: Int = 0
 )

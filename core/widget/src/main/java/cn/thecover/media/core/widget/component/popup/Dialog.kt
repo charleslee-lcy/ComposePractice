@@ -75,6 +75,7 @@ fun YBDialog(
     onConfirm: (() -> Unit)? = null,
     onCancel: (() -> Unit)? = null,
     widthRate: Float = 0.8f,
+    handleConfirmDismiss: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val configuration = LocalConfiguration.current
@@ -132,7 +133,9 @@ fun YBDialog(
                                 YBButton(
                                     onClick = {
                                         onConfirm?.invoke()
-                                        dialogState.value = false
+                                        if (!handleConfirmDismiss) {
+                                            dialogState.value = false
+                                        }
                                     },
                                     shape = MaterialTheme.shapes.extraSmall,
                                     modifier = Modifier.weight(1f),

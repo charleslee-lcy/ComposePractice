@@ -14,9 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -99,11 +96,13 @@ fun AppealDetailScreen(
     val showApprovalDialog = remember { mutableStateOf(false) }
     val showRejectDialog = remember { mutableStateOf(false) }
     val detailInfoStatus by viewModel.appealDetailUiState.collectAsStateWithLifecycle()
+    val auditEnableStatus by viewModel.auditEnableState.collectAsStateWithLifecycle()
+    val auditDetailStatus by viewModel.auditDetailUiState.collectAsStateWithLifecycle()
     var attachments by remember { mutableStateOf(listOf<Material>()) }
     val loadingState = rememberTipsDialogState()
 
     LaunchedEffect(Unit) {
-        viewModel.getAppealDetailInfo(410)
+        viewModel.getAppealDetailInfo(appealId)
     }
 
     LaunchedEffect(detailInfoStatus) {
@@ -135,6 +134,53 @@ fun AppealDetailScreen(
             HttpStatus.ERROR -> {
                 loadingState.hide()
                 Toast.makeText(context, detailInfoStatus.errorMsg, Toast.LENGTH_SHORT).show()
+            }
+            else -> {}
+        }
+    }
+
+    LaunchedEffect(auditDetailStatus) {
+        when (auditDetailStatus.status) {
+            HttpStatus.LOADING -> {
+                loadingState.show()
+            }
+            HttpStatus.SUCCESS -> {
+                loadingState.hide()
+                Toast.makeText(context, "操作成功", Toast.LENGTH_SHORT).show()
+                navController.popBackStack()
+            }
+            HttpStatus.ERROR -> {
+                loadingState.hide()
+                Toast.makeText(
+                    context,
+                    auditDetailStatus.errorMsg.ifEmpty { "操作失败" },
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            else -> {}
+        }
+    }
+
+    LaunchedEffect(auditEnableStatus) {
+        when (auditEnableStatus.status) {
+            HttpStatus.SUCCESS -> {
+                auditEnableStatus.data?.takeIf {
+                    it.value == 1 && it.inEffect
+                }?.let {
+                    if (it.operation == 2) {
+                        showApprovalDialog.value = true
+                    }
+                    if (it.operation == 4) {
+                        showRejectDialog.value = true
+                    }
+                }
+            }
+            HttpStatus.ERROR -> {
+                Toast.makeText(
+                    context,
+                    auditEnableStatus.errorMsg.ifEmpty { "操作失败" },
+                    Toast.LENGTH_SHORT
+                ).show()
             }
             else -> {}
         }
@@ -207,7 +253,8 @@ fun AppealDetailScreen(
                         label = {
                             Text(
                                 modifier = Modifier.weight(0.76f),
-                                text = detailInfoStatus.data?.creatorName.orEmpty().ifEmpty { "--" },
+                                text = detailInfoStatus.data?.creatorName.orEmpty()
+                                    .ifEmpty { "--" },
                                 color = MainTextColor,
                                 fontSize = 14.sp
                             )
@@ -247,7 +294,8 @@ fun AppealDetailScreen(
                         label = {
                             Text(
                                 modifier = Modifier.weight(0.76f),
-                                text = detailInfoStatus.data?.appealTitle.orEmpty().ifEmpty { "--" },
+                                text = detailInfoStatus.data?.appealTitle.orEmpty()
+                                    .ifEmpty { "--" },
                                 color = MainTextColor,
                                 fontSize = 14.sp
                             )
@@ -419,7 +467,7 @@ fun AppealDetailScreen(
 
             }
 
-            if (canEdit) {
+            if (canEdit /*&& detailInfoStatus.data?.status == 1*/) {
                 Row(
                     modifier = Modifier
                         .padding(bottom = 30.dp)
@@ -439,7 +487,7 @@ fun AppealDetailScreen(
                             .height(44.dp),
                         backgroundColor = Color.Transparent,
                         onClick = {
-                            showRejectDialog.value = true
+                            viewModel.getAuditEnableInfo(operation = 4)
                         }
                     )
                     YBButton(
@@ -449,7 +497,7 @@ fun AppealDetailScreen(
                             .height(44.dp),
                         shape = RoundedCornerShape(2.dp),
                         onClick = {
-                            showApprovalDialog.value = true
+                            viewModel.getAuditEnableInfo(operation = 2)
                         }
                     )
                 }
@@ -467,7 +515,12 @@ fun AppealDetailScreen(
         },
         confirmText = "确认",
         onConfirm = {
-            navController.popBackStack()
+            viewModel.auditAppealDetailInfo(
+                id = appealId,
+                operation = 2,
+                curNodeId = detailInfoStatus.data?.curNodeId,
+                nextNodeId = detailInfoStatus.data?.nextNodeId
+            )
         },
         cancelText = "取消",
         onCancel = {
@@ -475,9 +528,14 @@ fun AppealDetailScreen(
         }
     )
 
+    var reasons = ""
+
     YBDialog(
         dialogState = showRejectDialog,
-        onDismissRequest = { showRejectDialog.value = false },
+        onDismissRequest = {
+            showRejectDialog.value = false
+            reasons = ""
+        },
         title = "申诉审批",
         content = {
             Column {
@@ -510,19 +568,31 @@ fun AppealDetailScreen(
                     contentPadding = 12.dp,
                     contentAlignment = Alignment.TopStart,
                     onValueChange = {
-
+                        reasons = it
                     }
                 )
             }
         },
         confirmText = "确认",
         onConfirm = {
-            navController.popBackStack()
+            if (reasons.isEmpty()) {
+                Toast.makeText(context, "请输入驳回意见", Toast.LENGTH_SHORT).show()
+                return@YBDialog
+            }
+            viewModel.auditAppealDetailInfo(
+                id = appealId,
+                operation = 4,
+                reasons = reasons,
+                curNodeId = detailInfoStatus.data?.curNodeId,
+                nextNodeId = detailInfoStatus.data?.nextNodeId
+            )
+            showRejectDialog.value = false
         },
         cancelText = "取消",
         onCancel = {
             showRejectDialog.value = false
-        }
+        },
+        handleConfirmDismiss = true
     )
 
     YBLoadingDialog(loadingState, enableDismiss = true, onDismissRequest = { loadingState.hide() })
