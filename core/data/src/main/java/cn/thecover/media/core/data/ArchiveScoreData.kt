@@ -21,6 +21,16 @@ data class ScoreArchiveListRequest(
 )
 
 @Serializable
+data class ScoreRuleData(
+    val id: Long = 0L,
+    val dayCount: String = "",
+    val monthCount: String = "",
+    val scoreLevel: String = "",
+    val scoreLevelName: String = "",
+    val order: String = ""
+)
+
+@Serializable
 data class ArchiveListData(
     val broadcastScore: String = "",
     val categoryId: Long = 0L,

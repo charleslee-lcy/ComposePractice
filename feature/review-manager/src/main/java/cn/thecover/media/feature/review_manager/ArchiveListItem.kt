@@ -156,7 +156,7 @@ fun ArchiveListItem(
                     fontSize = 13.sp,
                     modifier = Modifier.padding(end = 10.dp)
                 )
-                if (item.userScoreStatus == "1" && item.newsScoreStatus == "1") {
+                if (item.scoreUserCount > 0) {
                     Text(
                         text = "已完成",
                         color = SecondaryAuxiliaryColor,

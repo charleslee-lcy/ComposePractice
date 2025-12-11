@@ -12,10 +12,16 @@ import cn.thecover.media.core.common.util.toMillisecond
 import cn.thecover.media.core.data.AppealDetailRequest
 import cn.thecover.media.core.data.AppealListData
 import cn.thecover.media.core.data.AppealManageRequest
+import cn.thecover.media.core.data.AppealSwitchInfo
 import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.core.data.DepartmentAssignListData
 import cn.thecover.media.core.data.DepartmentAssignRequest
+import cn.thecover.media.core.data.DepartmentRemainRequest
+import cn.thecover.media.core.data.NetworkRequest
+import cn.thecover.media.core.data.NextNodeRequest
 import cn.thecover.media.core.data.ScoreArchiveListRequest
+import cn.thecover.media.core.data.ScoreRuleData
+import cn.thecover.media.core.data.AuditDetailRequest
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
@@ -69,6 +75,7 @@ class ReviewManageViewModel @Inject constructor(
         initialValue = ArchiveListUiState(),
     )
     private val archiveRequest = ScoreArchiveListRequest()
+    val scoreRuleStatus = MutableStateFlow(listOf<ScoreRuleData>())
     // ======================================== 稿件打分 end =========================================
 
     // ====================================== 部门内分配 start =======================================
@@ -86,6 +93,7 @@ class ReviewManageViewModel @Inject constructor(
         initialValue = DepartmentAssignListUiState(),
     )
     private val departmentRequest = DepartmentAssignRequest()
+    val assignRemainStatus = MutableStateFlow(DepartmentAssignListData())
     // ====================================== 部门内分配 end =========================================
 
     // ======================================== 申诉管理 start =======================================
@@ -114,10 +122,24 @@ class ReviewManageViewModel @Inject constructor(
     private val appealManageRequest = AppealManageRequest()
 
     val appealDetailUiState = MutableStateFlow(BaseUiState<AppealListData>())
+    val auditEnableState = MutableStateFlow(BaseUiState<AppealSwitchInfo>())
+    val auditDetailUiState = MutableStateFlow(BaseUiState<Any>())
     // ======================================== 申诉管理 end ========================================
 
     private val _unreadMessageCount = MutableStateFlow(0)
     val unreadMessageCount: StateFlow<Int> = _unreadMessageCount
+
+    fun getScoreRuleInfo() {
+        viewModelScope.launch {
+            flow {
+                val result = apiService.getScoreRuleInfo(NetworkRequest())
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    scoreRuleStatus.value = result.data ?: emptyList()
+                }
+        }
+    }
 
     fun getArchiveList(isRefresh: Boolean = true, request: ScoreArchiveListRequest = archiveRequest) {
         if (isRefresh) {
@@ -186,6 +208,20 @@ class ReviewManageViewModel @Inject constructor(
                         }
                         else -> {}
                     }
+                }
+        }
+    }
+
+    fun getDepartmentAssignRemain() {
+        viewModelScope.launch {
+            flow {
+                val request = DepartmentRemainRequest()
+                request.year = departYear.value
+                val result = apiService.getDepartmentAssignRemain(request)
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    assignRemainStatus.value = result.data ?: DepartmentAssignListData()
                 }
         }
     }
@@ -338,9 +374,7 @@ class ReviewManageViewModel @Inject constructor(
             resultList.add(rejectResult.data?.total ?: 0)
 
             // 更新UI状态
-            tabInfoState.update {
-                resultList
-            }
+            tabInfoState.value = resultList
         }
     }
 
@@ -406,11 +440,67 @@ class ReviewManageViewModel @Inject constructor(
     fun getAppealDetailInfo(id: Long) {
         viewModelScope.launch {
             flow {
-                val result = apiService.getAppealDetailInfo(AppealDetailRequest(id))
-                emit(result)
+                val detail = apiService.getAppealDetailInfo(AppealDetailRequest(id))
+                detail.data?.auditFlows?.last()?.toNode?.takeIf {
+                    it > 0L
+                }?.let {
+                    detail.data?.let { data ->
+                        data.curNodeId = it
+                    }
+                    val nextNode = apiService.getNextNodeInfo(NextNodeRequest(id, it))
+                    nextNode.data?.takeIf { nextNodeId ->
+                        nextNodeId > 0L
+                    }?.let { nextNodeId ->
+                        detail.data?.let { data ->
+                            data.nextNodeId = nextNodeId
+                        }
+                    }
+                }
+                emit(detail)
             }.asResult()
                 .collect { result ->
                     appealDetailUiState.value = result
+                }
+        }
+    }
+
+    /**
+     * 获取申诉详情编辑开关，operation: 2-通过，4-驳回
+     */
+    fun getAuditEnableInfo(operation: Int) {
+        viewModelScope.launch {
+            flow {
+                val result = apiService.getAuditEnable()
+                result.data?.apply {
+                    this.operation = operation
+                }
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    auditEnableState.value = result
+                }
+        }
+    }
+
+    /**
+     * 处理申诉详情，operation: 2-通过，4-驳回
+     */
+    fun auditAppealDetailInfo(id: Long, operation: Int, reasons: String? = null, curNodeId: Long?, nextNodeId: Long?) {
+        viewModelScope.launch {
+            flow {
+                val request = AuditDetailRequest()
+                request.id = id
+                request.operation = operation
+                reasons?.let {
+                    request.reasons = it
+                }
+                request.curNodeId = curNodeId
+                request.nextNodeId = nextNodeId
+                val result = apiService.auditAppealDetailInfo(request)
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    auditDetailUiState.value = result
                 }
         }
     }

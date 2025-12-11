@@ -1,6 +1,7 @@
 package cn.thecover.media.feature.review_manager
 
 import android.R.attr.label
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -79,6 +80,7 @@ import cn.thecover.media.feature.review_manager.appeal.FilterSearchBar
 import cn.thecover.media.feature.review_manager.appeal.FilterType
 import cn.thecover.media.feature.review_manager.assign.FilterDropMenuView
 import cn.thecover.media.feature.review_manager.navigation.navigateToArchiveDetail
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 
@@ -102,7 +104,10 @@ fun ArchiveScoreScreen(
     val archiveListUiState by viewModel.archiveListDataState.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel.startLocalDate, viewModel.endLocalDate) {
+        // 获取稿件评分列表
         viewModel.getArchiveList(isRefresh = true)
+        // 获取打分规则
+        viewModel.getScoreRuleInfo()
     }
 
     LaunchedEffect(archiveListUiState) {
@@ -150,9 +155,9 @@ fun ArchiveScoreScreen(
     onLoadMore: () -> Unit = {},
     onSearch: (String) -> Unit = {},
 ) {
-    var showScoreDialog = remember { mutableStateOf(false) }
+    val showScoreDialog = remember { mutableStateOf(false) }
 
-    YBCoordinatorList (
+    YBCoordinatorList(
         modifier = Modifier.fillMaxSize(),
         items = items,
         isRefreshing = isRefreshing,
@@ -174,7 +179,7 @@ fun ArchiveScoreScreen(
                 .fillMaxWidth(),
             item = item,
             onDetailClick = {
-                navController.navigateToArchiveDetail(item)
+                navController.navigateToArchiveDetail(item.wapUrl)
             },
             onScoreClick = {
                 showScoreDialog.value = true
@@ -382,6 +387,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
 
     var isStartDatePickerShow by remember { mutableStateOf(true) }
     var datePickerShow by remember { mutableStateOf(false) }
+    val scoreRuleStatus by viewModel.scoreRuleStatus.collectAsStateWithLifecycle()
 
     val scoreStateFilters = listOf(
         FilterType(type = 1, desc = "全部"),
@@ -395,119 +401,121 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
         FilterType(type = 3, desc = "稿件名称")
     )
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 12.dp, start = 15.dp, end = 15.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        shape = RoundedCornerShape(8.dp),
-    ) {
-        Row(
+    if (scoreRuleStatus.isNotEmpty()) {
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(64.dp)
-                .gradientShape(
-                    colors = listOf(Color(0xFFEBF1FF), Color.White),
-                    start = GradientLeftTop,
-                    end = GradientLeftBottom
-                ),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(top = 12.dp, start = 15.dp, end = 15.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+            shape = RoundedCornerShape(8.dp)
         ) {
-            YBImage(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(vertical = 14.dp),
-                placeholder = painterResource(R.mipmap.img_archive_score_label),
-                contentScale = ContentScale.Fit
-            )
-            VerticalDivider(
-                modifier = Modifier.height(36.dp), thickness = 0.5.dp, color = OutlineColor
-            )
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "等级",
-                    color = SecondaryTextColor,
-                    fontSize = 12.sp
-                )
-                Text(
-                    text = "A",
-                    color = MainTextColor,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-            VerticalDivider(
-                modifier = Modifier.height(36.dp), thickness = 0.5.dp, color = OutlineColor
-            )
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "当月数量",
-                    color = SecondaryTextColor,
-                    fontSize = 12.sp
-                )
-                Text(
-                    text = "223",
-                    color = MainTextColor,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-            VerticalDivider(
-                modifier = Modifier.height(36.dp), thickness = 0.5.dp, color = OutlineColor
-            )
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "当天数量",
-                    color = SecondaryTextColor,
-                    fontSize = 12.sp
-                )
-                Text(
-                    text = "14",
-                    color = MainTextColor,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-            VerticalDivider(
-                modifier = Modifier.height(36.dp), thickness = 0.5.dp, color = OutlineColor
-            )
             Row(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f)
-                    .clickableWithoutRipple {
-                        showScoreDialog.value = true
-                    },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                    .fillMaxWidth()
+                    .height(64.dp)
+                    .gradientShape(
+                        colors = listOf(Color(0xFFEBF1FF), Color.White),
+                        start = GradientLeftTop,
+                        end = GradientLeftBottom
+                    ),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "更多",
-                    color = TertiaryTextColor,
-                    lineHeight = 14.sp,
-                    fontSize = 14.sp,
+                YBImage(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(vertical = 14.dp),
+                    placeholder = painterResource(R.mipmap.img_archive_score_label),
+                    contentScale = ContentScale.Fit
                 )
-                Icon(
-                    painterResource(cn.thecover.media.core.widget.R.drawable.icon_right_arrow),
-                    contentDescription = "Localized description",
-                    Modifier
-                        .size(18.dp)
-                        .padding(2.dp),
-                    tint = TertiaryTextColor
+                VerticalDivider(
+                    modifier = Modifier.height(36.dp), thickness = 0.5.dp, color = OutlineColor
                 )
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "等级",
+                        color = SecondaryTextColor,
+                        fontSize = 12.sp
+                    )
+                    Text(
+                        text = scoreRuleStatus.first().scoreLevelName,
+                        color = MainTextColor,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                VerticalDivider(
+                    modifier = Modifier.height(36.dp), thickness = 0.5.dp, color = OutlineColor
+                )
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "当月数量",
+                        color = SecondaryTextColor,
+                        fontSize = 12.sp
+                    )
+                    Text(
+                        text = "${scoreRuleStatus.first().monthCount}",
+                        color = MainTextColor,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                VerticalDivider(
+                    modifier = Modifier.height(36.dp), thickness = 0.5.dp, color = OutlineColor
+                )
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "当天数量",
+                        color = SecondaryTextColor,
+                        fontSize = 12.sp
+                    )
+                    Text(
+                        text = "${scoreRuleStatus.first().dayCount}",
+                        color = MainTextColor,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                VerticalDivider(
+                    modifier = Modifier.height(36.dp), thickness = 0.5.dp, color = OutlineColor
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .clickableWithoutRipple {
+                            showScoreDialog.value = true
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "更多",
+                        color = TertiaryTextColor,
+                        lineHeight = 14.sp,
+                        fontSize = 14.sp,
+                    )
+                    Icon(
+                        painterResource(cn.thecover.media.core.widget.R.drawable.icon_right_arrow),
+                        contentDescription = "Localized description",
+                        Modifier
+                            .size(18.dp)
+                            .padding(2.dp),
+                        tint = TertiaryTextColor
+                    )
+                }
             }
         }
     }
@@ -602,7 +610,10 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                     fontSize = 13.sp
                 )
                 Spacer(modifier = Modifier.height(6.dp))
-                FilterDropMenuView(filterData = scoreStateFilters, initialIndex = viewModel.userScoreStatus.intValue) { _, index ->
+                FilterDropMenuView(
+                    filterData = scoreStateFilters,
+                    initialIndex = viewModel.userScoreStatus.intValue
+                ) { _, index ->
                     viewModel.userScoreStatus.intValue = index
                     viewModel.getArchiveList(isRefresh = true)
                 }
@@ -618,7 +629,10 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                     fontSize = 13.sp
                 )
                 Spacer(modifier = Modifier.height(6.dp))
-                FilterDropMenuView(filterData = scoreStateFilters, initialIndex = viewModel.newsScoreStatus.intValue) { _, index ->
+                FilterDropMenuView(
+                    filterData = scoreStateFilters,
+                    initialIndex = viewModel.newsScoreStatus.intValue
+                ) { _, index ->
                     viewModel.newsScoreStatus.intValue = index
                     viewModel.getArchiveList(isRefresh = true)
                 }
@@ -649,58 +663,6 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
         title = "稿件评分情况",
         widthRate = 0.9f,
         content = {
-            val dataList = listOf(
-                ArchiveScoreRule(
-                    grade = "A+",
-                    monthlyCount = 20,
-                    dailyCount = 9
-                ),
-                ArchiveScoreRule(
-                    grade = "A",
-                    monthlyCount = 20,
-                    dailyCount = 9
-                ),
-                ArchiveScoreRule(
-                    grade = "A-",
-                    monthlyCount = 20,
-                    dailyCount = 9
-                ),
-                ArchiveScoreRule(
-                    grade = "B+",
-                    monthlyCount = 20,
-                    dailyCount = 9
-                ),
-                ArchiveScoreRule(
-                    grade = "B",
-                    monthlyCount = 20,
-                    dailyCount = 9
-                ),
-                ArchiveScoreRule(
-                    grade = "B-",
-                    monthlyCount = 20,
-                    dailyCount = 9
-                ),
-                ArchiveScoreRule(
-                    grade = "C+",
-                    monthlyCount = 20,
-                    dailyCount = 9
-                ),
-                ArchiveScoreRule(
-                    grade = "C",
-                    monthlyCount = 20,
-                    dailyCount = 9
-                ),
-                ArchiveScoreRule(
-                    grade = "C-",
-                    monthlyCount = 20,
-                    dailyCount = 9
-                ),
-                ArchiveScoreRule(
-                    grade = "D",
-                    monthlyCount = 20,
-                    dailyCount = 9
-                )
-            )
             Column {
                 Text(
                     text = "提示：当前等级统计数据包含一篇稿件多个打分的等级数据，仅供打分时参考。",
@@ -741,7 +703,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                         fontWeight = FontWeight.SemiBold
                     )
                 }
-                dataList.forEachIndexed { index, item ->
+                scoreRuleStatus.forEachIndexed { index, item ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -752,21 +714,21 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                         Text(
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.Center,
-                            text = item.grade,
+                            text = item.scoreLevelName,
                             fontSize = 14.sp,
                             color = MainTextColor
                         )
                         Text(
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.Center,
-                            text = "${item.monthlyCount}",
+                            text = "${item.monthCount}",
                             fontSize = 14.sp,
                             color = MainTextColor
                         )
                         Text(
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.Center,
-                            text = "${item.dailyCount}",
+                            text = "${item.dayCount}",
                             fontSize = 14.sp,
                             color = MainTextColor
                         )
@@ -797,12 +759,6 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
     )
 }
 
-private data class ArchiveScoreRule(
-    val grade: String,
-    val monthlyCount: Int,
-    val dailyCount: Int
-)
-
 @PhonePreview
 @Composable
 private fun ArchiveScoreScreenPreview() {
@@ -812,7 +768,10 @@ private fun ArchiveScoreScreenPreview() {
         val canLoadMore = remember { mutableStateOf(true) }
         val items = remember { mutableStateOf(listOf<ArchiveListData>()) }
         repeat(10) {
-            items.value += ArchiveListData(title = "标题$it", publishTime = LocalDateTime.now().toMillisecond())
+            items.value += ArchiveListData(
+                title = "标题$it",
+                publishTime = LocalDateTime.now().toMillisecond()
+            )
         }
         ArchiveScoreScreen(
             viewModel = ReviewManageViewModel(

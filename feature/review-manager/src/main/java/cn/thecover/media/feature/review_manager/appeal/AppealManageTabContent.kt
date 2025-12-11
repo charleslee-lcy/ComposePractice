@@ -241,7 +241,7 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
                     .fillMaxWidth()
                     .clickableWithoutRipple {
                         // 跳转到申诉详情页
-                        navController.navigateToAppealDetail(item.id, true)
+                        navController.navigateToAppealDetail(item.id, viewModel.currentPos == 0)
                     }, item = item
             )
         }

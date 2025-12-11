@@ -21,11 +21,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -134,7 +137,6 @@ internal fun YBApp(
 
     // 判断当前是否在顶级目的地页面
 
-
     // 只有在顶级页面才显示底部导航栏
     Column {
         MainContent(
@@ -145,7 +147,10 @@ internal fun YBApp(
         if (appState.isTopLevelDestination == true) {
             HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 0.25.dp, color = OutlineColor)
             YBNavigationBar(
-                modifier = Modifier.heightIn(60.dp, 80.dp)//部分手机系统小白条会占用一部分高度,故预留一部分buffer值.
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.navigationBars)
+                    .height(60.dp)
             ) {
                 appState.topLevelDestinations.forEachIndexed { index, destination ->
                     val hasUnreadMsg = false

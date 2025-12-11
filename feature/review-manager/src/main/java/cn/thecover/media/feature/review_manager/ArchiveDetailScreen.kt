@@ -1,52 +1,55 @@
 package cn.thecover.media.feature.review_manager
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.view.ViewGroup
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.net.toUri
 import androidx.navigation.NavController
-import cn.thecover.media.core.common.util.formatToDateString
-import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.core.widget.component.PreviewImages
 import cn.thecover.media.core.widget.component.YBTitleBar
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
-import cn.thecover.media.core.widget.theme.MainTextColor
-import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
-import com.google.gson.Gson
-import com.mohamedrejeb.calf.ui.web.WebView
-import com.mohamedrejeb.calf.ui.web.WebViewState
 import com.mohamedrejeb.calf.ui.web.rememberWebViewState
 
 @Composable
 internal fun ArchiveDetailRoute(
     modifier: Modifier = Modifier,
-    dataJsonStr: String,
+    url: String,
     navController: NavController
 ) {
-    val data = Gson().fromJson(dataJsonStr, ArchiveListData::class.java)
-    ArchiveDetailScreen(modifier, data, navController)
+    ArchiveDetailScreen(modifier, url, navController)
 }
 
 /**
@@ -57,12 +60,10 @@ internal fun ArchiveDetailRoute(
 @Composable
 fun ArchiveDetailScreen(
     modifier: Modifier = Modifier,
-    data: ArchiveListData,
+    url: String,
     navController: NavController
 ) {
-    val webViewState = rememberWebViewState(
-        url = data.wapUrl
-    )
+
     val showImages = remember { mutableStateOf(false) }
     val imagesData = remember {
         mutableStateListOf(
@@ -74,14 +75,8 @@ fun ArchiveDetailScreen(
         )
     }
 
-    LaunchedEffect(Unit) {
-        // Get the current loading state
-        // Enable JavaScript
-        webViewState.settings.javaScriptEnabled = true
-    }
-
     Box(modifier = modifier.fillMaxSize()) {
-        WebViewContent(showImages, webViewState, data, navController)
+        WebViewContent(showImages, url, navController)
         PreviewImages(imagesData, showImages)
     }
 }
@@ -89,11 +84,38 @@ fun ArchiveDetailScreen(
 @Composable
 private fun WebViewContent(
     showImages: MutableState<Boolean>,
-    webViewState: WebViewState,
-    data: ArchiveListData,
+    url: String,
     navController: NavController
 ) {
     val scrollState = rememberScrollState()
+    val webViewState = rememberWebViewState(
+        url = url
+    )
+    var webView: WebView? by remember { mutableStateOf(null) }
+    var isLoading by remember { mutableStateOf(true) }
+    var isError by remember { mutableStateOf(false) }
+    var webTitle by remember { mutableStateOf("") }
+
+    // 添加 WebView 设置
+//    LaunchedEffect(webViewState) {
+//        webViewState.settings.apply {
+//            javaScriptEnabled = true
+//            androidSettings.domStorageEnabled = true
+//            androidSettings.loadWithOverviewMode = true
+//            androidSettings.useWideViewPort = true
+//            androidSettings.builtInZoomControls = false
+//            androidSettings.displayZoomControls = false
+//        }
+//    }
+//
+//    LaunchedEffect(webViewState.isLoading) {
+//        // Get the current loading state
+//        isLoading = webViewState.isLoading
+//
+//        if (webViewState.errorsForCurrentRequest.isNotEmpty()) {
+//            isError = true
+//        }
+//    }
 
     Column(
         modifier = Modifier
@@ -117,32 +139,157 @@ private fun WebViewContent(
                 }
                 .verticalScroll(scrollState),
         ) {
-            Text(
-                modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp),
-                text = data.title,
-                color = MainTextColor,
-                fontSize = 24.sp,
-                lineHeight = 24.sp * 1.3f
-            )
-            Row(
-                modifier = Modifier.padding(horizontal = 15.dp)
-            ) {
-                Text(
-                    text = "周国超",
-                    color = SecondaryTextColor,
-                    fontSize = 14.sp,
+//            Text(
+//                modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp),
+//                text = data.title,
+//                color = MainTextColor,
+//                fontSize = 24.sp,
+//                lineHeight = 24.sp * 1.3f
+//            )
+//            Row(
+//                modifier = Modifier.padding(horizontal = 15.dp)
+//            ) {
+//                Text(
+//                    text = "周国超",
+//                    color = SecondaryTextColor,
+//                    fontSize = 14.sp,
+//                )
+//                Spacer(modifier = Modifier.width(20.dp))
+//                Text(
+//                    text = data.publishTime.formatToDateString(),
+//                    color = SecondaryTextColor,
+//                    fontSize = 14.sp,
+//                )
+//            }
+//
+//            Box(modifier = Modifier.fillMaxSize()) {
+//                WebView(
+//                    state = webViewState,
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .clickableWithoutRipple {
+//                            showImages.value = true
+//                        }
+//                )
+//            }
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                AndroidView(
+                    factory = { context ->
+                        WebView(context).apply {
+                            layoutParams = ViewGroup.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT
+                            )
+
+                            // WebView基础配置
+                            settings.apply {
+                                javaScriptEnabled = true
+                                useWideViewPort = true
+                                loadWithOverviewMode = true
+                                domStorageEnabled = true
+                                builtInZoomControls = false
+                                displayZoomControls = false
+                                setSupportZoom(false)
+                            }
+
+                            // 设置WebView客户端
+                            webViewClient = object : WebViewClient() {
+                                override fun onPageStarted(
+                                    view: WebView?,
+                                    url: String?,
+                                    favicon: Bitmap?
+                                ) {
+                                    super.onPageStarted(view, url, favicon)
+                                    isLoading = true
+                                }
+
+                                override fun onPageFinished(view: WebView?, url: String?) {
+                                    super.onPageFinished(view, url)
+                                    isLoading = false
+                                }
+
+                                override fun onReceivedError(
+                                    view: WebView?,
+                                    request: WebResourceRequest?,
+                                    error: WebResourceError?
+                                ) {
+                                    super.onReceivedError(view, request, error)
+                                    isLoading = false
+                                }
+
+                                override fun shouldOverrideUrlLoading(
+                                    view: WebView?,
+                                    request: WebResourceRequest?
+                                ): Boolean {
+                                    val url = request?.url.toString()
+                                    if (url.startsWith("yndaily://")) {
+                                        try {
+                                            val uri = url.toUri()
+                                            val intent = Intent(Intent.ACTION_VIEW, uri)
+                                            val context = view?.context
+
+                                            context?.apply {
+                                                if (intent.resolveActivity(packageManager) != null) {
+                                                    startActivity(intent)
+                                                } else {
+                                                    Toast.makeText(this, "请先安装云新闻应用", Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                        } catch (e: Exception) {
+                                            // 处理其他异常情况
+                                            e.printStackTrace()
+                                        }
+                                        view?.takeIf {
+                                            it.canGoBack()
+                                        }?.let {
+                                            it.goBack()
+                                        }
+                                        return true
+                                    }
+                                    return super.shouldOverrideUrlLoading(view, request)
+                                }
+                            }
+
+                            webChromeClient = object : WebChromeClient() {
+                                override fun onReceivedTitle(view: WebView?, title: String?) {
+                                    super.onReceivedTitle(view, title)
+                                    title?.let { webTitle = it }
+                                }
+                            }
+
+                            loadUrl(url)
+                            webView = this
+                        }
+                    },
+                    update = { view ->
+                        if (view.url != url) {
+                            view.loadUrl(url)
+                        }
+                    }
                 )
-                Spacer(modifier = Modifier.width(20.dp))
-                Text(
-                    text = data.publishTime.formatToDateString(),
-                    color = SecondaryTextColor,
-                    fontSize = 14.sp,
-                )
+
+//                if (isLoading) {
+//                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+//                }
+
+                if (isError) {
+                    Text(
+                        text = "加载失败，请重试",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
             }
-            WebView(
-                state = webViewState,
-                modifier = Modifier.fillMaxSize()
-            )
+        }
+    }
+
+    BackHandler(true) {
+        webView?.let {
+            if (it.canGoBack()) {
+                it.goBack()
+            } else {
+                navController.popBackStack()
+            }
         }
     }
 }
@@ -152,7 +299,7 @@ private fun WebViewContent(
 private fun ArchiveScoreScreenPreview() {
     YBTheme {
         ArchiveDetailScreen(
-            data = ArchiveListData(),
+            url = "https://www.baidu.com",
             navController = NavController(LocalContext.current)
         )
     }
