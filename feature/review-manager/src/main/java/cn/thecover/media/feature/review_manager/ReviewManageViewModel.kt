@@ -14,14 +14,15 @@ import cn.thecover.media.core.data.AppealListData
 import cn.thecover.media.core.data.AppealManageRequest
 import cn.thecover.media.core.data.AppealSwitchInfo
 import cn.thecover.media.core.data.ArchiveListData
+import cn.thecover.media.core.data.AuditDetailRequest
 import cn.thecover.media.core.data.DepartmentAssignListData
 import cn.thecover.media.core.data.DepartmentAssignRequest
+import cn.thecover.media.core.data.DepartmentListData
 import cn.thecover.media.core.data.DepartmentRemainRequest
 import cn.thecover.media.core.data.NetworkRequest
 import cn.thecover.media.core.data.NextNodeRequest
 import cn.thecover.media.core.data.ScoreArchiveListRequest
 import cn.thecover.media.core.data.ScoreRuleData
-import cn.thecover.media.core.data.AuditDetailRequest
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
@@ -80,7 +81,9 @@ class ReviewManageViewModel @Inject constructor(
 
     // ====================================== 部门内分配 start =======================================
     // 年度
-    val departYear = mutableStateOf(LocalDate.now().year.toString())
+    val departYear = mutableIntStateOf(LocalDate.now().year)
+    var curDepartmentData = mutableStateOf(DepartmentListData())
+    var departmentListState = MutableStateFlow(listOf<DepartmentListData>())
     // 搜索类型
     val departSearchType = mutableIntStateOf(0)
     // 搜索关键词
@@ -216,7 +219,8 @@ class ReviewManageViewModel @Inject constructor(
         viewModelScope.launch {
             flow {
                 val request = DepartmentRemainRequest()
-                request.year = departYear.value
+                request.year = departYear.intValue.toString()
+                request.departmentId = curDepartmentData.value.id
                 val result = apiService.getDepartmentAssignRemain(request)
                 emit(result)
             }.asResult()
@@ -226,21 +230,40 @@ class ReviewManageViewModel @Inject constructor(
         }
     }
 
+    fun getDepartmentList() {
+        viewModelScope.launch {
+            flow {
+                val list = apiService.getDepartmentList()
+                emit(list)
+            }.asResult().collect { result ->
+                result.data?.takeIf { it.isNotEmpty() }?.let {
+                    departmentListState.value = it
+                    if (curDepartmentData.value.id == 0L) {
+                        curDepartmentData.value = it.first()
+                    }
+                    getDepartmentAssignRemain()
+                    getDepartmentAssignList(isRefresh = true)
+                }
+            }
+        }
+    }
+
     fun getDepartmentAssignList(isRefresh: Boolean = true, request: DepartmentAssignRequest = departmentRequest) {
         if (isRefresh) {
             request.lastId = null
         } else {
             request.lastId = departmentLastId
         }
-        request.year = departYear.value
+        request.year = departYear.intValue.toString()
         when(departSearchType.intValue) {
             0 -> { request.searchType = 1 }
             else -> { request.searchType = 2 }
         }
         request.searchKeyword = departSearchKeyword.value
+        request.departmentId = curDepartmentData.value.id
+        request.pageSize = pageSize
         viewModelScope.launch {
             flow {
-                request.pageSize = pageSize
                 val list = apiService.getDepartmentAssignList(request)
                 emit(list)
             }.asResult().collect { result ->

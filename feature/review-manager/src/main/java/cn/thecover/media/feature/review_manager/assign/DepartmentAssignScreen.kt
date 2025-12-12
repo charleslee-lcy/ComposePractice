@@ -84,10 +84,18 @@ internal fun DepartmentAssignScreen(
     var checkedItem by remember { mutableStateOf<DepartmentAssignListData?>(null) }
 
     val departmentListUiState by viewModel.departmentListDataState.collectAsStateWithLifecycle()
+    var isFirstLaunch by remember { mutableStateOf(true) }
 
-    LaunchedEffect(viewModel.departYear.value) {
-        viewModel.getDepartmentAssignRemain()
-        viewModel.getDepartmentAssignList(isRefresh = true)
+    LaunchedEffect(viewModel.departYear.intValue) {
+        if (isFirstLaunch) {
+            // 首次初始化逻辑
+            viewModel.getDepartmentList()
+            isFirstLaunch = false
+        } else {
+            // 后续值变化逻辑
+            viewModel.getDepartmentAssignRemain()
+            viewModel.getDepartmentAssignList(isRefresh = true)
+        }
     }
 
     LaunchedEffect(departmentListUiState) {
@@ -103,6 +111,7 @@ internal fun DepartmentAssignScreen(
             .padding(horizontal = 15.dp)
     ) {
         DepartmentAssignHeader(viewModel) {
+            viewModel.getDepartmentAssignRemain()
             viewModel.getDepartmentAssignList(isRefresh = true)
             focusManager.clearFocus()
         }
@@ -114,6 +123,7 @@ internal fun DepartmentAssignScreen(
             isLoadingMore = isLoadingMore,
             canLoadMore = canLoadMore,
             onRefresh = {
+                viewModel.getDepartmentAssignRemain()
                 viewModel.getDepartmentAssignList(isRefresh = true)
             },
             onLoadMore = {
@@ -151,11 +161,11 @@ internal fun DepartmentAssignScreen(
                 .padding(top = 15.dp)
         ) {
             checkedItem?.apply {
-                LabelText("年度：", viewModel.departYear.value)
+                LabelText("年度：", viewModel.departYear.intValue.toString())
                 LabelText("部门：", departmentName)
                 LabelText("部门人员：", userName)
-                LabelText("部门年度预算剩余：", "${departmentRemainStatus.yearBudget}分")
-                LabelText("年度已分配总分：", "${departmentRemainStatus.yearTotalBudget}分")
+                LabelText("部门年度预算剩余：", "${formatDecimalString(departmentRemainStatus.yearBudget)}分")
+                LabelText("年度已分配总分：", "${formatDecimalString(departmentRemainStatus.yearTotalBudget)}分")
 
                 HorizontalDivider(
                     modifier = Modifier
@@ -304,21 +314,12 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
         FilterType(type = 1, desc = "部门人员"),
         FilterType(type = 2, desc = "人员ID")
     )
-    val departmentFilters = listOf(
-        FilterType(type = 1, desc = "部门总稿费"),
-        FilterType(type = 2, desc = "部门总完成度"),
-        FilterType(type = 3, desc = "部门总完成人数"),
-        FilterType(type = 4, desc = "部门总完成率"),
-        FilterType(type = 5, desc = "部门总完成时间")
-    )
-    val currentDate = LocalDate.now()
-    val currentYearText = "${currentDate.year}年"
 
     val showBudgetDialog = remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
-    var datePickedText by remember { mutableStateOf(currentYearText) }
+    var datePickedText by remember { mutableStateOf("${viewModel.departYear.intValue}年") }
     val departmentRemainState by viewModel.assignRemainStatus.collectAsStateWithLifecycle()
-
+    val departmentListStatus by viewModel.departmentListState.collectAsStateWithLifecycle()
 
     Card(
         modifier = Modifier
@@ -336,7 +337,11 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
         ) {
             // 左侧排序指数选择区域
             Column(modifier = Modifier.weight(1.2f)) {
-                FilterDropMenuView(filterData = departmentFilters)
+                DepartmentMultiDropMenuView(curDepartItem = viewModel.curDepartmentData, filterData = departmentListStatus) { item ->
+                    viewModel.curDepartmentData.value = item
+                    viewModel.getDepartmentAssignRemain()
+                    viewModel.getDepartmentAssignList(true)
+                }
             }
             Spacer(Modifier.width(12.dp))
             // 右侧时间选择区域
@@ -381,12 +386,13 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
     YBDatePicker(
         visible = showDatePicker,
         type = DateType.YEAR,
+        value = LocalDate.of(viewModel.departYear.intValue, 1, 1),
         start = LocalDate.of(LocalDate.now().year - 5, 1, 1),
         end = LocalDate.of(LocalDate.now().year + 4, 1, 1),
         onCancel = { showDatePicker = false },
         onChange = {
             datePickedText = "${it.year}年"
-            viewModel.departYear.value = it.year.toString()
+            viewModel.departYear.intValue = it.year
         }
     )
 

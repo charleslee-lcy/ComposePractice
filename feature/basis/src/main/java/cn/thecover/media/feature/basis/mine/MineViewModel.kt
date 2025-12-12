@@ -175,8 +175,7 @@ class MineViewModel @Inject constructor(
                             ModifyPasswordRequest(
                                 oldPassword = mineIntent.oldPassword,
                                 password = mineIntent.password,
-                                passwordVerify = mineIntent.passwordVerify,
-//                                client = "android"
+                                passwordVerify = mineIntent.passwordVerify
                             )
                         )
                         emit(response)

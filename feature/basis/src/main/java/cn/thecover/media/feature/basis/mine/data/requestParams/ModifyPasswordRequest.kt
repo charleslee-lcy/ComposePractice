@@ -9,5 +9,4 @@ data class ModifyPasswordRequest(
     val oldPassword: String,
     val password: String,
     val passwordVerify: String,
-    val client: String="android"
 )

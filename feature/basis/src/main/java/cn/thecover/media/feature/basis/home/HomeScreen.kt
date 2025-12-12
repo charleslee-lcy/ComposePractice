@@ -114,12 +114,6 @@ internal fun HomeScreen(
     var roleState by remember { mutableIntStateOf(1) }
 
     val infiniteTransition = rememberInfiniteTransition(label = "infinite")
-    val animatedColor by infiniteTransition.animateColor(
-        initialValue = Color(0xFF60DDAD),
-        targetValue = Color(0xFF4285F4),
-        animationSpec = infiniteRepeatable(tween(1000), RepeatMode.Reverse),
-        label = "color"
-    )
     val userInfo by viewModel.userUiState.collectAsStateWithLifecycle()
     val homeInfo by viewModel.homeUiState.collectAsStateWithLifecycle()
     val unreadMessageCount by viewModel.unreadMessageCount.collectAsState()
@@ -221,7 +215,7 @@ internal fun HomeScreen(
                     )
                     Text(
                         text = "稿件TOP榜单",
-                        color = animatedColor,
+                        color = MainTextColor,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(start = 5.dp)
@@ -333,8 +327,8 @@ private fun TopBar(
     YBDatePicker(
         visible = datePickerShow,
         value = LocalDate.of(currentYear.value, currentMonth.value, 1),
-        start = LocalDate.of(currentYear.value - 5, 1, 1),
-        end = LocalDate.of(currentYear.value + 4, 1, 1),
+        start = LocalDate.of(LocalDate.now().year - 5, 1, 1),
+        end = LocalDate.of(LocalDate.now().year + 4, 1, 1),
         type = DateType.MONTH,
         onCancel = { datePickerShow = false },
         onChange = {

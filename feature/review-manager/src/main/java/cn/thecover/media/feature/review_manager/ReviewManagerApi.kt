@@ -15,6 +15,7 @@ import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.core.data.ScoreArchiveListRequest
 import cn.thecover.media.core.data.ScoreRuleData
 import cn.thecover.media.core.data.AuditDetailRequest
+import cn.thecover.media.core.data.DepartmentListData
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -41,6 +42,12 @@ interface ReviewManagerApi {
      */
     @POST(value = "api/mgr/score/news/list")
     suspend fun getScoreArchiveList(@Body request: ScoreArchiveListRequest): NetworkResponse<PaginatedResult<ArchiveListData>>
+
+    /**
+     * 获取部门数据
+     */
+    @POST(value = "api/mgr/department/employee/deptListAuth")
+    suspend fun getDepartmentList(@Body request: NetworkRequest = NetworkRequest()): NetworkResponse<List<DepartmentListData>>
 
     /**
      * 部门年度和月度预算剩余
@@ -85,7 +92,7 @@ interface ReviewManagerApi {
     suspend fun getAuditEnable(@Body request: NetworkRequest = NetworkRequest()): NetworkResponse<AppealSwitchInfo>
 
     /**
-     * 更新申诉
+     * 操作申诉
      */
     @POST(value = "api/mgr/appeal/audit")
     suspend fun auditAppealDetailInfo(@Body request: AuditDetailRequest): NetworkResponse<Any>
