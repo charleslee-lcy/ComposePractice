@@ -83,6 +83,7 @@ import cn.thecover.media.feature.review_manager.appeal.FilterSearchBar
 import cn.thecover.media.feature.review_manager.appeal.FilterType
 import cn.thecover.media.feature.review_manager.assign.FilterDropMenuView
 import cn.thecover.media.feature.review_manager.navigation.navigateToArchiveDetail
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 
@@ -661,7 +662,12 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                     color = if (viewModel.endDateText.value != "结束时间") MainTextColor else EditHintTextColor
                 )
                 Icon(
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier.size(18.dp).clickableWithoutRipple {
+                        viewModel.startDateText.value = "开始时间"
+                        viewModel.endDateText.value = "结束时间"
+                        viewModel.startLocalDate = LocalDate.now()
+                        viewModel.endLocalDate = LocalDate.now()
+                    },
                     painter = painterResource(R.mipmap.ic_date_to_pick),
                     contentDescription = "${label}下拉筛选按钮",
                     tint = TertiaryTextColor

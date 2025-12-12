@@ -57,11 +57,11 @@ class ReviewManageViewModel @Inject constructor(
     var pageType by mutableIntStateOf(ReviewManageType.ARCHIVE_SCORE.index)
     // ======================================= 稿件打分 start ========================================
     // 开始时间
-    val startDateText = mutableStateOf("开始时间")
-    var startLocalDate by mutableStateOf(LocalDate.now())
+    var startLocalDate by mutableStateOf(LocalDate.now().minusMonths(1))
+    val startDateText = mutableStateOf("${startLocalDate.year}-${startLocalDate.monthValue}-${startLocalDate.dayOfMonth}")
     // 结束时间
-    val endDateText = mutableStateOf("结束时间")
     var endLocalDate by mutableStateOf(LocalDate.now())
+    val endDateText = mutableStateOf("${endLocalDate.year}-${endLocalDate.monthValue}-${endLocalDate.dayOfMonth}")
     // 本人打分状态
     val userScoreStatus = mutableIntStateOf(0)
     // 稿件打分状态
