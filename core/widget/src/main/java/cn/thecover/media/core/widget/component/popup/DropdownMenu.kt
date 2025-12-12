@@ -33,6 +33,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -69,7 +70,7 @@ import cn.thecover.media.core.widget.ui.PhonePreview
 @Composable
 fun DepartmentDropdownMenu(
     modifier: Modifier = Modifier,
-    curDepartItem: MutableState<DepartmentListData>,
+    curDepartItem: DepartmentListData,
     data: List<DepartmentListData>,
     expanded: MutableState<Boolean>,
     onItemClick: (item: DepartmentListData) -> Unit = { _ -> },
@@ -111,6 +112,7 @@ fun DepartmentDropdownMenu(
                     curDepartItem,
                     expanded,
                     onItemClick,
+                    expandStates,
                     isExpanded = expandStates[item.id] ?: false,
                     onExpandChange = { isExpand ->
                         expandStates[item.id] = isExpand
@@ -131,9 +133,10 @@ fun DepartmentDropdownMenu(
 @Composable
 fun DepartmentMultiMenuItem(
     item: DepartmentListData,
-    currentItem: MutableState<DepartmentListData>,
+    currentItem: DepartmentListData,
     expanded: MutableState<Boolean>,
     onItemClick: (item: DepartmentListData) -> Unit = { _ -> },
+    expandStates: SnapshotStateMap<Long, Boolean>,
     isExpanded: Boolean = false,
     onExpandChange: (Boolean) -> Unit = {}
 ) {
@@ -170,7 +173,7 @@ fun DepartmentMultiMenuItem(
                     }
                     Text(
                         text = "${item.name}",
-                        color = if (currentItem.value.id == item.id) MainColor else SecondaryTextColor,
+                        color = if (currentItem.id == item.id) MainColor else SecondaryTextColor,
                         fontSize = 14.sp,
                         modifier = Modifier.weight(1f).padding(start = 0.dp, top = 12.dp, end = 16.dp, bottom = 12.dp)
                     )
@@ -178,7 +181,10 @@ fun DepartmentMultiMenuItem(
                 AnimatedVisibility(visible = !item.children.isNullOrEmpty() && isExpanded) {
                     Column {
                         item.children?.forEachIndexed { childIndex, childItem ->
-                            DepartmentMultiMenuItem(childItem, currentItem, expanded, onItemClick)
+                            DepartmentMultiMenuItem(childItem, currentItem, expanded, onItemClick, expandStates, isExpanded = expandStates[childItem.id] ?: false,
+                                onExpandChange = { isExpand ->
+                                    expandStates[childItem.id] = isExpand
+                                })
                         }
                     }
                 }
@@ -187,7 +193,6 @@ fun DepartmentMultiMenuItem(
         },
         onClick = {
             expanded.value = false
-            currentItem.value = item
             onItemClick.invoke(item)
         }
     )

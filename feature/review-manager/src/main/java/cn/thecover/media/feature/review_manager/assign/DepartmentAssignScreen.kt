@@ -320,6 +320,7 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
     var datePickedText by remember { mutableStateOf("${viewModel.departYear.intValue}年") }
     val departmentRemainState by viewModel.assignRemainStatus.collectAsStateWithLifecycle()
     val departmentListStatus by viewModel.departmentListState.collectAsStateWithLifecycle()
+    val curDepartmentData by viewModel.curDepartmentData.collectAsStateWithLifecycle()
 
     Card(
         modifier = Modifier
@@ -337,7 +338,7 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
         ) {
             // 左侧排序指数选择区域
             Column(modifier = Modifier.weight(1.2f)) {
-                DepartmentMultiDropMenuView(curDepartItem = viewModel.curDepartmentData, filterData = departmentListStatus) { item ->
+                DepartmentMultiDropMenuView(curDepartItem = curDepartmentData, filterData = departmentListStatus) { item ->
                     viewModel.curDepartmentData.value = item
                     viewModel.getDepartmentAssignRemain()
                     viewModel.getDepartmentAssignList(true)

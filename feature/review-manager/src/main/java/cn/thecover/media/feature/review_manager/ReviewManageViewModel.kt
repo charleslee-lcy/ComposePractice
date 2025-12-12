@@ -82,7 +82,7 @@ class ReviewManageViewModel @Inject constructor(
     // ====================================== 部门内分配 start =======================================
     // 年度
     val departYear = mutableIntStateOf(LocalDate.now().year)
-    var curDepartmentData = mutableStateOf(DepartmentListData())
+    var curDepartmentData = MutableStateFlow(DepartmentListData())
     var departmentListState = MutableStateFlow(listOf<DepartmentListData>())
     // 搜索类型
     val departSearchType = mutableIntStateOf(0)

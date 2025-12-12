@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import cn.thecover.media.core.data.DepartmentListData
@@ -59,13 +60,12 @@ import cn.thecover.media.feature.review_manager.appeal.FilterType
  */
 @Composable
 fun DepartmentMultiDropMenuView(
-    curDepartItem: MutableState<DepartmentListData>,
+    curDepartItem: DepartmentListData,
     filterData: List<DepartmentListData>,
     filterClick: (DepartmentListData) -> Unit = { _ -> }
 ) {
     val showDrop = remember { mutableStateOf(false) }
     val animRotate = remember { Animatable(0f) }
-    var title by remember { mutableStateOf(curDepartItem.value.name) }
 
     // 当菜单展开状态改变时，触发动画旋转图标
     LaunchedEffect(showDrop.value) {
@@ -85,7 +85,6 @@ fun DepartmentMultiDropMenuView(
         expanded = showDrop,
         offset = DpOffset(0.dp, 0.dp),
         onItemClick = { item ->
-            title = item.name
             filterClick.invoke(item)
         }
     ) {
@@ -109,8 +108,14 @@ fun DepartmentMultiDropMenuView(
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(title, style = MaterialTheme.typography.labelMedium, color = MainTextColor)
-            Spacer(Modifier.weight(1f))
+            Text(
+                modifier = Modifier.weight(1f),
+                text = curDepartItem.name,
+                style = MaterialTheme.typography.labelMedium,
+                color = MainTextColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
             Icon(
                 modifier = Modifier
                     .size(18.dp)
