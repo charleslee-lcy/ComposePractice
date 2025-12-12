@@ -22,8 +22,11 @@ import cn.thecover.media.core.data.DepartmentRemainRequest
 import cn.thecover.media.core.data.NetworkRequest
 import cn.thecover.media.core.data.NextNodeRequest
 import cn.thecover.media.core.data.ScoreArchiveListRequest
+import cn.thecover.media.core.data.ScoreLevelData
 import cn.thecover.media.core.data.ScoreRuleData
 import cn.thecover.media.core.data.UpdateAssignRequest
+import cn.thecover.media.core.data.UpdateScoreRequest
+import cn.thecover.media.core.data.UserScoreGroup
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
@@ -78,6 +81,9 @@ class ReviewManageViewModel @Inject constructor(
     )
     private val archiveRequest = ScoreArchiveListRequest()
     val scoreRuleStatus = MutableStateFlow(listOf<ScoreRuleData>())
+    val scoreLevelState = MutableStateFlow(listOf(ScoreLevelData(levelCode = "A", levelNum = 0, qualityScore = 0.0, qualityType = 0)))
+    val scoreGroupState = MutableStateFlow(listOf<UserScoreGroup>())
+    val updateScoreState = MutableStateFlow(BaseUiState<Any>())
     // ======================================== 稿件打分 end =========================================
 
     // ====================================== 部门内分配 start =======================================
@@ -143,6 +149,46 @@ class ReviewManageViewModel @Inject constructor(
             }.asResult()
                 .collect { result ->
                     scoreRuleStatus.value = result.data ?: emptyList()
+                }
+        }
+    }
+
+    fun getScoreLevelInfo() {
+        viewModelScope.launch {
+            flow {
+                val result = apiService.getScoreLevelInfo(NetworkRequest())
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    scoreLevelState.value = result.data ?: emptyList()
+                }
+        }
+    }
+
+    fun getUserGroupInfo() {
+        viewModelScope.launch {
+            flow {
+                val result = apiService.getUserGroupInfo(NetworkRequest())
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    scoreGroupState.value = result.data ?: emptyList()
+                }
+        }
+    }
+
+    fun updateScore(scoreGroupId: Int, scoreLevel: Int, newsId: Long? = null) {
+        viewModelScope.launch {
+            flow {
+                val request = UpdateScoreRequest(newsId, scoreGroupId, scoreLevel)
+                val result = apiService.updateScore(request)
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    updateScoreState.value = result
+                    if (result.status == HttpStatus.SUCCESS) {
+                        getArchiveList(isRefresh = true)
+                    }
                 }
         }
     }

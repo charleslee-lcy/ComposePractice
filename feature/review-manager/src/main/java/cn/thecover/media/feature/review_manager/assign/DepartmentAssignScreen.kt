@@ -43,7 +43,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import cn.thecover.media.core.data.DepartmentAssignListData
-import cn.thecover.media.core.data.Material
 import cn.thecover.media.core.data.UpdateAssignRequest
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
@@ -67,9 +66,7 @@ import cn.thecover.media.core.widget.ui.PhonePreview
 import cn.thecover.media.feature.review_manager.ReviewManageViewModel
 import cn.thecover.media.feature.review_manager.appeal.FilterSearchBar
 import cn.thecover.media.feature.review_manager.appeal.FilterType
-import kotlinx.serialization.json.Json
 import java.time.LocalDate
-import kotlin.text.ifEmpty
 
 
 /**

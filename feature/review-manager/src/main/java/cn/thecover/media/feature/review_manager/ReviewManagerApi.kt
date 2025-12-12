@@ -16,7 +16,11 @@ import cn.thecover.media.core.data.ScoreArchiveListRequest
 import cn.thecover.media.core.data.ScoreRuleData
 import cn.thecover.media.core.data.AuditDetailRequest
 import cn.thecover.media.core.data.DepartmentListData
+import cn.thecover.media.core.data.ScoreLevel
+import cn.thecover.media.core.data.ScoreLevelData
 import cn.thecover.media.core.data.UpdateAssignRequest
+import cn.thecover.media.core.data.UpdateScoreRequest
+import cn.thecover.media.core.data.UserScoreGroup
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -39,10 +43,28 @@ interface ReviewManagerApi {
     suspend fun getScoreRuleInfo(@Body request: NetworkRequest): NetworkResponse<List<ScoreRuleData>>
 
     /**
+     * 获取打分等级数据
+     */
+    @POST(value = "api/mgr/score/news/level")
+    suspend fun getScoreLevelInfo(@Body request: NetworkRequest = NetworkRequest()): NetworkResponse<List<ScoreLevelData>>
+
+    /**
+     * 获取用户打分组权限
+     */
+    @POST(value = "api/mgr/score/news/userGroup")
+    suspend fun getUserGroupInfo(@Body request: NetworkRequest = NetworkRequest()): NetworkResponse<List<UserScoreGroup>>
+
+    /**
      * 获取稿件打分列表数据
      */
     @POST(value = "api/mgr/score/news/list")
     suspend fun getScoreArchiveList(@Body request: ScoreArchiveListRequest): NetworkResponse<PaginatedResult<ArchiveListData>>
+
+    /**
+     * 稿件打分
+     */
+    @POST(value = "api/mgr/news/score")
+    suspend fun updateScore(@Body request: UpdateScoreRequest): NetworkResponse<Any>
 
     /**
      * 获取部门数据

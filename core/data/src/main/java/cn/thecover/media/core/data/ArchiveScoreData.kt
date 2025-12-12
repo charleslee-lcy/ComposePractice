@@ -21,6 +21,13 @@ data class ScoreArchiveListRequest(
 )
 
 @Serializable
+data class UpdateScoreRequest(
+    val newsId: Long? = null,
+    val scoreGroupId: Int = 0,
+    val scoreLevel: Int = 0
+)
+
+@Serializable
 data class ScoreRuleData(
     val id: Long = 0L,
     val dayCount: String = "",
@@ -28,6 +35,22 @@ data class ScoreRuleData(
     val scoreLevel: String = "",
     val scoreLevelName: String = "",
     val order: String = ""
+)
+
+@Serializable
+data class ScoreLevelData(
+    val id: Long = 0L,
+    val levelCode: String = "",
+    val levelNum: Int = 0,
+    val qualityScore: Double,
+    val qualityType: Int = 0
+)
+
+@Serializable
+data class UserScoreGroup(
+    val id: Int = 0,
+    val scoreName: String = "",
+    val type: Int = 0  //1-值班副总编辑 2-值班编委 3-专家
 )
 
 @Serializable
@@ -75,7 +98,7 @@ data class ScoreLevel(
     val id: Long = 0L,
     val newsId: Long = 0L,
     val score: String = "",
-    val scoreGroupId: Long = 0L,
+    val scoreGroupId: Int = 0,
     val scoreGroupName: String = "",
     val scoreLevel: String = "",
     val scoreLevelName: String = "",

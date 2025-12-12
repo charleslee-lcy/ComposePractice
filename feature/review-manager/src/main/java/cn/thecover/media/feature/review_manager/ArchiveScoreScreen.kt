@@ -1,7 +1,7 @@
 package cn.thecover.media.feature.review_manager
 
 import android.R.attr.label
-import androidx.compose.animation.AnimatedVisibility
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -53,6 +53,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import cn.thecover.media.core.common.util.toMillisecond
 import cn.thecover.media.core.data.ArchiveListData
+import cn.thecover.media.core.data.ScoreLevelData
+import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.GradientLeftBottom
 import cn.thecover.media.core.widget.GradientLeftTop
@@ -66,6 +68,7 @@ import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.component.popup.YBPopup
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.gradientShape
+import cn.thecover.media.core.widget.state.TipsDialogState
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.EditHintTextColor
 import cn.thecover.media.core.widget.theme.MainColor
@@ -80,7 +83,6 @@ import cn.thecover.media.feature.review_manager.appeal.FilterSearchBar
 import cn.thecover.media.feature.review_manager.appeal.FilterType
 import cn.thecover.media.feature.review_manager.assign.FilterDropMenuView
 import cn.thecover.media.feature.review_manager.navigation.navigateToArchiveDetail
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 
@@ -103,11 +105,14 @@ fun ArchiveScoreScreen(
     val items = remember { mutableStateOf(listOf<ArchiveListData>()) }
     val archiveListUiState by viewModel.archiveListDataState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        // 获取打分规则
+        viewModel.getScoreRuleInfo()
+    }
+
     LaunchedEffect(viewModel.startLocalDate, viewModel.endLocalDate) {
         // 获取稿件评分列表
         viewModel.getArchiveList(isRefresh = true)
-        // 获取打分规则
-        viewModel.getScoreRuleInfo()
     }
 
     LaunchedEffect(archiveListUiState) {
@@ -124,6 +129,7 @@ fun ArchiveScoreScreen(
         isRefreshing = isRefreshing,
         isLoadingMore = isLoadingMore,
         canLoadMore = canLoadMore,
+        loadingState = loadingState,
         onRefresh = {
             viewModel.getArchiveList(isRefresh = true)
         },
@@ -151,11 +157,33 @@ fun ArchiveScoreScreen(
     isRefreshing: MutableState<Boolean>,
     isLoadingMore: MutableState<Boolean>,
     canLoadMore: MutableState<Boolean>,
+    loadingState: TipsDialogState,
     onRefresh: () -> Unit = {},
     onLoadMore: () -> Unit = {},
     onSearch: (String) -> Unit = {},
 ) {
+    val context = LocalContext.current
     val showScoreDialog = remember { mutableStateOf(false) }
+    var checkedItem by remember { mutableStateOf<ArchiveListData?>(null) }
+    val updateScoreStatus by viewModel.updateScoreState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(updateScoreStatus) {
+        when (updateScoreStatus.status) {
+            HttpStatus.LOADING -> {
+                loadingState.show()
+            }
+            HttpStatus.SUCCESS -> {
+                loadingState.hide()
+                showScoreDialog.value = false
+                checkedItem = null
+            }
+            HttpStatus.ERROR -> {
+                loadingState.hide()
+                Toast.makeText(context, updateScoreStatus.errorMsg, Toast.LENGTH_SHORT).show()
+            }
+            else -> {}
+        }
+    }
 
     YBCoordinatorList(
         modifier = Modifier.fillMaxSize(),
@@ -182,17 +210,61 @@ fun ArchiveScoreScreen(
                 navController.navigateToArchiveDetail(item.wapUrl)
             },
             onScoreClick = {
+                checkedItem = item
                 showScoreDialog.value = true
             }
         )
     }
 
+    var scoreLevel by remember { mutableIntStateOf(0) }
+
     YBPopup(
         visible = showScoreDialog.value,
         isShowTopActionBar = true,
         draggable = false,
-        onClose = { showScoreDialog.value = false }
+        onClose = {
+            showScoreDialog.value = false
+            checkedItem = null
+        },
+        onConfirm = {
+            viewModel.updateScore(
+                scoreGroupId = viewModel.scoreGroupState.value.takeIf { it.isNotEmpty() }?.first()?.id ?: 0,
+                scoreLevel = scoreLevel,
+                newsId = checkedItem?.id
+            )
+        }
     ) {
+        val scoreLevelStatus by viewModel.scoreLevelState.collectAsStateWithLifecycle()
+        val scoreGroupStatus by viewModel.scoreGroupState.collectAsStateWithLifecycle()
+
+        var scoreList1 by remember { mutableStateOf(listOf<String>()) }
+        var scoreList2 by remember { mutableStateOf(listOf<String>()) }
+        var scoreList3 by remember { mutableStateOf(listOf<String>()) }
+
+        LaunchedEffect(Unit) {
+            viewModel.getScoreLevelInfo()
+            viewModel.getUserGroupInfo()
+
+            val newList1 = mutableListOf<String>()
+            val newList2 = mutableListOf<String>()
+            val newList3 = mutableListOf<String>()
+
+            checkedItem?.scoreLevels?.takeIf { it.isNotEmpty() }?.let { list ->
+                list.forEach {
+                    when(it.scoreGroupId) {
+                        1 -> newList1.add(it.scoreLevelName)
+                        2 -> newList2.add(it.scoreLevelName)
+                        else -> newList3.add(it.scoreLevelName)
+                    }
+                }
+
+                // 替换整个状态以触发重组
+                scoreList1 = newList1
+                scoreList2 = newList2
+                scoreList3 = newList3
+            }
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -200,11 +272,12 @@ fun ArchiveScoreScreen(
             Spacer(modifier = Modifier.height(15.dp))
             ScoreInfoContent(
                 title = "值班副总编辑",
-                enable = false,
-                scoredList = listOf(
-                    "A-"
-                )
-            )
+                enable = scoreGroupStatus.map { it.type }.contains(1),
+                scoreLevelList = scoreLevelStatus,
+                scoredList = scoreList1
+            ) {
+                scoreLevel = it
+            }
             HorizontalDivider(
                 modifier = Modifier
                     .padding(top = 15.dp)
@@ -214,11 +287,12 @@ fun ArchiveScoreScreen(
             )
             ScoreInfoContent(
                 title = "值班编委",
-                enable = true,
-                scoredList = listOf(
-                    "A-", "B+", "B", "C", "D"
-                )
-            )
+                enable = scoreGroupStatus.map { it.type }.contains(2),
+                scoreLevelList = scoreLevelStatus,
+                scoredList = scoreList2
+            ) {
+                scoreLevel = it
+            }
             HorizontalDivider(
                 modifier = Modifier
                     .padding(top = 15.dp)
@@ -228,8 +302,12 @@ fun ArchiveScoreScreen(
             )
             ScoreInfoContent(
                 title = "专家",
-                enable = false
-            )
+                enable = scoreGroupStatus.map { it.type }.contains(3),
+                scoreLevelList = scoreLevelStatus,
+                scoredList = scoreList3
+            ) {
+                scoreLevel = it
+            }
             Spacer(modifier = Modifier.height(15.dp))
         }
 
@@ -240,23 +318,18 @@ fun ArchiveScoreScreen(
 private fun ScoreInfoContent(
     title: String,
     enable: Boolean = false,
-    initialIndex: Int = 0,
-    scoredList: List<String> = listOf()
+    scoreLevelList: List<ScoreLevelData> = listOf(),
+    scoredList: List<String> = listOf(),
+    onScoreSelect: (Int) -> Unit = {_ -> }
 ) {
-    val scoreStateFilters = listOf(
-        FilterType(type = 1, desc = "A+"),
-        FilterType(type = 2, desc = "A"),
-        FilterType(type = 3, desc = "A-"),
-        FilterType(type = 4, desc = "B+"),
-        FilterType(type = 5, desc = "B"),
-        FilterType(type = 6, desc = "B-"),
-        FilterType(type = 7, desc = "C+"),
-        FilterType(type = 8, desc = "C"),
-        FilterType(type = 9, desc = "C-"),
-        FilterType(type = 10, desc = "D")
-    )
-    var showScoreFilter = remember { mutableStateOf(false) }
-    var currentIndex by remember { mutableIntStateOf(initialIndex) }
+    val showScoreFilter = remember { mutableStateOf(false) }
+    var currentIndex by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(Unit) {
+        if(enable && scoreLevelList.isNotEmpty()) {
+            onScoreSelect.invoke(scoreLevelList[currentIndex].levelNum)
+        }
+    }
 
     Row(
         modifier = Modifier
@@ -290,7 +363,7 @@ private fun ScoreInfoContent(
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = if (enable) scoreStateFilters[currentIndex].desc else scoreStateFilters[initialIndex].desc,
+                    text = if (enable && scoreLevelList.isNotEmpty()) scoreLevelList[currentIndex].levelCode else "A",
                     textAlign = TextAlign.Center,
                     style = scoreTitleStyle(enable)
                 )
@@ -362,10 +435,11 @@ private fun ScoreInfoContent(
 
     SingleColumnPicker(
         visible = showScoreFilter.value,
-        range = scoreStateFilters.map { it.desc },
+        range = scoreLevelList.map { it.levelCode },
         value = currentIndex,
         onChange = {
             currentIndex = it
+            onScoreSelect.invoke(scoreLevelList[it].levelNum)
         },
         onCancel = {
             showScoreFilter.value = false
@@ -766,6 +840,7 @@ private fun ArchiveScoreScreenPreview() {
         val isRefreshing = remember { mutableStateOf(false) }
         val isLoadingMore = remember { mutableStateOf(false) }
         val canLoadMore = remember { mutableStateOf(true) }
+        val loadingState = rememberTipsDialogState()
         val items = remember { mutableStateOf(listOf<ArchiveListData>()) }
         repeat(10) {
             items.value += ArchiveListData(
@@ -783,6 +858,7 @@ private fun ArchiveScoreScreenPreview() {
             isRefreshing = isRefreshing,
             isLoadingMore = isLoadingMore,
             canLoadMore = canLoadMore,
+            loadingState = loadingState,
         )
     }
 }
