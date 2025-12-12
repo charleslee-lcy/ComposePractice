@@ -16,6 +16,7 @@ import cn.thecover.media.core.data.ScoreArchiveListRequest
 import cn.thecover.media.core.data.ScoreRuleData
 import cn.thecover.media.core.data.AuditDetailRequest
 import cn.thecover.media.core.data.DepartmentListData
+import cn.thecover.media.core.data.UpdateAssignRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -60,6 +61,18 @@ interface ReviewManagerApi {
      */
     @POST(value = "api/mgr/department/employee/budgetList")
     suspend fun getDepartmentAssignList(@Body request: DepartmentAssignRequest): NetworkResponse<PaginatedResult<DepartmentAssignListData>>
+
+    /**
+     * 获取不能操作的月份
+     */
+    @POST(value = "api/mgr/department/employee/notEditMonth")
+    suspend fun getCannotEditMonth(@Body request: DepartmentRemainRequest): NetworkResponse<List<Int>>
+
+    /**
+     * 更新预算分配
+     */
+    @POST(value = "api/mgr/department/employee/updateBudget")
+    suspend fun updateDepartmentAssign(@Body request: UpdateAssignRequest): NetworkResponse<Any>
 
     /**
      * 我的申诉列表数据

@@ -25,6 +25,24 @@ data class DepartmentRemainRequest(
     var departmentId: Long = 0L
 )
 
+data class UpdateAssignRequest(
+    var userId: Long = 0L,
+    var year: String = "",
+    var departmentId: Long = 0L,
+    var janBudget: String = "",
+    var febBudget: String = "",
+    var marBudget: String = "",
+    var aprBudget: String = "",
+    var mayBudget: String = "",
+    var junBudget: String = "",
+    var julBudget: String = "",
+    var augBudget: String = "",
+    var sepBudget: String = "",
+    var octBudget: String = "",
+    var novBudget: String = "",
+    var decBudget: String = "",
+)
+
 @Serializable
 data class DepartmentAssignListData(
     val id: String = "",

@@ -132,7 +132,7 @@ fun AssignListItem(
 }
 
 @Composable
-fun DepartmentAnnualAssign(item: DepartmentAssignListData) {
+fun DepartmentAnnualAssign(item: DepartmentAssignListData, cannotEditMonth: List<Int> = listOf()) {
     LazyVerticalGrid (
         modifier = Modifier.padding(top = 16.dp).height(136.dp),
         columns = GridCells.Fixed(6),
@@ -147,7 +147,7 @@ fun DepartmentAnnualAssign(item: DepartmentAssignListData) {
                         .background(
                             color = PageBackgroundColor,
                             shape = RoundedCornerShape(4.dp)
-                        ),
+                        ).alpha(if (cannotEditMonth.contains(it + 1)) 0.2f else 1f),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {

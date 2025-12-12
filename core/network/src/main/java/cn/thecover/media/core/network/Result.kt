@@ -48,5 +48,6 @@ data class BaseUiState<T>(
     val data: T? = null,
     val status: HttpStatus = HttpStatus.NORMAL,
     val errorCode: Int = 0,
-    val errorMsg: String = ""
+    val errorMsg: String = "",
+    val isSuccess: Boolean = status == HttpStatus.SUCCESS
 )

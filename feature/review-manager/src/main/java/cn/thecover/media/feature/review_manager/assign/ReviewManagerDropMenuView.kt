@@ -114,7 +114,7 @@ fun DepartmentMultiDropMenuView(
                 style = MaterialTheme.typography.labelMedium,
                 color = MainTextColor,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+                overflow = TextOverflow.MiddleEllipsis,
             )
             Icon(
                 modifier = Modifier

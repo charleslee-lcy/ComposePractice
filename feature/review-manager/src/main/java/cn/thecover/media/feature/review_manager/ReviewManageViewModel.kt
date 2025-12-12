@@ -23,6 +23,7 @@ import cn.thecover.media.core.data.NetworkRequest
 import cn.thecover.media.core.data.NextNodeRequest
 import cn.thecover.media.core.data.ScoreArchiveListRequest
 import cn.thecover.media.core.data.ScoreRuleData
+import cn.thecover.media.core.data.UpdateAssignRequest
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
@@ -84,6 +85,7 @@ class ReviewManageViewModel @Inject constructor(
     val departYear = mutableIntStateOf(LocalDate.now().year)
     var curDepartmentData = MutableStateFlow(DepartmentListData())
     var departmentListState = MutableStateFlow(listOf<DepartmentListData>())
+    var cannotEditMonthState = MutableStateFlow(listOf<Int>())
     // 搜索类型
     val departSearchType = mutableIntStateOf(0)
     // 搜索关键词
@@ -97,6 +99,7 @@ class ReviewManageViewModel @Inject constructor(
     )
     private val departmentRequest = DepartmentAssignRequest()
     val assignRemainStatus = MutableStateFlow(DepartmentAssignListData())
+    val updateAssignState = MutableStateFlow(BaseUiState<Any>())
     // ====================================== 部门内分配 end =========================================
 
     // ======================================== 申诉管理 start =======================================
@@ -305,6 +308,39 @@ class ReviewManageViewModel @Inject constructor(
                     else -> {}
                 }
             }
+        }
+    }
+
+    fun getCannotEditMonth() {
+        viewModelScope.launch {
+            flow {
+                val list = apiService.getCannotEditMonth(
+                    DepartmentRemainRequest(
+                    year = departYear.intValue.toString(),
+                    departmentId = curDepartmentData.value.id)
+                )
+                emit(list)
+            }.asResult().collect { result ->
+                result.data?.takeIf { it.isNotEmpty() }?.let {
+                    cannotEditMonthState.value = it
+                }
+            }
+        }
+    }
+
+    fun updateDepartmentAssign(request: UpdateAssignRequest = UpdateAssignRequest()) {
+        viewModelScope.launch {
+            flow {
+                val result = apiService.updateDepartmentAssign(request)
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    updateAssignState.value = result
+                    if (result.status == HttpStatus.SUCCESS) {
+                        getDepartmentAssignRemain()
+                        getDepartmentAssignList(isRefresh = true)
+                    }
+                }
         }
     }
 
