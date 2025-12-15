@@ -128,7 +128,7 @@ fun YBBadge(
                         containerColor = MsgColor,
                         contentColor = Color.White
                     ) {
-                        Text(text = if (msgCount > 99) "99+" else "$msgCount")
+                        Text(text = if (msgCount > 99) "99+" else "$msgCount", fontSize = 10.sp)
                     }
                 } else {
                     Badge(
