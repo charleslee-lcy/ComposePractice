@@ -133,7 +133,7 @@ internal fun ManuscriptReviewPage(
                     text = buildAnnotatedString {
                         append("共 ")
                         withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                            append(data.dataList?.size.toString())
+                            append((data.dataList?.size ?: 0).toString())
                         }
                         append(" 条记录")
                     },
