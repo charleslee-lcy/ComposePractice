@@ -15,7 +15,7 @@ import retrofit2.http.POST
  */
 
 interface MessageApi {
-    @POST(value = "mgr/notification/list")
+    @POST(value = "mgr/notification/list?client=android")
     suspend fun getMessageList(
         @Body messageListRequest: MessageListRequest
     ): NetworkResponse<PaginatedResult<MessageDataEntity>?>

@@ -178,14 +178,15 @@ private fun TopBar(
         }
         YBBadge(
             modifier = Modifier
-                .padding(horizontal = 10.dp)
+                .padding(horizontal = 16.dp)
                 .align(Alignment.CenterEnd),
             msgCount = unreadMessageCount,
+            showNumber = true
 
             ) {
             YBImage(
                 modifier = Modifier
-                    .padding(2.dp)
+                    .padding(5.dp)
                     .size(18.dp)
                     .clickableWithoutRipple {
                         routeToMsgScreen()
