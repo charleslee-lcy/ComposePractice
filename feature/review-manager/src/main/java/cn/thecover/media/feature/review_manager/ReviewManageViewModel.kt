@@ -14,14 +14,19 @@ import cn.thecover.media.core.data.AppealListData
 import cn.thecover.media.core.data.AppealManageRequest
 import cn.thecover.media.core.data.AppealSwitchInfo
 import cn.thecover.media.core.data.ArchiveListData
+import cn.thecover.media.core.data.AuditDetailRequest
 import cn.thecover.media.core.data.DepartmentAssignListData
 import cn.thecover.media.core.data.DepartmentAssignRequest
+import cn.thecover.media.core.data.DepartmentListData
 import cn.thecover.media.core.data.DepartmentRemainRequest
 import cn.thecover.media.core.data.NetworkRequest
 import cn.thecover.media.core.data.NextNodeRequest
 import cn.thecover.media.core.data.ScoreArchiveListRequest
+import cn.thecover.media.core.data.ScoreLevelData
 import cn.thecover.media.core.data.ScoreRuleData
-import cn.thecover.media.core.data.AuditDetailRequest
+import cn.thecover.media.core.data.UpdateAssignRequest
+import cn.thecover.media.core.data.UpdateScoreRequest
+import cn.thecover.media.core.data.UserScoreGroup
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
@@ -52,11 +57,11 @@ class ReviewManageViewModel @Inject constructor(
     var pageType by mutableIntStateOf(ReviewManageType.ARCHIVE_SCORE.index)
     // ======================================= 稿件打分 start ========================================
     // 开始时间
-    val startDateText = mutableStateOf("开始时间")
-    var startLocalDate by mutableStateOf(LocalDate.now())
+    var startLocalDate by mutableStateOf(LocalDate.now().minusMonths(1))
+    val startDateText = mutableStateOf("${startLocalDate.year}-${startLocalDate.monthValue}-${startLocalDate.dayOfMonth}")
     // 结束时间
-    val endDateText = mutableStateOf("结束时间")
     var endLocalDate by mutableStateOf(LocalDate.now())
+    val endDateText = mutableStateOf("${endLocalDate.year}-${endLocalDate.monthValue}-${endLocalDate.dayOfMonth}")
     // 本人打分状态
     val userScoreStatus = mutableIntStateOf(0)
     // 稿件打分状态
@@ -76,11 +81,17 @@ class ReviewManageViewModel @Inject constructor(
     )
     private val archiveRequest = ScoreArchiveListRequest()
     val scoreRuleStatus = MutableStateFlow(listOf<ScoreRuleData>())
+    val scoreLevelState = MutableStateFlow(listOf(ScoreLevelData(levelCode = "A", levelNum = 0, qualityScore = 0.0, qualityType = 0)))
+    val scoreGroupState = MutableStateFlow(listOf<UserScoreGroup>())
+    val updateScoreState = MutableStateFlow(BaseUiState<Any>())
     // ======================================== 稿件打分 end =========================================
 
     // ====================================== 部门内分配 start =======================================
     // 年度
-    val departYear = mutableStateOf(LocalDate.now().year.toString())
+    val departYear = mutableIntStateOf(LocalDate.now().year)
+    var curDepartmentData = MutableStateFlow(DepartmentListData())
+    var departmentListState = MutableStateFlow(listOf<DepartmentListData>())
+    var cannotEditMonthState = MutableStateFlow(listOf<Int>())
     // 搜索类型
     val departSearchType = mutableIntStateOf(0)
     // 搜索关键词
@@ -94,6 +105,7 @@ class ReviewManageViewModel @Inject constructor(
     )
     private val departmentRequest = DepartmentAssignRequest()
     val assignRemainStatus = MutableStateFlow(DepartmentAssignListData())
+    val updateAssignState = MutableStateFlow(BaseUiState<Any>())
     // ====================================== 部门内分配 end =========================================
 
     // ======================================== 申诉管理 start =======================================
@@ -137,6 +149,46 @@ class ReviewManageViewModel @Inject constructor(
             }.asResult()
                 .collect { result ->
                     scoreRuleStatus.value = result.data ?: emptyList()
+                }
+        }
+    }
+
+    fun getScoreLevelInfo() {
+        viewModelScope.launch {
+            flow {
+                val result = apiService.getScoreLevelInfo(NetworkRequest())
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    scoreLevelState.value = result.data ?: emptyList()
+                }
+        }
+    }
+
+    fun getUserGroupInfo() {
+        viewModelScope.launch {
+            flow {
+                val result = apiService.getUserGroupInfo(NetworkRequest())
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    scoreGroupState.value = result.data ?: emptyList()
+                }
+        }
+    }
+
+    fun updateScore(scoreGroupId: Int, scoreLevel: Int, newsId: Long? = null) {
+        viewModelScope.launch {
+            flow {
+                val request = UpdateScoreRequest(newsId, scoreGroupId, scoreLevel)
+                val result = apiService.updateScore(request)
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    updateScoreState.value = result
+                    if (result.status == HttpStatus.SUCCESS) {
+                        getArchiveList(isRefresh = true)
+                    }
                 }
         }
     }
@@ -216,7 +268,8 @@ class ReviewManageViewModel @Inject constructor(
         viewModelScope.launch {
             flow {
                 val request = DepartmentRemainRequest()
-                request.year = departYear.value
+                request.year = departYear.intValue.toString()
+                request.departmentId = curDepartmentData.value.id
                 val result = apiService.getDepartmentAssignRemain(request)
                 emit(result)
             }.asResult()
@@ -226,21 +279,40 @@ class ReviewManageViewModel @Inject constructor(
         }
     }
 
+    fun getDepartmentList() {
+        viewModelScope.launch {
+            flow {
+                val list = apiService.getDepartmentList()
+                emit(list)
+            }.asResult().collect { result ->
+                result.data?.takeIf { it.isNotEmpty() }?.let {
+                    departmentListState.value = it
+                    if (curDepartmentData.value.id == 0L) {
+                        curDepartmentData.value = it.first()
+                    }
+                    getDepartmentAssignRemain()
+                    getDepartmentAssignList(isRefresh = true)
+                }
+            }
+        }
+    }
+
     fun getDepartmentAssignList(isRefresh: Boolean = true, request: DepartmentAssignRequest = departmentRequest) {
         if (isRefresh) {
             request.lastId = null
         } else {
             request.lastId = departmentLastId
         }
-        request.year = departYear.value
+        request.year = departYear.intValue.toString()
         when(departSearchType.intValue) {
             0 -> { request.searchType = 1 }
             else -> { request.searchType = 2 }
         }
         request.searchKeyword = departSearchKeyword.value
+        request.departmentId = curDepartmentData.value.id
+        request.pageSize = pageSize
         viewModelScope.launch {
             flow {
-                request.pageSize = pageSize
                 val list = apiService.getDepartmentAssignList(request)
                 emit(list)
             }.asResult().collect { result ->
@@ -282,6 +354,39 @@ class ReviewManageViewModel @Inject constructor(
                     else -> {}
                 }
             }
+        }
+    }
+
+    fun getCannotEditMonth() {
+        viewModelScope.launch {
+            flow {
+                val list = apiService.getCannotEditMonth(
+                    DepartmentRemainRequest(
+                    year = departYear.intValue.toString(),
+                    departmentId = curDepartmentData.value.id)
+                )
+                emit(list)
+            }.asResult().collect { result ->
+                result.data?.takeIf { it.isNotEmpty() }?.let {
+                    cannotEditMonthState.value = it
+                }
+            }
+        }
+    }
+
+    fun updateDepartmentAssign(request: UpdateAssignRequest = UpdateAssignRequest()) {
+        viewModelScope.launch {
+            flow {
+                val result = apiService.updateDepartmentAssign(request)
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    updateAssignState.value = result
+                    if (result.status == HttpStatus.SUCCESS) {
+                        getDepartmentAssignRemain()
+                        getDepartmentAssignList(isRefresh = true)
+                    }
+                }
         }
     }
 

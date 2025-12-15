@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.review_manager.assign
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,6 +43,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import cn.thecover.media.core.data.DepartmentAssignListData
+import cn.thecover.media.core.data.UpdateAssignRequest
+import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.YBInput
@@ -50,7 +54,9 @@ import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.SingleColumnPicker
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBDialog
+import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.component.popup.YBPopup
+import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.DividerColor
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -74,6 +80,7 @@ internal fun DepartmentAssignScreen(
     navController: NavController,
     viewModel: ReviewManageViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val isRefreshing = remember { mutableStateOf(false) }
     val isLoadingMore = remember { mutableStateOf(false) }
     val canLoadMore = remember { mutableStateOf(true) }
@@ -84,10 +91,22 @@ internal fun DepartmentAssignScreen(
     var checkedItem by remember { mutableStateOf<DepartmentAssignListData?>(null) }
 
     val departmentListUiState by viewModel.departmentListDataState.collectAsStateWithLifecycle()
+    var isFirstLaunch by remember { mutableStateOf(true) }
+    var monthPicked by remember { mutableIntStateOf(LocalDate.now().monthValue) }
+    var assignScore by remember { mutableStateOf("") }
+    val updateAssignStatus by viewModel.updateAssignState.collectAsStateWithLifecycle()
+    val loadingState = rememberTipsDialogState()
 
-    LaunchedEffect(viewModel.departYear.value) {
-        viewModel.getDepartmentAssignRemain()
-        viewModel.getDepartmentAssignList(isRefresh = true)
+    LaunchedEffect(viewModel.departYear.intValue) {
+        if (isFirstLaunch) {
+            // 首次初始化逻辑
+            viewModel.getDepartmentList()
+            isFirstLaunch = false
+        } else {
+            // 后续值变化逻辑
+            viewModel.getDepartmentAssignRemain()
+            viewModel.getDepartmentAssignList(isRefresh = true)
+        }
     }
 
     LaunchedEffect(departmentListUiState) {
@@ -97,12 +116,31 @@ internal fun DepartmentAssignScreen(
         items.value = departmentListUiState.list
     }
 
+    LaunchedEffect(updateAssignStatus) {
+        when (updateAssignStatus.status) {
+            HttpStatus.LOADING -> {
+                loadingState.show()
+            }
+            HttpStatus.SUCCESS -> {
+                loadingState.hide()
+                showAssignDialog.value = false
+                checkedItem = null
+            }
+            HttpStatus.ERROR -> {
+                loadingState.hide()
+                Toast.makeText(context, updateAssignStatus.errorMsg, Toast.LENGTH_SHORT).show()
+            }
+            else -> {}
+        }
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 15.dp)
     ) {
         DepartmentAssignHeader(viewModel) {
+            viewModel.getDepartmentAssignRemain()
             viewModel.getDepartmentAssignList(isRefresh = true)
             focusManager.clearFocus()
         }
@@ -114,6 +152,7 @@ internal fun DepartmentAssignScreen(
             isLoadingMore = isLoadingMore,
             canLoadMore = canLoadMore,
             onRefresh = {
+                viewModel.getDepartmentAssignRemain()
                 viewModel.getDepartmentAssignList(isRefresh = true)
             },
             onLoadMore = {
@@ -137,13 +176,86 @@ internal fun DepartmentAssignScreen(
         onClose = {
             showAssignDialog.value = false
             checkedItem = null
+        },
+        onConfirm = {
+            if (assignScore.isEmpty()) {
+                Toast.makeText(context, "请输入分配分数", Toast.LENGTH_SHORT).show()
+                return@YBPopup
+            }
+            val request = UpdateAssignRequest()
+            request.userId = checkedItem?.userId ?: 0
+            request.departmentId = checkedItem?.departmentId ?: 0
+            request.year = viewModel.departYear.intValue.toString()
+            request.janBudget = if (monthPicked == 1) {
+                assignScore
+            } else {
+                checkedItem?.janBudget ?: ""
+            }
+            request.febBudget = if (monthPicked == 2) {
+                assignScore
+            } else {
+                checkedItem?.febBudget ?: ""
+            }
+            request.marBudget = if (monthPicked == 3) {
+                assignScore
+            } else {
+                checkedItem?.marBudget ?: ""
+            }
+            request.aprBudget = if (monthPicked == 4) {
+                assignScore
+            } else {
+                checkedItem?.aprBudget ?: ""
+            }
+            request.mayBudget = if (monthPicked == 5) {
+                assignScore
+            } else {
+                checkedItem?.mayBudget ?: ""
+            }
+            request.junBudget = if (monthPicked == 6) {
+                assignScore
+            } else {
+                checkedItem?.junBudget ?: ""
+            }
+            request.julBudget = if (monthPicked == 7) {
+                assignScore
+            } else {
+                checkedItem?.julBudget ?: ""
+            }
+            request.augBudget = if (monthPicked == 8) {
+                assignScore
+            } else {
+                checkedItem?.augBudget ?: ""
+            }
+            request.sepBudget = if (monthPicked == 9) {
+                assignScore
+            } else {
+                checkedItem?.sepBudget ?: ""
+            }
+            request.octBudget = if (monthPicked == 10) {
+                assignScore
+            } else {
+                checkedItem?.octBudget ?: ""
+            }
+            request.novBudget = if (monthPicked == 11) {
+                assignScore
+            } else {
+                checkedItem?.novBudget ?: ""
+            }
+            request.decBudget = if (monthPicked == 12) {
+                assignScore
+            } else {
+                checkedItem?.decBudget ?: ""
+            }
+            viewModel.updateDepartmentAssign(request)
         }
     ) {
-        val currentDate = LocalDate.now()
-        val currentMonthText = "${currentDate.monthValue}月"
         var showMonthPicker by remember { mutableStateOf(false) }
-        var monthPickedText by remember { mutableStateOf(currentMonthText) }
         val departmentRemainStatus by viewModel.assignRemainStatus.collectAsStateWithLifecycle()
+        val cannotEditMonthStatus by viewModel.cannotEditMonthState.collectAsStateWithLifecycle()
+
+        LaunchedEffect(Unit) {
+            viewModel.getCannotEditMonth()
+        }
 
         Column(
             modifier = Modifier
@@ -151,11 +263,11 @@ internal fun DepartmentAssignScreen(
                 .padding(top = 15.dp)
         ) {
             checkedItem?.apply {
-                LabelText("年度：", viewModel.departYear.value)
+                LabelText("年度：", viewModel.departYear.intValue.toString())
                 LabelText("部门：", departmentName)
                 LabelText("部门人员：", userName)
-                LabelText("部门年度预算剩余：", "${departmentRemainStatus.yearBudget}分")
-                LabelText("年度已分配总分：", "${departmentRemainStatus.yearTotalBudget}分")
+                LabelText("部门年度预算剩余：", "${formatDecimalString(departmentRemainStatus.yearBudget)}分")
+                LabelText("年度已分配总分：", "${formatDecimalString(departmentRemainStatus.yearTotalBudget)}分")
 
                 HorizontalDivider(
                     modifier = Modifier
@@ -181,7 +293,7 @@ internal fun DepartmentAssignScreen(
                             .weight(1f)
                             .padding(start = 10.dp)
                     ) {
-                        DateSelectionView(label = monthPickedText, textAlignCenter = true, onClick = {
+                        DateSelectionView(label = "${monthPicked}月", textAlignCenter = true, onClick = {
                             showMonthPicker = true
                         })
                     }
@@ -224,7 +336,7 @@ internal fun DepartmentAssignScreen(
                                     keyboardType = KeyboardType.Number
                                 ),
                                 onValueChange = {
-
+                                    assignScore = it
                                 }
                             )
                         }
@@ -242,38 +354,50 @@ internal fun DepartmentAssignScreen(
                     fontSize = 14.sp,
                     color = MainTextColor
                 )
-                DepartmentAnnualAssign(this)
+                DepartmentAnnualAssign(this, cannotEditMonthStatus)
                 Spacer(modifier = Modifier.height(15.dp))
             }
         }
 
         // 单独的月份选择器弹窗组件
         val months = listOf(
-            "1月",
-            "2月",
-            "3月",
-            "4月",
-            "5月",
-            "6月",
-            "7月",
-            "8月",
-            "9月",
-            "10月",
-            "11月",
-            "12月"
-        )
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+        ).filter {
+            !cannotEditMonthStatus.contains(it)
+        }.also{
+            if (!it.contains(monthPicked)) {
+                monthPicked = it.last()
+            }
+        }
+
+        val monthStrings = months.map {
+            "${it}月"
+        }
         SingleColumnPicker(
             visible = showMonthPicker,
-            range = months,
-            value = months.indexOf(monthPickedText),
+            range = monthStrings,
+            value = months.indexOf(monthPicked),
             onChange = {
-                monthPickedText = months[it]
+                monthPicked = months[it]
             },
             onCancel = {
                 showMonthPicker = false
             }
         )
     }
+
+    YBLoadingDialog(loadingState, enableDismiss = true, onDismissRequest = { loadingState.hide() })
 }
 
 @Composable
@@ -304,21 +428,13 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
         FilterType(type = 1, desc = "部门人员"),
         FilterType(type = 2, desc = "人员ID")
     )
-    val departmentFilters = listOf(
-        FilterType(type = 1, desc = "部门总稿费"),
-        FilterType(type = 2, desc = "部门总完成度"),
-        FilterType(type = 3, desc = "部门总完成人数"),
-        FilterType(type = 4, desc = "部门总完成率"),
-        FilterType(type = 5, desc = "部门总完成时间")
-    )
-    val currentDate = LocalDate.now()
-    val currentYearText = "${currentDate.year}年"
 
     val showBudgetDialog = remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
-    var datePickedText by remember { mutableStateOf(currentYearText) }
+    var datePickedText by remember { mutableStateOf("${viewModel.departYear.intValue}年") }
     val departmentRemainState by viewModel.assignRemainStatus.collectAsStateWithLifecycle()
-
+    val departmentListStatus by viewModel.departmentListState.collectAsStateWithLifecycle()
+    val curDepartmentData by viewModel.curDepartmentData.collectAsStateWithLifecycle()
 
     Card(
         modifier = Modifier
@@ -336,7 +452,11 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
         ) {
             // 左侧排序指数选择区域
             Column(modifier = Modifier.weight(1.2f)) {
-                FilterDropMenuView(filterData = departmentFilters)
+                DepartmentMultiDropMenuView(curDepartItem = curDepartmentData, filterData = departmentListStatus) { item ->
+                    viewModel.curDepartmentData.value = item
+                    viewModel.getDepartmentAssignRemain()
+                    viewModel.getDepartmentAssignList(true)
+                }
             }
             Spacer(Modifier.width(12.dp))
             // 右侧时间选择区域
@@ -381,12 +501,13 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
     YBDatePicker(
         visible = showDatePicker,
         type = DateType.YEAR,
+        value = LocalDate.of(viewModel.departYear.intValue, 1, 1),
         start = LocalDate.of(LocalDate.now().year - 5, 1, 1),
         end = LocalDate.of(LocalDate.now().year + 4, 1, 1),
         onCancel = { showDatePicker = false },
         onChange = {
             datePickedText = "${it.year}年"
-            viewModel.departYear.value = it.year.toString()
+            viewModel.departYear.intValue = it.year
         }
     )
 
@@ -412,7 +533,7 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
                     },
                     trailingIcon = {
                         Text(
-                            text = "${departmentRemainState.yearBudget}",
+                            text = "${formatDecimalString(departmentRemainState.yearBudget)}",
                             fontSize = 16.sp,
                             color = MainColor,
                             fontWeight = FontWeight.SemiBold

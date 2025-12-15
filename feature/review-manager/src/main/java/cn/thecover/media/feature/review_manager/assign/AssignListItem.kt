@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -30,11 +31,13 @@ import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
+import cn.thecover.media.core.widget.theme.MsgColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
+import java.math.BigDecimal
 
 
 /**
@@ -70,6 +73,16 @@ fun AssignListItem(
                         fontWeight = FontWeight.SemiBold
                     )
                 )
+                if (item.status == 0) {
+                    Text(
+                        text = "(部门变动)",
+                        style = TextStyle(
+                            color = MsgColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    )
+                }
                 Text(
                     text = "ID:${item.userId}",
                     style = TextStyle(
@@ -89,8 +102,10 @@ fun AssignListItem(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.clickableWithoutRipple {
                         // 分配分数
-                        onAssignClick?.invoke()
-                    }
+                        if (item.status == 1) {
+                            onAssignClick?.invoke()
+                        }
+                    }.alpha(if (item.status == 0) 0.4f else 1f)
                 ) {
                     Text(
                         text = "分配分数",
@@ -117,7 +132,7 @@ fun AssignListItem(
 }
 
 @Composable
-fun DepartmentAnnualAssign(item: DepartmentAssignListData) {
+fun DepartmentAnnualAssign(item: DepartmentAssignListData, cannotEditMonth: List<Int> = listOf()) {
     LazyVerticalGrid (
         modifier = Modifier.padding(top = 16.dp).height(136.dp),
         columns = GridCells.Fixed(6),
@@ -132,7 +147,7 @@ fun DepartmentAnnualAssign(item: DepartmentAssignListData) {
                         .background(
                             color = PageBackgroundColor,
                             shape = RoundedCornerShape(4.dp)
-                        ),
+                        ).alpha(if (cannotEditMonth.contains(it + 1)) 0.2f else 1f),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -142,7 +157,7 @@ fun DepartmentAnnualAssign(item: DepartmentAssignListData) {
                         fontSize = 14.sp
                     )
                     Text(
-                        text = handleMonthData(item, it),
+                        text = formatDecimalString(handleMonthData(item, it)),
                         color = MainTextColor,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold
@@ -155,18 +170,26 @@ fun DepartmentAnnualAssign(item: DepartmentAssignListData) {
 
 private fun handleMonthData(item: DepartmentAssignListData, index: Int): String {
     return when(index + 1) {
-        1 -> item.janBudget.toString()
-        2 -> item.febBudget.toString()
-        3 -> item.marBudget.toString()
-        4 -> item.aprBudget.toString()
-        5 -> item.mayBudget.toString()
-        6 -> item.junBudget.toString()
-        7 -> item.julBudget.toString()
-        8 -> item.augBudget.toString()
-        9 -> item.sepBudget.toString()
-        10 -> item.octBudget.toString()
-        11 -> item.novBudget.toString()
-        else -> item.decBudget.toString()
+        1 -> item.janBudget
+        2 -> item.febBudget
+        3 -> item.marBudget
+        4 -> item.aprBudget
+        5 -> item.mayBudget
+        6 -> item.junBudget
+        7 -> item.julBudget
+        8 -> item.augBudget
+        9 -> item.sepBudget
+        10 -> item.octBudget
+        11 -> item.novBudget
+        else -> item.decBudget
+    }
+}
+
+fun formatDecimalString(decimalString: String): String {
+    return try {
+        BigDecimal(decimalString).stripTrailingZeros().toPlainString()
+    } catch (e: NumberFormatException) {
+        decimalString
     }
 }
 
@@ -182,21 +205,8 @@ private fun AssignListItemPreview() {
             userDepartmentName = "部门1",
             userId = 1,
             userName = "用户1",
-            janBudget = 100,
-            febBudget = 100,
-            marBudget = 100,
-            aprBudget = 100,
-            mayBudget = 100,
-            junBudget = 100,
-            julBudget = 100,
-            augBudget = 100,
-            sepBudget = 100,
-            octBudget = 100,
-            novBudget = 100,
-            decBudget = 100,
-            yearTotalBudget = 100,
             handleTime = "2021-01-01 00:00:00",
-            status = 1
+            status = 0
         )
         AssignListItem(item = item)
     }

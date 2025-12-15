@@ -9,8 +9,6 @@ import kotlinx.serialization.Serializable
  * 15708478830@163.com
  */
 @Serializable
-open class NetworkRequest(
-    val client: String = "android"
-)
+open class NetworkRequest()
 
 
