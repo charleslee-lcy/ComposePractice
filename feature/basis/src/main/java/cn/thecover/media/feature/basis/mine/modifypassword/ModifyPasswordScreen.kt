@@ -32,21 +32,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.YBTitleBar
-import cn.thecover.media.core.widget.component.YBTopAppBar
+import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.icon.YBIcons
-import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
+import cn.thecover.media.feature.basis.home.navigation.LoginRoute
 import cn.thecover.media.feature.basis.mine.MineIntent
 import cn.thecover.media.feature.basis.mine.MineViewModel
 
@@ -62,26 +63,47 @@ internal fun ModifyPasswordRoute(
     navController: NavController
 ) {
     val snackBarHostState: SnackbarHostState = remember { SnackbarHostState() }
-    LaunchedEffect(viewModel.oneTimeUiState) {
-        if(viewModel.oneTimeUiState.value.successMessage == "修改密码成功") {
-            snackBarHostState.showSnackbar("修改密码成功")
-            navController.popBackStack()
-        }else if(viewModel.oneTimeUiState.value.toastMessage?.isNotEmpty() == true){
-            snackBarHostState.showSnackbar(viewModel.oneTimeUiState.value.toastMessage?:"")
+    val oneTimeUiState by viewModel.oneTimeUiState.collectAsStateWithLifecycle()
+
+    // 监听状态变化
+    LaunchedEffect(oneTimeUiState) {
+        val toastMessage = oneTimeUiState.toastMessage
+        val shouldNavigateToLogin = oneTimeUiState.shouldNavigateToLogin
+
+        if (toastMessage?.isNotEmpty() == true) {
+            snackBarHostState.showSnackbar(
+                message = toastMessage,
+            )
+            if (shouldNavigateToLogin) {
+                // 导航到登录页面，并清除所有返回栈
+                navController.navigate(LoginRoute) {
+                    popUpTo(0) { inclusive = true }
+                }
+            }
         }
     }
 
-    ModifyPasswordScreen(modifier, navController){ old, new, confirm ->
-        viewModel.handleIntent(MineIntent.ModifyPassword(old, new, confirm))
+    Box(modifier = Modifier.fillMaxSize()) {
+        ModifyPasswordScreen(modifier, navController, snackBarHostState) { old, new, confirm ->
+            viewModel.handleIntent(MineIntent.ModifyPassword(old, new, confirm))
+        }
+
+        YBToast(snackBarHostState = snackBarHostState)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ModifyPasswordScreen(modifier: Modifier, navController: NavController,commit: (String, String, String) -> Unit){
+fun ModifyPasswordScreen(
+    modifier: Modifier,
+    navController: NavController,
+    snackBarHostState: SnackbarHostState,
+    commit: (String, String, String) -> Unit
+) {
     val oldPass = remember { mutableStateOf("") }
     val newPass = remember { mutableStateOf("") }
     val confirmPass = remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -125,8 +147,12 @@ fun ModifyPasswordScreen(modifier: Modifier, navController: NavController,commit
                 modifier = Modifier.fillMaxWidth(),
                 text = { Text("提交") },
                 onClick = {
+                    // 收起软键盘
+                    keyboardController?.hide()
                     commit(oldPass.value, newPass.value, confirmPass.value)
                 },
+                borderColor = Color.Transparent,
+                enabled = oldPass.value.length >= 8 && newPass.value.length >= 8 && confirmPass.value.length >= 8,
                 shape = RoundedCornerShape(2.dp)
             )
         }

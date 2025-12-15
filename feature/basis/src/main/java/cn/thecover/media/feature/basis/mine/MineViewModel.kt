@@ -3,6 +3,7 @@ package cn.thecover.media.feature.basis.mine
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cn.thecover.media.core.common.util.DESUtil
 import cn.thecover.media.core.data.NetworkRequest
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
@@ -63,6 +64,11 @@ class MineViewModel @Inject constructor(
     val oneTimeUiState: StateFlow<OneTimeUiState> = _oneTimeUiState
 
     private var currentMessageType = MessageType.ALL
+
+    // 重置一次性 UI 状态
+    fun resetOneTimeUiState() {
+        _oneTimeUiState.value = OneTimeUiState()
+    }
 
 
     fun handleMessageIntent(messageIntent: MessageIntent) {
@@ -173,16 +179,21 @@ class MineViewModel @Inject constructor(
                         val apiService = retrofit.get().create(MineApi::class.java)
                         val response = apiService.modifyPassword(
                             ModifyPasswordRequest(
-                                oldPassword = mineIntent.oldPassword,
-                                password = mineIntent.password,
-                                passwordVerify = mineIntent.passwordVerify
+                                oldPassword = DESUtil.simpleEncrypt(mineIntent.oldPassword),
+                                password = DESUtil.simpleEncrypt(mineIntent.password),
+                                passwordVerify = DESUtil.simpleEncrypt(mineIntent.passwordVerify)
                             )
                         )
                         emit(response)
                     }.asResult()
                         .collect { result ->
                             if (result.status == HttpStatus.SUCCESS) {
-                                _oneTimeUiState.update { OneTimeUiState(toastMessage = "修改密码成功") }
+                                _oneTimeUiState.update {
+                                    OneTimeUiState(
+                                        toastMessage = "修改密码成功",
+                                        shouldNavigateToLogin = true
+                                    )
+                                }
                                 logout()
                             } else {
                                 _oneTimeUiState.update { OneTimeUiState(toastMessage = result.errorMsg) }
