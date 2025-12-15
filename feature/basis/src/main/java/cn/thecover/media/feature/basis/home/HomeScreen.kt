@@ -70,7 +70,6 @@ import cn.thecover.media.feature.basis.home.navigation.navigateToMessage
 import cn.thecover.media.feature.basis.home.ui.LeaderUserContent
 import cn.thecover.media.feature.basis.home.ui.ManuscriptTopRankingItem
 import cn.thecover.media.feature.basis.home.ui.ReporterUserContent
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 
@@ -231,11 +230,18 @@ internal fun HomeScreen(
                             modifier = Modifier
                                 .padding(10.dp)
                                 .clickable {
-                                    mainScreenScope.launch {
-                                        navController.navigate(
-                                            route = "cn.thecover.media.feature.review_data.navigation.ReviewDataRoute"
-                                        )
+                                    // 使用底部导航栏相同的方式导航到考核数据页面
+                                    val navOptions = androidx.navigation.navOptions {
+                                        popUpTo(0) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
+                                    navController.navigate(
+                                        route = "cn.thecover.media.feature.review_data.navigation.ReviewDataRoute",
+                                        navOptions = navOptions
+                                    )
                                 },
                             verticalAlignment = Alignment.CenterVertically
                         ) {
