@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cn.thecover.media.core.data.DiffusionDataEntity
 import cn.thecover.media.core.widget.component.PrimaryItemScoreRow
 import cn.thecover.media.core.widget.component.ScoreItemType
 import cn.thecover.media.core.widget.component.YBNormalList
@@ -47,8 +48,6 @@ import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelecti
 import cn.thecover.media.feature.review_data.basic_widget.widget.ExpandItemColumn
 import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewFilterState
-import cn.thecover.media.feature.review_data.data.entity.DiffusionDataEntity
-import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
 import java.time.LocalDate
 
 /**
@@ -101,7 +100,7 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
                         text = buildAnnotatedString {
                             append("共 ")
                             withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                                append(data.dataList?.size.toString())
+                                append((data.dataList?.size ?: 0).toString())
                             }
                             append(" 条记录")
                         },

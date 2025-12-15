@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -16,6 +15,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,6 +34,7 @@ import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryAuxiliaryColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.basis.home.HomeViewModel
 
 /**
  *  Created by Wing at 15:48 on 2025/8/7
@@ -40,7 +42,7 @@ import cn.thecover.media.core.widget.theme.YBTheme
  */
 
 @Composable
-internal fun ManuscriptTopRankingItem() {
+internal fun ManuscriptTopRankingItem(viewModel: HomeViewModel) {
     val titles = listOf("稿件TOP10", "稿件传播力TOP10")
     val currentIndex = remember { mutableIntStateOf(0) }
     Card(
@@ -65,8 +67,8 @@ internal fun ManuscriptTopRankingItem() {
                 }
             }
             when (currentIndex.intValue) {
-                0 -> TopManuscriptPage()
-                else -> TopDiffusionPage()
+                0 -> TopManuscriptPage(viewModel)
+                else -> TopDiffusionPage(viewModel)
             }
         }
 
@@ -74,22 +76,28 @@ internal fun ManuscriptTopRankingItem() {
 }
 
 @Composable
-private fun TopManuscriptPage() {
+private fun TopManuscriptPage(viewModel: HomeViewModel) {
     Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        for (index in 1..10) {
-            DataItemRankingRow(index) {
-                ManuScriptItemHeader("稿件标题", "稿件作者", "稿件编辑")
+
+        val uiState by viewModel.homeManuscriptUiState.collectAsState()
+        uiState.dataList?.forEachIndexed { index, item ->
+            DataItemRankingRow(index + 1) {
+                ManuScriptItemHeader(
+                    item.title,
+                    author = item.reporter.joinToString("、") { it.name },
+                    editor = item.reporter.joinToString("、") { it.name },
+                )
             }
 
             ItemScoreRow(
                 items = arrayOf(
-                    Pair("总分", "80"),
-                    Pair("基础分", "80"),
-                    Pair("传播分", "80"),
-                    Pair("质量分", "80")
+                    Pair("总分", item.score.toString()),
+                    Pair("基础分", item.basicScore.toString()),
+                    Pair("传播分", item.diffusionScore.toString()),
+                    Pair("质量分", item.qualityScore.toString())
                 )
             )
-            if ( index != 10) {
+            if (index != uiState.dataList?.lastIndex) {
                 HorizontalDivider(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -102,20 +110,33 @@ private fun TopManuscriptPage() {
 }
 
 @Composable
-private fun TopDiffusionPage() {
+private fun TopDiffusionPage(viewModel: HomeViewModel) {
+    val uiState by viewModel.homeManuscriptDiffusionUiState.collectAsState()
     Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        for (index in 1..10) {
-            DataItemRankingRow(index) {
-                ManuScriptItemHeader("稿件标题", "稿件作者", "稿件编辑")
+
+        uiState.dataList?.forEachIndexed { index, item ->
+
+            DataItemRankingRow(index + 1) {
+                ManuScriptItemHeader(
+                    item.title,
+                    author = item.reporter.joinToString("、") { it.name },
+                    editor = item.editor.joinToString("、") { it.name },
+                )
             }
 
             ItemScoreRow(
                 items = arrayOf(
-                    Pair("公式传播分", "80"),
-                    Pair("最终传播分", "80"),
+                    Pair(
+                        "公式传播分",
+                        item.formulaSpreadScore.toString()
+                    ),
+                    Pair(
+                        "最终传播分",
+                        item.spreadScore.toString()
+                    ),
                 )
             )
-            if ( index != 10) {
+            if (index != uiState.dataList?.lastIndex) {
                 HorizontalDivider(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -124,6 +145,8 @@ private fun TopDiffusionPage() {
                 )
             }
         }
+
+
     }
 }
 
@@ -184,7 +207,7 @@ internal fun ManuScriptItemHeader(
 @Preview
 fun ManuScriptTopRankingItemPreview() {
     YBTheme {
-        ManuscriptTopRankingItem()
+
     }
 
 }

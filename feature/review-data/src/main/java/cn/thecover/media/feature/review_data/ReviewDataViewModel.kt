@@ -3,6 +3,8 @@ package cn.thecover.media.feature.review_data
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cn.thecover.media.core.data.DiffusionDataEntity
+import cn.thecover.media.core.data.ManuscriptReviewDataEntity
 import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
@@ -11,8 +13,6 @@ import cn.thecover.media.feature.review_data.data.DepartmentReviewDateFilterStat
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewFilterState
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
-import cn.thecover.media.feature.review_data.data.entity.DiffusionDataEntity
-import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
 import cn.thecover.media.feature.review_data.data.params.RepositoryResult
 import cn.thecover.media.feature.review_data.repository.ReviewDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

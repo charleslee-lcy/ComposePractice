@@ -198,13 +198,15 @@ private fun TopBar(
                 .clickableWithoutRipple {
                     onMessageClick.invoke()
                 }
-                .padding(horizontal = 10.dp)
+                .padding(horizontal = 16.dp)
                 .align(Alignment.CenterEnd),
             msgCount = unreadMessageCount,
-            showNumber = false
+            showNumber = true
         ) {
             YBImage(
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier
+                    .padding(5.dp)
+                    .size(18.dp),
                 placeholder = painterResource(cn.thecover.media.core.widget.R.mipmap.ic_home_msg)
             )
         }

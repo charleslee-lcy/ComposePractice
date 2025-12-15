@@ -1,4 +1,4 @@
-package cn.thecover.media.feature.review_data.data.params
+package cn.thecover.media.core.data
 
 /**
  *  Created by Wing at 17:16 on 2025/12/1

@@ -1,4 +1,4 @@
-package cn.thecover.media.feature.review_data.data.entity
+package cn.thecover.media.core.data
 
 import com.google.gson.annotations.SerializedName
 
