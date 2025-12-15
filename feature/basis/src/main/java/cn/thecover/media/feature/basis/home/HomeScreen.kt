@@ -204,57 +204,59 @@ internal fun HomeScreen(
                         ReporterUserContent(homeInfo.data ?: HomeInfo())
                     }
                 }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 15.dp, end = 5.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Poll,
-                        tint = MainColor,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Text(
-                        text = "稿件TOP榜单",
-                        color = MainTextColor,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(start = 5.dp)
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
+
+                // 只有当两个数据列表都不为空时才显示稿件TOP榜单
+                if (homeManuscript.dataList?.isNotEmpty() == true && homeManuscriptDiffusion.dataList?.isNotEmpty() == true) {
                     Row(
                         modifier = Modifier
-                            .padding(10.dp)
-                            .clickable {
-                                mainScreenScope.launch {
-                                    navController.navigate(
-                                        route = "cn.thecover.media.feature.review_data.navigation.ReviewDataRoute"
-                                    )
-                                }
-                            },
+                            .fillMaxWidth()
+                            .padding(start = 15.dp, end = 5.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "查看更多",
-                            color = TertiaryTextColor,
-                            lineHeight = 14.sp,
-                            fontSize = 14.sp,
-                        )
                         Icon(
-                            painterResource(R.drawable.icon_right_arrow),
-                            contentDescription = "Localized description",
-                            Modifier
-                                .size(18.dp)
-                                .padding(2.dp),
-                            tint = TertiaryTextColor
+                            imageVector = Icons.Filled.Poll,
+                            tint = MainColor,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
                         )
+                        Text(
+                            text = "稿件TOP榜单",
+                            color = MainTextColor,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(start = 5.dp)
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Row(
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .clickable {
+                                    mainScreenScope.launch {
+                                        navController.navigate(
+                                            route = "cn.thecover.media.feature.review_data.navigation.ReviewDataRoute"
+                                        )
+                                    }
+                                },
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "查看更多",
+                                color = TertiaryTextColor,
+                                lineHeight = 14.sp,
+                                fontSize = 14.sp,
+                            )
+                            Icon(
+                                painterResource(R.drawable.icon_right_arrow),
+                                contentDescription = "Localized description",
+                                Modifier
+                                    .size(18.dp)
+                                    .padding(2.dp),
+                                tint = TertiaryTextColor
+                            )
+                        }
                     }
-                }
 
-                if (homeManuscript.dataList?.isNotEmpty() == true && homeManuscriptDiffusion.dataList?.isNotEmpty() == true) {
-                    ManuscriptTopRankingItem(viewModel)
+                    ManuscriptTopRankingItem(homeManuscript, homeManuscriptDiffusion, viewModel)
                 }
 
             }
