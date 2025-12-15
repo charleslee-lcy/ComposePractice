@@ -10,7 +10,7 @@ android {
     namespace = "cn.thecover.media"
 
     defaultConfig {
-        applicationId = "com.yndaily.review"
+        applicationId = "com.ynrb.performance"
         versionCode = 1
         versionName = "1.0.0"
 
@@ -21,6 +21,15 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("ynperformance.jks")
+            storePassword = "ynrb123456"
+            keyAlias = "ynperformance"
+            keyPassword = "ynrb123456"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -28,6 +37,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
