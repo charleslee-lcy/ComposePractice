@@ -229,7 +229,9 @@ internal fun HomeScreen(
                             .padding(10.dp)
                             .clickable {
                                 mainScreenScope.launch {
-
+                                    navController.navigate(
+                                        route = "cn.thecover.media.feature.review_data.navigation.ReviewDataRoute"
+                                    )
                                 }
                             },
                         verticalAlignment = Alignment.CenterVertically
