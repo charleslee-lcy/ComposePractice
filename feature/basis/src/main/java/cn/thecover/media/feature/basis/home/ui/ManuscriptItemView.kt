@@ -24,6 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import cn.thecover.media.core.data.DiffusionDataEntity
+import cn.thecover.media.core.data.ManuscriptReviewDataEntity
+import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.core.widget.component.ItemScoreRow
 import cn.thecover.media.core.widget.component.YBTab
 import cn.thecover.media.core.widget.component.YBTabRow
@@ -42,8 +45,32 @@ import cn.thecover.media.feature.basis.home.HomeViewModel
  */
 
 @Composable
-internal fun ManuscriptTopRankingItem(viewModel: HomeViewModel) {
-    val titles = listOf("稿件TOP10", "稿件传播力TOP10")
+internal fun ManuscriptTopRankingItem(
+    homeManuscript: PaginatedResult<ManuscriptReviewDataEntity>,
+    homeManuscriptDiffusion: PaginatedResult<DiffusionDataEntity>,
+    viewModel: HomeViewModel
+) {
+    // 根据数据是否为空动态创建标题和页面
+    val availableTabs = mutableListOf<String>()
+    val availablePages = mutableListOf<@Composable () -> Unit>()
+
+    // 添加稿件TOP10 tab（如果有数据）
+    if (homeManuscript.dataList?.isNotEmpty() == true) {
+        availableTabs.add("稿件TOP10")
+        availablePages.add { TopManuscriptPage(viewModel) }
+    }
+
+    // 添加稿件传播力TOP10 tab（如果有数据）
+    if (homeManuscriptDiffusion.dataList?.isNotEmpty() == true) {
+        availableTabs.add("稿件传播力TOP10")
+        availablePages.add { TopDiffusionPage(viewModel) }
+    }
+
+    // 如果没有任何数据，不显示任何内容
+    if (availableTabs.isEmpty()) {
+        return
+    }
+    
     val currentIndex = remember { mutableIntStateOf(0) }
     Card(
         modifier = Modifier
@@ -58,7 +85,7 @@ internal fun ManuscriptTopRankingItem(viewModel: HomeViewModel) {
                 selectedTabIndex = currentIndex.intValue,
                 modifier = Modifier.padding()
             ) {
-                titles.forEachIndexed { index, title ->
+                availableTabs.forEachIndexed { index, title ->
                     YBTab(
                         selected = index == currentIndex.intValue,
                         onClick = { currentIndex.intValue = index },
@@ -66,12 +93,11 @@ internal fun ManuscriptTopRankingItem(viewModel: HomeViewModel) {
                     )
                 }
             }
-            when (currentIndex.intValue) {
-                0 -> TopManuscriptPage(viewModel)
-                else -> TopDiffusionPage(viewModel)
+            // 显示当前选中的页面
+            if (currentIndex.intValue < availablePages.size) {
+                availablePages[currentIndex.intValue]()
             }
         }
-
     }
 }
 

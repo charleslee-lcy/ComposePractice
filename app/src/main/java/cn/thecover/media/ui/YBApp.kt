@@ -21,12 +21,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
@@ -135,16 +133,24 @@ internal fun YBApp(
 ) {
     val currentDestination = appState.currentDestination
 
-    // 判断当前是否在顶级目的地页面
+    // 判断当前是否在顶级目的地页面或考核数据相关页面
+    val currentRoute = currentDestination?.route ?: ""
+    val isReviewDataPage = currentRoute.contains("review_data") ||
+            currentRoute.contains("DepartmentReviewRoute") ||
+            currentRoute.contains("DepartmentTaskReviewRoute") ||
+            currentRoute.contains("DepartmentTopRankingRoute") ||
+            currentRoute.contains("ManuscriptReviewRoute") ||
+            currentRoute.contains("ManuscriptTopRoute") ||
+            currentRoute.contains("ManuscriptDiffusionRoute")
 
-    // 只有在顶级页面才显示底部导航栏
+    // 只有在顶级页面或考核数据相关页面才显示底部导航栏
     Column {
         MainContent(
             appState, snackBarHostState, modifier = modifier
                 .fillMaxWidth()
                 .weight(1f)
         )
-        if (appState.isTopLevelDestination == true) {
+        if (appState.isTopLevelDestination == true || isReviewDataPage) {
             HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 0.25.dp, color = OutlineColor)
             YBNavigationBar(
                 modifier = Modifier
