@@ -10,5 +10,6 @@ data class OneTimeUiState(
     val dialogMessage: String? = null,
     val successMessage: String? = null,
     val unreadMessageCount: Int = 0,
+    val shouldNavigateToLogin: Boolean = false,
     val time: Long = System.currentTimeMillis()
 )

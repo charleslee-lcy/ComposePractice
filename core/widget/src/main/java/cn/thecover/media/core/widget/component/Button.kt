@@ -98,6 +98,7 @@ fun YBButton(
     text: @Composable () -> Unit,
     textColor: Color = Color.White,
     backgroundColor: Color = MainColor,
+    borderColor: Color = backgroundColor,
     shape: Shape = MaterialTheme.shapes.extraSmall,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -108,6 +109,7 @@ fun YBButton(
         enabled = enabled,
         textColor = textColor,
         backgroundColor = backgroundColor,
+        borderColor = borderColor,
         shape = shape,
         contentPadding = if (leadingIcon != null) {
             ButtonDefaults.ButtonWithIconContentPadding
