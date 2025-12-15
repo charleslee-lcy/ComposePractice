@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,6 +53,7 @@ import cn.thecover.media.core.widget.GradientLeftBottom
 import cn.thecover.media.core.widget.GradientLeftTop
 import cn.thecover.media.core.widget.YBShape
 import cn.thecover.media.core.widget.component.YBButton
+import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.YBLabel
 import cn.thecover.media.core.widget.component.YBTitleBar
@@ -65,6 +67,7 @@ import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
+import cn.thecover.media.feature.review_manager.R
 import cn.thecover.media.feature.review_manager.ReviewManageViewModel
 import kotlinx.serialization.json.Json
 
@@ -346,14 +349,20 @@ fun AppealDetailScreen(
                                     )
                                 } else {
                                     attachments.forEach { item ->
-                                        Text(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            text = item.fileName,
-                                            color = MainTextColor,
-                                            fontSize = 14.sp,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.MiddleEllipsis
-                                        )
+                                        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                            YBImage(
+                                                placeholder = painterResource(R.mipmap.ic_attachment),
+                                                modifier = Modifier.size(16.dp).padding(end = 2.dp)
+                                            )
+                                            Text(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                text = item.fileName,
+                                                color = MainTextColor,
+                                                fontSize = 14.sp,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.MiddleEllipsis
+                                            )
+                                        }
                                     }
                                 }
                             }
