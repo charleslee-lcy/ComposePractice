@@ -1,4 +1,4 @@
-package cn.thecover.media.feature.review_data.data.entity
+package cn.thecover.media.core.data
 
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
@@ -19,7 +19,8 @@ data class ManuscriptReviewDataEntity(
     val title: String = "",
     @SerializedName("reporterList")
     val reporter: List<ReporterEntity> = emptyList(),
-
+    @SerializedName("editorList")
+    val editor: List<ReporterEntity> = emptyList(),
     @SerializedName("cutNews")
     val isCutNews: Boolean = false,
     val leaderScoreModified: Boolean = false,

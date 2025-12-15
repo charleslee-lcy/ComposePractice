@@ -6,13 +6,10 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.Message
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -131,7 +128,7 @@ fun YBBadge(
                         containerColor = MsgColor,
                         contentColor = Color.White
                     ) {
-                        Text(text = "$msgCount")
+                        Text(text = if (msgCount > 99) "99+" else "$msgCount")
                     }
                 } else {
                     Badge(

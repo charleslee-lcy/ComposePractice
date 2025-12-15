@@ -1,11 +1,7 @@
 package cn.thecover.media.feature.basis.home
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -116,6 +112,8 @@ internal fun HomeScreen(
     val infiniteTransition = rememberInfiniteTransition(label = "infinite")
     val userInfo by viewModel.userUiState.collectAsStateWithLifecycle()
     val homeInfo by viewModel.homeUiState.collectAsStateWithLifecycle()
+    val homeManuscript by viewModel.homeManuscriptUiState.collectAsStateWithLifecycle()
+    val homeManuscriptDiffusion by viewModel.homeManuscriptDiffusionUiState.collectAsStateWithLifecycle()
     val unreadMessageCount by viewModel.unreadMessageCount.collectAsState()
 
     fun fetchHomeData() {
@@ -126,6 +124,11 @@ internal fun HomeScreen(
 
         // 获取首页信息
         viewModel.getUnreadMessageCount()
+
+        // 获取首页稿件排行榜
+        viewModel.getHomeManuscript()
+        // 获取首页稿件传播数据
+        viewModel.getHomeManuscriptDiffusion()
     }
 
     LaunchedEffect(Unit) {
@@ -226,7 +229,7 @@ internal fun HomeScreen(
                             .padding(10.dp)
                             .clickable {
                                 mainScreenScope.launch {
-                                    snackBarHostState.showToast("查看更多排行数据")
+
                                 }
                             },
                         verticalAlignment = Alignment.CenterVertically
@@ -248,7 +251,10 @@ internal fun HomeScreen(
                     }
                 }
 
-                ManuscriptTopRankingItem()
+                if (homeManuscript.dataList?.isNotEmpty() == true && homeManuscriptDiffusion.dataList?.isNotEmpty() == true) {
+                    ManuscriptTopRankingItem(viewModel)
+                }
+
             }
         }
     }
@@ -308,14 +314,14 @@ private fun TopBar(
         }
         YBBadge(
             modifier = Modifier
-                .padding(horizontal = 10.dp)
+                .padding(horizontal = 24.dp)
                 .align(Alignment.CenterEnd),
             msgCount = unreadMessageCount,
-            showNumber = false
+            showNumber = true
         ) {
             YBImage(
                 modifier = Modifier
-                    .size(20.dp)
+                    .size(24.dp)
                     .clickable {
                         messageClick()
                     },

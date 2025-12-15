@@ -11,10 +11,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
+import cn.thecover.media.core.data.DiffusionDataEntity
 import cn.thecover.media.core.data.HomeInfo
 import cn.thecover.media.core.data.HomeRequest
 import cn.thecover.media.core.data.LoginRequest
 import cn.thecover.media.core.data.LoginResponse
+import cn.thecover.media.core.data.ManuscriptDiffusionRequest
+import cn.thecover.media.core.data.ManuscriptReviewDataEntity
+import cn.thecover.media.core.data.ManuscriptTopRequest
+import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HTTP_STATUS_LOGOUT
@@ -31,6 +36,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import java.time.LocalDate
@@ -52,6 +58,8 @@ class HomeViewModel @Inject constructor(
     val homeUiState = MutableStateFlow(BaseUiState<HomeInfo>())
     val unreadMessageCount = MutableStateFlow(0)
 
+    val homeManuscriptUiState = MutableStateFlow(PaginatedResult<ManuscriptReviewDataEntity>())
+    val homeManuscriptDiffusionUiState = MutableStateFlow(PaginatedResult<DiffusionDataEntity>())
     var hasHomeDataFetched by mutableStateOf(false)
     var canShowToast by mutableStateOf(true)
     val curYear = mutableIntStateOf(LocalDate.now().year)
@@ -153,5 +161,52 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun getHomeManuscript() {
+        viewModelScope.launch {
+            flow {
+                val apiService = retrofit.get().create(HomeApi::class.java)
+                val response = apiService.getManuscriptReviewTopData(
+                    ManuscriptTopRequest(
+                        year = curYear.intValue,
+                        month = curMonth.intValue,
+                        page = 1,
+                        page_size = "10"
+                    )
+                )
+                emit(response)
+            }.asResult()
+                .collect { result ->
+                    if (result.status == HttpStatus.SUCCESS) {
+                        homeManuscriptUiState.update {
+                            result.data ?: PaginatedResult()
+                        }
+                    }
+                }
+        }
+    }
 
+    fun getHomeManuscriptDiffusion() {
+        viewModelScope.launch {
+            flow {
+                val apiService = retrofit.get().create(HomeApi::class.java)
+                val response = apiService.getManuscriptDiffusionData(
+                    ManuscriptDiffusionRequest(
+                        year = curYear.intValue,
+                        month = curMonth.intValue,
+                        page = 1,
+                        page_size = "10"
+                    )
+                )
+                emit(response)
+            }.asResult()
+                .collect { result ->
+                    if (result.status == HttpStatus.SUCCESS) {
+                        homeManuscriptDiffusionUiState.update {
+                            result.data ?: PaginatedResult()
+                        }
+                    }
+
+                }
+        }
+    }
 }

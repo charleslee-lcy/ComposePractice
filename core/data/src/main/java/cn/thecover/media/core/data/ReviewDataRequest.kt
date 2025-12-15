@@ -1,4 +1,4 @@
-package cn.thecover.media.feature.review_data.data.params
+package cn.thecover.media.core.data
 
 /**
  * 稿件数据请求参数

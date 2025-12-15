@@ -22,6 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cn.thecover.media.core.data.ManuscriptReviewDataEntity
+import cn.thecover.media.core.data.ReporterEntity
 import cn.thecover.media.core.widget.component.PrimaryItemScoreRow
 import cn.thecover.media.core.widget.component.ScoreItemType
 import cn.thecover.media.core.widget.component.YBNormalList
@@ -38,8 +40,6 @@ import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRanking
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
 import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewFilterState
-import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
-import cn.thecover.media.feature.review_data.data.entity.ReporterEntity
 import java.time.LocalDate
 
 /**

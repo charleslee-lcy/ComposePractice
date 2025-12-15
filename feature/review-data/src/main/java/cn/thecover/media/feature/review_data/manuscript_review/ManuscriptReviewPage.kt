@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastCoerceAtLeast
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cn.thecover.media.core.data.ManuscriptReviewDataEntity
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.YBInput
@@ -62,11 +63,9 @@ import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
 import cn.thecover.media.core.widget.component.popup.YBDialog
-import cn.thecover.media.core.widget.component.popup.YBPopup
 import cn.thecover.media.core.widget.component.search.FilterSearchTextField
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.icon.YBIcons
-import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
@@ -84,7 +83,6 @@ import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRanking
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
 import cn.thecover.media.feature.review_data.basic_widget.widget.ExpandItemColumn
 import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
-import cn.thecover.media.feature.review_data.data.entity.ManuscriptReviewDataEntity
 import java.time.LocalDate
 
 /**
@@ -226,7 +224,11 @@ internal fun ManuscriptReviewPage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(44.dp)
-                        .border(0.5.dp, color = MaterialTheme.colorScheme.outlineVariant, shape = YBShapes.medium)
+                        .border(
+                            0.5.dp,
+                            color = MaterialTheme.colorScheme.outlineVariant,
+                            shape = YBShapes.medium
+                        )
                         .background(
                             PageBackgroundColor,
                             shape = YBShapes.medium
