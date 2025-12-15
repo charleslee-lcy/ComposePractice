@@ -24,9 +24,14 @@ class AuthInterceptor @Inject constructor(
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
+        val requestUrl = request.url
         val requestBody = request.body
         if (!request.url.toString().startsWith(URLConstant.YB_BASE_URL))
             return chain.proceed(request)
+
+        val newHttpUrl = requestUrl.newBuilder()
+            .addQueryParameter("client", "android")
+            .build()
 
         val token = getToken(context)
         if (token.isEmpty()) return chain.proceed(request)
@@ -40,6 +45,7 @@ class AuthInterceptor @Inject constructor(
             val newBody = modifyRequestBody(requestBody)
             newRequest.method(request.method, newBody)
         }
+        newRequest.url(newHttpUrl)
         return chain.proceed(newRequest.build())
     }
 
