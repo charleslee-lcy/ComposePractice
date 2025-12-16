@@ -67,6 +67,7 @@ import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.util.getCurrentTimeToMinute
+import cn.thecover.media.feature.basis.home.navigation.LoginRoute
 import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FAILED
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FINISHED
@@ -193,6 +194,9 @@ internal fun MineScreen(
             confirmText = "退出",
             onConfirm = {
                 viewModel.logout()
+                navController.navigate(LoginRoute) {
+                    popUpTo(0) { inclusive = true }
+                }
             },
             cancelText = "取消",
             onCancel = {
