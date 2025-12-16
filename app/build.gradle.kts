@@ -10,7 +10,7 @@ android {
     namespace = "cn.thecover.media"
 
     defaultConfig {
-        applicationId = "com.ynrb.performance"
+        applicationId = "com.yndaily.performance"
         versionCode = 1
         versionName = "1.0.0"
 
