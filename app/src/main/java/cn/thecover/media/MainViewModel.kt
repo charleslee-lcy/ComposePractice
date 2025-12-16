@@ -33,7 +33,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     val retrofit: dagger.Lazy<Retrofit>
 ) : ViewModel() {
-    val uiState: StateFlow<MainActivityUiState> = flow<UserData> {
+    val uiState: StateFlow<MainActivityUiState> = flow {
         emit(
             UserData(
                 themeBrand = ThemeBrand.DEFAULT,

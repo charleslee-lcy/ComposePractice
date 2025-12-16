@@ -87,16 +87,9 @@ fun YBApp(
     appState: YBAppState,
     modifier: Modifier = Modifier,
 ) {
-    val shouldShowGradientBackground =
-        appState.currentTopLevelDestination == TopLevelDestination.HOME
-
     YBBackground(modifier = modifier) {
         YBGradientBackground(
-            gradientColors = if (shouldShowGradientBackground) {
-                LocalGradientColors.current
-            } else {
-                GradientColors()
-            },
+            gradientColors = GradientColors(),
         ) {
             val snackBarHostState = remember { SnackbarHostState() }
 
