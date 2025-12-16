@@ -64,6 +64,7 @@ class HomeViewModel @Inject constructor(
     var canShowToast by mutableStateOf(true)
     val curYear = mutableIntStateOf(LocalDate.now().year)
     val curMonth = mutableIntStateOf(LocalDate.now().monthValue)
+    var roleState by mutableIntStateOf(2)
 
     fun login(username: String, password: String) {
         viewModelScope.launch {
