@@ -106,7 +106,7 @@ internal fun HomeScreen(
     val scrollState = rememberScrollState()
     val refreshState = rememberPullToRefreshState()
     val isRefreshing = remember { mutableStateOf(false) }
-    var roleState by remember { mutableIntStateOf(1) }
+    var roleState by remember { mutableIntStateOf(2) }
 
     val infiniteTransition = rememberInfiniteTransition(label = "infinite")
     val userInfo by viewModel.userUiState.collectAsStateWithLifecycle()
@@ -162,7 +162,7 @@ internal fun HomeScreen(
             viewModel.curMonth,
             unreadMessageCount,
             titleClick = {
-                roleState = if (roleState == 3) 1 else 3
+
             }, onDatePick = {
                 isRefreshing.value = true
                 viewModel.getHomeInfo(viewModel.curYear.intValue, viewModel.curMonth.intValue)
@@ -199,7 +199,7 @@ internal fun HomeScreen(
                 Crossfade(roleState) {
                     if (it == 3) {
                         LeaderUserContent(homeInfo.data ?: HomeInfo())
-                    } else {
+                    } else if (it == 1){
                         ReporterUserContent(homeInfo.data ?: HomeInfo())
                     }
                 }
