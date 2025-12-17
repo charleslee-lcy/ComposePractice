@@ -237,13 +237,13 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
                 viewModel.getAppealManageList(isRefresh = false)
             }) { item, _ ->
             AppealListItem(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickableWithoutRipple {
-                        // 跳转到申诉详情页
-                        navController.navigateToAppealDetail(item.id, viewModel.currentPos == 0)
-                    }, item = item
-            )
+                viewModel = viewModel,
+                modifier = Modifier.fillMaxWidth(),
+                item = item
+            ) {
+                // 跳转到申诉详情页
+                navController.navigateToAppealDetail(item.id, viewModel.currentPos == 0)
+            }
         }
     }
 }

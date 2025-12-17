@@ -12,6 +12,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -23,7 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.YBTab
 import cn.thecover.media.core.widget.component.YBTabRow
@@ -31,6 +34,7 @@ import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.review_manager.ReviewManageViewModel
+import cn.thecover.media.feature.review_manager.navigation.navigateToArchiveDetail
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
@@ -60,6 +64,14 @@ internal fun AppealManageScreen(
             currentTabIndex.intValue = currentPage
         } catch (e: CancellationException) {
             e.printStackTrace()
+        }
+    }
+
+    val appealNewsInfo by viewModel.appealNewsUiState.collectAsStateWithLifecycle()
+    LaunchedEffect(appealNewsInfo) {
+        if (appealNewsInfo.isSuccess) {
+            navController.navigateToArchiveDetail(appealNewsInfo.data?.wapUrl ?: "")
+            viewModel.appealNewsUiState.value = BaseUiState()
         }
     }
 

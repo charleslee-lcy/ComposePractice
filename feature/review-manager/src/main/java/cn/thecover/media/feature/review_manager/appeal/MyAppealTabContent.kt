@@ -24,7 +24,6 @@ import androidx.navigation.NavController
 import cn.thecover.media.core.data.AppealListData
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.YBNormalList
-import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 import cn.thecover.media.feature.review_manager.ReviewManageViewModel
@@ -101,13 +100,13 @@ fun MyAppealContent(viewModel: ReviewManageViewModel, navController: NavControll
                 viewModel.getMyAppealList(isRefresh = true)
             }) { item, _ ->
             AppealListItem(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickableWithoutRipple {
-                        // 跳转到申诉详情页
-                        navController.navigateToAppealDetail(item.id, false)
-                    }, item = item
-            )
+                viewModel = viewModel,
+                modifier = Modifier.fillMaxWidth(),
+                item = item
+            ) {
+                // 跳转到申诉详情页
+                navController.navigateToAppealDetail(item.id, false)
+            }
         }
     }
 }
