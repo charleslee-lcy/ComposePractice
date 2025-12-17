@@ -62,8 +62,8 @@ class HomeViewModel @Inject constructor(
     val homeManuscriptDiffusionUiState = MutableStateFlow(PaginatedResult<DiffusionDataEntity>())
     var hasHomeDataFetched by mutableStateOf(false)
     var canShowToast by mutableStateOf(true)
-    val curYear = mutableIntStateOf(LocalDate.now().year)
-    val curMonth = mutableIntStateOf(LocalDate.now().monthValue)
+    val curYear = mutableIntStateOf(LocalDate.now().minusMonths(1).year)
+    val curMonth = mutableIntStateOf(LocalDate.now().minusMonths(1).monthValue)
     var roleState by mutableIntStateOf(2)
 
     fun login(username: String, password: String) {
