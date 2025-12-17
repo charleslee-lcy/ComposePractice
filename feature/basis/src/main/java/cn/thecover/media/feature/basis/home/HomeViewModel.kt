@@ -139,7 +139,13 @@ class HomeViewModel @Inject constructor(
             }.asResult()
                 .collect { result ->
                     canShowToast = true
-                    homeUiState.value = result
+                    if (result.status == HttpStatus.LOADING) {
+                        homeUiState.update {
+                            it.copy(status = HttpStatus.LOADING)
+                        }
+                    } else {
+                        homeUiState.value = result
+                    }
                 }
         }
     }
