@@ -213,17 +213,22 @@ internal fun ManuScriptItemHeader(
         Spacer(Modifier.height(8.dp))
         // 显示作者和编辑信息
         Row {
-            Text(
-                "作者：${author}",
-                style = MaterialTheme.typography.bodySmall,
-                color = SecondaryTextColor
-            )
+            if (author.isNotEmpty()) {
+                Text(
+                    "作者：${author}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = SecondaryTextColor
+                )
+            }
             Spacer(Modifier.width(20.dp))
-            Text(
-                "编辑：${editor}",
-                style = MaterialTheme.typography.bodySmall,
-                color = SecondaryTextColor
-            )
+            if (editor.isNotEmpty()) {
+                Text(
+                    "编辑：${editor}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = SecondaryTextColor
+                )
+            }
+
         }
     }
 }
