@@ -155,9 +155,19 @@ fun FilterSearchTextField(
                 textState.value = it
                 onValueChange(data.value, textState.value)
             },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Search
+            ),
             keyboardActions = KeyboardActions(
                 onSearch = {
+                    onSearch(data.value, textState.value)
+                },
+                onDone = {
+                    // 兼容低版本系统，当回车键按下时也执行搜索
+                    onSearch(data.value, textState.value)
+                },
+                onGo = {
+                    // 兼容更多键盘类型，执行搜索
                     onSearch(data.value, textState.value)
                 }
             ),
