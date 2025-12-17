@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Task
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -21,14 +18,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.thecover.media.core.data.HomeInfo
-import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.widget.theme.HintTextColor
-import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.MsgColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
@@ -53,13 +49,13 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
             .padding(horizontal = 15.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom
+            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = Icons.Filled.Person,
+                painter = painterResource(cn.thecover.media.feature.basis.R.mipmap.icon_home_personal),
                 contentDescription = null,
-                tint = MainColor,
-                modifier = Modifier.size(20.dp)
+                tint = Color.Unspecified,
+                modifier = Modifier.size(16.dp)
             )
             Text(
                 text = "个人概览",
@@ -73,7 +69,7 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                 color = HintTextColor,
                 fontSize = 11.sp,
                 lineHeight = 11.sp,
-                modifier = Modifier.padding(start = 5.dp, bottom = 2.dp)
+                modifier = Modifier.padding(start = 5.dp)
             )
         }
         Row(
@@ -186,13 +182,13 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
         Spacer(modifier = Modifier.height(20.dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom
+            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = Icons.Filled.Task,
+                painter = painterResource(cn.thecover.media.feature.basis.R.mipmap.icon_home_task),
                 contentDescription = null,
-                tint = MainColor,
-                modifier = Modifier.size(20.dp)
+                tint = Color.Unspecified,
+                modifier = Modifier.size(16.dp)
             )
             Text(
                 text = "任务完成情况",
@@ -206,7 +202,7 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                 color = HintTextColor,
                 fontSize = 11.sp,
                 lineHeight = 11.sp,
-                modifier = Modifier.padding(start = 5.dp, bottom = 2.dp)
+                modifier = Modifier.padding(start = 5.dp)
             )
         }
 
@@ -336,13 +332,13 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
             .padding(horizontal = 15.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom
+            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = Icons.Filled.Person,
+                painter = painterResource(cn.thecover.media.feature.basis.R.mipmap.icon_home_personal),
                 contentDescription = null,
-                tint = MainColor,
-                modifier = Modifier.size(20.dp)
+                tint = Color.Unspecified,
+                modifier = Modifier.size(16.dp)
             )
             Text(
                 text = "个人概览",
@@ -356,7 +352,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                 color = HintTextColor,
                 fontSize = 11.sp,
                 lineHeight = 11.sp,
-                modifier = Modifier.padding(start = 5.dp, bottom = 2.dp)
+                modifier = Modifier.padding(start = 5.dp)
             )
         }
         Row(
@@ -546,13 +542,13 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
         Spacer(modifier = Modifier.height(20.dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom
+            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = Icons.Filled.Task,
+                painter = painterResource(cn.thecover.media.feature.basis.R.mipmap.icon_home_personal),
                 contentDescription = null,
-                tint = MainColor,
-                modifier = Modifier.size(20.dp)
+                tint = Color.Unspecified,
+                modifier = Modifier.size(16.dp)
             )
             Text(
                 text = "任务完成情况",
@@ -566,7 +562,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                 color = HintTextColor,
                 fontSize = 11.sp,
                 lineHeight = 11.sp,
-                modifier = Modifier.padding(start = 5.dp, bottom = 2.dp)
+                modifier = Modifier.padding(start = 5.dp)
             )
         }
 
