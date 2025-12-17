@@ -33,8 +33,8 @@ data class ScoreRuleData(
     val dayCount: String = "",
     val monthCount: String = "",
     val scoreLevel: String = "",
-    val scoreLevelName: String = "",
-    val order: String = ""
+    val scoreLevelName: String? = null,
+    val order: String?= null
 )
 
 @Serializable
