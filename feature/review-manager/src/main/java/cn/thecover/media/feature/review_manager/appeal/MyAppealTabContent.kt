@@ -97,7 +97,7 @@ fun MyAppealContent(viewModel: ReviewManageViewModel, navController: NavControll
                 viewModel.getMyAppealList(isRefresh = true)
             },
             onLoadMore = {
-                viewModel.getMyAppealList(isRefresh = true)
+                viewModel.getMyAppealList(isRefresh = false)
             }) { item, _ ->
             AppealListItem(
                 viewModel = viewModel,
