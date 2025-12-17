@@ -474,6 +474,7 @@ fun AppealDetailScreen(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(20.dp))
             }
 
             if (canEdit /*&& detailInfoStatus.data?.status == 1*/) {
