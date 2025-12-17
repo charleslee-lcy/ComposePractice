@@ -41,7 +41,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun okHttpCallFactory(@ApplicationContext application: Context): Call.Factory =
-        if (BuildConfig.DEBUG)
+        if (BuildConfig.ENV_CONFIG == 1)
             // 配置OkHttpClient跳过证书验证
             OkHttpClient.Builder()
                 .sslSocketFactory(getSSLSocketFactory(), getTrustManager())
