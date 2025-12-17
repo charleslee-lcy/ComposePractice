@@ -210,10 +210,9 @@ class MineViewModel @Inject constructor(
                 val apiService = retrofit.get().create(MessageApi::class.java)
                 val result = apiService.getMessageList(
                     MessageListRequest(
-                        page = page,
                         pageSize = pageSize,
-                        lastId = messageListState.value.messageDataList.lastOrNull()?.id ?: 0,
-                        type = if (type == 0) "0" else type.toString(),
+                        lastId = messageListState.value.messageDataList.lastOrNull()?.id,
+                        type = if (type == 0) null else type.toString(),
                         allUser = 2,
                     )
                 )
