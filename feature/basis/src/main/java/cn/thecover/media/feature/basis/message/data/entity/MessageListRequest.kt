@@ -6,9 +6,8 @@ package cn.thecover.media.feature.basis.message.data.entity
  */
 
 data class MessageListRequest(
-    val page: Int,
     val pageSize: Int,
-    val type: String = "",
+    val type: String? = null,
     val allUser: Int = 2,
-    val lastId: Long = 0L
+    val lastId: Long? = null
 )
