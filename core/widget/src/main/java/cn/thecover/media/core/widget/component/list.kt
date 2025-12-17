@@ -89,7 +89,10 @@ fun <T> YBNormalList(
             }
         ) { firstVisible, lastVisible, canScrollForward, canScrollBackward ->
             var shouldLoadMore = false
-            if (canScrollBackward && lastVisible == items.value.lastIndex && !isLoadingMore.value && canLoadMore.value) {
+            // 当可见项的最后一项接近数据末尾时（相差不超过2个位置），且可加载更多时，触发加载
+            if (!isLoadingMore.value && canLoadMore.value && items.value.isNotEmpty() &&
+                lastVisible != null && lastVisible >= items.value.lastIndex - 2
+            ) {
                 shouldLoadMore = true
             }
             shouldLoadMore
@@ -216,7 +219,10 @@ fun <T> YBCoordinatorList(
             }
         ) { firstVisible, lastVisible, canScrollForward, canScrollBackward ->
             var shouldLoadMore = false
-            if (canScrollBackward && lastVisible == items.value.lastIndex && !isLoadingMore.value && canLoadMore.value) {
+            // 当可见项的最后一项接近数据末尾时（相差不超过2个位置），且可加载更多时，触发加载
+            if (!isLoadingMore.value && canLoadMore.value && items.value.isNotEmpty() &&
+                lastVisible != null && lastVisible >= items.value.lastIndex - 2
+            ) {
                 shouldLoadMore = true
             }
             shouldLoadMore
@@ -314,7 +320,9 @@ fun <T> YBCoordinatorList(
 
                 if (items.value.isEmpty() && !isRefreshing.value) {
                     Box(
-                        Modifier.fillMaxWidth().height(with(LocalDensity.current) { coordinatorState.emptyHeight.toDp() }),
+                        Modifier
+                            .fillMaxWidth()
+                            .height(with(LocalDensity.current) { coordinatorState.emptyHeight.toDp() }),
                         contentAlignment = Alignment.Center
                     ) {
                         YBImage(

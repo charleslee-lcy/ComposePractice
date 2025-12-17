@@ -32,7 +32,7 @@ data class SortConditions(
         const val NEWS_DATA_SPREAD_SCORE = "NEWS_DATA_SPREAD_SCORE"//-稿件榜单传播分
         const val NEWS_DATA_FINAL_SCORE = "NEWS_DATA_FINAL_SCORE"//-稿件榜单最终分
 
-        fun putSortConditions(conditions: String, direction: String="ASC"): SortConditions {
+        fun putSortConditions(conditions: String, direction: String = DESC): SortConditions {
             return when(conditions){
                 "部门总稿费" -> SortConditions(DEPT_DATA_TOTAL_MONEY,direction)
                 "部门总分" -> SortConditions(DEPT_DATA_TOTAL_SCORE,direction)
