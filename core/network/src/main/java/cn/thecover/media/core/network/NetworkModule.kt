@@ -1,6 +1,9 @@
 package cn.thecover.media.core.network
 
 import android.content.Context
+import cn.thecover.media.core.network.HttpManager.getHostnameVerifier
+import cn.thecover.media.core.network.HttpManager.getSSLSocketFactory
+import cn.thecover.media.core.network.HttpManager.getTrustManager
 import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.util.DebugLogger
@@ -18,6 +21,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
+import javax.net.ssl.HostnameVerifier
 
 
 /**
@@ -36,13 +40,26 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun okHttpCallFactory(@ApplicationContext application: Context): Call.Factory = OkHttpClient.Builder()
-        .addInterceptor(AuthInterceptor(application))
-        .addInterceptor(HttpLogInterceptor())
-        .connectTimeout(30 * 1000, TimeUnit.MILLISECONDS)
-        .readTimeout(30 * 1000, TimeUnit.MILLISECONDS)
-        .writeTimeout(30 * 1000, TimeUnit.MILLISECONDS)
-        .build()
+    fun okHttpCallFactory(@ApplicationContext application: Context): Call.Factory =
+        if (BuildConfig.ENV_CONFIG == 1)
+            // 配置OkHttpClient跳过证书验证
+            OkHttpClient.Builder()
+                .sslSocketFactory(getSSLSocketFactory(), getTrustManager())
+                .hostnameVerifier(getHostnameVerifier())
+                .addInterceptor(AuthInterceptor(application))
+                .addInterceptor(HttpLogInterceptor())
+                .connectTimeout(30 * 1000, TimeUnit.MILLISECONDS)
+                .readTimeout(30 * 1000, TimeUnit.MILLISECONDS)
+                .writeTimeout(30 * 1000, TimeUnit.MILLISECONDS)
+                .build()
+        else
+            OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor(application))
+            .addInterceptor(HttpLogInterceptor())
+            .connectTimeout(30 * 1000, TimeUnit.MILLISECONDS)
+            .readTimeout(30 * 1000, TimeUnit.MILLISECONDS)
+            .writeTimeout(30 * 1000, TimeUnit.MILLISECONDS)
+            .build()
 
     @Provides
     @Singleton

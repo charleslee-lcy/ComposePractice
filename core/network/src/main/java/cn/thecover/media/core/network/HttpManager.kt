@@ -88,7 +88,7 @@ object HttpManager {
     /**
      * 获取这个SSLSocketFactory
      */
-    private fun getSSLSocketFactory(): SSLSocketFactory {
+    fun getSSLSocketFactory(): SSLSocketFactory {
         return try {
             val sslContext: SSLContext = SSLContext.getInstance("SSL")
             sslContext.init(null, arrayOf<TrustManager>(getTrustManager()), SecureRandom())
@@ -102,7 +102,7 @@ object HttpManager {
      * 获取TrustManager
      */
     @SuppressLint("CustomX509TrustManager")
-    private fun getTrustManager(): X509TrustManager {
+    fun getTrustManager(): X509TrustManager {
         return object : X509TrustManager {
             @SuppressLint("TrustAllX509TrustManager")
             override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {
@@ -121,7 +121,7 @@ object HttpManager {
     /**
      * 获取HostnameVerifier
      */
-    private fun getHostnameVerifier(): HostnameVerifier {
+    fun getHostnameVerifier(): HostnameVerifier {
         return HostnameVerifier { _, _ -> true }
     }
 }

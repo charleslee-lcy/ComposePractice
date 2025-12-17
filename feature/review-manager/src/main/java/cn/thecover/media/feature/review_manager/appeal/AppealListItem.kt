@@ -1,6 +1,5 @@
 package cn.thecover.media.feature.review_manager.appeal
 
-import android.R.attr.type
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -15,6 +14,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,7 +32,8 @@ import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
-import kotlin.random.Random
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 
 /**
@@ -45,6 +46,17 @@ fun AppealListItem(
     modifier: Modifier = Modifier,
     item: AppealListData,
 ) {
+    val formattedTime = remember(item.submitTime) {
+        try {
+            val originalFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            val targetFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+            val date = originalFormat.parse(item.submitTime)
+            targetFormat.format(date)
+        } catch (e: Exception) {
+            item.submitTime
+        }
+    }
+
     Box(
         modifier = modifier.padding(top = 12.dp)
     ) {
@@ -118,7 +130,7 @@ fun AppealListItem(
                 )
                 Text(
                     modifier = Modifier.padding(start = 12.dp),
-                    text = item.submitTime,
+                    text = formattedTime,
                     style = TextStyle(
                         color = TertiaryTextColor, fontSize = 14.sp
                     )

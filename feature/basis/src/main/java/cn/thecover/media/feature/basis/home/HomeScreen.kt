@@ -1,7 +1,6 @@
 package cn.thecover.media.feature.basis.home
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,10 +28,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -99,14 +96,11 @@ internal fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val mainScreenScope = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
     val scrollState = rememberScrollState()
     val refreshState = rememberPullToRefreshState()
     val isRefreshing = remember { mutableStateOf(false) }
-    var roleState by remember { mutableIntStateOf(1) }
 
-    val infiniteTransition = rememberInfiniteTransition(label = "infinite")
     val userInfo by viewModel.userUiState.collectAsStateWithLifecycle()
     val homeInfo by viewModel.homeUiState.collectAsStateWithLifecycle()
     val homeManuscript by viewModel.homeManuscriptUiState.collectAsStateWithLifecycle()
@@ -146,7 +140,7 @@ internal fun HomeScreen(
 
         if (homeInfo.status == HttpStatus.SUCCESS) {
             homeInfo.data?.jobType?.apply {
-                roleState = this
+                viewModel.roleState = this
             }
         }
     }
@@ -160,10 +154,11 @@ internal fun HomeScreen(
             viewModel.curMonth,
             unreadMessageCount,
             titleClick = {
-                roleState = if (roleState == 3) 1 else 3
+
             }, onDatePick = {
                 isRefreshing.value = true
-                viewModel.getHomeInfo(viewModel.curYear.intValue, viewModel.curMonth.intValue)
+//                viewModel.getHomeInfo(viewModel.curYear.intValue, viewModel.curMonth.intValue)
+                fetchHomeData()
             }, messageClick = {
                 routeToMessageScreen?.invoke()
             })
@@ -194,10 +189,10 @@ internal fun HomeScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Spacer(modifier = Modifier.height(1.dp))
-                Crossfade(roleState) {
+                Crossfade(viewModel.roleState) {
                     if (it == 3) {
                         LeaderUserContent(homeInfo.data ?: HomeInfo())
-                    } else {
+                    } else if (it == 1){
                         ReporterUserContent(homeInfo.data ?: HomeInfo())
                     }
                 }
