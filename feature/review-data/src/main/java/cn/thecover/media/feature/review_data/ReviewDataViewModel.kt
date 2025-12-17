@@ -532,7 +532,7 @@ class ReviewDataViewModel @Inject constructor(
             val lastId = if (isLoadMore) {
                 _departmentReviewPageState.value.lastId
             } else {
-                1
+                -1
             }
             
             val result = repository.fetchDepartmentReviewPage(
@@ -585,7 +585,7 @@ class ReviewDataViewModel @Inject constructor(
             val lastId = if (isLoadMore) {
                 _departmentReviewTopPageState.value.lastId
             } else {
-                1
+                -1
             }
             
             val result = repository.fetchDepartmentTopPage(
