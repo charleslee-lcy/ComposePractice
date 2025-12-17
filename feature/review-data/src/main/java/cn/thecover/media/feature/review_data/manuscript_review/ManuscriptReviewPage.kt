@@ -450,11 +450,11 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
             FilterSearchTextField(
                 data = selectSearchChoice, label = "请输入搜索内容", dataList = listOf(
                     "稿件标题", "稿件作者", "稿件编辑"
-                ), onValueChange = { key, searchValue ->
+                ), onValueChange = { valueType, value ->
                     viewModel.handleUIIntent(
                         ReviewUIIntent.UpdateManuscriptReviewFilter(
-                            searchType = key,
-                            searchText = searchValue
+                            searchType = valueType,
+                            searchText = value
                         )
                     )
                 })
