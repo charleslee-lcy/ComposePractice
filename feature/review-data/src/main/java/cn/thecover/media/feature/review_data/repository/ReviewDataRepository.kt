@@ -54,7 +54,7 @@ class ReviewDataRepository @Inject constructor(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
                         totalPages = body.total,
-                        hasNextPage = body.lastId.toInt() != -1,
+                        hasNextPage = body.lastId?.toInt() != -1,
                         lastId = body.lastId
                     )
                 )
@@ -97,7 +97,7 @@ class ReviewDataRepository @Inject constructor(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
                         totalPages = body.total,
-                        hasNextPage = body.lastId.toInt() != -1,
+                        hasNextPage = body.lastId?.toInt() != -1,
                         lastId = body.lastId
                     )
                 )
@@ -140,7 +140,7 @@ class ReviewDataRepository @Inject constructor(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
                         totalPages = body.total,
-                        hasNextPage = body.lastId.toInt() != -1,
+                        hasNextPage = body.lastId?.toInt() != -1,
                         lastId = body.lastId
                     )
                 )
@@ -180,7 +180,7 @@ class ReviewDataRepository @Inject constructor(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
                         totalPages = body.total,
-                        hasNextPage = body.lastId.toInt() != -1,
+                        hasNextPage = body.lastId?.toInt() != -1,
                         lastId = body.lastId
                     )
                 )
@@ -216,7 +216,7 @@ class ReviewDataRepository @Inject constructor(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
                         totalPages = body.total,
-                        hasNextPage = body.lastId.toInt() != -1,
+                        hasNextPage = body.lastId?.toInt() != -1,
                         lastId = body.lastId
                     )
                 )
@@ -256,7 +256,7 @@ class ReviewDataRepository @Inject constructor(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
                         totalPages = body.total,
-                        hasNextPage = body.lastId.toInt() != -1,
+                        hasNextPage = body.lastId?.toInt() != -1,
                         lastId = body.lastId
                     )
                 )

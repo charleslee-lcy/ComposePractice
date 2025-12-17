@@ -286,7 +286,7 @@ class ReviewDataViewModel @Inject constructor(
             val result = repository.fetchManuscriptsPage(
                 year = filter.getYearAsInt(),
                 month = filter.getMonthAsInt(),
-                lastId = lastId,
+                lastId = lastId ?: -1,
                 rankType = when (filter.sortField) {
                     "分割线以上" -> 1
                     "分割线以下（清零）" -> 2
@@ -357,7 +357,7 @@ class ReviewDataViewModel @Inject constructor(
             val result = repository.fetchManuscriptDiffusionData(
                 year = filter.getYearAsInt(),
                 month = filter.getMonthAsInt(),
-                lastId = lastId,
+                lastId = lastId ?: -1,
                 sortConditions = filter.sortField,
                 title = if (filter.searchField.contains("标题"))
                     filter.searchText else "",
@@ -421,7 +421,7 @@ class ReviewDataViewModel @Inject constructor(
             val result = repository.fetchManuscriptsTopPage(
                 year = manuscriptTopFilterState.value.getYearAsInt(),
                 month = manuscriptTopFilterState.value.getMonthAsInt(),
-                lastId = lastId,
+                lastId = lastId ?: -1,
                 sortConditions = manuscriptTopFilterState.value.sortField 
             )
             when (result) {
@@ -480,7 +480,7 @@ class ReviewDataViewModel @Inject constructor(
             val result = repository.fetchDepartmentTaskPage(
                 departmentDataFilterState.value.getYearAsInt(),
                 departmentDataFilterState.value.getMonthAsInt(),
-                lastId = lastId,
+                lastId = lastId ?: -1,
             )
 
             when (result) {
@@ -539,7 +539,7 @@ class ReviewDataViewModel @Inject constructor(
                 departmentDataFilterState.value.sortField,
                 departmentDataFilterState.value.getYearAsInt(),
                 departmentDataFilterState.value.getMonthAsInt(),
-                lastId
+                lastId = lastId ?: -1,
             )
             if (result is RepositoryResult.Success) {
                 val departmentData =
@@ -591,7 +591,7 @@ class ReviewDataViewModel @Inject constructor(
             val result = repository.fetchDepartmentTopPage(
                 departmentTopFilterState.value.getYearAsInt(),
                 departmentTopFilterState.value.getMonthAsInt(),
-                lastId
+                lastId = lastId ?: -1,
             )
             if (result is RepositoryResult.Success) {
                 val departmentData =

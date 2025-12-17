@@ -21,7 +21,7 @@ data class PaginatedResult<T>(
     val total: Int = 0,
     // 当前页记录数
     val size: Int = 0,
-    val lastId: Long = 0L,
+    val lastId: Long? = 0L,
     val hasNextPage: Boolean = false,
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
