@@ -159,7 +159,8 @@ internal fun HomeScreen(
 
             }, onDatePick = {
                 isRefreshing.value = true
-                viewModel.getHomeInfo(viewModel.curYear.intValue, viewModel.curMonth.intValue)
+//                viewModel.getHomeInfo(viewModel.curYear.intValue, viewModel.curMonth.intValue)
+                fetchHomeData()
             }, messageClick = {
                 routeToMessageScreen?.invoke()
             })
