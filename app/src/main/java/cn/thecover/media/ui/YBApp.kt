@@ -99,10 +99,10 @@ fun YBApp(
             val notConnectedMessage = stringResource(R.string.not_connected)
             LaunchedEffect(isOffline) {
                 if (isOffline) {
-                    snackBarHostState.showSnackbar(
-                        message = notConnectedMessage,
-                        duration = Indefinite,
-                    )
+//                    snackBarHostState.showSnackbar(
+//                        message = notConnectedMessage,
+//                        duration = Indefinite,
+//                    )
                 }
             }
 
