@@ -1,6 +1,5 @@
 package cn.thecover.media.feature.review_manager.appeal
 
-import android.R.attr.type
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -35,7 +34,6 @@ import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 import java.text.SimpleDateFormat
 import java.util.Locale
-import kotlin.random.Random
 
 
 /**
