@@ -172,7 +172,7 @@ enum class ReviewDataNavigationType(
      * 部门任务完成情况页面。
      */
     DEPARTMENT_TASK_DATA(
-        "部门完成任务情况",
+        "部门任务完成情况",
         { nav -> nav.navigateToDepartmentTaskReviewPage() },
         DepartmentTaskReviewRoute.toString(),
     ),
@@ -181,7 +181,7 @@ enum class ReviewDataNavigationType(
      * 部门 TOP 排行页面。
      */
     DEPARTMENT_TOP_RANKING(
-        "部门TOP排行",
+        "部门TOP榜单",
         { nav -> nav.navigate(DepartmentTopRankingRoute) },
         DepartmentTopRankingRoute.toString(),
     ),

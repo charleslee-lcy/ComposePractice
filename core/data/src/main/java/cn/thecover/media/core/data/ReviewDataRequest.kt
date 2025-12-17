@@ -10,8 +10,8 @@ data class ManuscriptReviewRequest(
     val reporterName: String = "",
     val year: Int,
     val month: Int,
-    val page: Int,
-    val page_size: String = "20"
+    val pageSize: String = "20",
+    val lastId: Long = -1
 )
 
 /**
@@ -24,8 +24,8 @@ data class ManuscriptTopRequest(
     val reporterName: String = "",
     val year: Int,
     val month: Int,
-    val page: Int,
-    val page_size: String = "20"
+    val pageSize: String = "20",
+    val lastId: Long = -1
 )
 
 /**
@@ -38,8 +38,8 @@ data class ManuscriptDiffusionRequest(
     val reporterName: String = "",
     val year: Int,
     val month: Int,
-    val page: Int,
-    val page_size: String = "20"
+    val pageSize: String = "20",
+    val lastId: Long = -1,
 )
 
 /**
@@ -48,9 +48,9 @@ data class ManuscriptDiffusionRequest(
 data class DepartmentReviewRequest(
     val year: Int,
     val month: Int,
-    val page: Int,
-    val page_size: String = "20",
-    val sortConditions: List<SortConditions> = emptyList()
+    val pageSize: String = "20",
+    val sortConditions: List<SortConditions> = emptyList(),
+    val lastId: Long = -1,
 )
 
 /**
@@ -59,8 +59,8 @@ data class DepartmentReviewRequest(
 data class DepartmentTaskRequest(
     val year: Int,
     val month: Int,
-    val page: Int,
-    val page_size: String = "20"
+    val pageSize: String = "20",
+    val lastId: Long = -1,
 )
 
 /**
@@ -69,9 +69,9 @@ data class DepartmentTaskRequest(
 data class DepartmentTopRequest(
     val year: Int,
     val month: Int,
-    val page: Int,
-    val page_size: String = "10",
-    val sortConditions: List<SortConditions> = emptyList()
+    val pageSize: String = "10",
+    val sortConditions: List<SortConditions> = emptyList(),
+    val lastId: Long = -1,
 )
 
 /**
