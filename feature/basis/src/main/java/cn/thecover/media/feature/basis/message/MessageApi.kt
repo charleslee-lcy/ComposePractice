@@ -15,14 +15,14 @@ import retrofit2.http.POST
  */
 
 interface MessageApi {
-    @POST(value = "mgr/notification/list?client=android")
+    @POST(value = "api/mgr/notification/list")
     suspend fun getMessageList(
         @Body messageListRequest: MessageListRequest
     ): NetworkResponse<PaginatedResult<MessageDataEntity>?>
 
-    @POST(value = "mgr/readNotification")
+    @POST(value = "api/mgr/readNotification")
     suspend fun readMessage(@Body readMessageRequest: ReadMessageRequest): NetworkResponse<Nothing?>
 
-    @GET(value = "mgr/unReadNotificationCount")
+    @GET(value = "api/mgr/unReadNotificationCount")
     suspend fun getUnreadMessageCount(): NetworkResponse<Int?>
 }

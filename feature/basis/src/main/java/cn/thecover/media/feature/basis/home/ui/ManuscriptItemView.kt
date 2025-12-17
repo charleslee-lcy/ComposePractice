@@ -27,7 +27,8 @@ import androidx.compose.ui.unit.dp
 import cn.thecover.media.core.data.DiffusionDataEntity
 import cn.thecover.media.core.data.ManuscriptReviewDataEntity
 import cn.thecover.media.core.data.PaginatedResult
-import cn.thecover.media.core.widget.component.ItemScoreRow
+import cn.thecover.media.core.widget.component.PrimaryItemScoreRow
+import cn.thecover.media.core.widget.component.ScoreItemType
 import cn.thecover.media.core.widget.component.YBTab
 import cn.thecover.media.core.widget.component.YBTabRow
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -115,12 +116,12 @@ private fun TopManuscriptPage(viewModel: HomeViewModel) {
                 )
             }
 
-            ItemScoreRow(
+            PrimaryItemScoreRow(
                 items = arrayOf(
-                    Pair("总分", item.score.toString()),
-                    Pair("基础分", item.basicScore.toString()),
-                    Pair("传播分", item.diffusionScore.toString()),
-                    Pair("质量分", item.qualityScore.toString())
+                    Triple("总分", item.score.toString(), ScoreItemType.PRIMARY),
+                    Triple("基础分", item.basicScore.toString(), ScoreItemType.NORMAL),
+                    Triple("传播分", item.diffusionScore.toString(), ScoreItemType.NORMAL),
+                    Triple("质量分", item.qualityScore.toString(), ScoreItemType.NORMAL)
                 )
             )
             if (index != uiState.dataList?.lastIndex) {
@@ -150,15 +151,17 @@ private fun TopDiffusionPage(viewModel: HomeViewModel) {
                 )
             }
 
-            ItemScoreRow(
+            PrimaryItemScoreRow(
                 items = arrayOf(
-                    Pair(
+                    Triple(
                         "公式传播分",
-                        item.formulaSpreadScore.toString()
+                        item.formulaSpreadScore.toString(),
+                        ScoreItemType.NORMAL
                     ),
-                    Pair(
+                    Triple(
                         "最终传播分",
-                        item.spreadScore.toString()
+                        item.spreadScore.toString(),
+                        ScoreItemType.PRIMARY
                     ),
                 )
             )
@@ -213,17 +216,22 @@ internal fun ManuScriptItemHeader(
         Spacer(Modifier.height(8.dp))
         // 显示作者和编辑信息
         Row {
-            Text(
-                "作者：${author}",
-                style = MaterialTheme.typography.bodySmall,
-                color = SecondaryTextColor
-            )
+            if (author.isNotEmpty()) {
+                Text(
+                    "作者：${author}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = SecondaryTextColor
+                )
+            }
             Spacer(Modifier.width(20.dp))
-            Text(
-                "编辑：${editor}",
-                style = MaterialTheme.typography.bodySmall,
-                color = SecondaryTextColor
-            )
+//            if (editor.isNotEmpty()) {
+//                Text(
+//                    "编辑：${editor}",
+//                    style = MaterialTheme.typography.bodySmall,
+//                    color = SecondaryTextColor
+//                )
+//            }
+
         }
     }
 }
