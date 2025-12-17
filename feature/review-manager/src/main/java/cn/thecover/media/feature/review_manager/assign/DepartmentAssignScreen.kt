@@ -431,7 +431,6 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
 
     val showBudgetDialog = remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
-    var datePickedText by remember { mutableStateOf("${viewModel.departYear.intValue}年") }
     val departmentRemainState by viewModel.assignRemainStatus.collectAsStateWithLifecycle()
     val departmentListStatus by viewModel.departmentListState.collectAsStateWithLifecycle()
     val curDepartmentData by viewModel.curDepartmentData.collectAsStateWithLifecycle()
@@ -451,7 +450,7 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 左侧排序指数选择区域
-            Column(modifier = Modifier.weight(1.2f)) {
+            Column(modifier = Modifier.weight(1f)) {
                 DepartmentMultiDropMenuView(curDepartItem = curDepartmentData, filterData = departmentListStatus) { item ->
                     viewModel.curDepartmentData.value = item
                     viewModel.getDepartmentAssignRemain()
@@ -460,18 +459,17 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
             }
             Spacer(Modifier.width(12.dp))
             // 右侧时间选择区域
-            Column(modifier = Modifier.weight(1f)) {
-                DateSelectionView(label = datePickedText, onClick = {
+            Column(modifier = Modifier.width(82.dp)) {
+                DateSelectionView(label = "${viewModel.departYear.intValue}", onClick = {
                     showDatePicker = true
                 })
             }
             Spacer(Modifier.width(12.dp))
             YBButton(
                 modifier = Modifier
-                    .height(36.dp)
-                    .weight(0.9f),
+                    .height(36.dp),
                 text = { Text("预算剩余", fontSize = 13.sp) },
-                contentPadding = PaddingValues(0.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp),
                 onClick = {
                     showBudgetDialog.value = true
                 }
@@ -506,7 +504,6 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
         end = LocalDate.of(LocalDate.now().year + 4, 1, 1),
         onCancel = { showDatePicker = false },
         onChange = {
-            datePickedText = "${it.year}年"
             viewModel.departYear.intValue = it.year
         }
     )
