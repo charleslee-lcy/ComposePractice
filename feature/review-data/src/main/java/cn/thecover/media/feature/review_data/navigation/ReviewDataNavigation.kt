@@ -154,7 +154,7 @@ enum class ReviewDataNavigationType(
      * 稿件 TOP 排行页面。
      */
     MANUSCRIPT_TOP_RANKING(
-        "稿件TOP排行",
+        "稿件TOP榜单",
         { nav -> nav.navigate(ManuscriptTopRoute) },
         ManuscriptTopRoute.toString(),
     ),

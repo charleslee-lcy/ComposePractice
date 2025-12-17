@@ -282,21 +282,22 @@ class ReviewDataViewModel @Inject constructor(
                 1
             }
 
+            val filter = manuscriptReviewFilterState.value
             val result = repository.fetchManuscriptsPage(
-                year = manuscriptReviewFilterState.value.getYearAsInt(),
-                month = manuscriptReviewFilterState.value.getMonthAsInt(),
+                year = filter.getYearAsInt(),
+                month = filter.getMonthAsInt(),
                 page = page,
-                rankType = when (manuscriptReviewFilterState.value.sortField) {
+                rankType = when (filter.sortField) {
                     "分割线以上" -> 1
                     "分割线以下（清零）" -> 2
                     else -> 0
                 },
-                title = if (manuscriptReviewFilterState.value.searchField.contains("标题"))
-                    manuscriptReviewFilterState.value.searchText else "",
-                reporter = if (manuscriptReviewFilterState.value.searchField.contains("记者"))
-                    manuscriptReviewFilterState.value.searchText else "",
-                id = if (manuscriptReviewFilterState.value.searchField.contains("id"))
-                    manuscriptReviewFilterState.value.searchText else ""
+                title = if (filter.searchField.contains("标题"))
+                    filter.searchText else "",
+                reporter = if (filter.searchField.contains("作者"))
+                    filter.searchText else "",
+                id = if (filter.searchField.contains("ID"))
+                    filter.searchText else ""
             )
 
             when (result) {
@@ -351,18 +352,18 @@ class ReviewDataViewModel @Inject constructor(
             } else {
                 1
             }
-            
+            val filter = manuscriptDiffusionFilterState.value
             val result = repository.fetchManuscriptDiffusionData(
-                year = manuscriptDiffusionFilterState.value.getYearAsInt(),
-                month = manuscriptDiffusionFilterState.value.getMonthAsInt(),
+                year = filter.getYearAsInt(),
+                month = filter.getMonthAsInt(),
                 page = page,
-                sortConditions = manuscriptDiffusionFilterState.value.sortField,
-                title = if (manuscriptDiffusionFilterState.value.searchField.contains("标题"))
-                    manuscriptDiffusionFilterState.value.searchText else "",
-                reporter = if (manuscriptDiffusionFilterState.value.searchField.contains("记者"))
-                    manuscriptDiffusionFilterState.value.searchText else "",
-                id = if (manuscriptDiffusionFilterState.value.searchField.contains("id"))
-                    manuscriptDiffusionFilterState.value.searchText else "",
+                sortConditions = filter.sortField,
+                title = if (filter.searchField.contains("标题"))
+                    filter.searchText else "",
+                reporter = if (filter.searchField.contains("作者"))
+                    filter.searchText else "",
+                id = if (filter.searchField.contains("ID"))
+                    filter.searchText else ""
             )
 
             when (result) {
@@ -419,7 +420,7 @@ class ReviewDataViewModel @Inject constructor(
                 year = manuscriptTopFilterState.value.getYearAsInt(),
                 month = manuscriptTopFilterState.value.getMonthAsInt(),
                 page = page,
-                sortConditions = manuscriptTopFilterState.value.sortField ,
+                sortConditions = manuscriptTopFilterState.value.sortField 
             )
             when (result) {
                 is RepositoryResult.Success -> {
