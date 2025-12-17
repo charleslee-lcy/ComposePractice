@@ -81,7 +81,7 @@ class MineViewModel @Inject constructor(
                         it.copy(isRefreshing = true)
                 }
 
-                getMessageList(page = if (messageIntent.loadMore) messageListState.value.currentPage + 1 else 1)
+                getMessageList(lastId = if (messageIntent.loadMore) messageListState.value.messageDataList.lastOrNull()?.id else null)
             }
 
             is MessageIntent.UpdateMessageFilter -> {
@@ -204,14 +204,18 @@ class MineViewModel @Inject constructor(
         }
     }
 
-    fun getMessageList(type: Int = currentMessageType.ordinal, page: Int = 1, pageSize: Int = 20) {
+    fun getMessageList(
+        type: Int = currentMessageType.ordinal,
+        lastId: Long? = null,
+        pageSize: Int = 20
+    ) {
         viewModelScope.launch {
             flow {
                 val apiService = retrofit.get().create(MessageApi::class.java)
                 val result = apiService.getMessageList(
                     MessageListRequest(
                         pageSize = pageSize,
-                        lastId = messageListState.value.messageDataList.lastOrNull()?.id,
+                        lastId = lastId,
                         type = if (type == 0) null else type.toString(),
                         allUser = 2,
                     )
@@ -223,12 +227,13 @@ class MineViewModel @Inject constructor(
                         val resultData = result.data?.dataList ?: emptyList()
                         _messageListState.update {
                             it.copy(
-                                messageDataList = if (page == 1) resultData else it.messageDataList + resultData,
+                                messageDataList = if (lastId == null) resultData else it.messageDataList + resultData,
                                 isLoading = false,
                                 isRefreshing = false,
                                 currentPage = result.data?.currentPage ?: 1,
-                                canLoadMore = (result.data?.currentPage
-                                    ?: 0) < (result.data?.totalPages ?: 0)
+                                canLoadMore = result.data?.lastId != -1L,
+                                lastId = result.data?.lastId,
+                                timeMillis = System.currentTimeMillis()
                             )
                         }
                     } else {
