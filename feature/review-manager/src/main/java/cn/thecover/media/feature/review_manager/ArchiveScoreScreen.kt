@@ -517,7 +517,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                         fontSize = 12.sp
                     )
                     Text(
-                        text = scoreRuleStatus.first().scoreLevelName,
+                        text = scoreRuleStatus.first { !it.scoreLevelName.isNullOrEmpty() }.scoreLevelName ?: "--",
                         color = MainTextColor,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold
@@ -794,7 +794,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                         Text(
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.Center,
-                            text = item.scoreLevelName,
+                            text = item.scoreLevelName ?: "--",
                             fontSize = 14.sp,
                             color = MainTextColor
                         )
