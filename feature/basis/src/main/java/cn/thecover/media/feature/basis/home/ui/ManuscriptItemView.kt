@@ -221,13 +221,13 @@ internal fun ManuScriptItemHeader(
                 )
             }
             Spacer(Modifier.width(20.dp))
-            if (editor.isNotEmpty()) {
-                Text(
-                    "编辑：${editor}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = SecondaryTextColor
-                )
-            }
+//            if (editor.isNotEmpty()) {
+//                Text(
+//                    "编辑：${editor}",
+//                    style = MaterialTheme.typography.bodySmall,
+//                    color = SecondaryTextColor
+//                )
+//            }
 
         }
     }
