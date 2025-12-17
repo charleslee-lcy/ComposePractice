@@ -255,8 +255,8 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = homeInfo.finalScore,
-                        color = if (homeInfo.finalScore == "--") MainTextColor else MsgColor,
+                        text = if (homeInfo.layoutScore + homeInfo.newsScore > 0) (homeInfo.layoutScore + homeInfo.newsScore).toString() else "0",
+                        color = if (homeInfo.layoutScore + homeInfo.newsScore > 0) MsgColor else MainTextColor,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -297,7 +297,7 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = if (homeInfo.innerTaskGoalNum.isNotEmpty()) "${homeInfo.innerTaskGoalNum}条" else "--",
+                        text = if (homeInfo.innerTaskGoalNum.isNotEmpty()) "${homeInfo.innerTaskGoalNum}条" else "0",
                         color = MainTextColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -313,7 +313,7 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) "${homeInfo.innerTaskFinishedNum}条" else "--",
+                        text = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) "${homeInfo.innerTaskFinishedNum}条" else "0",
                         color = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) MsgColor else MainTextColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -616,7 +616,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                     )
                     Text(
                         text = homeInfo.finalCoefficient,
-                        color = if (homeInfo.finalCoefficient == "--") MainTextColor else MsgColor,
+                        color = if (homeInfo.finalCoefficient == "0") MainTextColor else MsgColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -657,7 +657,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = if (homeInfo.innerTaskGoalNum.isNotEmpty()) "${homeInfo.innerTaskGoalNum}条" else "--",
+                        text = if (homeInfo.innerTaskGoalNum.isNotEmpty()) "${homeInfo.innerTaskGoalNum}条" else "0",
                         color = MainTextColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -673,7 +673,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) "${homeInfo.innerTaskFinishedNum}条" else "--",
+                        text = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) "${homeInfo.innerTaskFinishedNum}条" else "0",
                         color = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) MsgColor else MainTextColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
