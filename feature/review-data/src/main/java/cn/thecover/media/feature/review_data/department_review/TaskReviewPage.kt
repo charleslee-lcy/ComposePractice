@@ -103,9 +103,9 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     ) { item, position ->
         TaskReviewItemView(
             item.departmentName.toString(),
-            item.taskFinishedPersons,
-            item.taskTotalPersons,
-            item.taskProgress,
+            item.finishedPersonNum,
+            item.taskGoalNum,
+            item.finishPercent,
             item.taskDesc
         )
     }
@@ -139,7 +139,7 @@ fun TaskReviewItemView(
     itemName: String,
     finishedPersons: Int,
     totalPersons: Int,
-    itemProgress: Float,
+    itemProgress: Double,
     itemDesc: String? = null
 ) {
     // 使用卡片容器包装整个内容
@@ -199,7 +199,7 @@ fun TaskReviewItemView(
                 modifier = Modifier
                     .padding(vertical = 8.dp)
                     .fillMaxWidth(),
-                progress = { itemProgress },
+                progress = { itemProgress.toFloat() },
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.primary.copy(0.1f),
                 drawStopIndicator = {

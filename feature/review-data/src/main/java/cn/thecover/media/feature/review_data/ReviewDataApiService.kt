@@ -46,7 +46,7 @@ interface ReviewDataApiService {
 
     //部门数据-任务完成情况
     @POST(value = "api/data/department/taskInfo")
-    suspend fun getDepartmentTaskData(@Body requestBody: DepartmentTaskRequest): NetworkResponse<PaginatedResult<DepartmentTaskDataEntity>>
+    suspend fun getDepartmentTaskData(@Body requestBody: DepartmentTaskRequest): NetworkResponse<List<DepartmentTaskDataEntity>>
 
     //修改稿分
     @POST(value = "api/data/news/modifyScore")

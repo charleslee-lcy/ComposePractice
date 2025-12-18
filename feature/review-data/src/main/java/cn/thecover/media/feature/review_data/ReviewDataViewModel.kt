@@ -471,32 +471,25 @@ class ReviewDataViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val lastId = if (isLoadMore) {
-                _departmentTaskPageState.value.lastId
-            } else {
-                -1L
-            }
+
 
             val result = repository.fetchDepartmentTaskPage(
                 departmentDataFilterState.value.getYearAsInt(),
                 departmentDataFilterState.value.getMonthAsInt(),
-                lastId = lastId ?: -1,
             )
 
             when (result) {
                 is RepositoryResult.Success -> {
-                    val departmentTaskData =
-                        if (isLoadMore) (_departmentTaskPageState.value.dataList ?: emptyList()) + (result.data.dataList ?: emptyList()) else (result.data.dataList ?: emptyList())
+                    val departmentTaskData = result.data
 
                     _departmentTaskPageState.update {
                         it.copy(
                             isRefreshing = false,
                             isLoading = false,
                             dataList = departmentTaskData,
-                            currentPage = result.data.currentPage,
-                            totalPages = result.data.totalPages,
-                            hasNextPage = result.data.hasNextPage,
-                            lastId = result.data.lastId
+
+                            hasNextPage = false,
+
                         )
                     }
                 }
