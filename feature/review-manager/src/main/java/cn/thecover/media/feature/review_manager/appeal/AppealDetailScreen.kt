@@ -312,7 +312,7 @@ fun AppealDetailScreen(
                         leadingIcon = {
                             Text(
                                 modifier = Modifier.weight(0.24f),
-                                text = "申诉内容：",
+                                text = "申诉理由：",
                                 color = SecondaryTextColor,
                                 fontSize = 14.sp
                             )
