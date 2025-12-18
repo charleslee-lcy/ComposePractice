@@ -179,15 +179,13 @@ fun YBInput(
                 }
             })
 
-        AnimatedVisibility(textState.value.isNotEmpty()) {
-            if (showVisibleIcon) {
-                IconButton(onClick = { textVisible = !textVisible }) {
-                    Icon(
-                        painterResource(if (textVisible) YBIcons.Custom.PasswordHide else YBIcons.Custom.PasswordWatch),
-                        tint = TertiaryTextColor,
-                        contentDescription = if (textVisible) "隐藏内容" else "查看内容"
-                    )
-                }
+        AnimatedVisibility(showVisibleIcon) {
+            IconButton(onClick = { textVisible = !textVisible }) {
+                Icon(
+                    painterResource(if (textVisible) YBIcons.Custom.PasswordHide else YBIcons.Custom.PasswordWatch),
+                    tint = TertiaryTextColor,
+                    contentDescription = if (textVisible) "隐藏内容" else "查看内容"
+                )
             }
         }
     }

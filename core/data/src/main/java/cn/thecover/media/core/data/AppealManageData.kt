@@ -107,7 +107,7 @@ data class AuditFlow(
     val operationName: String = "",
     val `operator`: Long = 0L,
     val operatorName: String = "",
-    val remark: String = "",
+    val remark: String? = null,
     val state: Long = 0L,
     val toNode: Long = 0L,
     val toState: Long = 0L
