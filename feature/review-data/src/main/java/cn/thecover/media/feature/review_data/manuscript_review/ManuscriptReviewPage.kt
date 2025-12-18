@@ -100,7 +100,8 @@ internal fun ManuscriptReviewPage(
     val data by viewModel.manuscriptReviewPageState.collectAsState()
     // 计算splitsNum为data.dataList中第一个score等于0的数据的索引
     val splitsNum = remember(data.dataList) {
-        data.dataList?.indexOfFirst { it.id.toLong() == data.firstCutNewsId }?.let {
+        if (viewModel.manuscriptReviewFilterState.value.sortField.contains("分割线以下")) 0 else data.dataList?.indexOfFirst { it.id.toLong() == data.firstCutNewsId }
+            ?.let {
             if (it == -1) data.dataList?.size ?: 0 else it
         } ?: 0
     }
@@ -303,9 +304,11 @@ private fun TotalRankingItem(
                         ) {
                             Text(
                                 if (data.score % 1 == 0.0) data.score.toInt()
-                                    .toString() else data.score.toString(),
+                                    .toString() else data.score.toString() + if (rank >= rankLine) "(0)" else "",
                                 style = MaterialTheme.typography.titleLarge,
-                                color = MaterialTheme.colorScheme.primary
+                                color = if (rank >= rankLine) MaterialTheme.colorScheme.primary.copy(
+                                    0.6f
+                                ) else MaterialTheme.colorScheme.primary
                             )
 
                             Spacer(modifier = Modifier.width(8.dp))
