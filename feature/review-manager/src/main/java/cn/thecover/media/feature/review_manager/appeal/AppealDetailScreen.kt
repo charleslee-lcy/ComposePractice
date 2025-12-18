@@ -672,7 +672,7 @@ private fun ApprovalFlowItem(
                 VerticalDivider(
                     modifier = Modifier
                         .padding(top = 3.dp)
-                        .height(if (index == 0) 20.dp else 40.dp),
+                        .height(if (node.nodeName.isEmpty()) 20.dp else 40.dp),
                     thickness = 1.dp,
                     color = MainColor
                 )
