@@ -451,7 +451,7 @@ fun AppealDetailScreen(
                             trailingIcon = {
                                 Text(
                                     modifier = Modifier.padding(end = 12.dp),
-                                    text = detailInfoStatus.data?.auditFlows?.filter { it.operation == 5 }?.first()?.createTime ?: "--",
+                                    text = detailInfoStatus.data?.replyTime ?: "--",
                                     color = MainTextColor,
                                     fontSize = 14.sp
                                 )
