@@ -59,6 +59,9 @@ class HomeViewModel @Inject constructor(
     val homeUiState = MutableStateFlow(BaseUiState<HomeInfo>())
     val unreadMessageCount = MutableStateFlow(0)
 
+    // 用于跟踪当前用户ID
+    private var currentUserId: Long = 0L
+
     val homeManuscriptUiState = MutableStateFlow(PaginatedResult<ManuscriptReviewDataEntity>())
     val homeManuscriptDiffusionUiState = MutableStateFlow(PaginatedResult<DiffusionDataEntity>())
     var hasHomeDataFetched by mutableStateOf(false)
@@ -66,6 +69,15 @@ class HomeViewModel @Inject constructor(
     val curYear = mutableIntStateOf(LocalDate.now().minusMonths(1).year)
     val curMonth = mutableIntStateOf(LocalDate.now().minusMonths(1).monthValue)
     var roleState by mutableIntStateOf(2)
+
+    /**
+     * 重置HomeViewModel的状态，用于用户切换时
+     */
+    fun resetState() {
+        hasHomeDataFetched = false
+        canShowToast = true
+        currentUserId = 0L
+    }
 
     fun login(username: String, password: String) {
         viewModelScope.launch {
@@ -113,6 +125,14 @@ class HomeViewModel @Inject constructor(
                     }
 
                     result.data?.let {
+                        // 检测用户ID是否变化
+                        if (currentUserId != 0L && currentUserId != it.userId) {
+                            // 用户发生变化，重置状态
+                            hasHomeDataFetched = false
+                            canShowToast = true
+                        }
+
+                        currentUserId = it.userId
                         userUiState.value = it
                         saveData(context, Keys.USER_INFO, Gson().toJson(it))
                     }

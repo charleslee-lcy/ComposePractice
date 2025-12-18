@@ -103,6 +103,8 @@ internal fun LoginScreen(
                 loadingState.hide()
                 loginState.data?.token?.let {
                     saveData(context, Keys.USER_TOKEN, it)
+                    // 重置HomeViewModel状态，确保用户切换后能重新获取数据
+                    viewModel.resetState()
                     navController.navigateToHome(
                         navOptions = navOptions {
                             popUpTo(navController.graph.id) {
@@ -146,7 +148,9 @@ internal fun LoginScreen(
             )
             Spacer(Modifier.size(20.dp))
             Row(
-                modifier = Modifier.fillMaxWidth().height(48.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -172,7 +176,9 @@ internal fun LoginScreen(
             }
             HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = OutlineColor, thickness = 0.8.dp)
             Row(
-                modifier = Modifier.fillMaxWidth().height(48.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {

@@ -127,9 +127,10 @@ internal fun MineScreen(
                 }
                 HttpStatus.SUCCESS -> {
                     logoutLoadingState.hide()
-                    // 清楚token和用户信息缓存
+                    // 清除token和用户信息缓存
                     clearData(context, Keys.USER_TOKEN)
                     clearData(context, Keys.USER_INFO)
+
                     navController.navigateToLogin(navOptions {
                         // 清除所有之前的页面
                         popUpTo(navController.graph.id) {
