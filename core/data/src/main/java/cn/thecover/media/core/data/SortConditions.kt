@@ -1,5 +1,7 @@
 package cn.thecover.media.core.data
 
+import java.io.Serializable
+
 /**
  *  Created by Wing at 17:16 on 2025/12/1
  *
@@ -8,7 +10,7 @@ package cn.thecover.media.core.data
 data class SortConditions(
     val field: String,
     val direction: String
-){
+) : Serializable {
     companion object {
         const val ASC = "ASC"
         const val DESC = "DESC"
