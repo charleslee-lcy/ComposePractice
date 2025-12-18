@@ -287,11 +287,11 @@ private fun MineFunctionList(
     var timePickerShow by remember { mutableStateOf(false) }
 
     if (showClearCacheState == CACHE_CLEAR_STATE_STARTED) {
-        loadingState.show("清理中")
+        loadingState.show("正在清理...")
     } else {
         loadingState.hide()
         if (showClearCacheState == CACHE_CLEAR_STATE_FINISHED) {
-            statusState.show("清理完成", YBIcons.Custom.Checked)
+            statusState.show("清理成功", YBIcons.Custom.Checked)
         } else if (showClearCacheState == CACHE_CLEAR_STATE_FAILED) {
             statusState.show("清理失败")
         }
