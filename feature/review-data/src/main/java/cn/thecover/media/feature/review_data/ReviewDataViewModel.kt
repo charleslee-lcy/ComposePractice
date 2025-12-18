@@ -298,10 +298,12 @@ class ReviewDataViewModel @Inject constructor(
                 year = filter.getYearAsInt(),
                 month = filter.getMonthAsInt(),
                 lastId = lastId ?: -1,
-                rankType = when (filter.sortField) {
-                    "分割线以上" -> 1
-                    "分割线以下（清零）" -> 2
-                    else -> 0
+                rankType = if (filter.sortField.contains("分割线以上")) {
+                    1
+                } else if (filter.sortField.contains("分割线以下")) {
+                    2
+                } else {
+                    0
                 },
                 title = if (filter.searchField.contains("标题"))
                     filter.searchText else "",
