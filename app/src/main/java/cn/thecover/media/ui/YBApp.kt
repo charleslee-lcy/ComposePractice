@@ -96,15 +96,15 @@ fun YBApp(
             val isOffline by appState.isOffline.collectAsStateWithLifecycle()
 
             // If user is not connected to the internet show a snack bar to inform them.
-            val notConnectedMessage = stringResource(R.string.not_connected)
-            LaunchedEffect(isOffline) {
-                if (isOffline) {
-                    snackBarHostState.showSnackbar(
-                        message = notConnectedMessage,
-                        duration = Indefinite,
-                    )
-                }
-            }
+//            val notConnectedMessage = stringResource(R.string.not_connected)
+//            LaunchedEffect(isOffline) {
+//                if (isOffline) {
+//                    snackBarHostState.showSnackbar(
+//                        message = notConnectedMessage,
+//                        duration = Indefinite,
+//                    )
+//                }
+//            }
 
             YBApp(
                 appState = appState,

@@ -10,28 +10,41 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cn.thecover.media.core.data.AppealListData
+import cn.thecover.media.core.network.previewRetrofit
+import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.HintTextColor
+import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
+import cn.thecover.media.feature.review_manager.ReviewManageViewModel
+import cn.thecover.media.feature.review_manager.navigation.navigateToArchiveDetail
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -43,8 +56,10 @@ import java.util.Locale
  */
 @Composable
 fun AppealListItem(
+    viewModel: ReviewManageViewModel,
     modifier: Modifier = Modifier,
     item: AppealListData,
+    itemClick: () -> Unit = {},
 ) {
     val formattedTime = remember(item.submitTime) {
         try {
@@ -58,7 +73,7 @@ fun AppealListItem(
     }
 
     Box(
-        modifier = modifier.padding(top = 12.dp)
+        modifier = modifier.padding(top = 12.dp).clickableWithoutRipple { itemClick.invoke() }
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -74,12 +89,49 @@ fun AppealListItem(
                 )
             )
             if (item.appealTitle.isNotEmpty()) {
-                Text(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                    text = item.appealTitle,
+                val annotatedText = buildAnnotatedString {
+                    append(item.appealTitle)
+
+                    if (item.type == 2) {
+                        append("  ")
+                        pushStringAnnotation(
+                            tag = "VIEW_ARTICLE",
+                            annotation = "view_article"
+                        )
+                        withStyle(
+                            style = SpanStyle(
+                                color = MainColor,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Normal,
+                                textDecoration = TextDecoration.Underline
+                            )
+                        ) {
+                            append("查看稿件")
+                        }
+                        pop()
+                    }
+                }
+
+                ClickableText(
+                    text = annotatedText,
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
                     style = TextStyle(
-                        color = MainTextColor, fontSize = 14.sp, fontWeight = FontWeight.SemiBold
-                    )
+                        color = MainTextColor,
+                        fontSize = 14.sp,
+                        lineHeight = 20.sp,
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    onClick = { offset ->
+                        // 精确判断点击位置是否在"查看稿件"注解上
+                        annotatedText.getStringAnnotations("VIEW_ARTICLE", offset, offset)
+                            .firstOrNull()?.let {
+                                // 仅当点击在"查看稿件"文本上时才执行操作
+                                viewModel.getAppealNewsInfo(item.newsId)
+                            } ?: kotlin.run {
+                                itemClick.invoke()
+                        }
+                    }
                 )
             } else {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -192,7 +244,10 @@ fun AppealListItemPreview() {
             repeat(5) {
                 item {
                     val item = AppealListData()
-                    AppealListItem(item = item)
+                    AppealListItem(viewModel = ReviewManageViewModel(
+                        savedStateHandle = SavedStateHandle(),
+                        retrofit = { previewRetrofit }
+                    ), item = item)
                 }
             }
         }

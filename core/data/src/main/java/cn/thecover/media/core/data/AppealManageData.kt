@@ -25,12 +25,47 @@ data class AppealDetailRequest(
 )
 
 @Serializable
+data class AppealNewsRequest(
+    var newsId: Long? = 0L
+)
+
+@Serializable
 data class AuditDetailRequest(
     var id: Long = 0L,
     var curNodeId: Long? = null,
     var nextNodeId: Long? = null,
     var operation: Int = 0,
     var reasons: String? = null
+)
+
+@Serializable
+data class AppealNewsData(
+    val audioUrl: String? = null,
+    val broadcastScore: String? = null,
+    val categoryId: Int,
+    val content: String,
+    val createTime: Long,
+    val disable: Int,
+    val id: Int,
+    val images: String? = null,
+    val img169: String,
+    val img43: String,
+    val listImg: String,
+    val listKind: Int,
+    val newsCategory: String,
+    val newsContent: String? = null,
+    val newsData: String? = null,
+    val newsKind: Int,
+    val newsSource: Int,
+    val publishTime: Long,
+    val qualityScore: String? = null,
+    val status: Int,
+    val title: String,
+    val updateTime: Long,
+    val videoUrl: String? = null,
+    val wapUrl: String = "",
+    val writeTimeType: Int,
+    val ynNewsId: Int
 )
 
 @Serializable

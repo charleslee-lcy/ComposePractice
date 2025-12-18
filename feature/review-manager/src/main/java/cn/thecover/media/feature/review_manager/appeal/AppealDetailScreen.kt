@@ -400,7 +400,7 @@ fun AppealDetailScreen(
                     ApprovalProcessContent(detailInfoStatus)
                 }
 
-                if (!detailInfoStatus.data?.reply.isNullOrEmpty()) {
+                if (detailInfoStatus.data?.auditFlows?.filter { it.operation == 5 }?.isNotEmpty() == true) {
                     Card(
                         modifier = Modifier
                             .padding(bottom = 15.dp)
@@ -449,7 +449,7 @@ fun AppealDetailScreen(
                             trailingIcon = {
                                 Text(
                                     modifier = Modifier.padding(end = 12.dp),
-                                    text = "2025-06-24 09:32:52",
+                                    text = detailInfoStatus.data?.auditFlows?.filter { it.operation == 5 }?.first()?.createTime ?: "--",
                                     color = MainTextColor,
                                     fontSize = 14.sp
                                 )
@@ -474,6 +474,7 @@ fun AppealDetailScreen(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(20.dp))
             }
 
             if (canEdit /*&& detailInfoStatus.data?.status == 1*/) {

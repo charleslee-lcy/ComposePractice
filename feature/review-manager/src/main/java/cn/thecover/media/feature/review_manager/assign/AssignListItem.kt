@@ -73,7 +73,7 @@ fun AssignListItem(
                         fontWeight = FontWeight.SemiBold
                     )
                 )
-                if (item.status == 0) {
+                if (item.userDepartmentId != item.departmentId) {
                     Text(
                         text = "(部门变动)",
                         style = TextStyle(
