@@ -95,6 +95,7 @@ internal fun DepartmentAssignScreen(
     var monthPicked by remember { mutableIntStateOf(LocalDate.now().monthValue) }
     var assignScore by remember { mutableStateOf("") }
     val updateAssignStatus by viewModel.updateAssignState.collectAsStateWithLifecycle()
+    val departmentRemainState by viewModel.assignRemainStatus.collectAsStateWithLifecycle()
     val loadingState = rememberTipsDialogState()
 
     LaunchedEffect(viewModel.departYear.intValue) {
@@ -354,7 +355,7 @@ internal fun DepartmentAssignScreen(
                     fontSize = 14.sp,
                     color = MainTextColor
                 )
-                DepartmentAnnualAssign(this, cannotEditMonthStatus)
+                DepartmentAnnualAssign(departmentRemainState)
                 Spacer(modifier = Modifier.height(15.dp))
             }
         }
