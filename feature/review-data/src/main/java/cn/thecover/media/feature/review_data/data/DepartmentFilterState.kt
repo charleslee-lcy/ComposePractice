@@ -8,6 +8,6 @@ import java.time.LocalDate
  */
 
 data class DepartmentFilterState(
-    override val selectedDate: String = "${LocalDate.now().year}年${LocalDate.now().monthValue}月",
+    override val selectedDate: String = "${if (LocalDate.now().monthValue == 1) LocalDate.now().year - 1 else LocalDate.now().year}年${if (LocalDate.now().monthValue == 1) 12 else LocalDate.now().monthValue - 1}月",
     val sortField: String = "部门总稿费"
 ): FilterState()

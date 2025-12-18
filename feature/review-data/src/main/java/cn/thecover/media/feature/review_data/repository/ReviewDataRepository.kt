@@ -29,11 +29,11 @@ class ReviewDataRepository @Inject constructor(
     suspend fun fetchManuscriptsPage(
         year: Int,
         month: Int,
-        page: Int,
         rankType: Int = 0,
         reporter: String = "",
         title: String = "",
-        id: String = ""
+        id: String = "",
+        lastId: Long = -1
     ): RepositoryResult<PaginatedResult<ManuscriptReviewDataEntity>> {
         return try {
             val response = reviewApiService.getManuscriptReviewData(
@@ -44,7 +44,7 @@ class ReviewDataRepository @Inject constructor(
                     reporterName = reporter,
                     year = year,
                     month = month,
-                    page = page
+                    lastId = lastId
                 )
             )
             if (response.isSuccess()) {
@@ -54,7 +54,8 @@ class ReviewDataRepository @Inject constructor(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
                         totalPages = body.total,
-                        hasNextPage = body.currentPage < body.total
+                        hasNextPage = body.lastId?.toInt() != -1,
+                        lastId = body.lastId
                     )
                 )
             } else {
@@ -69,7 +70,7 @@ class ReviewDataRepository @Inject constructor(
     suspend fun fetchManuscriptsTopPage(
         year: Int,
         month: Int,
-        page: Int,
+        lastId: Long = -1,
         sortConditions: String = "",
         reporter: String = "",
         title: String = "",
@@ -86,7 +87,7 @@ class ReviewDataRepository @Inject constructor(
                     reporterName = reporter,
                     year = year,
                     month = month,
-                    page = page
+                    lastId = lastId
                 )
             )
             if (response.isSuccess()) {
@@ -96,7 +97,8 @@ class ReviewDataRepository @Inject constructor(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
                         totalPages = body.total,
-                        hasNextPage = body.currentPage < body.total
+                        hasNextPage = body.lastId?.toInt() != -1,
+                        lastId = body.lastId
                     )
                 )
             } else {
@@ -111,7 +113,7 @@ class ReviewDataRepository @Inject constructor(
     suspend fun fetchManuscriptDiffusionData(
         year: Int,
         month: Int,
-        page: Int,
+        lastId: Long = -1,
         sortConditions: String = "",
         reporter: String = "",
         title: String = "",
@@ -128,7 +130,7 @@ class ReviewDataRepository @Inject constructor(
                     reporterName = reporter,
                     year = year,
                     month = month,
-                    page = page
+                    lastId = lastId
                 )
             )
             if (response.isSuccess()) {
@@ -138,7 +140,8 @@ class ReviewDataRepository @Inject constructor(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
                         totalPages = body.total,
-                        hasNextPage = body.currentPage < body.total
+                        hasNextPage = body.lastId?.toInt() != -1,
+                        lastId = body.lastId
                     )
                 )
             } else {
@@ -155,7 +158,7 @@ class ReviewDataRepository @Inject constructor(
         filter: String,
         year: Int,
         month: Int,
-        page: Int
+        lastId: Long = -1
     ): RepositoryResult<PaginatedResult<DepartmentTotalDataEntity>> {
         // 实现部门考核数据获取逻辑
         return try {
@@ -163,7 +166,7 @@ class ReviewDataRepository @Inject constructor(
                 DepartmentReviewRequest(
                     year = year,
                     month = month,
-                    page = page,
+                    lastId = lastId,
                     sortConditions = listOf(
                         SortConditions.putSortConditions(filter)
                     )
@@ -177,7 +180,8 @@ class ReviewDataRepository @Inject constructor(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
                         totalPages = body.total,
-                        hasNextPage = body.currentPage < body.total
+                        hasNextPage = body.lastId?.toInt() != -1,
+                        lastId = body.lastId
                     )
                 )
             } else {
@@ -193,7 +197,7 @@ class ReviewDataRepository @Inject constructor(
     suspend fun fetchDepartmentTaskPage(
         year: Int,
         month: Int,
-        page: Int
+        lastId: Long = -1
     ): RepositoryResult<PaginatedResult<DepartmentTaskDataEntity>> {
 
         return try {
@@ -201,7 +205,7 @@ class ReviewDataRepository @Inject constructor(
                 DepartmentTaskRequest(
                     year = year,
                     month = month,
-                    page = page
+                    lastId = lastId
                 )
             )
 
@@ -212,7 +216,8 @@ class ReviewDataRepository @Inject constructor(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
                         totalPages = body.total,
-                        hasNextPage = body.currentPage < body.total
+                        hasNextPage = body.lastId?.toInt() != -1,
+                        lastId = body.lastId
                     )
                 )
             } else {
@@ -228,7 +233,7 @@ class ReviewDataRepository @Inject constructor(
     suspend fun fetchDepartmentTopPage(
         year: Int,
         month: Int,
-        page: Int
+        lastId: Long = -1
     ): RepositoryResult<PaginatedResult<DepartmentTotalDataEntity>> {
 
         // 实现部门考核数据获取逻辑
@@ -237,7 +242,7 @@ class ReviewDataRepository @Inject constructor(
                 DepartmentTopRequest(
                     year = year,
                     month = month,
-                    page = page,
+                    lastId = lastId,
                     sortConditions = listOf(
                         SortConditions.putSortConditions(DEPT_DATA_AVERAGE_SCORE)
                     )
@@ -251,7 +256,8 @@ class ReviewDataRepository @Inject constructor(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
                         totalPages = body.total,
-                        hasNextPage = body.currentPage < body.total
+                        hasNextPage = body.lastId?.toInt() != -1,
+                        lastId = body.lastId
                     )
                 )
             } else {

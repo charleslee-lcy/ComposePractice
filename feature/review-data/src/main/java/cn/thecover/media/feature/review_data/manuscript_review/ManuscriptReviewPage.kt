@@ -111,6 +111,7 @@ internal fun ManuscriptReviewPage(
         manus.value = data.dataList ?: emptyList()
         isLoadingMore.value = data.isLoading
         isRefreshing.value = data.isRefreshing
+        canLoadMore.value = data.hasNextPage
     }
 
     YBNormalList(

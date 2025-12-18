@@ -176,8 +176,8 @@ class HomeViewModel @Inject constructor(
                     ManuscriptTopRequest(
                         year = curYear.intValue,
                         month = curMonth.intValue,
-                        page = 1,
-                        page_size = "10"
+                        lastId = -1,
+                        pageSize = "10"
                     )
                 )
                 emit(response)
@@ -200,8 +200,8 @@ class HomeViewModel @Inject constructor(
                     ManuscriptDiffusionRequest(
                         year = curYear.intValue,
                         month = curMonth.intValue,
-                        page = 1,
-                        page_size = "10"
+                        lastId = -1,
+                        pageSize = "10"
                     )
                 )
                 emit(response)

@@ -276,17 +276,17 @@ class ReviewDataViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
-            val page = if (isLoadMore) {
-                _manuscriptReviewPageState.value.currentPage + 1
+            val lastId = if (isLoadMore) {
+                manuscriptReviewPageState.value.lastId
             } else {
-                1
+                -1
             }
 
             val filter = manuscriptReviewFilterState.value
             val result = repository.fetchManuscriptsPage(
                 year = filter.getYearAsInt(),
                 month = filter.getMonthAsInt(),
-                page = page,
+                lastId = lastId ?: -1,
                 rankType = when (filter.sortField) {
                     "分割线以上" -> 1
                     "分割线以下（清零）" -> 2
@@ -297,7 +297,7 @@ class ReviewDataViewModel @Inject constructor(
                 reporter = if (filter.searchField.contains("作者"))
                     filter.searchText else "",
                 id = if (filter.searchField.contains("ID"))
-                    filter.searchText else ""
+                    filter.searchText else "",
             )
 
             when (result) {
@@ -316,7 +316,8 @@ class ReviewDataViewModel @Inject constructor(
                             dataList = manuscripts,
                             currentPage = result.data.currentPage,
                             totalPages = result.data.totalPages,
-                            hasNextPage = result.data.hasNextPage
+                            hasNextPage = result.data.hasNextPage,
+                            lastId = result.data.lastId
                         )
                     }
                 }
@@ -347,16 +348,16 @@ class ReviewDataViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
-            val page = if (isLoadMore) {
-                _manuscriptReviewDiffusionPageState.value.currentPage + 1
+            val lastId = if (isLoadMore) {
+                _manuscriptReviewDiffusionPageState.value.lastId
             } else {
-                1
+                -1
             }
             val filter = manuscriptDiffusionFilterState.value
             val result = repository.fetchManuscriptDiffusionData(
                 year = filter.getYearAsInt(),
                 month = filter.getMonthAsInt(),
-                page = page,
+                lastId = lastId ?: -1,
                 sortConditions = filter.sortField,
                 title = if (filter.searchField.contains("标题"))
                     filter.searchText else "",
@@ -381,7 +382,8 @@ class ReviewDataViewModel @Inject constructor(
                             dataList = manuscripts,
                             currentPage = result.data.currentPage,
                             totalPages = result.data.totalPages,
-                            hasNextPage = result.data.hasNextPage
+                            hasNextPage = result.data.hasNextPage,
+                            lastId = result.data.lastId
                         )
                     }
                 }
@@ -410,16 +412,16 @@ class ReviewDataViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
-            val page = if (isLoadMore) {
-                _manuscriptReviewTopPageState.value.currentPage + 1
+            val lastId = if (isLoadMore) {
+                _manuscriptReviewTopPageState.value.lastId
             } else {
-                1
+                -1
             }
             
             val result = repository.fetchManuscriptsTopPage(
                 year = manuscriptTopFilterState.value.getYearAsInt(),
                 month = manuscriptTopFilterState.value.getMonthAsInt(),
-                page = page,
+                lastId = lastId ?: -1,
                 sortConditions = manuscriptTopFilterState.value.sortField 
             )
             when (result) {
@@ -436,7 +438,8 @@ class ReviewDataViewModel @Inject constructor(
                             dataList = manuscripts,
                             currentPage = result.data.currentPage,
                             totalPages = result.data.totalPages,
-                            hasNextPage = result.data.hasNextPage
+                            hasNextPage = result.data.hasNextPage,
+                            lastId = result.data.lastId
                         )
                     }
                 }
@@ -468,16 +471,16 @@ class ReviewDataViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val page = if (isLoadMore) {
-                _departmentTaskPageState.value.currentPage + 1
+            val lastId = if (isLoadMore) {
+                _departmentTaskPageState.value.lastId
             } else {
-                1
+                -1L
             }
 
             val result = repository.fetchDepartmentTaskPage(
                 departmentDataFilterState.value.getYearAsInt(),
                 departmentDataFilterState.value.getMonthAsInt(),
-                page
+                lastId = lastId ?: -1,
             )
 
             when (result) {
@@ -492,7 +495,8 @@ class ReviewDataViewModel @Inject constructor(
                             dataList = departmentTaskData,
                             currentPage = result.data.currentPage,
                             totalPages = result.data.totalPages,
-                            hasNextPage = result.data.hasNextPage
+                            hasNextPage = result.data.hasNextPage,
+                            lastId = result.data.lastId
                         )
                     }
                 }
@@ -525,17 +529,17 @@ class ReviewDataViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
-            val page = if (isLoadMore) {
-                _departmentReviewPageState.value.currentPage + 1
+            val lastId = if (isLoadMore) {
+                _departmentReviewPageState.value.lastId
             } else {
-                1
+                -1
             }
             
             val result = repository.fetchDepartmentReviewPage(
                 departmentDataFilterState.value.sortField,
                 departmentDataFilterState.value.getYearAsInt(),
                 departmentDataFilterState.value.getMonthAsInt(),
-                page
+                lastId = lastId ?: -1,
             )
             if (result is RepositoryResult.Success) {
                 val departmentData =
@@ -548,7 +552,10 @@ class ReviewDataViewModel @Inject constructor(
                         isLoading = false,
                         isRefreshing = false,
                         error = null,
-                        currentPage = result.data.currentPage
+                        lastId = result.data.lastId,
+                        currentPage = result.data.currentPage,
+                        totalPages = result.data.totalPages,
+                        hasNextPage = result.data.hasNextPage,
                     )
                 }
             } else if (result is RepositoryResult.Error) {
@@ -575,16 +582,16 @@ class ReviewDataViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
-            val page = if (isLoadMore) {
-                _departmentReviewTopPageState.value.currentPage + 1
+            val lastId = if (isLoadMore) {
+                _departmentReviewTopPageState.value.lastId
             } else {
-                1
+                -1
             }
             
             val result = repository.fetchDepartmentTopPage(
                 departmentTopFilterState.value.getYearAsInt(),
                 departmentTopFilterState.value.getMonthAsInt(),
-                page
+                lastId = lastId ?: -1,
             )
             if (result is RepositoryResult.Success) {
                 val departmentData =
@@ -597,7 +604,10 @@ class ReviewDataViewModel @Inject constructor(
                         isLoading = false,
                         isRefreshing = false,
                         error = null,
-                        currentPage = result.data.currentPage
+                        currentPage = result.data.currentPage,
+                        totalPages = result.data.totalPages,
+                        hasNextPage = result.data.hasNextPage,
+                        lastId = result.data.lastId
                     )
                 }
             } else if (result is RepositoryResult.Error) {

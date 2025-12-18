@@ -8,7 +8,7 @@ import java.time.LocalDate
  */
 
 open class FilterState(
-    open val selectedDate: String = "${LocalDate.now().year}年${LocalDate.now().monthValue}月",
+    open val selectedDate: String = "${if (LocalDate.now().monthValue == 1) LocalDate.now().year - 1 else LocalDate.now().year}年${if (LocalDate.now().monthValue == 1) 12 else LocalDate.now().monthValue - 1}月",
 ){
     private fun getYearStr(): String {
         return try {

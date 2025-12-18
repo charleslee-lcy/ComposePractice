@@ -13,5 +13,7 @@ data class MessageDataListState(
     val isRefreshing: Boolean = false,
     val canLoadMore: Boolean = true,
     val currentPage: Int = 1,
-    val error: String? = null
+    val lastId: Long? = null,
+    val error: String? = null,
+    val timeMillis: Long = 0L
 )

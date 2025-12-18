@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -55,17 +55,16 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
     // 部门总数据列表，包含部门ID、名称和平均分数
     val departmentTotalData by viewModel.departmentReviewTopPageState.collectAsState()
 
-
     // 日期选择器显示状态和选中日期文本状态
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickedState by viewModel.departmentTopFilterState.collectAsState()
 
-
-    // 创建 MutableState 用于列表组件，将可空列表转换为非空列表
+    // 创建 MutableState 用于列表组件，确保初始状态允许滚动
     val departmentList = remember { mutableStateOf(departmentTotalData.dataList ?: emptyList()) }
     val isLoadingMore = remember { mutableStateOf(departmentTotalData.isLoading) }
     val isRefreshing = remember { mutableStateOf(departmentTotalData.isRefreshing) }
-    val canLoadMore = remember { mutableStateOf(departmentTotalData.hasNextPage) }
+    // 初始化为 true，确保列表可以滚动，后续会根据数据更新
+    val canLoadMore = remember { mutableStateOf(true) }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(departmentTotalData) {
@@ -83,7 +82,7 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
     YBNormalList(
         modifier = Modifier
             .padding(horizontal = 16.dp)
-            .fillMaxHeight(),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         items = departmentList,
         isLoadingMore = isLoadingMore,
