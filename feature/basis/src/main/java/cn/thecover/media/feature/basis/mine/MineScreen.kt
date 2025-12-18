@@ -343,7 +343,9 @@ private fun MineFunctionList(
 
                         else -> null
 
-                    })
+                    },
+                showDivider = func == MineFunctionType.Version || func == MineFunctionType.Cache || func == MineFunctionType.ModifyPassword
+            )
         }
     }
 
@@ -385,31 +387,52 @@ private fun MineFunctionItem(
     title: String,
     desc: String,
     clickAction: (() -> Unit)? = null,
-    showRightArrow: Boolean = true
+    showRightArrow: Boolean = true,
+    showDivider: Boolean = false
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(enabled = clickAction != null) { clickAction?.invoke() }
-            .padding(vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            painterResource(icon),
-            contentDescription = title,
-            modifier = Modifier.size(20.dp)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(title, modifier = Modifier.weight(1f), fontSize = 15.sp, color = MainTextColor)
-
-        Text(desc, fontSize = 14.sp, color = TertiaryTextColor)
-
-        if (clickAction != null && showRightArrow) {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(enabled = clickAction != null) { clickAction?.invoke() }
+                .padding(vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically) {
             Icon(
-                painterResource(YBIcons.Custom.RightArrow),
-                "",
-                modifier = Modifier.size(16.dp),
-                tint = TertiaryTextColor
+                painterResource(icon),
+                contentDescription = title,
+                modifier = Modifier.size(20.dp)
             )
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(title, modifier = Modifier.weight(1f), fontSize = 15.sp, color = MainTextColor)
+
+            Text(desc, fontSize = 14.sp, color = TertiaryTextColor)
+
+            if (clickAction != null && showRightArrow) {
+                Icon(
+                    painterResource(YBIcons.Custom.RightArrow),
+                    "",
+                    modifier = Modifier.size(16.dp),
+                    tint = TertiaryTextColor
+                )
+            }
+        }
+
+        // 显示分割线，从文本下方开始
+        if (showDivider) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                // 左侧空白，与图标对齐
+                Spacer(modifier = Modifier.width(36.dp))
+                // 分割线
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(0.5.dp)
+                        .background(Color(0xFFE5E5E5))
+                )
+            }
         }
     }
 
