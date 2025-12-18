@@ -330,7 +330,7 @@ class ReviewDataViewModel @Inject constructor(
                             currentPage = result.data.currentPage,
                             totalPages = result.data.totalPages,
                             hasNextPage = result.data.hasNextPage,
-                            total = result.data.total,
+                            total = if (!isLoadMore) result.data.total else _manuscriptReviewPageState.value.total,
                             lastId = result.data.lastId
                         )
                     }
@@ -397,7 +397,7 @@ class ReviewDataViewModel @Inject constructor(
                             currentPage = result.data.currentPage,
                             totalPages = result.data.totalPages,
                             hasNextPage = result.data.hasNextPage,
-                            total = result.data.total,
+                            total = if (!isLoadMore) result.data.total else _manuscriptReviewDiffusionPageState.value.total,
                             lastId = result.data.lastId
                         )
                     }
