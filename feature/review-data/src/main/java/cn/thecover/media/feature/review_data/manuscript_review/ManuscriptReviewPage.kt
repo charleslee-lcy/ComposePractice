@@ -24,6 +24,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -59,6 +60,7 @@ import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.YBNormalList
+import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
@@ -253,6 +255,17 @@ internal fun ManuscriptReviewPage(
             textFiledState = ""
         }
     )
+
+    val snackBarHostState = remember { SnackbarHostState() }
+    YBToast(snackBarHostState)
+
+    val toastState by viewModel.iconTipsDialogState.collectAsState()
+    LaunchedEffect(toastState.time) {
+        if (toastState.message.isNotEmpty()) {
+            snackBarHostState.showSnackbar(toastState.message)
+        }
+    }
+
 
 
 }

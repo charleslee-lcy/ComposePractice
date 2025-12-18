@@ -11,6 +11,7 @@ import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
 import cn.thecover.media.feature.review_data.data.DepartmentFilterState
 import cn.thecover.media.feature.review_data.data.DepartmentReviewDateFilterState
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewFilterState
+import cn.thecover.media.feature.review_data.data.UiToastState
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
 import cn.thecover.media.feature.review_data.data.params.RepositoryResult
@@ -34,6 +35,9 @@ class ReviewDataViewModel @Inject constructor(
 ) : ViewModel() {
     private val _unreadMessageCount = MutableStateFlow(0)
     val unreadMessageCount: StateFlow<Int> = _unreadMessageCount
+
+    private val _iconTipsDialogState = MutableStateFlow(UiToastState())
+    val iconTipsDialogState: StateFlow<UiToastState> = _iconTipsDialogState
 
     //部门考核页信息流数据
     private val _departmentReviewPageState =
@@ -261,6 +265,13 @@ class ReviewDataViewModel @Inject constructor(
 
                     currentState.copy(
                         dataList = updatedManuscripts
+                    )
+                }
+            } else if (result is RepositoryResult.Error) {
+                _iconTipsDialogState.update {
+                    it.copy(
+                        message = result.exception.message ?: "修改稿件分失败",
+                        time = System.currentTimeMillis()
                     )
                 }
             }
