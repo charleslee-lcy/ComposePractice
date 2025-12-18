@@ -92,11 +92,6 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
     var passCount by remember { mutableIntStateOf(0) }
     var rejectCount by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(Unit) {
-        viewModel.getAppealTabInfo()
-        viewModel.getAppealManageList(isRefresh = true)
-    }
-
     LaunchedEffect(appealManageListUiState) {
         isRefreshing.value = appealManageListUiState.isRefreshing
         isLoadingMore.value = appealManageListUiState.isLoading
@@ -158,6 +153,7 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
                         .clickableWithoutRipple {
                             viewModel.currentPos = 0
                             viewModel.getAppealManageList(isRefresh = true)
+                            viewModel.getAppealTabInfo()
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -183,6 +179,7 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
                         .clickableWithoutRipple {
                             viewModel.currentPos = 1
                             viewModel.getAppealManageList(isRefresh = true)
+                            viewModel.getAppealTabInfo()
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -208,6 +205,7 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
                         .clickableWithoutRipple {
                             viewModel.currentPos = 2
                             viewModel.getAppealManageList(isRefresh = true)
+                            viewModel.getAppealTabInfo()
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -235,6 +233,7 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
             canLoadMore = canLoadMore,
             onRefresh = {
                 viewModel.getAppealManageList(isRefresh = true)
+                viewModel.getAppealTabInfo()
             },
             onLoadMore = {
                 viewModel.getAppealManageList(isRefresh = false)

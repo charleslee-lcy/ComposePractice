@@ -62,6 +62,17 @@ internal fun AppealManageScreen(
         try {
             val currentPage = pagerState.currentPage
             currentTabIndex.intValue = currentPage
+            when (currentTabIndex.intValue) {
+                0 -> {
+//                    viewModel.myAppealSearchKeyword.value = ""
+                    viewModel.getMyAppealList(isRefresh = true)
+                }
+                1 -> {
+//                    viewModel.appealManageSearchKeyword.value = ""
+                    viewModel.getAppealTabInfo()
+                    viewModel.getAppealManageList(isRefresh = true)
+                }
+            }
         } catch (e: CancellationException) {
             e.printStackTrace()
         }
@@ -91,6 +102,11 @@ internal fun AppealManageScreen(
                     normalTextColor = TertiaryTextColor,
                     onClick = {
                         currentTabIndex.intValue = index
+                        // 在点击时立即清空搜索框
+//                        when (index) {
+//                            0 -> viewModel.myAppealSearchKeyword.value = ""
+//                            1 -> viewModel.appealManageSearchKeyword.value = ""
+//                        }
                         scope.launch {
                             pagerState.animateScrollToPage(index)
                         }

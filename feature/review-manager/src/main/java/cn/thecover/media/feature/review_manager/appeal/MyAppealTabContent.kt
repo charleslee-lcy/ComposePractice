@@ -52,10 +52,6 @@ fun MyAppealContent(viewModel: ReviewManageViewModel, navController: NavControll
     val focusManager = LocalFocusManager.current
     val myAppealListUiState by viewModel.myAppealListDataState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        viewModel.getMyAppealList(isRefresh = true)
-    }
-
     LaunchedEffect(myAppealListUiState) {
         isRefreshing.value = myAppealListUiState.isRefreshing
         isLoadingMore.value = myAppealListUiState.isLoading
