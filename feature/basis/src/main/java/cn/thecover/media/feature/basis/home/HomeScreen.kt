@@ -100,6 +100,7 @@ internal fun HomeScreen(
     val scrollState = rememberScrollState()
     val refreshState = rememberPullToRefreshState()
     val isRefreshing = remember { mutableStateOf(false) }
+    val shouldScrollToTop = remember { mutableStateOf(false) }
 
     val userInfo by viewModel.userUiState.collectAsStateWithLifecycle()
     val homeInfo by viewModel.homeUiState.collectAsStateWithLifecycle()
@@ -130,6 +131,14 @@ internal fun HomeScreen(
         }
     }
 
+    // 监听滚动到顶部的请求
+    LaunchedEffect(shouldScrollToTop.value) {
+        if (shouldScrollToTop.value) {
+            scrollState.animateScrollTo(0)
+            shouldScrollToTop.value = false
+        }
+    }
+
     LaunchedEffect(homeInfo) {
         isRefreshing.value = homeInfo.status == HttpStatus.LOADING
 
@@ -142,6 +151,8 @@ internal fun HomeScreen(
             homeInfo.data?.jobType?.apply {
                 viewModel.roleState = this
             }
+            // 当数据加载成功时，触发滚动到顶部
+            shouldScrollToTop.value = true
         }
     }
 
@@ -158,6 +169,8 @@ internal fun HomeScreen(
             }, onDatePick = {
                 isRefreshing.value = true
 //                viewModel.getHomeInfo(viewModel.curYear.intValue, viewModel.curMonth.intValue)
+                // 在日期选择后，触发滚动到顶部再获取数据
+                shouldScrollToTop.value = true
                 fetchHomeData()
             }, messageClick = {
                 routeToMessageScreen?.invoke()
@@ -168,6 +181,8 @@ internal fun HomeScreen(
             isRefreshing = isRefreshing.value,
             onRefresh = {
                 isRefreshing.value = true
+                // 在下拉刷新时，触发滚动到顶部
+                shouldScrollToTop.value = true
                 fetchHomeData()
             },
             modifier = modifier,
