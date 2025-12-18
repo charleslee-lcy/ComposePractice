@@ -6,5 +6,5 @@ package cn.thecover.media.feature.basis.message.data.entity
  */
 
 data class ReadMessageRequest(
-    val messageId: Long
+    val id: Long
 )
