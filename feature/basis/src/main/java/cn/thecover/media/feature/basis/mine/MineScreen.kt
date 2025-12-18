@@ -234,7 +234,7 @@ enum class MineFunctionType(
         "版本",
         "v1.0.0"
     ),
-    Cache(icon = YBIcons.Custom.MineClearCache, "缓存", "上次清理 "), ModifyPassword(
+    Cache(icon = YBIcons.Custom.MineClearCache, "缓存", " "), ModifyPassword(
         icon = YBIcons.Custom.MineModifyPassword, "修改密码",
         ""
     ),
@@ -278,7 +278,8 @@ private fun MineFunctionList(
     val context = LocalContext.current
     val lastTimeForClearCache = readData(context, Keys.USER_CLEAR_CACHE_TIME, "").collectAsState("")
     val scope = rememberCoroutineScope()
-    MineFunctionType.Cache.desc = "上次清理 ${lastTimeForClearCache.value}"
+    MineFunctionType.Cache.desc =
+        if (lastTimeForClearCache.value.isNotEmpty()) "上次清理 ${lastTimeForClearCache.value}" else ""
     val statusState = rememberIconTipsDialogState()
     var showClearCacheState by remember { mutableStateOf(CACHE_CLEAR_STATE_INITIAL) }
     val dialogState = remember { mutableStateOf(false) }
@@ -309,7 +310,7 @@ private fun MineFunctionList(
             MineFunctionItem(
                 icon = func.icon,
                 func.title,
-                if (func == MineFunctionType.Cache) "上次清理 ${lastTimeForClearCache.value}" else func.desc,
+                if (func == MineFunctionType.Cache) if (lastTimeForClearCache.value.isNotEmpty()) "上次清理 ${lastTimeForClearCache.value}" else "" else func.desc,
                 clickAction =
                     when (func) {
                         MineFunctionType.ModifyPassword -> {
