@@ -50,14 +50,14 @@ import cn.thecover.media.core.widget.theme.YBShapes
 /**
  * 筛选搜索组合项，包含一个下拉筛选菜单和一个文本输入框。
  *
- * @param dataList 下拉菜单的数据列表，默认为 ["稿件标题", "稿件作者", "稿件ID"]
+ * @param dataList 下拉菜单的数据列表，默认为 ["稿件名称", "记者", "稿件ID"]
  * @param data 当前选中的下拉菜单项，使用 MutableState 包装以便响应式更新
  * @param label 输入框的提示文本
  */
 @Composable
 fun FilterSearchTextField(
     dataList: List<String> = listOf(
-        "稿件标题", "稿件作者", "稿件ID"
+        "稿件名称", "稿件 ID", "记者"
     ),
     data: MutableState<String>, label: String = "请输入搜索内容",
     backgroundColor: Color = MaterialTheme.colorScheme.background,

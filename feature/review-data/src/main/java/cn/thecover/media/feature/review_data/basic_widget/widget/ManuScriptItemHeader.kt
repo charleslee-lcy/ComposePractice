@@ -18,7 +18,7 @@ import cn.thecover.media.core.widget.theme.SecondaryTextColor
  *  稿件Item的头部信息，都是文章加标题加排序号所以单独抽成一个通用组件
  *
  *  @param num 稿件排序号
- *  @param title 稿件标题
+ *  @param title 稿件名称
  *  @param author 作者名称
  *  @param editor 编辑名称
  */
@@ -30,7 +30,7 @@ internal fun ManuScriptItemHeader(
     author: String = "",
     editor: String = "",
 ) {
-    // 显示稿件标题
+    // 稿件名称
     Column {
         Text(title, style = MaterialTheme.typography.titleSmall, color = MainTextColor)
         Spacer(Modifier.height(8.dp))

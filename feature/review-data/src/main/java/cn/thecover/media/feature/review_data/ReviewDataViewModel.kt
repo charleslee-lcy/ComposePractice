@@ -89,7 +89,7 @@ class ReviewDataViewModel @Inject constructor(
     private val _manuscriptDiffusionFilterState = MutableStateFlow(
         ManuscriptReviewFilterState(
             sortField = "最终传播分",
-            searchField = "稿件标题"
+            searchField = "稿件名称"
         )
     )
     val manuscriptDiffusionFilterState = _manuscriptDiffusionFilterState
@@ -97,7 +97,7 @@ class ReviewDataViewModel @Inject constructor(
     private val _manuscriptReviewFilterState = MutableStateFlow(
         ManuscriptReviewFilterState(
             sortField = "全部",
-            searchField = "稿件标题"
+            searchField = "稿件名称"
         )
     )
     val manuscriptReviewFilterState = _manuscriptReviewFilterState
@@ -305,9 +305,9 @@ class ReviewDataViewModel @Inject constructor(
                 } else {
                     0
                 },
-                title = if (filter.searchField.contains("标题"))
+                title = if (filter.searchField.contains("稿件名称"))
                     filter.searchText else "",
-                reporter = if (filter.searchField.contains("作者"))
+                reporter = if (filter.searchField.contains("记者"))
                     filter.searchText else "",
                 id = if (filter.searchField.contains("ID"))
                     filter.searchText else "",
@@ -373,9 +373,9 @@ class ReviewDataViewModel @Inject constructor(
                 month = filter.getMonthAsInt(),
                 lastId = lastId ?: -1,
                 sortConditions = filter.sortField,
-                title = if (filter.searchField.contains("标题"))
+                title = if (filter.searchField.contains("稿件名称"))
                     filter.searchText else "",
-                reporter = if (filter.searchField.contains("作者"))
+                reporter = if (filter.searchField.contains("记者"))
                     filter.searchText else "",
                 id = if (filter.searchField.contains("ID"))
                     filter.searchText else ""

@@ -219,7 +219,7 @@ internal fun ManuScriptItemHeader(
     author: String = "",
     editor: String = "",
 ) {
-    // 显示稿件标题
+    // 稿件名称
     Column {
         Text(
             title,

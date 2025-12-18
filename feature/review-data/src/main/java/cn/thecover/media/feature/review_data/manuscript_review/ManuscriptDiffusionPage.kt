@@ -305,7 +305,7 @@ private fun ManuscriptDiffusionHeader(
             // 搜索输入区域
             FilterSearchTextField(
                 data = selectSearchChoice, label = "请输入搜索内容", dataList = listOf(
-                    "稿件标题", "稿件作者", "稿件 ID"
+                    "稿件名称", "稿件 ID", "记者"
                 ), onValueChange = { valueType, value ->
                     viewModel.handleUIIntent(
                         ReviewUIIntent.UpdateManuscriptDiffusionFilter(
