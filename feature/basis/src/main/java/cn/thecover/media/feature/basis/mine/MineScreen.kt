@@ -66,7 +66,7 @@ import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
-import cn.thecover.media.core.widget.util.getCurrentTimeToMinute
+import cn.thecover.media.core.widget.util.getCurrentTimeToDay
 import cn.thecover.media.feature.basis.home.navigation.LoginRoute
 import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FAILED
@@ -326,7 +326,7 @@ private fun MineFunctionList(
 
                                     saveData(
                                         context, Keys.USER_CLEAR_CACHE_TIME,
-                                        getCurrentTimeToMinute()
+                                        getCurrentTimeToDay()
                                     )
                                     delay(1000L)
                                     showClearCacheState = CACHE_CLEAR_STATE_FINISHED
