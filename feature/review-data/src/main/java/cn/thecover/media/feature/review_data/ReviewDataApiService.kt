@@ -53,6 +53,6 @@ interface ReviewDataApiService {
     suspend fun modifyManuscriptScore(@Body requestBody: ModifyManuscriptScoreRequest): NetworkResponse<Nothing>
 
     //获取未读消息数
-    @GET(value = "mgr/unReadNotificationCount")
+    @GET(value = "api/mgr/unReadNotificationCount")
     suspend fun getUnreadMessageCount(): NetworkResponse<Int>
 }

@@ -5,19 +5,18 @@ import cn.thecover.media.core.data.AppealListData
 import cn.thecover.media.core.data.AppealManageRequest
 import cn.thecover.media.core.data.AppealSwitchInfo
 import cn.thecover.media.core.data.ArchiveListData
+import cn.thecover.media.core.data.AuditDetailRequest
 import cn.thecover.media.core.data.DepartmentAssignListData
 import cn.thecover.media.core.data.DepartmentAssignRequest
+import cn.thecover.media.core.data.DepartmentListData
 import cn.thecover.media.core.data.DepartmentRemainRequest
 import cn.thecover.media.core.data.NetworkRequest
 import cn.thecover.media.core.data.NetworkResponse
 import cn.thecover.media.core.data.NextNodeRequest
 import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.core.data.ScoreArchiveListRequest
-import cn.thecover.media.core.data.ScoreRuleData
-import cn.thecover.media.core.data.AuditDetailRequest
-import cn.thecover.media.core.data.DepartmentListData
-import cn.thecover.media.core.data.ScoreLevel
 import cn.thecover.media.core.data.ScoreLevelData
+import cn.thecover.media.core.data.ScoreRuleData
 import cn.thecover.media.core.data.UpdateAssignRequest
 import cn.thecover.media.core.data.UpdateScoreRequest
 import cn.thecover.media.core.data.UserScoreGroup
@@ -33,7 +32,7 @@ import retrofit2.http.POST
  */
 interface ReviewManagerApi {
     //获取未读消息数
-    @GET(value = "mgr/unReadNotificationCount")
+    @GET(value = "api/mgr/unReadNotificationCount")
     suspend fun getUnreadMessageCount(): NetworkResponse<Int>
 
     /**
