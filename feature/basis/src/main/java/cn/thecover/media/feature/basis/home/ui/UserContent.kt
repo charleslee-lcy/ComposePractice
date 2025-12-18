@@ -353,42 +353,62 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                     thickness = 0.5.dp,
                     color = TertiaryTextColor
                 )
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 30.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "目标任务",
-                        color = MainTextColor,
-                        fontSize = 14.sp,
-                    )
-                    Text(
-                        text = if (homeInfo.innerTaskGoalNum.isNotEmpty()) "${homeInfo.innerTaskGoalNum}条" else "0",
-                        color = MainTextColor,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                }
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "实际完成",
-                        color = MainTextColor,
-                        fontSize = 14.sp,
-                    )
-                    Text(
-                        text = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) "${homeInfo.innerTaskFinishedNum}条" else "0",
-                        color = if (homeInfo.innerTaskFinishedNum.isEmpty() || homeInfo.innerTaskFinishedNum.contains(
-                                "0"
-                            )
-                        ) MsgColor else MainTextColor,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                    )
+                // 判断目标任务是否为0
+                val isNoInnerTask =
+                    homeInfo.innerTaskGoalNum.isEmpty() || homeInfo.innerTaskGoalNum == "0"
+
+                if (isNoInnerTask) {
+                    // 无任务时显示单列
+                    Column(
+                        modifier = Modifier.weight(2f),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "无任务",
+                            color = MainTextColor,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                } else {
+                    // 有任务时显示目标任务和实际完成两列
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 30.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "目标任务",
+                            color = MainTextColor,
+                            fontSize = 14.sp,
+                        )
+                        Text(
+                            text = "${homeInfo.innerTaskGoalNum}条",
+                            color = MainTextColor,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "实际完成",
+                            color = MainTextColor,
+                            fontSize = 14.sp,
+                        )
+                        Text(
+                            text = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) "${homeInfo.innerTaskFinishedNum}条" else "0",
+                            color = if (homeInfo.innerTaskFinishedNum.isEmpty() || homeInfo.innerTaskFinishedNum.contains(
+                                    "0"
+                                )
+                            ) MsgColor else MainTextColor,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
                 }
             }
         }
@@ -724,39 +744,59 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                     thickness = 0.5.dp,
                     color = TertiaryTextColor
                 )
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 30.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "目标任务",
-                        color = MainTextColor,
-                        fontSize = 14.sp,
-                    )
-                    Text(
-                        text = if (homeInfo.innerTaskGoalNum.isNotEmpty()) "${homeInfo.innerTaskGoalNum}条" else "0",
-                        color = MainTextColor,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                }
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "实际完成",
-                        color = MainTextColor,
-                        fontSize = 14.sp,
-                    )
-                    Text(
-                        text = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) "${homeInfo.innerTaskFinishedNum}条" else "0",
-                        color = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) MsgColor else MainTextColor,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                    )
+                // 判断目标任务是否为0
+                val isNoInnerTask =
+                    homeInfo.innerTaskGoalNum.isEmpty() || homeInfo.innerTaskGoalNum == "0"
+
+                if (isNoInnerTask) {
+                    // 无任务时显示单列
+                    Column(
+                        modifier = Modifier.weight(2f),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "无任务",
+                            color = MainTextColor,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                } else {
+                    // 有任务时显示目标任务和实际完成两列
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 30.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "目标任务",
+                            color = MainTextColor,
+                            fontSize = 14.sp,
+                        )
+                        Text(
+                            text = "${homeInfo.innerTaskGoalNum}条",
+                            color = MainTextColor,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "实际完成",
+                            color = MainTextColor,
+                            fontSize = 14.sp,
+                        )
+                        Text(
+                            text = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) "${homeInfo.innerTaskFinishedNum}条" else "0",
+                            color = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) MsgColor else MainTextColor,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
                 }
             }
         }
@@ -784,36 +824,14 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                     thickness = 0.5.dp,
                     color = TertiaryTextColor
                 )
+                // 客户端拉新任务目标任务始终为0，直接显示"无任务"
                 Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 30.dp),
+                    modifier = Modifier.weight(2f),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "目标任务",
+                        text = "无任务",
                         color = MainTextColor,
-                        fontSize = 14.sp,
-                    )
-                    Text(
-                        text = "0场",
-                        color = MainTextColor,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                }
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "实际完成",
-                        color = MainTextColor,
-                        fontSize = 14.sp,
-                    )
-                    Text(
-                        text = "0场",
-                        color = MsgColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
