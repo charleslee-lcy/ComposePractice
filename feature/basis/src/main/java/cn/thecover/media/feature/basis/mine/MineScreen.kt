@@ -66,7 +66,7 @@ import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
-import cn.thecover.media.core.widget.util.getCurrentTimeToMinute
+import cn.thecover.media.core.widget.util.getCurrentTimeToDay
 import cn.thecover.media.feature.basis.home.navigation.LoginRoute
 import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FAILED
@@ -127,9 +127,10 @@ internal fun MineScreen(
                 }
                 HttpStatus.SUCCESS -> {
                     logoutLoadingState.hide()
-                    // 清楚token和用户信息缓存
+                    // 清除token和用户信息缓存
                     clearData(context, Keys.USER_TOKEN)
                     clearData(context, Keys.USER_INFO)
+
                     navController.navigateToLogin(navOptions {
                         // 清除所有之前的页面
                         popUpTo(navController.graph.id) {
@@ -234,7 +235,7 @@ enum class MineFunctionType(
         "版本",
         "v1.0.0"
     ),
-    Cache(icon = YBIcons.Custom.MineClearCache, "缓存", "上次清理 "), ModifyPassword(
+    Cache(icon = YBIcons.Custom.MineClearCache, "缓存", " "), ModifyPassword(
         icon = YBIcons.Custom.MineModifyPassword, "修改密码",
         ""
     ),
@@ -278,7 +279,8 @@ private fun MineFunctionList(
     val context = LocalContext.current
     val lastTimeForClearCache = readData(context, Keys.USER_CLEAR_CACHE_TIME, "").collectAsState("")
     val scope = rememberCoroutineScope()
-    MineFunctionType.Cache.desc = "上次清理 ${lastTimeForClearCache.value}"
+    MineFunctionType.Cache.desc =
+        if (lastTimeForClearCache.value.isNotEmpty()) "上次清理 ${lastTimeForClearCache.value}" else ""
     val statusState = rememberIconTipsDialogState()
     var showClearCacheState by remember { mutableStateOf(CACHE_CLEAR_STATE_INITIAL) }
     val dialogState = remember { mutableStateOf(false) }
@@ -286,11 +288,11 @@ private fun MineFunctionList(
     var timePickerShow by remember { mutableStateOf(false) }
 
     if (showClearCacheState == CACHE_CLEAR_STATE_STARTED) {
-        loadingState.show("清理中")
+        loadingState.show("正在清理...")
     } else {
         loadingState.hide()
         if (showClearCacheState == CACHE_CLEAR_STATE_FINISHED) {
-            statusState.show("清理完成", YBIcons.Custom.Checked)
+            statusState.show("清理成功", YBIcons.Custom.Checked)
         } else if (showClearCacheState == CACHE_CLEAR_STATE_FAILED) {
             statusState.show("清理失败")
         }
@@ -309,7 +311,7 @@ private fun MineFunctionList(
             MineFunctionItem(
                 icon = func.icon,
                 func.title,
-                if (func == MineFunctionType.Cache) "上次清理 ${lastTimeForClearCache.value}" else func.desc,
+                if (func == MineFunctionType.Cache) if (lastTimeForClearCache.value.isNotEmpty()) "上次清理 ${lastTimeForClearCache.value}" else "" else func.desc,
                 clickAction =
                     when (func) {
                         MineFunctionType.ModifyPassword -> {
@@ -325,7 +327,7 @@ private fun MineFunctionList(
 
                                     saveData(
                                         context, Keys.USER_CLEAR_CACHE_TIME,
-                                        getCurrentTimeToMinute()
+                                        getCurrentTimeToDay()
                                     )
                                     delay(1000L)
                                     showClearCacheState = CACHE_CLEAR_STATE_FINISHED

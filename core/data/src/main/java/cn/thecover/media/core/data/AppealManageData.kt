@@ -15,7 +15,7 @@ data class AppealManageRequest(
     var pageSize: Int = 10,
     var status: String? = null,
     var type: String = "",
-    var searchType: Int = 1, //搜索类型 1-稿件标题 2-姓名 3-申诉理由
+    var searchType: Int = 1, //搜索类型 1-稿件名称 2-姓名 3-申诉理由
     var searchKeyword: String? = null, //搜索关键词
 )
 

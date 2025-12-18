@@ -1,12 +1,5 @@
 package cn.thecover.media.core.widget.component
 
-import android.R.attr.label
-import android.R.attr.maxLength
-import android.R.attr.maxLines
-import android.R.attr.minLines
-import android.R.attr.singleLine
-import android.R.attr.text
-import android.R.attr.textStyle
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,15 +9,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.OutlinedTextFieldDefaults.contentPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,7 +23,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Vertical
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusProperties
 import androidx.compose.ui.focus.FocusRequester
@@ -42,11 +31,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -56,7 +43,6 @@ import cn.thecover.media.core.widget.theme.EditHintTextColor
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
-import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
@@ -185,7 +171,7 @@ fun YBInput(
         AnimatedVisibility(showVisibleIcon) {
             IconButton(onClick = { textVisible = !textVisible }) {
                 Icon(
-                    painterResource(if (textVisible) YBIcons.Custom.PasswordHide else YBIcons.Custom.PasswordWatch),
+                    painterResource(if (textVisible) YBIcons.Custom.PasswordIsHide else YBIcons.Custom.PasswordIsShow),
                     tint = TertiaryTextColor,
                     contentDescription = if (textVisible) "隐藏内容" else "查看内容"
                 )

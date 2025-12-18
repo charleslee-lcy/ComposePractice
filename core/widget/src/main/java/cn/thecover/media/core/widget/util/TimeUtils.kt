@@ -8,8 +8,8 @@ import java.time.format.DateTimeFormatter
  *
  */
 
-fun getCurrentTimeToMinute(): String {
+fun getCurrentTimeToDay(): String {
     val now = LocalDateTime.now()
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     return now.withSecond(0).withNano(0).format(formatter)
 }

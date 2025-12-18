@@ -16,7 +16,6 @@
 
 package cn.thecover.media.core.widget.icon
 
-import cn.thecover.media.core.widget.R
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ShortText
@@ -36,6 +35,7 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Upcoming
 import androidx.compose.material.icons.rounded.ViewDay
 import androidx.compose.ui.graphics.vector.ImageVector
+import cn.thecover.media.core.widget.R
 
 /**
  * Now in Android icons. Material icons are [ImageVector]s, custom icons are drawable resource IDs.
@@ -69,8 +69,8 @@ object YBIcons {
         val MineClearCache = R.drawable.icon_mine_clear_cache
         val MineHelpCenter = R.drawable.icon_mine_help
         val RightArrow= R.drawable.icon_right_arrow
-        val PasswordWatch= R.drawable.icon_watch
-        val PasswordHide= R.drawable.icon_watch_banned
+        val PasswordIsShow = R.drawable.icon_watch
+        val PasswordIsHide = R.drawable.icon_watch_banned
         val BackArrow= R.drawable.icon_back_arrow
         val Expand= R.drawable.icon_expand_down
         val ExpandVariant= R.drawable.icon_expand_variant
