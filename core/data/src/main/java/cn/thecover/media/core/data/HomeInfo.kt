@@ -22,6 +22,8 @@ data class HomeInfo(
     val quotaBasicScore: String = "0",  //定额基数分
     val quotaFinishScore: String = "0",  //实际完成
     val assessmentResult: Boolean? = null, //考核是否合格
+    val assess: Boolean = false,  //是否考核中
+    val intraAssess: Boolean = false,  //是否内部考核中
     val participateAssessmentCount: String = "0",  //部门参加考核的人数
     val passCount: String = "0",   //部门合格人数
     val passRate: String = "0",    //合格率

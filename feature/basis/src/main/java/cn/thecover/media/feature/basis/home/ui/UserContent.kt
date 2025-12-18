@@ -167,7 +167,7 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                 )
                 Text(
                     text = when(homeInfo.assessmentResult) {
-                        null -> "--"
+                        null -> "本月不考核"
                         true -> "合格"
                         else -> "不合格"
                     },
