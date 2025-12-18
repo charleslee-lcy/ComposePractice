@@ -500,8 +500,8 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
         visible = showDatePicker,
         type = DateType.YEAR,
         value = LocalDate.of(viewModel.departYear.intValue, 1, 1),
-        start = LocalDate.of(LocalDate.now().year - 5, 1, 1),
-        end = LocalDate.of(LocalDate.now().year + 4, 1, 1),
+        start = LocalDate.of(2025, 1, 1),
+        end = LocalDate.now().plusYears(10),
         onCancel = { showDatePicker = false },
         onChange = {
             viewModel.departYear.intValue = it.year

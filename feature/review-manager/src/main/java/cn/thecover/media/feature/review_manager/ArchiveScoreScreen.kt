@@ -580,7 +580,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                     modifier = Modifier.size(18.dp).clickableWithoutRipple {
                         viewModel.startDateText.value = "开始时间"
                         viewModel.endDateText.value = "结束时间"
-                        viewModel.startLocalDate = LocalDate.now()
+                        viewModel.startLocalDate = LocalDate.of(2025, 1, 1)
                         viewModel.endLocalDate = LocalDate.now()
                     },
                     painter = painterResource(R.mipmap.ic_date_to_pick),
@@ -740,6 +740,8 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
         visible = datePickerShow,
         type = DateType.DAY,
         title = if (isStartDatePickerShow) "选择开始时间" else "选择结束时间",
+        start = if (isStartDatePickerShow) LocalDate.of(2025, 1, 1) else viewModel.startLocalDate,
+        end = LocalDate.now().plusYears(10),
         value = if (isStartDatePickerShow) viewModel.startLocalDate else viewModel.endLocalDate,
         onCancel = { datePickerShow = false },
         onChange = {
