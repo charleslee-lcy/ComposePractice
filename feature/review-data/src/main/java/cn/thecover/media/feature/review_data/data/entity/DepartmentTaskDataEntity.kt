@@ -6,9 +6,11 @@ package cn.thecover.media.feature.review_data.data.entity
  */
 
 data class DepartmentTaskDataEntity(
+    val departmentId: Int,
     val departmentName: String?,
-    val taskFinishedPersons: Int,
-    val taskTotalPersons: Int,
-    val taskProgress: Float,
-    val taskDesc: String?
+    val finishedPersonNum: Int,
+    val taskGoalNum: Int,
+    val finishPercent: Double,
+    val subCoefficient: Double,
+    val taskDesc: String?,
 )

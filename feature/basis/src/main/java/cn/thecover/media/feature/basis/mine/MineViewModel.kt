@@ -98,7 +98,7 @@ class MineViewModel @Inject constructor(
                         val apiService = retrofit.get().create(MessageApi::class.java)
                         val response = apiService.readMessage(
                             readMessageRequest = ReadMessageRequest(
-                                messageId = messageIntent.id
+                                id = messageIntent.id
                             )
                         )
                         emit(response)

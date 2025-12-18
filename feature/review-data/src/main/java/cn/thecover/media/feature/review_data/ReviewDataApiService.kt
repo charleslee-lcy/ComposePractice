@@ -46,13 +46,13 @@ interface ReviewDataApiService {
 
     //部门数据-任务完成情况
     @POST(value = "api/data/department/taskInfo")
-    suspend fun getDepartmentTaskData(@Body requestBody: DepartmentTaskRequest): NetworkResponse<PaginatedResult<DepartmentTaskDataEntity>>
+    suspend fun getDepartmentTaskData(@Body requestBody: DepartmentTaskRequest): NetworkResponse<List<DepartmentTaskDataEntity>>
 
     //修改稿分
     @POST(value = "api/data/news/modifyScore")
     suspend fun modifyManuscriptScore(@Body requestBody: ModifyManuscriptScoreRequest): NetworkResponse<Nothing>
 
     //获取未读消息数
-    @GET(value = "mgr/unReadNotificationCount")
+    @GET(value = "api/mgr/unReadNotificationCount")
     suspend fun getUnreadMessageCount(): NetworkResponse<Int>
 }

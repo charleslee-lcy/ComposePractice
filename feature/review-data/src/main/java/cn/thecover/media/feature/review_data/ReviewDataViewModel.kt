@@ -11,6 +11,7 @@ import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
 import cn.thecover.media.feature.review_data.data.DepartmentFilterState
 import cn.thecover.media.feature.review_data.data.DepartmentReviewDateFilterState
 import cn.thecover.media.feature.review_data.data.ManuscriptReviewFilterState
+import cn.thecover.media.feature.review_data.data.UiToastState
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
 import cn.thecover.media.feature.review_data.data.params.RepositoryResult
@@ -34,6 +35,9 @@ class ReviewDataViewModel @Inject constructor(
 ) : ViewModel() {
     private val _unreadMessageCount = MutableStateFlow(0)
     val unreadMessageCount: StateFlow<Int> = _unreadMessageCount
+
+    private val _iconTipsDialogState = MutableStateFlow(UiToastState())
+    val iconTipsDialogState: StateFlow<UiToastState> = _iconTipsDialogState
 
     //部门考核页信息流数据
     private val _departmentReviewPageState =
@@ -84,7 +88,7 @@ class ReviewDataViewModel @Inject constructor(
 
     private val _manuscriptDiffusionFilterState = MutableStateFlow(
         ManuscriptReviewFilterState(
-            sortField = "公式传播分",
+            sortField = "最终传播分",
             searchField = "稿件标题"
         )
     )
@@ -263,6 +267,13 @@ class ReviewDataViewModel @Inject constructor(
                         dataList = updatedManuscripts
                     )
                 }
+            } else if (result is RepositoryResult.Error) {
+                _iconTipsDialogState.update {
+                    it.copy(
+                        message = result.exception.message ?: "修改稿件分失败",
+                        time = System.currentTimeMillis()
+                    )
+                }
             }
         }
 
@@ -287,10 +298,12 @@ class ReviewDataViewModel @Inject constructor(
                 year = filter.getYearAsInt(),
                 month = filter.getMonthAsInt(),
                 lastId = lastId ?: -1,
-                rankType = when (filter.sortField) {
-                    "分割线以上" -> 1
-                    "分割线以下（清零）" -> 2
-                    else -> 0
+                rankType = if (filter.sortField.contains("分割线以上")) {
+                    1
+                } else if (filter.sortField.contains("分割线以下")) {
+                    2
+                } else {
+                    0
                 },
                 title = if (filter.searchField.contains("标题"))
                     filter.searchText else "",
@@ -317,6 +330,7 @@ class ReviewDataViewModel @Inject constructor(
                             currentPage = result.data.currentPage,
                             totalPages = result.data.totalPages,
                             hasNextPage = result.data.hasNextPage,
+                            total = result.data.total,
                             lastId = result.data.lastId
                         )
                     }
@@ -383,6 +397,7 @@ class ReviewDataViewModel @Inject constructor(
                             currentPage = result.data.currentPage,
                             totalPages = result.data.totalPages,
                             hasNextPage = result.data.hasNextPage,
+                            total = result.data.total,
                             lastId = result.data.lastId
                         )
                     }
@@ -471,32 +486,25 @@ class ReviewDataViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val lastId = if (isLoadMore) {
-                _departmentTaskPageState.value.lastId
-            } else {
-                -1L
-            }
+
 
             val result = repository.fetchDepartmentTaskPage(
                 departmentDataFilterState.value.getYearAsInt(),
                 departmentDataFilterState.value.getMonthAsInt(),
-                lastId = lastId ?: -1,
             )
 
             when (result) {
                 is RepositoryResult.Success -> {
-                    val departmentTaskData =
-                        if (isLoadMore) (_departmentTaskPageState.value.dataList ?: emptyList()) + (result.data.dataList ?: emptyList()) else (result.data.dataList ?: emptyList())
+                    val departmentTaskData = result.data
 
                     _departmentTaskPageState.update {
                         it.copy(
                             isRefreshing = false,
                             isLoading = false,
                             dataList = departmentTaskData,
-                            currentPage = result.data.currentPage,
-                            totalPages = result.data.totalPages,
-                            hasNextPage = result.data.hasNextPage,
-                            lastId = result.data.lastId
+
+                            hasNextPage = false,
+
                         )
                     }
                 }

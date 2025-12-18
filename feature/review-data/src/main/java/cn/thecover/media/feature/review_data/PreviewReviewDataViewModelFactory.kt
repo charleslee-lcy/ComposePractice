@@ -52,8 +52,8 @@ class PreviewReviewDataApiService : ReviewDataApiService {
         return NetworkResponse(PaginatedResult(dataList = emptyList()))
     }
 
-    override suspend fun getDepartmentTaskData(requestBody: DepartmentTaskRequest): NetworkResponse<PaginatedResult<DepartmentTaskDataEntity>> {
-        return NetworkResponse(PaginatedResult(dataList = emptyList()))
+    override suspend fun getDepartmentTaskData(requestBody: DepartmentTaskRequest): NetworkResponse<List<DepartmentTaskDataEntity>> {
+        return NetworkResponse(emptyList())
     }
 
     override suspend fun modifyManuscriptScore(requestBody: ModifyManuscriptScoreRequest): NetworkResponse<Nothing> {

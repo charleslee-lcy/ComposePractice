@@ -108,7 +108,7 @@ internal fun DepartmentReviewScreen(
         }
     ) { it, index ->
         DepartmentReviewItem(
-            it.departmentRanking,
+            index + 1, // 使用本地计算的排名，从1开始
             it.departmentName,
             it.totalPayment,
             it.totalPersons,

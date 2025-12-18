@@ -24,6 +24,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -59,6 +60,7 @@ import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.YBNormalList
+import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
@@ -95,8 +97,13 @@ internal fun ManuscriptReviewPage(
     modifier: Modifier = Modifier,
     viewModel: ReviewDataViewModel
 ) {
-    val splitsNum = 2
     val data by viewModel.manuscriptReviewPageState.collectAsState()
+    // 计算splitsNum为data.dataList中第一个score等于0的数据的索引
+    val splitsNum = remember(data.dataList) {
+        data.dataList?.indexOfFirst { it.id.toLong() == data.firstCutNewsId }?.let {
+            if (it == -1) data.dataList?.size ?: 0 else it
+        } ?: 0
+    }
 
     val showEditScorePop = remember { mutableStateOf(false) }
 
@@ -253,6 +260,17 @@ internal fun ManuscriptReviewPage(
             textFiledState = ""
         }
     )
+
+    val snackBarHostState = remember { SnackbarHostState() }
+    YBToast(snackBarHostState)
+
+    val toastState by viewModel.iconTipsDialogState.collectAsState()
+    LaunchedEffect(toastState.time) {
+        if (toastState.message.isNotEmpty()) {
+            snackBarHostState.showSnackbar(toastState.message)
+        }
+    }
+
 
 
 }
@@ -450,7 +468,7 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
             // 搜索输入区域
             FilterSearchTextField(
                 data = selectSearchChoice, label = "请输入搜索内容", dataList = listOf(
-                    "稿件标题", "稿件作者", "稿件编辑"
+                    "稿件标题", "稿件作者", "稿件ID"
                 ), onValueChange = { valueType, value ->
                     viewModel.handleUIIntent(
                         ReviewUIIntent.UpdateManuscriptReviewFilter(
@@ -479,14 +497,14 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
 /**
  * 筛选搜索组合项，包含一个下拉筛选菜单和一个文本输入框。
  *
- * @param dataList 下拉菜单的数据列表，默认为 ["稿件标题", "稿件作者", "稿件编辑"]
+ * @param dataList 下拉菜单的数据列表，默认为 ["稿件标题", "稿件作者", "稿件ID"]
  * @param data 当前选中的下拉菜单项，使用 MutableState 包装以便响应式更新
  * @param label 输入框的提示文本，默认显示当前选中的下拉项文本
  */
 @Composable
 private fun FilterSearchView(
     dataList: List<String> = listOf(
-        "稿件标题", "稿件作者", "稿件编辑"
+        "稿件标题", "稿件作者", "稿件ID"
     ), data: MutableState<String>, label: String = data.value
 ) {
     // 控制下拉菜单是否展开的状态

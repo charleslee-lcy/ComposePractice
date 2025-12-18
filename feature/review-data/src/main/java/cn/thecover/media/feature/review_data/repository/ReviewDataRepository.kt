@@ -53,9 +53,12 @@ class ReviewDataRepository @Inject constructor(
                     PaginatedResult(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
-                        totalPages = body.total,
+                        totalPages = body.totalPages,
                         hasNextPage = body.lastId?.toInt() != -1,
-                        lastId = body.lastId
+                        lastId = body.lastId,
+                        total = body.total,
+                        firstCutNewsId = body.firstCutNewsId,
+                        budgetCutProcess = body.budgetCutProcess
                     )
                 )
             } else {
@@ -139,9 +142,10 @@ class ReviewDataRepository @Inject constructor(
                     PaginatedResult(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
-                        totalPages = body.total,
+                        totalPages = body.totalPages,
                         hasNextPage = body.lastId?.toInt() != -1,
-                        lastId = body.lastId
+                        lastId = body.lastId,
+                        total = body.total
                     )
                 )
             } else {
@@ -197,28 +201,20 @@ class ReviewDataRepository @Inject constructor(
     suspend fun fetchDepartmentTaskPage(
         year: Int,
         month: Int,
-        lastId: Long = -1
-    ): RepositoryResult<PaginatedResult<DepartmentTaskDataEntity>> {
+    ): RepositoryResult<List<DepartmentTaskDataEntity>> {
 
         return try {
             val response = reviewApiService.getDepartmentTaskData(
                 DepartmentTaskRequest(
                     year = year,
                     month = month,
-                    lastId = lastId
                 )
             )
 
             if (response.isSuccess()) {
                 val body = response.data ?: throw Exception("Empty response")
                 RepositoryResult.Success(
-                    PaginatedResult(
-                        dataList = body.dataList,
-                        currentPage = body.currentPage,
-                        totalPages = body.total,
-                        hasNextPage = body.lastId?.toInt() != -1,
-                        lastId = body.lastId
-                    )
+                    body
                 )
             } else {
                 RepositoryResult.Error(Exception(response.message))
@@ -255,9 +251,9 @@ class ReviewDataRepository @Inject constructor(
                     PaginatedResult(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
-                        totalPages = body.total,
+                        totalPages = body.totalPages,
                         hasNextPage = body.lastId?.toInt() != -1,
-                        lastId = body.lastId
+                        lastId = body.lastId, total = body.total
                     )
                 )
             } else {

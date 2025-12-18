@@ -25,6 +25,8 @@ data class PaginatedResult<T>(
     val hasNextPage: Boolean = false,
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
+    val firstCutNewsId: Long? = null,
+    val budgetCutProcess: Boolean = false,
     val error: String? = null,
 ): Serializable
 

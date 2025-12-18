@@ -9,8 +9,6 @@ import java.io.Serializable
  */
 
 data class DepartmentTotalDataEntity(
-    @SerializedName("rank")
-    val departmentRanking: Int = 0,
     @SerializedName("departmentId")
     val departmentId: Int = 0,
     @SerializedName("departmentName")

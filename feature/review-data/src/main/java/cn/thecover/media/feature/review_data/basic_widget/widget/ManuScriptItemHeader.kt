@@ -38,7 +38,7 @@ internal fun ManuScriptItemHeader(
         Row {
             if (author.isNotEmpty()) {
                 Text(
-                    "作者：${author}",
+                    "记者：${author}",
                     style = MaterialTheme.typography.bodySmall,
                     color = SecondaryTextColor
                 )
