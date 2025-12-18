@@ -24,7 +24,7 @@ data class ManuscriptTopRequest(
     val reporterName: String = "",
     val year: Int,
     val month: Int,
-    val pageSize: String = "20",
+    val pageSize: String = "10",
     val lastId: Long = -1
 )
 
