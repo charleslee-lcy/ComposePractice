@@ -46,6 +46,7 @@ import cn.thecover.media.core.widget.theme.MainTextColor
  *
  * @param modifier Modifier
  * @param url 要加载的网页URL
+ * @param htmlContent 要直接加载的HTML内容，如果提供了此参数，将优先使用而不是url
  * @param onBackRequested 返回按键回调
  * @param onLoadingStateChanged 加载状态变化回调
  * @param onReceivedTitle 接收到网页标题回调
@@ -54,7 +55,8 @@ import cn.thecover.media.core.widget.theme.MainTextColor
 @Composable
 fun YBWebViewPage(
     modifier: Modifier = Modifier,
-    url: String,
+    url: String = "",
+    htmlContent: String? = null,
     defaultTitle: String = "",
     onBackRequested: (() -> Unit)? = null,
     onLoadingStateChanged: ((Boolean) -> Unit)? = null,
@@ -81,7 +83,9 @@ fun YBWebViewPage(
                 Text(
                     text = webTitle,
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = 32.dp).basicMarquee(),
+                    modifier = Modifier
+                        .padding(horizontal = 32.dp)
+                        .basicMarquee(),
                     color = MainTextColor
                 )
             }, leftOnClick = {
@@ -163,12 +167,20 @@ fun YBWebViewPage(
                             }
                         }
 
-                        loadUrl(url)
+                        // 优先使用HTML内容，否则使用URL
+                        if (!htmlContent.isNullOrEmpty()) {
+                            loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null)
+                        } else {
+                            loadUrl(url)
+                        }
                         webView = this
                     }
                 },
                 update = { view ->
-                    if (view.url != url) {
+                    // 优先使用HTML内容，否则使用URL
+                    if (!htmlContent.isNullOrEmpty()) {
+                        view.loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null)
+                    } else if (view.url != url) {
                         view.loadUrl(url)
                     }
                 }
