@@ -242,6 +242,13 @@ private fun DepartmentReviewItem(
                             totalPersonNumber.toString(),
                             if (filterText.contains("总人数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                         ),
+
+
+                        )
+                )
+                PrimaryItemScoreRow(
+                    items = arrayOf(
+
                         Triple(
                             "人员平均分",
                             averageScore.toString(),

@@ -15,6 +15,7 @@ import cn.thecover.media.feature.basis.message.data.MessageDataListState
 import cn.thecover.media.feature.basis.message.data.entity.MessageListRequest
 import cn.thecover.media.feature.basis.message.data.entity.ReadMessageRequest
 import cn.thecover.media.feature.basis.message.intent.MessageIntent
+import cn.thecover.media.feature.basis.mine.data.HelpWebContentResponse
 import cn.thecover.media.feature.basis.mine.data.OneTimeUiState
 import cn.thecover.media.feature.basis.mine.data.requestParams.ModifyPasswordRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -56,8 +57,8 @@ class MineViewModel @Inject constructor(
         MutableStateFlow(MessageDataListState())
     val messageListState = _messageListState
 
-    private val _helpCenterUrlUiData = MutableStateFlow<String?>(null)
-    val helpCenterUrlUiData: StateFlow<String?> = _helpCenterUrlUiData
+    private val _helpCenterUrlUiData = MutableStateFlow<HelpWebContentResponse?>(null)
+    val helpCenterUrlUiData: StateFlow<HelpWebContentResponse?> = _helpCenterUrlUiData
 
     //一次性 UI事件如 toast、弹窗等状态
     private val _oneTimeUiState = MutableStateFlow(OneTimeUiState())

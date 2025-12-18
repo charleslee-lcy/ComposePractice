@@ -90,7 +90,15 @@ internal fun ManuscriptTopRankingItem(
                 availableTabs.forEachIndexed { index, title ->
                     YBTab(
                         selected = index == currentIndex.intValue,
-                        onClick = { currentIndex.intValue = index },
+                        onClick = {
+                            currentIndex.intValue = index
+                            // 切换 tab 时调用相应接口
+                            if (index == 0 && availableTabs.contains("稿件TOP10")) {
+                                viewModel.getHomeManuscript()
+                            } else if (index == 1 && availableTabs.contains("稿件传播力TOP10")) {
+                                viewModel.getHomeManuscriptDiffusion()
+                            }
+                        },
                         text = { Text(text = title) }
                     )
                 }
@@ -211,7 +219,7 @@ internal fun ManuScriptItemHeader(
     author: String = "",
     editor: String = "",
 ) {
-    // 显示稿件标题
+    // 稿件名称
     Column {
         Text(
             title,

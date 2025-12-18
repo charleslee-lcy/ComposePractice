@@ -141,7 +141,7 @@ internal fun ManuscriptReviewPage(
                     text = buildAnnotatedString {
                         append("共 ")
                         withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                            append((data.dataList?.size ?: 0).toString())
+                            append(data.total.toString())
                         }
                         append(" 条记录")
                     },
@@ -468,7 +468,7 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
             // 搜索输入区域
             FilterSearchTextField(
                 data = selectSearchChoice, label = "请输入搜索内容", dataList = listOf(
-                    "稿件标题", "稿件作者", "稿件ID"
+                    "稿件名称", "稿件 ID", "记者"
                 ), onValueChange = { valueType, value ->
                     viewModel.handleUIIntent(
                         ReviewUIIntent.UpdateManuscriptReviewFilter(
@@ -497,14 +497,14 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
 /**
  * 筛选搜索组合项，包含一个下拉筛选菜单和一个文本输入框。
  *
- * @param dataList 下拉菜单的数据列表，默认为 ["稿件标题", "稿件作者", "稿件ID"]
+ * @param dataList 下拉菜单的数据列表，默认为 ["稿件名称", "记者", "稿件ID"]
  * @param data 当前选中的下拉菜单项，使用 MutableState 包装以便响应式更新
  * @param label 输入框的提示文本，默认显示当前选中的下拉项文本
  */
 @Composable
 private fun FilterSearchView(
     dataList: List<String> = listOf(
-        "稿件标题", "稿件作者", "稿件ID"
+        "稿件名称", "稿件 ID", "记者",
     ), data: MutableState<String>, label: String = data.value
 ) {
     // 控制下拉菜单是否展开的状态

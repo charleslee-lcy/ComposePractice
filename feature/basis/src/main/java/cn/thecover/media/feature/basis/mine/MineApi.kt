@@ -1,6 +1,7 @@
 package cn.thecover.media.feature.basis.mine
 
 import cn.thecover.media.core.data.NetworkResponse
+import cn.thecover.media.feature.basis.mine.data.HelpWebContentResponse
 import cn.thecover.media.feature.basis.mine.data.requestParams.ModifyPasswordRequest
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -12,8 +13,8 @@ import retrofit2.http.POST
 
 interface MineApi {
 
-    @POST(value = "api/user/helpCenterUrl")
-    suspend fun getHelpCenterUrl(): NetworkResponse<String?>
+    @POST(value = "api/user/helpCenterContent")
+    suspend fun getHelpCenterUrl(): NetworkResponse<HelpWebContentResponse?>
 
     @POST(value = "api/user/updatePassword")
     suspend fun modifyPassword(@Body requestData: ModifyPasswordRequest): NetworkResponse<Nothing?>
