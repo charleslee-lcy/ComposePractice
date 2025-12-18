@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -287,7 +288,7 @@ fun FilterSearchBar(
             expanded = expanded,
             initialIndex = initialIndex,
             isItemWidthAlign = true,
-            modifier = Modifier.weight(0.28f),
+            modifier = Modifier.width(100.dp),
             offset = DpOffset(0.dp, 0.dp),
             onItemClick = { text, index ->
                 title = text
@@ -322,7 +323,7 @@ fun FilterSearchBar(
         YBInput(
             text = searchText,
             modifier = Modifier
-                .weight(0.7f)
+                .weight(1f)
                 .padding(horizontal = 15.dp),
             textStyle = TextStyle(
                 fontSize = 13.sp, color = MainTextColor
