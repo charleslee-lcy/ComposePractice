@@ -3,7 +3,6 @@ package cn.thecover.media.feature.basis.home.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -72,110 +71,179 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                 modifier = Modifier.padding(start = 5.dp)
             )
         }
-        Row(
+
+        Column(
             modifier = Modifier
+                .fillMaxWidth()
                 .padding(top = 12.dp)
-
         ) {
-            Card(
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .weight(1f)
-                    .fillMaxHeight(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
-                shape = RoundedCornerShape(12.dp)
+            // 第一行卡片
+            Row(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = "本月绩效最终得分",
-                    color = SecondaryTextColor,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp)
-                )
-                Text(
-                    text = homeInfo.finalScore,
-                    color = MainTextColor,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
-                )
-            }
-            Card(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = "本月稿费编辑费",
-                    color = SecondaryTextColor,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp)
-                )
-                Text(
-                    text = homeInfo.money,
-                    color = MainTextColor,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
-                )
-            }
-        }
-        Row(
-            modifier = Modifier
-                .padding(top = 8.dp)
+                Card(
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .weight(1f),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "本月绩效最终得分",
+                        color = SecondaryTextColor,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                    )
+                    Text(
+                        text = homeInfo.finalScore,
+                        color = MainTextColor,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
+                    )
+                }
 
-        ) {
-            Card(
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .fillMaxHeight()
-                    .weight(1f),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = "定额基数分",
-                    color = SecondaryTextColor,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp)
-                )
-                Text(
-                    text = homeInfo.quotaBasicScore,
-                    color = MainTextColor,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
-                )
+                if (homeInfo.showMoney) {
+                    Card(
+                        modifier = Modifier
+                            .weight(1f),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = "本月稿费编辑费",
+                            color = SecondaryTextColor,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                        )
+                        Text(
+                            text = homeInfo.money,
+                            color = MainTextColor,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
+                        )
+                    }
+                } else {
+                    // 当不显示稿费时，显示定额基数分
+                    Card(
+                        modifier = Modifier
+                            .weight(1f),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = "定额基数分",
+                            color = SecondaryTextColor,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                        )
+                        Text(
+                            text = homeInfo.quotaBasicScore,
+                            color = MainTextColor,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
+                        )
+                    }
+                }
             }
-            Card(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = "本月考核结果",
-                    color = SecondaryTextColor,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp)
-                )
-                Text(
-                    text = when(homeInfo.assessmentResult) {
-                        null -> "本月不考核"
-                        true -> "合格"
-                        else -> "不合格"
-                    },
-                    color = if (homeInfo.assessmentResult == null) MainTextColor else MsgColor,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
-                )
+
+            // 第二行卡片（只在showMoney为true时显示）
+            if (homeInfo.showMoney) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .weight(1f),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = "定额基数分",
+                            color = SecondaryTextColor,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                        )
+                        Text(
+                            text = homeInfo.quotaBasicScore,
+                            color = MainTextColor,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
+                        )
+                    }
+
+                    Card(
+                        modifier = Modifier
+                            .weight(1f),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = "本月考核结果",
+                            color = SecondaryTextColor,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                        )
+                        Text(
+                            text = when (homeInfo.assessmentResult) {
+                                null -> "本月不考核"
+                                true -> "合格"
+                                else -> "不合格"
+                            },
+                            color = if (homeInfo.assessmentResult == null) MainTextColor else MsgColor,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
+                        )
+                    }
+                }
+            } else {
+                // 当不显示稿费时，只显示考核结果
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .weight(1f),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = "本月考核结果",
+                            color = SecondaryTextColor,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                        )
+                        Text(
+                            text = when (homeInfo.assessmentResult) {
+                                null -> "本月不考核"
+                                true -> "合格"
+                                else -> "不合格"
+                            },
+                            color = if (homeInfo.assessmentResult == null) MainTextColor else MsgColor,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
+                        )
+                    }
+                    // 添加一个空的Spacer来保持右侧空间
+                    Spacer(modifier = Modifier.weight(1f))
+                }
             }
         }
 
@@ -358,188 +426,196 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                 modifier = Modifier.padding(start = 5.dp)
             )
         }
-        Row(
+        Column(
             modifier = Modifier
+                .fillMaxWidth()
                 .padding(top = 12.dp)
-
         ) {
-            Card(
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .weight(1f)
-                    .fillMaxHeight(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
-                shape = RoundedCornerShape(12.dp)
+            // 第一行卡片
+            Row(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = "本月部门参加考核人数",
-                    color = SecondaryTextColor,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp)
-                )
-                Text(
-                    text = homeInfo.participateAssessmentCount,
-                    color = MainTextColor,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
-                )
-            }
-            Card(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = "本月部门合格人数",
-                    color = SecondaryTextColor,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp)
-                )
-                Text(
-                    text = homeInfo.passCount,
-                    color = MainTextColor,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
-                )
-            }
-        }
-        Row(
-            modifier = Modifier
-                .padding(top = 8.dp)
+                Card(
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .weight(1f),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "本月部门参加考核人数",
+                        color = SecondaryTextColor,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                    )
+                    Text(
+                        text = homeInfo.participateAssessmentCount,
+                        color = MainTextColor,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
+                    )
+                }
 
-        ) {
-            Card(
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .fillMaxHeight()
-                    .weight(1f),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = "本月合格率",
-                    color = SecondaryTextColor,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp)
-                )
-                Text(
-                    text = homeInfo.passRate,
-                    color = MainTextColor,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
-                )
+                Card(
+                    modifier = Modifier
+                        .weight(1f),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "本月部门合格人数",
+                        color = SecondaryTextColor,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                    )
+                    Text(
+                        text = homeInfo.passCount,
+                        color = MainTextColor,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
+                    )
+                }
             }
-            Card(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = "本月部门平均分",
-                    color = SecondaryTextColor,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp)
-                )
-                Text(
-                    text = homeInfo.deptAverageScore,
-                    color = MainTextColor,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 12.dp)
-                )
-            }
-        }
-        Row(
-            modifier = Modifier
-                .padding(top = 8.dp)
 
-        ) {
-            Card(
+            // 第二行卡片
+            Row(
                 modifier = Modifier
-                    .padding(end = 8.dp)
-                    .fillMaxHeight()
-                    .weight(1f),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
-                shape = RoundedCornerShape(12.dp)
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
             ) {
-                Text(
-                    text = "本月最终系数",
-                    color = SecondaryTextColor,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp)
-                )
-                Text(
-                    text = homeInfo.finalCoefficient,
-                    color = MainTextColor,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
-                )
-            }
-            Card(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = "本月绩效最终得分",
-                    color = SecondaryTextColor,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp)
-                )
-                Text(
-                    text = homeInfo.finalScore,
-                    color = MainTextColor,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 12.dp)
-                )
-            }
-        }
-        Row(
-            modifier = Modifier
-                .padding(top = 8.dp)
+                Card(
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .weight(1f),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "本月合格率",
+                        color = SecondaryTextColor,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                    )
+                    Text(
+                        text = homeInfo.passRate,
+                        color = MainTextColor,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
+                    )
+                }
 
-        ) {
-            Card(
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .fillMaxHeight()
-                    .weight(1f),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = "本月稿费编辑费",
-                    color = SecondaryTextColor,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp)
-                )
-                Text(
-                    text = homeInfo.money,
-                    color = MainTextColor,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
-                )
+                Card(
+                    modifier = Modifier
+                        .weight(1f),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "本月部门平均分",
+                        color = SecondaryTextColor,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                    )
+                    Text(
+                        text = homeInfo.deptAverageScore,
+                        color = MainTextColor,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
+                    )
+                }
             }
-            Spacer(modifier = Modifier.weight(1f))
+
+            // 第三行卡片
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) {
+                Card(
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .weight(1f),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "本月最终系数",
+                        color = SecondaryTextColor,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                    )
+                    Text(
+                        text = homeInfo.finalCoefficient,
+                        color = MainTextColor,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
+                    )
+                }
+
+                Card(
+                    modifier = Modifier
+                        .weight(1f),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "本月绩效最终得分",
+                        color = SecondaryTextColor,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                    )
+                    Text(
+                        text = homeInfo.finalScore,
+                        color = MainTextColor,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
+                    )
+                }
+            }
+
+            // 第四行卡片（只在showMoney为true时显示）
+            if (homeInfo.showMoney) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .weight(1f),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = "本月稿费编辑费",
+                            color = SecondaryTextColor,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                        )
+                        Text(
+                            text = homeInfo.money,
+                            color = MainTextColor,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
+                        )
+                    }
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
