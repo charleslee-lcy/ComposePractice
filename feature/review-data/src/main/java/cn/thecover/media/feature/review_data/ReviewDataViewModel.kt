@@ -88,7 +88,7 @@ class ReviewDataViewModel @Inject constructor(
 
     private val _manuscriptDiffusionFilterState = MutableStateFlow(
         ManuscriptReviewFilterState(
-            sortField = "公式传播分",
+            sortField = "最终传播分",
             searchField = "稿件标题"
         )
     )
