@@ -20,6 +20,7 @@ import cn.thecover.media.core.data.ManuscriptDiffusionRequest
 import cn.thecover.media.core.data.ManuscriptReviewDataEntity
 import cn.thecover.media.core.data.ManuscriptTopRequest
 import cn.thecover.media.core.data.PaginatedResult
+import cn.thecover.media.core.data.SortConditions
 import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HTTP_STATUS_LOGOUT
@@ -200,6 +201,9 @@ class HomeViewModel @Inject constructor(
                     ManuscriptDiffusionRequest(
                         year = curYear.intValue,
                         month = curMonth.intValue,
+                        sortConditions = listOf(
+                            SortConditions.putSortConditions("最终传播分")
+                        ),
                         lastId = -1,
                         pageSize = "10"
                     )
