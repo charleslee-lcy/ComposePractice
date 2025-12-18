@@ -101,7 +101,7 @@ data class ScoreLevel(
     val scoreGroupId: Int = 0,
     val scoreGroupName: String = "",
     val scoreLevel: String = "",
-    val scoreLevelName: String = "",
+    val scoreLevelName: String? = null,
     val scoreTime: String = "",
     val self: Boolean = false,
     val userId: Long = 0L,

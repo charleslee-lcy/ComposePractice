@@ -61,16 +61,6 @@ fun AppealListItem(
     item: AppealListData,
     itemClick: () -> Unit = {},
 ) {
-    val formattedTime = remember(item.submitTime) {
-        try {
-            val originalFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-            val targetFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-            val date = originalFormat.parse(item.submitTime)
-            targetFormat.format(date)
-        } catch (e: Exception) {
-            item.submitTime
-        }
-    }
 
     Box(
         modifier = modifier.padding(top = 12.dp).clickableWithoutRipple { itemClick.invoke() }
@@ -182,7 +172,7 @@ fun AppealListItem(
                 )
                 Text(
                     modifier = Modifier.padding(start = 12.dp),
-                    text = formattedTime,
+                    text = item.submitTime,
                     style = TextStyle(
                         color = TertiaryTextColor, fontSize = 14.sp
                     )
