@@ -53,9 +53,10 @@ class ReviewDataRepository @Inject constructor(
                     PaginatedResult(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
-                        totalPages = body.total,
+                        totalPages = body.totalPages,
                         hasNextPage = body.lastId?.toInt() != -1,
-                        lastId = body.lastId
+                        lastId = body.lastId,
+                        total = body.total
                     )
                 )
             } else {
@@ -139,9 +140,10 @@ class ReviewDataRepository @Inject constructor(
                     PaginatedResult(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
-                        totalPages = body.total,
+                        totalPages = body.totalPages,
                         hasNextPage = body.lastId?.toInt() != -1,
-                        lastId = body.lastId
+                        lastId = body.lastId,
+                        total = body.total
                     )
                 )
             } else {
@@ -247,9 +249,9 @@ class ReviewDataRepository @Inject constructor(
                     PaginatedResult(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
-                        totalPages = body.total,
+                        totalPages = body.totalPages,
                         hasNextPage = body.lastId?.toInt() != -1,
-                        lastId = body.lastId
+                        lastId = body.lastId, total = body.total
                     )
                 )
             } else {
