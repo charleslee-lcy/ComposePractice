@@ -202,7 +202,7 @@ fun ModifyPasswordInput(textState: MutableState<String>, label: String, hint: St
                         AnimatedVisibility(textState.value.isNotEmpty()) {
                             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                 Icon(
-                                    painterResource(if (passwordVisible) YBIcons.Custom.PasswordHide else YBIcons.Custom.PasswordWatch),
+                                    painterResource(if (passwordVisible) YBIcons.Custom.PasswordIsShow else YBIcons.Custom.PasswordIsHide),
                                     tint = TertiaryTextColor,
                                     contentDescription = if (passwordVisible) "隐藏密码" else "查看密码"
                                 )
