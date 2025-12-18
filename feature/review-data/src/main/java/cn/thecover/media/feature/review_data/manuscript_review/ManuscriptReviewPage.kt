@@ -97,8 +97,13 @@ internal fun ManuscriptReviewPage(
     modifier: Modifier = Modifier,
     viewModel: ReviewDataViewModel
 ) {
-    val splitsNum = 2
     val data by viewModel.manuscriptReviewPageState.collectAsState()
+    // 计算splitsNum为data.dataList中第一个score等于0的数据的索引
+    val splitsNum = remember(data.dataList) {
+        data.dataList?.indexOfFirst { it.id.toLong() == data.firstCutNewsId }?.let {
+            if (it == -1) data.dataList?.size ?: 0 else it
+        } ?: 0
+    }
 
     val showEditScorePop = remember { mutableStateOf(false) }
 
@@ -136,7 +141,7 @@ internal fun ManuscriptReviewPage(
                     text = buildAnnotatedString {
                         append("共 ")
                         withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                            append(data.total.toString())
+                            append((data.dataList?.size ?: 0).toString())
                         }
                         append(" 条记录")
                     },

@@ -100,7 +100,7 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
                         text = buildAnnotatedString {
                             append("共 ")
                             withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                                append(data.total.toString())
+                                append((data.dataList?.size ?: 0).toString())
                             }
                             append(" 条记录")
                         },

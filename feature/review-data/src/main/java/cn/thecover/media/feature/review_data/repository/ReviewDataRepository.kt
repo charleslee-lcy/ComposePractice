@@ -56,7 +56,9 @@ class ReviewDataRepository @Inject constructor(
                         totalPages = body.totalPages,
                         hasNextPage = body.lastId?.toInt() != -1,
                         lastId = body.lastId,
-                        total = body.total
+                        total = body.total,
+                        firstCutNewsId = body.firstCutNewsId,
+                        budgetCutProcess = body.budgetCutProcess
                     )
                 )
             } else {
