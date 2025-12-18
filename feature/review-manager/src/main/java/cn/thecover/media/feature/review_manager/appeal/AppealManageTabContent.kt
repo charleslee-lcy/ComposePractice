@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -78,6 +79,7 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
         FilterType(type = 2, desc = "申诉理由")
     )
 
+    val listState = rememberLazyListState()
     val items = remember { mutableStateOf(listOf<AppealListData>()) }
     val isRefreshing = remember { mutableStateOf(false) }
     val isLoadingMore = remember { mutableStateOf(false) }
@@ -227,6 +229,7 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
                 .fillMaxWidth()
                 .weight(1f),
             items = items,
+            listState = listState,
             isRefreshing = isRefreshing,
             isLoadingMore = isLoadingMore,
             canLoadMore = canLoadMore,

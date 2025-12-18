@@ -253,9 +253,9 @@ fun ArchiveScoreScreen(
             checkedItem?.scoreLevels?.takeIf { it.isNotEmpty() }?.let { list ->
                 list.forEach {
                     when(it.scoreGroupId) {
-                        1 -> newList1.add(it.scoreLevelName)
-                        2 -> newList2.add(it.scoreLevelName)
-                        else -> newList3.add(it.scoreLevelName)
+                        1 -> newList1.add(it.scoreLevelName ?: "-")
+                        2 -> newList2.add(it.scoreLevelName ?: "-")
+                        else -> newList3.add(it.scoreLevelName ?: "-")
                     }
                 }
 
