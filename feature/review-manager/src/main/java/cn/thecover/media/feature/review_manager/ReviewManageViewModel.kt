@@ -12,6 +12,8 @@ import cn.thecover.media.core.common.util.toMillisecond
 import cn.thecover.media.core.data.AppealDetailRequest
 import cn.thecover.media.core.data.AppealListData
 import cn.thecover.media.core.data.AppealManageRequest
+import cn.thecover.media.core.data.AppealNewsData
+import cn.thecover.media.core.data.AppealNewsRequest
 import cn.thecover.media.core.data.AppealSwitchInfo
 import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.core.data.AuditDetailRequest
@@ -67,7 +69,7 @@ class ReviewManageViewModel @Inject constructor(
     // 稿件打分状态
     val newsScoreStatus = mutableIntStateOf(0)
     // 搜索类型
-    val searchType = mutableIntStateOf(2)
+    val searchType = mutableIntStateOf(0)
     // 搜索关键词
     val searchKeyword = mutableStateOf("")
     private val pageSize = 10
@@ -133,6 +135,7 @@ class ReviewManageViewModel @Inject constructor(
     private val myAppealRequest = AppealManageRequest()
     private val appealManageRequest = AppealManageRequest()
 
+    val appealNewsUiState = MutableStateFlow(BaseUiState<AppealNewsData>())
     val appealDetailUiState = MutableStateFlow(BaseUiState<AppealListData>())
     val auditEnableState = MutableStateFlow(BaseUiState<AppealSwitchInfo>())
     val auditDetailUiState = MutableStateFlow(BaseUiState<Any>())
@@ -212,9 +215,9 @@ class ReviewManageViewModel @Inject constructor(
             else -> {}
         }
         when(searchType.intValue) {
-            0 -> { request.searchType = 1 }
+            0 -> { request.searchType = 3 }
             1 -> { request.searchType = 2 }
-            else -> { request.searchType = 3 }
+            else -> { request.searchType = 1 }
         }
         request.searchKeyword = searchKeyword.value.ifEmpty { null }
         viewModelScope.launch {
@@ -539,6 +542,22 @@ class ReviewManageViewModel @Inject constructor(
                     else -> {}
                 }
             }
+        }
+    }
+
+    /**
+     * 获取申诉新闻详情
+     */
+    fun getAppealNewsInfo(newsId: Long) {
+        viewModelScope.launch {
+            flow {
+                val request = AppealNewsRequest(newsId)
+                val result = apiService.getAppealNewsInfo(request)
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    appealNewsUiState.value = result
+                }
         }
     }
 

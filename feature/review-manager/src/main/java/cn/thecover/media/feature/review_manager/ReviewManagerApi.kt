@@ -3,6 +3,8 @@ package cn.thecover.media.feature.review_manager
 import cn.thecover.media.core.data.AppealDetailRequest
 import cn.thecover.media.core.data.AppealListData
 import cn.thecover.media.core.data.AppealManageRequest
+import cn.thecover.media.core.data.AppealNewsData
+import cn.thecover.media.core.data.AppealNewsRequest
 import cn.thecover.media.core.data.AppealSwitchInfo
 import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.core.data.AuditDetailRequest
@@ -106,6 +108,12 @@ interface ReviewManagerApi {
      */
     @POST(value = "api/mgr/appeal/mgmtAuditList")
     suspend fun getAppealManageList(@Body request: AppealManageRequest): NetworkResponse<PaginatedResult<AppealListData>>
+
+    /**
+     * 申诉列表-查看稿件
+     */
+    @POST(value = "api/mgr/appeal/newsInfo")
+    suspend fun getAppealNewsInfo(@Body request: AppealNewsRequest): NetworkResponse<AppealNewsData>
 
     /**
      * 申诉详情数据

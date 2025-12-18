@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -89,6 +90,7 @@ internal fun LoginScreen(
     var nameText by remember { mutableStateOf("") }
     var passwordText by remember { mutableStateOf("") }
     val loadingState = rememberTipsDialogState()
+    var isLoginEnable by remember { mutableStateOf(false) }
 
     val loginState = viewModel.loginUiState.collectAsStateWithLifecycle().value
 
@@ -165,6 +167,7 @@ internal fun LoginScreen(
                     hintTextColor = EditHintTextColor,
                     onValueChange = {
                         nameText = it
+                        isLoginEnable = nameText.isNotEmpty() && passwordText.isNotEmpty()
                     })
             }
             HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = OutlineColor, thickness = 0.8.dp)
@@ -192,6 +195,7 @@ internal fun LoginScreen(
                     showVisibleIcon = true,
                     onValueChange = {
                         passwordText = it
+                        isLoginEnable = nameText.isNotEmpty() && passwordText.isNotEmpty()
                     })
             }
             HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = OutlineColor, thickness = 0.8.dp)
@@ -201,9 +205,12 @@ internal fun LoginScreen(
                     .align(Alignment.CenterHorizontally)
                     .fillMaxWidth()
                     .padding(top = 40.dp, bottom = 10.dp)
-                    .height(44.dp),
+                    .height(44.dp)
+                    .alpha(if (isLoginEnable) 1f else 0.5f),
                 shape = RoundedCornerShape(2.dp),
                 onClick = {
+                    if (!isLoginEnable) return@YBButton
+
                     if (nameText.isEmpty()) {
                         Toast.makeText(context, "用户名不能为空", Toast.LENGTH_SHORT).show()
                         return@YBButton

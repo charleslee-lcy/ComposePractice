@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,7 +25,6 @@ import androidx.navigation.NavController
 import cn.thecover.media.core.data.AppealListData
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.YBNormalList
-import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 import cn.thecover.media.feature.review_manager.ReviewManageViewModel
@@ -44,6 +44,7 @@ fun MyAppealContent(viewModel: ReviewManageViewModel, navController: NavControll
         FilterType(type = 2, desc = "申诉理由")
     )
 
+    val listState = rememberLazyListState()
     val items = remember { mutableStateOf(listOf<AppealListData>()) }
     val isRefreshing = remember { mutableStateOf(false) }
     val isLoadingMore = remember { mutableStateOf(false) }
@@ -91,6 +92,7 @@ fun MyAppealContent(viewModel: ReviewManageViewModel, navController: NavControll
                 .fillMaxWidth()
                 .weight(1f),
             items = items,
+            listState = listState,
             isRefreshing = isRefreshing,
             isLoadingMore = isLoadingMore,
             canLoadMore = canLoadMore,
@@ -98,16 +100,16 @@ fun MyAppealContent(viewModel: ReviewManageViewModel, navController: NavControll
                 viewModel.getMyAppealList(isRefresh = true)
             },
             onLoadMore = {
-                viewModel.getMyAppealList(isRefresh = true)
+                viewModel.getMyAppealList(isRefresh = false)
             }) { item, _ ->
             AppealListItem(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickableWithoutRipple {
-                        // 跳转到申诉详情页
-                        navController.navigateToAppealDetail(item.id, false)
-                    }, item = item
-            )
+                viewModel = viewModel,
+                modifier = Modifier.fillMaxWidth(),
+                item = item
+            ) {
+                // 跳转到申诉详情页
+                navController.navigateToAppealDetail(item.id, false)
+            }
         }
     }
 }

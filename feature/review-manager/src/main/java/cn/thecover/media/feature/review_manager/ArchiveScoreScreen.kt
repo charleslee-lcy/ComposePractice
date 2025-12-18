@@ -253,9 +253,9 @@ fun ArchiveScoreScreen(
             checkedItem?.scoreLevels?.takeIf { it.isNotEmpty() }?.let { list ->
                 list.forEach {
                     when(it.scoreGroupId) {
-                        1 -> newList1.add(it.scoreLevelName)
-                        2 -> newList2.add(it.scoreLevelName)
-                        else -> newList3.add(it.scoreLevelName)
+                        1 -> newList1.add(it.scoreLevelName ?: "-")
+                        2 -> newList2.add(it.scoreLevelName ?: "-")
+                        else -> newList3.add(it.scoreLevelName ?: "-")
                     }
                 }
 
@@ -471,9 +471,9 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
     )
 
     val searchFilters = listOf(
-        FilterType(type = 1, desc = "记者"),
+        FilterType(type = 3, desc = "稿件名称"),
         FilterType(type = 2, desc = "稿件ID"),
-        FilterType(type = 3, desc = "稿件名称")
+        FilterType(type = 1, desc = "记者")
     )
 
     if (scoreRuleStatus.isNotEmpty()) {

@@ -16,11 +16,17 @@
 
 package cn.thecover.media.core.network
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import androidx.compose.ui.res.stringResource
 import cn.thecover.media.core.data.NetworkResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import java.net.SocketException
+import java.net.UnknownHostException
 
 enum class HttpStatus {
     NORMAL,
@@ -42,7 +48,21 @@ fun <T> Flow<NetworkResponse<T>>.asResult(): Flow<BaseUiState<T>> =
         result
     }
         .onStart { emit(BaseUiState(null, HttpStatus.LOADING, -1, "")) }
-        .catch { emit(BaseUiState(null, HttpStatus.ERROR, -1, it.message ?: "")) }
+        .catch {
+            if (it is UnknownHostException || it is SocketException) {
+                emit(BaseUiState(null, HttpStatus.ERROR, -1, "网络开小差，请稍后重试"))
+            } else {
+                emit(BaseUiState(null, HttpStatus.ERROR, -1, it.message ?: ""))
+            }
+        }
+
+fun isNetworkAvailable(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val network = connectivityManager.activeNetwork
+    val capabilities = connectivityManager.getNetworkCapabilities(network)
+    return capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true &&
+            capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) == true
+}
 
 data class BaseUiState<T>(
     val data: T? = null,

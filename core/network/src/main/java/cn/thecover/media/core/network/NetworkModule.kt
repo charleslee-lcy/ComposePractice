@@ -14,14 +14,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.Call
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
-import javax.net.ssl.HostnameVerifier
 
 
 /**
@@ -36,6 +33,8 @@ object NetworkModule {
     @Singleton
     fun provideNetworkJson(): Json = Json {
         ignoreUnknownKeys = true
+        explicitNulls = false
+        coerceInputValues = true
     }
 
     @Provides
