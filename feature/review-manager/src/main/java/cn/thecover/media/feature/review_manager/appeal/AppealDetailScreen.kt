@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -22,7 +23,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,6 +39,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -647,18 +649,47 @@ private fun ApprovalFlowItem(
     index: Int,
     count: Int
 ) {
-    Row(modifier = Modifier.fillMaxWidth()) {
+    var dividerHeight by remember { mutableStateOf(0.dp) }
+
+    LaunchedEffect(Unit) {
+        dividerHeight = if (node.nodeName.isEmpty()) {
+            if (node.operation == 4 && !node.remark.isNullOrEmpty()) {
+                40.dp
+            } else {
+                20.dp
+            }
+        } else {
+            if (node.operation == 4 && !node.remark.isNullOrEmpty()) {
+                60.dp
+            } else {
+                40.dp
+            }
+        }
+    }
+
+    ConstraintLayout (
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        val (leftColumn, rightColumn) = createRefs()
+
+        // 左侧时间轴列
         Column(
-            modifier = Modifier.padding(start = 11.dp),
+            modifier = Modifier
+                .constrainAs(leftColumn) {
+                    start.linkTo(parent.start, margin = 11.dp)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    height = Dimension.fillToConstraints
+                },
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (index != 0) {
-                VerticalDivider(
+                Spacer(
                     modifier = Modifier
                         .padding(bottom = 3.dp)
-                        .height(5.dp),
-                    thickness = 1.dp,
-                    color = MainColor
+                        .height(5.dp)
+                        .width(1.dp)
+                        .background(MainColor)
                 )
             } else {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -669,16 +700,26 @@ private fun ApprovalFlowItem(
                 containerColor = MainColor
             )
             if (index != count - 1) {
-                VerticalDivider(
+                Spacer(
                     modifier = Modifier
                         .padding(top = 3.dp)
-                        .height(if (node.nodeName.isEmpty()) 20.dp else 40.dp),
-                    thickness = 1.dp,
-                    color = MainColor
+                        .weight(1f)
+                        .width(1.dp)
+                        .background(MainColor)
                 )
             }
         }
-        Column {
+
+        // 右侧内容列
+        Column(
+            modifier = Modifier
+                .constrainAs(rightColumn) {
+                    start.linkTo(leftColumn.end, margin = 6.dp)
+                    end.linkTo(parent.end, margin = 8.dp)
+                    top.linkTo(parent.top)
+                    width = Dimension.fillToConstraints
+                }
+        ) {
             if (node.nodeName.isNotEmpty()) {
                 Text(
                     modifier = Modifier
@@ -706,12 +747,22 @@ private fun ApprovalFlowItem(
                     fontSize = 14.sp
                 )
                 Text(
-                    modifier = Modifier.padding(end = 12.dp),
+                    modifier = Modifier.padding(end = 6.dp),
                     text = node.createTime,
                     color = MainTextColor,
                     fontSize = 14.sp
                 )
             }
+            if (node.operation == 4 && !node.remark.isNullOrEmpty()) {
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 6.dp),
+                    text = "审批意见：${node.remark ?: "-"}",
+                    color = MainTextColor,
+                    fontSize = 14.sp
+                )
+            }
+            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
