@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cn.thecover.media.core.data.DiffusionDataEntity
@@ -212,7 +213,12 @@ internal fun ManuScriptItemHeader(
 ) {
     // 显示稿件标题
     Column {
-        Text(title, style = MaterialTheme.typography.titleSmall, color = MainTextColor)
+        Text(
+            title,
+            style = MaterialTheme.typography.titleSmall,
+            color = MainTextColor,
+            fontWeight = FontWeight.Bold
+        )
         Spacer(Modifier.height(8.dp))
         // 显示作者和编辑信息
         Row {
