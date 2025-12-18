@@ -649,24 +649,6 @@ private fun ApprovalFlowItem(
     index: Int,
     count: Int
 ) {
-    var dividerHeight by remember { mutableStateOf(0.dp) }
-
-    LaunchedEffect(Unit) {
-        dividerHeight = if (node.nodeName.isEmpty()) {
-            if (node.operation == 4 && !node.remark.isNullOrEmpty()) {
-                40.dp
-            } else {
-                20.dp
-            }
-        } else {
-            if (node.operation == 4 && !node.remark.isNullOrEmpty()) {
-                60.dp
-            } else {
-                40.dp
-            }
-        }
-    }
-
     ConstraintLayout (
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -714,8 +696,8 @@ private fun ApprovalFlowItem(
         Column(
             modifier = Modifier
                 .constrainAs(rightColumn) {
-                    start.linkTo(leftColumn.end, margin = 6.dp)
-                    end.linkTo(parent.end, margin = 8.dp)
+                    start.linkTo(leftColumn.end, margin = 2.dp)
+                    end.linkTo(parent.end, margin = 2.dp)
                     top.linkTo(parent.top)
                     width = Dimension.fillToConstraints
                 }
