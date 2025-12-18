@@ -2,6 +2,12 @@ package cn.thecover.media.feature.review_manager
 
 import android.R.attr.label
 import android.widget.Toast
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -54,6 +61,7 @@ import androidx.navigation.NavController
 import cn.thecover.media.core.common.util.toMillisecond
 import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.core.data.ScoreLevelData
+import cn.thecover.media.core.data.ScoreRuleData
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.GradientLeftBottom
@@ -83,6 +91,7 @@ import cn.thecover.media.feature.review_manager.appeal.FilterSearchBar
 import cn.thecover.media.feature.review_manager.appeal.FilterType
 import cn.thecover.media.feature.review_manager.assign.FilterDropMenuView
 import cn.thecover.media.feature.review_manager.navigation.navigateToArchiveDetail
+import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -463,6 +472,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
     var isStartDatePickerShow by remember { mutableStateOf(true) }
     var datePickerShow by remember { mutableStateOf(false) }
     val scoreRuleStatus by viewModel.scoreRuleStatus.collectAsStateWithLifecycle()
+    var currentIndex = remember { mutableIntStateOf(0) }
 
     val scoreStateFilters = listOf(
         FilterType(type = 1, desc = "全部"),
@@ -476,6 +486,15 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
         FilterType(type = 1, desc = "记者")
     )
 
+    LaunchedEffect(scoreRuleStatus) {
+        if (scoreRuleStatus.isNotEmpty()) {
+            while (true) {
+                delay(4000) // 每3秒切换一次
+                currentIndex.intValue = (currentIndex.intValue + 1) % scoreRuleStatus.size
+            }
+        }
+    }
+
     if (scoreRuleStatus.isNotEmpty()) {
         Card(
             modifier = Modifier
@@ -485,112 +504,8 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
             shape = RoundedCornerShape(8.dp)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp)
-                    .gradientShape(
-                        colors = listOf(Color(0xFFEBF1FF), Color.White),
-                        start = GradientLeftTop,
-                        end = GradientLeftBottom
-                    ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                YBImage(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(vertical = 14.dp),
-                    placeholder = painterResource(R.mipmap.img_archive_score_label),
-                    contentScale = ContentScale.Fit
-                )
-                VerticalDivider(
-                    modifier = Modifier.height(36.dp), thickness = 0.5.dp, color = OutlineColor
-                )
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "等级",
-                        color = SecondaryTextColor,
-                        fontSize = 12.sp
-                    )
-                    Text(
-                        text = scoreRuleStatus.first { !it.scoreLevelName.isNullOrEmpty() }.scoreLevelName ?: "--",
-                        color = MainTextColor,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-                VerticalDivider(
-                    modifier = Modifier.height(36.dp), thickness = 0.5.dp, color = OutlineColor
-                )
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "当月数量",
-                        color = SecondaryTextColor,
-                        fontSize = 12.sp
-                    )
-                    Text(
-                        text = "${scoreRuleStatus.first().monthCount}",
-                        color = MainTextColor,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-                VerticalDivider(
-                    modifier = Modifier.height(36.dp), thickness = 0.5.dp, color = OutlineColor
-                )
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "当天数量",
-                        color = SecondaryTextColor,
-                        fontSize = 12.sp
-                    )
-                    Text(
-                        text = "${scoreRuleStatus.first().dayCount}",
-                        color = MainTextColor,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-                VerticalDivider(
-                    modifier = Modifier.height(36.dp), thickness = 0.5.dp, color = OutlineColor
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                        .clickableWithoutRipple {
-                            showScoreDialog.value = true
-                        },
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "更多",
-                        color = TertiaryTextColor,
-                        lineHeight = 14.sp,
-                        fontSize = 14.sp,
-                    )
-                    Icon(
-                        painterResource(cn.thecover.media.core.widget.R.drawable.icon_right_arrow),
-                        contentDescription = "Localized description",
-                        Modifier
-                            .size(18.dp)
-                            .padding(2.dp),
-                        tint = TertiaryTextColor
-                    )
-                }
+            ArchiveScoreFlipItem(scoreRuleStatus, currentIndex) {
+                showScoreDialog.value = true
             }
         }
     }
@@ -837,6 +752,130 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
             }
         }
     )
+}
+
+
+@Composable
+private fun ArchiveScoreFlipItem(list: List<ScoreRuleData>, indexState: MutableIntState, onMoreClick: () -> Unit = {}) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .height(64.dp)
+        .gradientShape(
+            colors = listOf(Color(0xFFEBF1FF), Color.White),
+            start = GradientLeftTop,
+            end = GradientLeftBottom
+        ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        YBImage(
+            modifier = Modifier
+                .weight(1f)
+                .padding(vertical = 14.dp),
+            placeholder = painterResource(R.mipmap.img_archive_score_label),
+            contentScale = ContentScale.Fit
+        )
+
+        AnimatedContent(
+            modifier = Modifier.weight(3f),
+            targetState = indexState.intValue,
+            transitionSpec = {
+                slideInVertically { height -> height } + fadeIn() togetherWith
+                        slideOutVertically { height -> -height } + fadeOut()
+            }
+        ) { targetIndex ->
+            Row(modifier = Modifier.fillMaxWidth()) {
+                VerticalDivider(
+                    modifier = Modifier.height(36.dp), thickness = 0.5.dp, color = OutlineColor
+                )
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "等级",
+                        color = SecondaryTextColor,
+                        fontSize = 12.sp
+                    )
+                    Text(
+                        text = list[targetIndex].scoreLevelName?.ifEmpty { "-" } ?: "-",
+                        color = MainTextColor,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                VerticalDivider(
+                    modifier = Modifier.height(36.dp), thickness = 0.5.dp, color = OutlineColor
+                )
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "当月数量",
+                        color = SecondaryTextColor,
+                        fontSize = 12.sp
+                    )
+                    Text(
+                        text = "${list[targetIndex].monthCount}",
+                        color = MainTextColor,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                VerticalDivider(
+                    modifier = Modifier.height(36.dp), thickness = 0.5.dp, color = OutlineColor
+                )
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "当天数量",
+                        color = SecondaryTextColor,
+                        fontSize = 12.sp
+                    )
+                    Text(
+                        text = "${list[targetIndex].dayCount}",
+                        color = MainTextColor,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                VerticalDivider(
+                    modifier = Modifier.height(36.dp), thickness = 0.5.dp, color = OutlineColor
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f)
+                .clickableWithoutRipple {
+                    onMoreClick.invoke()
+                },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "更多",
+                color = TertiaryTextColor,
+                lineHeight = 14.sp,
+                fontSize = 14.sp,
+            )
+            Icon(
+                painterResource(cn.thecover.media.core.widget.R.drawable.icon_right_arrow),
+                contentDescription = "Localized description",
+                Modifier
+                    .size(18.dp)
+                    .padding(2.dp),
+                tint = TertiaryTextColor
+            )
+        }
+    }
 }
 
 @PhonePreview
