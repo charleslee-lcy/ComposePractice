@@ -160,12 +160,14 @@ private fun DiffusionItem(data: DiffusionDataEntity, filterChoice: String) {
                         items = arrayOf(
                             Triple(
                                 "公式传播分",
-                                data.formulaSpreadScore.toString(),
+                                if (data.formulaSpreadScore % 1 == 0.0) data.formulaSpreadScore.toInt()
+                                    .toString() else data.formulaSpreadScore.toString(),
                                 if (filterChoice.contains("公式传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                             ),
                             Triple(
                                 "最终传播分",
-                                data.spreadScore.toString(),
+                                if (data.spreadScore % 1 == 0.0) data.spreadScore.toInt()
+                                    .toString() else data.spreadScore.toString(),
                                 if (filterChoice.contains("最终传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                             ),
                         )

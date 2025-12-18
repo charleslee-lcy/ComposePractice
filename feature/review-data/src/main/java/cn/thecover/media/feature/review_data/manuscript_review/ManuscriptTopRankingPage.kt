@@ -125,22 +125,26 @@ private fun ManuscriptTopRankingItem(
                     items = arrayOf(
                         Triple(
                             "总分",
-                            data.score.toString(),
+                            if ((data.score % 1).toFloat() == 0f) data.score.toInt()
+                                .toString() else data.score.toString(),
                             if (filterChoice.contains("总分")) ScoreItemType.PRIMARY_WITH_BORDER else ScoreItemType.PRIMARY
                         ),
                         Triple(
                             "基础分",
-                            data.basicScore.toString(),
+                            if ((data.basicScore % 1).toFloat() == 0f) data.basicScore.toInt()
+                                .toString() else data.basicScore.toString(),
                             if (filterChoice.contains("基础分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                         ),
                         Triple(
                             "传播分",
-                            data.diffusionScore.toString(),
+                            if ((data.diffusionScore % 1).toFloat() == 0f) data.diffusionScore.toInt()
+                                .toString() else data.diffusionScore.toString(),
                             if (filterChoice.contains("传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                         ),
                         Triple(
                             "质量分",
-                            data.qualityScore.toString(),
+                            if ((data.qualityScore % 1).toFloat() == 0f) data.qualityScore.toInt()
+                                .toString() else data.qualityScore.toString(),
                             if (filterChoice.contains("质量分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                         ),
                     )

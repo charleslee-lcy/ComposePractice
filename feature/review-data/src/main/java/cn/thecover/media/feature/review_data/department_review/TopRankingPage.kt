@@ -106,7 +106,12 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
             }
         }
     ) { item, index ->
-        TopRankingItem(index + 1, item.departmentName, item.averageScore)
+        TopRankingItem(
+            index + 1,
+            item.departmentName,
+            if ((item.averageScore % 1).toFloat() == 0f) item.averageScore.toInt()
+                .toDouble() else item.averageScore
+        )
     }
 
     // 月份选择器组件，用于选择查看排名的月份
@@ -146,7 +151,7 @@ private fun TopRankingItem(ranking: Int, departmentName: String, score: Double) 
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    score.toString(),
+                    if (score % 1 == 0.0) score.toInt().toString() else score.toString(),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary
                 )

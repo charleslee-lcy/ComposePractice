@@ -251,12 +251,14 @@ private fun DepartmentReviewItem(
 
                         Triple(
                             "人员平均分",
-                            averageScore.toString(),
+                            if (averageScore % 1 == 0.0) averageScore.toInt()
+                                .toString() else averageScore.toString(),
                             if (filterText.contains("人员平均分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                         ),
                         Triple(
                             "总分",
-                            totalScore.toString(),
+                            if (totalScore % 1 == 0.0) totalScore.toInt()
+                                .toString() else totalScore.toString(),
                             if (filterText.contains("总分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                         ),
 

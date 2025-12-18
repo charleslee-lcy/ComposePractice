@@ -302,7 +302,8 @@ private fun TotalRankingItem(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                data.score.toString(),
+                                if (data.score % 1 == 0.0) data.score.toInt()
+                                    .toString() else data.score.toString(),
                                 style = MaterialTheme.typography.titleLarge,
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -372,7 +373,7 @@ private fun ItemFoldedView(
             Text("基础分", style = MaterialTheme.typography.bodySmall, color = SecondaryTextColor)
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                "$basicScore",
+                if (basicScore % 1 == 0.0) basicScore.toInt().toString() else basicScore.toString(),
                 style = MaterialTheme.typography.titleSmall,
                 color = MainTextColor.copy(0.5f)
             )
@@ -381,7 +382,8 @@ private fun ItemFoldedView(
             Text("质量分", style = MaterialTheme.typography.bodySmall, color = SecondaryTextColor)
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                "$qualityScore",
+                if (qualityScore % 1 == 0.0) qualityScore.toInt()
+                    .toString() else qualityScore.toString(),
                 style = MaterialTheme.typography.titleSmall,
                 color = MainTextColor.copy(0.5f)
             )
@@ -390,7 +392,8 @@ private fun ItemFoldedView(
             Text("传播分", style = MaterialTheme.typography.bodySmall, color = SecondaryTextColor)
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                "$diffusionScore",
+                if (diffusionScore % 1 == 0.0) diffusionScore.toInt()
+                    .toString() else diffusionScore.toString(),
                 style = MaterialTheme.typography.titleSmall,
                 color = MainTextColor.copy(0.5f)
             )

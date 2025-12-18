@@ -127,10 +127,26 @@ private fun TopManuscriptPage(viewModel: HomeViewModel) {
 
             PrimaryItemScoreRow(
                 items = arrayOf(
-                    Triple("总分", item.score.toString(), ScoreItemType.PRIMARY),
-                    Triple("基础分", item.basicScore.toString(), ScoreItemType.NORMAL),
-                    Triple("传播分", item.diffusionScore.toString(), ScoreItemType.NORMAL),
-                    Triple("质量分", item.qualityScore.toString(), ScoreItemType.NORMAL)
+                    Triple("总分",
+                        if (item.score % 1 == 0.0) item.score.toInt()
+                            .toString() else item.score.toString(),
+                        ScoreItemType.PRIMARY
+                    ),
+                    Triple("基础分",
+                        if (item.basicScore % 1 == 0.0) item.basicScore.toInt()
+                            .toString() else item.basicScore.toString(),
+                        ScoreItemType.NORMAL
+                    ),
+                    Triple("传播分",
+                        if (item.diffusionScore % 1 == 0.0) item.diffusionScore.toInt()
+                            .toString() else item.diffusionScore.toString(),
+                        ScoreItemType.NORMAL
+                    ),
+                    Triple("质量分",
+                        if (item.qualityScore % 1 == 0.0) item.qualityScore.toInt()
+                            .toString() else item.qualityScore.toString(),
+                        ScoreItemType.NORMAL
+                    )
                 )
             )
             if (index != uiState.dataList?.lastIndex) {
@@ -164,12 +180,14 @@ private fun TopDiffusionPage(viewModel: HomeViewModel) {
                 items = arrayOf(
                     Triple(
                         "公式传播分",
-                        item.formulaSpreadScore.toString(),
+                        if (item.formulaSpreadScore % 1 == 0.0) item.formulaSpreadScore.toInt()
+                            .toString() else item.formulaSpreadScore.toString(),
                         ScoreItemType.NORMAL
                     ),
                     Triple(
                         "最终传播分",
-                        item.spreadScore.toString(),
+                        if (item.spreadScore % 1 == 0.0) item.spreadScore.toInt()
+                            .toString() else item.spreadScore.toString(),
                         ScoreItemType.PRIMARY
                     ),
                 )
