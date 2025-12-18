@@ -256,7 +256,7 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                     )
                     Text(
                         text = if (homeInfo.layoutScore + homeInfo.newsScore > 0) (homeInfo.layoutScore + homeInfo.newsScore).toString() else "0",
-                        color = if (homeInfo.layoutScore + homeInfo.newsScore > 0) MsgColor else MainTextColor,
+                        color = if (homeInfo.layoutScore + homeInfo.newsScore > 0) MainTextColor else MsgColor,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -314,7 +314,10 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                     )
                     Text(
                         text = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) "${homeInfo.innerTaskFinishedNum}条" else "0",
-                        color = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) MsgColor else MainTextColor,
+                        color = if (homeInfo.innerTaskFinishedNum.isEmpty() || homeInfo.innerTaskFinishedNum.contains(
+                                "0"
+                            )
+                        ) MsgColor else MainTextColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
