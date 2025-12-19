@@ -69,6 +69,7 @@ import cn.thecover.media.feature.basis.home.navigation.navigateToMessage
 import cn.thecover.media.feature.basis.home.ui.LeaderUserContent
 import cn.thecover.media.feature.basis.home.ui.ManuscriptTopRankingItem
 import cn.thecover.media.feature.basis.home.ui.ReporterUserContent
+import cn.thecover.media.feature.basis.home.ui.ReviewerUserContent
 import java.time.LocalDate
 
 
@@ -230,7 +231,9 @@ internal fun HomeScreen(
                 Crossfade(viewModel.roleState) {
                     if (it == 3) {
                         LeaderUserContent(homeInfo.data ?: HomeInfo())
-                    } else if (it == 1){
+                    } else if (it == 2) {
+                        ReviewerUserContent(homeInfo.data ?: HomeInfo())
+                    } else if (it == 1) {
                         ReporterUserContent(homeInfo.data ?: HomeInfo())
                     }
                 }
