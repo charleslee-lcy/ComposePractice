@@ -41,7 +41,8 @@ fun MyAppealContent(viewModel: ReviewManageViewModel, navController: NavControll
     val filters = listOf(
         FilterType(type = 0, desc = "稿件名称"),
         FilterType(type = 1, desc = "人员姓名"),
-        FilterType(type = 2, desc = "申诉理由")
+        FilterType(type = 2, desc = "申诉人"),
+        FilterType(type = 3, desc = "申诉理由")
     )
 
     val listState = rememberLazyListState()
@@ -51,10 +52,6 @@ fun MyAppealContent(viewModel: ReviewManageViewModel, navController: NavControll
     val canLoadMore = remember { mutableStateOf(true) }
     val focusManager = LocalFocusManager.current
     val myAppealListUiState by viewModel.myAppealListDataState.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        viewModel.getMyAppealList(isRefresh = true)
-    }
 
     LaunchedEffect(myAppealListUiState) {
         isRefreshing.value = myAppealListUiState.isRefreshing

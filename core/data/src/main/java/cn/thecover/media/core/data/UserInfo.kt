@@ -12,5 +12,7 @@ import kotlinx.serialization.Serializable
 data class UserInfo(
     val userId: Long = 0L,
     val nickname: String = "",
-    val avatar: String = ""
+    val avatar: String = "",
+    val hasSubmitAppealAuth: Boolean = false, //提交申述权限
+    val hasAuditAppealAuth: Boolean = false //审核申述权限
 )

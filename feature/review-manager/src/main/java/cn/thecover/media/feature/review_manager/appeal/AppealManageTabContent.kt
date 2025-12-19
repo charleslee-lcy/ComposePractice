@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -76,7 +77,8 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
     val filters = listOf(
         FilterType(type = 0, desc = "稿件名称"),
         FilterType(type = 1, desc = "人员姓名"),
-        FilterType(type = 2, desc = "申诉理由")
+        FilterType(type = 2, desc = "申诉人"),
+        FilterType(type = 3, desc = "申诉理由")
     )
 
     val listState = rememberLazyListState()
@@ -91,11 +93,6 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
     var dealingCount by remember { mutableIntStateOf(0) }
     var passCount by remember { mutableIntStateOf(0) }
     var rejectCount by remember { mutableIntStateOf(0) }
-
-    LaunchedEffect(Unit) {
-        viewModel.getAppealTabInfo()
-        viewModel.getAppealManageList(isRefresh = true)
-    }
 
     LaunchedEffect(appealManageListUiState) {
         isRefreshing.value = appealManageListUiState.isRefreshing
@@ -158,6 +155,7 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
                         .clickableWithoutRipple {
                             viewModel.currentPos = 0
                             viewModel.getAppealManageList(isRefresh = true)
+                            viewModel.getAppealTabInfo()
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -183,6 +181,7 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
                         .clickableWithoutRipple {
                             viewModel.currentPos = 1
                             viewModel.getAppealManageList(isRefresh = true)
+                            viewModel.getAppealTabInfo()
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -208,6 +207,7 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
                         .clickableWithoutRipple {
                             viewModel.currentPos = 2
                             viewModel.getAppealManageList(isRefresh = true)
+                            viewModel.getAppealTabInfo()
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -235,6 +235,7 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
             canLoadMore = canLoadMore,
             onRefresh = {
                 viewModel.getAppealManageList(isRefresh = true)
+                viewModel.getAppealTabInfo()
             },
             onLoadMore = {
                 viewModel.getAppealManageList(isRefresh = false)
@@ -287,7 +288,7 @@ fun FilterSearchBar(
             expanded = expanded,
             initialIndex = initialIndex,
             isItemWidthAlign = true,
-            modifier = Modifier.weight(0.28f),
+            modifier = Modifier.width(100.dp),
             offset = DpOffset(0.dp, 0.dp),
             onItemClick = { text, index ->
                 title = text
@@ -322,7 +323,7 @@ fun FilterSearchBar(
         YBInput(
             text = searchText,
             modifier = Modifier
-                .weight(0.7f)
+                .weight(1f)
                 .padding(horizontal = 15.dp),
             textStyle = TextStyle(
                 fontSize = 13.sp, color = MainTextColor
