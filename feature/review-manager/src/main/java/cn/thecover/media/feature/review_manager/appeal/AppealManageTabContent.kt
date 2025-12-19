@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.review_manager.appeal
 
+import android.R.attr.text
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -75,7 +76,7 @@ import cn.thecover.media.feature.review_manager.navigation.navigateToAppealDetai
 @Composable
 fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavController) {
     val filters = listOf(
-        FilterType(type = 0, desc = "稿件名称"),
+        FilterType(type = 0, desc = "稿件标题"),
         FilterType(type = 1, desc = "人员姓名"),
         FilterType(type = 2, desc = "申诉人"),
         FilterType(type = 3, desc = "申诉理由")
@@ -267,6 +268,10 @@ fun FilterSearchBar(
     val animRotate = remember { Animatable(0f) }
     var title by remember { mutableStateOf(filterData[initialIndex].desc) }
     var searchText by remember { mutableStateOf(initialSearchText) }
+
+    LaunchedEffect(initialSearchText) {
+        searchText = initialSearchText
+    }
 
     // 当菜单状态改变时触发动画
     LaunchedEffect(expanded.value) {

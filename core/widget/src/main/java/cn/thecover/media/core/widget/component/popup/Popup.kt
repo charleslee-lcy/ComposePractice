@@ -9,7 +9,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -18,12 +17,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -44,12 +46,11 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
@@ -83,6 +84,7 @@ fun YBPopup(
         targetOffsetY = { it }
     ),
     padding: PaddingValues = PaddingValues(vertical = 20.dp, horizontal = 20.dp),
+    topActionBarHorizontalPadding: Dp = 0.dp,
     draggable: Boolean = true,
     isShowTopActionBar: Boolean = false,
     onClose: () -> Unit,
@@ -148,6 +150,7 @@ fun YBPopup(
                     .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.extraLarge)
                     .clickableWithoutRipple { }
                     .padding(padding)
+                    .windowInsetsPadding(WindowInsets.navigationBars)
                     .onSizeChanged {
                         height = it.height
                     }
@@ -157,7 +160,7 @@ fun YBPopup(
                         DraggableLine()
                     }
                     if (isShowTopActionBar) {
-                        TopActionBar(title, onCancel = onClose, onConfirm = onConfirm)
+                        TopActionBar(topActionBarHorizontalPadding, title, onCancel = onClose, onConfirm = onConfirm)
                     } else if (title != null) {
                         PopupTitle(title)
                     }
@@ -221,8 +224,8 @@ private fun DraggableLine() {
 }
 
 @Composable
-private fun TopActionBar(title: String?, onCancel: () -> Unit, onConfirm: () -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+private fun TopActionBar(horizontalPadding: Dp = 0.dp, title: String?, onCancel: () -> Unit, onConfirm: () -> Unit) {
+    Row(modifier = Modifier.padding(horizontal = horizontalPadding), verticalAlignment = Alignment.CenterVertically) {
         Text(
             modifier = Modifier.clickable { onCancel.invoke() },
             color = TertiaryTextColor,

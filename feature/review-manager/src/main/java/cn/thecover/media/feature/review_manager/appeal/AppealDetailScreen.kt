@@ -206,14 +206,13 @@ fun AppealDetailScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(scrollState)
                 .background(MaterialTheme.colorScheme.background)
                 .padding(horizontal = 15.dp),
         ) {
-
             Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxSize()
+                    .verticalScroll(scrollState),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Card(
@@ -476,14 +475,15 @@ fun AppealDetailScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(if (canEdit) 70.dp else 20.dp))
             }
 
             if (canEdit /*&& detailInfoStatus.data?.status == 1*/) {
                 Row(
                     modifier = Modifier
-                        .padding(bottom = 30.dp)
                         .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(bottom = 30.dp)
                         .align(Alignment.BottomCenter),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
