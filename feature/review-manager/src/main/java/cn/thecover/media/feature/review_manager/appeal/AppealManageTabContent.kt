@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.review_manager.appeal
 
+import android.R.attr.text
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -267,6 +268,10 @@ fun FilterSearchBar(
     val animRotate = remember { Animatable(0f) }
     var title by remember { mutableStateOf(filterData[initialIndex].desc) }
     var searchText by remember { mutableStateOf(initialSearchText) }
+
+    LaunchedEffect(initialSearchText) {
+        searchText = initialSearchText
+    }
 
     // 当菜单状态改变时触发动画
     LaunchedEffect(expanded.value) {
