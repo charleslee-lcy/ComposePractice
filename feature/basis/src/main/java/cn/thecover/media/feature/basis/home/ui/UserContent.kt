@@ -357,14 +357,14 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                 val isNoInnerTask =
                     homeInfo.innerTaskGoalNum.isEmpty() || homeInfo.innerTaskGoalNum == "0"
 
-                if (isNoInnerTask) {
+                if (isNoInnerTask || !homeInfo.intraAssess) {
                     // 无任务时显示单列
                     Column(
                         modifier = Modifier.weight(2f),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "无任务",
+                            text = if (!homeInfo.intraAssess) "不参与考核" else "无任务",
                             color = MainTextColor,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.SemiBold,
@@ -748,14 +748,14 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                 val isNoInnerTask =
                     homeInfo.innerTaskGoalNum.isEmpty() || homeInfo.innerTaskGoalNum == "0"
 
-                if (isNoInnerTask) {
+                if (isNoInnerTask || !homeInfo.intraAssess) {
                     // 无任务时显示单列
                     Column(
                         modifier = Modifier.weight(2f),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "无任务",
+                            text = if (!homeInfo.intraAssess) "不参与考核" else "无任务",
                             color = MainTextColor,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.SemiBold,
