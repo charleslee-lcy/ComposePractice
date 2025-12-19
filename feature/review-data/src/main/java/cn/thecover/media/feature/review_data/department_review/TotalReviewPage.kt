@@ -120,8 +120,8 @@ internal fun DepartmentReviewScreen(
             it.departmentName,
             it.totalPayment,
             it.totalPersons,
-            it.averageScore,
             it.totalScore,
+            it.averageScore,
             viewmodel.departmentDataFilterState.collectAsState().value.sortField
         )
     }
