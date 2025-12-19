@@ -89,47 +89,47 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
             snackbarHostState.showSnackbar(toastMessage.message)
         }
     }
-    
+
     LaunchedEffect(datePickedState) {
         viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshDepartmentTaskData)
     }
 
     Box(modifier = Modifier.fillMaxWidth()) {
         YBNormalList(
-        items = departmentTaskList,
-        modifier = Modifier.padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        isRefreshing = isRefreshing,
-        isLoadingMore = isLoadingMore,
-        canLoadMore = canLoadMore,
-        header = {
-            DataItemCard {
-                Column {
-                    Text(text = "时间")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    DataItemSelectionView(label = datePickedState.selectedDate, onClick = {
-                        showDatePicker = !showDatePicker
-                    })
+            items = departmentTaskList,
+            modifier = Modifier.padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            isRefreshing = isRefreshing,
+            isLoadingMore = isLoadingMore,
+            canLoadMore = canLoadMore,
+            header = {
+                DataItemCard {
+                    Column {
+                        Text(text = "时间")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        DataItemSelectionView(label = datePickedState.selectedDate, onClick = {
+                            showDatePicker = !showDatePicker
+                        })
+                    }
                 }
-            }
-        },
-        onRefresh = {
-            viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshDepartmentTaskData)
-        },
-        onLoadMore = {
-            viewModel.handleReviewDataIntent(
-                ReviewDataIntent.LoadMoreDepartmentTaskData
+            },
+            onRefresh = {
+                viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshDepartmentTaskData)
+            },
+            onLoadMore = {
+                viewModel.handleReviewDataIntent(
+                    ReviewDataIntent.LoadMoreDepartmentTaskData
+                )
+            },
+        ) { item, position ->
+            TaskReviewItemView(
+                item.departmentName.toString(),
+                item.finishedPersonNum,
+                item.taskGoalNum,
+                item.finishPercent,
+                item.subCoefficient
             )
-        },
-    ) { item, position ->
-        TaskReviewItemView(
-            item.departmentName.toString(),
-            item.finishedPersonNum,
-            item.taskGoalNum,
-            item.finishPercent,
-            item.taskDesc
-        )
-    }
+        }
 
         // Toast 组件
         YBToast(snackBarHostState = snackbarHostState)
@@ -157,7 +157,7 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
  * @param finishedPersons 已完成该任务的人数
  * @param totalPersons 总共需要完成该任务的人数
  * @param itemProgress 任务完成进度（0f 到 1f）
- * @param itemDesc 任务描述，可为空
+ * @param subCoefficient 扣系数，可为空
  */
 @Composable
 fun TaskReviewItemView(
@@ -165,7 +165,7 @@ fun TaskReviewItemView(
     finishedPersons: Int,
     totalPersons: Int,
     itemProgress: Double,
-    itemDesc: String? = null
+    subCoefficient: Double? = null
 ) {
     // 使用卡片容器包装整个内容
     DataItemCard {
@@ -203,13 +203,13 @@ fun TaskReviewItemView(
                     color = SecondaryTextColor
                 )
                 Spacer(Modifier.width(20.dp))
-                if (itemDesc != null) {
-                    Text(
-                        itemDesc,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = SecondaryTextColor
-                    )
-                }
+
+                Text(
+                    "扣系数 $subCoefficient",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = SecondaryTextColor
+                )
+
                 Spacer(Modifier.weight(1f))
                 Text(
                     "任务: $totalPersons 人",
