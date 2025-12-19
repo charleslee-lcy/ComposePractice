@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.review_manager.appeal
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.core.network.BaseUiState
+import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.YBTab
 import cn.thecover.media.core.widget.component.YBTabRow
@@ -60,6 +62,7 @@ internal fun AppealManageScreen(
         FilterType(0, "我的申诉"),
         FilterType(1, "申诉审批")
     )
+    val context = LocalContext.current
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { tabs.size })
     val currentTabIndex = remember { mutableIntStateOf(0) }
     val scope = rememberCoroutineScope()
@@ -99,9 +102,15 @@ internal fun AppealManageScreen(
 
     val appealNewsInfo by viewModel.appealNewsUiState.collectAsStateWithLifecycle()
     LaunchedEffect(appealNewsInfo) {
-        if (appealNewsInfo.isSuccess) {
-            navController.navigateToArchiveDetail(appealNewsInfo.data?.wapUrl ?: "")
-            viewModel.appealNewsUiState.value = BaseUiState()
+        when(appealNewsInfo.status) {
+            HttpStatus.SUCCESS -> {
+                navController.navigateToArchiveDetail(appealNewsInfo.data?.wapUrl ?: "")
+                viewModel.appealNewsUiState.value = BaseUiState()
+            }
+            HttpStatus.ERROR -> {
+                Toast.makeText(context, appealNewsInfo.errorMsg, Toast.LENGTH_SHORT).show()
+            }
+            else -> {}
         }
     }
 
