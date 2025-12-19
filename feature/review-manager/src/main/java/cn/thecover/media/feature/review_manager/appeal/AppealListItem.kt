@@ -135,7 +135,7 @@ fun AppealListItem(
             ) {
                 Text(
                     modifier = Modifier.padding(start = 12.dp, top = 8.dp),
-                    text = "申诉内容：",
+                    text = "申诉理由：",
                     style = TextStyle(
                         color = TertiaryTextColor, fontSize = 14.sp
                     )

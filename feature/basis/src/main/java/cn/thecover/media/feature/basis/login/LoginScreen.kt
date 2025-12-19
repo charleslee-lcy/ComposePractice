@@ -231,17 +231,17 @@ internal fun LoginScreen(
                 }
             )
 
-            Text(
-                text = "找回密码",
-                fontSize = 15.sp,
-                color = MainColor,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .clickableWithoutRipple {
-                        navController.navigateToModifyPassword()
-                    }
-                    .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
-            )
+//            Text(
+//                text = "找回密码",
+//                fontSize = 15.sp,
+//                color = MainColor,
+//                modifier = Modifier
+//                    .align(Alignment.CenterHorizontally)
+//                    .clickableWithoutRipple {
+//                        navController.navigateToModifyPassword()
+//                    }
+//                    .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
+//            )
         }
     }
 

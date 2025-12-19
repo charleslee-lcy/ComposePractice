@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusProperties
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -78,16 +79,18 @@ fun YBInput(
     contentAlignment: Alignment = Alignment.CenterStart
 ) {
     var textVisible by remember { mutableStateOf(!isPassword) }
-    val textState = remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
     val textStyle = textStyle
+    var textState by remember { mutableStateOf(text) }
+
+    LaunchedEffect(text) {
+        textState = text
+    }
 
     LaunchedEffect(Unit) {
         if (showKeyboard) {
             focusRequester.requestFocus()
         }
-
-        textState.value = text
     }
 
     Row(
@@ -95,7 +98,7 @@ fun YBInput(
         verticalAlignment = Alignment.CenterVertically
     ) {
         BasicTextField(
-            value = textState.value,
+            value = textState,
             onValueChange = {
                 val result = if (keyboardOptions.keyboardType == KeyboardType.Number ||
                     keyboardOptions.keyboardType == KeyboardType.Phone ||
@@ -106,12 +109,12 @@ fun YBInput(
                     it
                 }
                 if (result.length > maxLength) {
-                    val cutText = result.substring(0, maxLength)
-                    textState.value = cutText
+                    val cutText = result.take(maxLength)
+                    textState = cutText
                     onValueChange.invoke(cutText)
                     return@BasicTextField
                 }
-                textState.value = result
+                textState = result
                 onValueChange.invoke(result)
             },
             modifier = Modifier
@@ -142,7 +145,7 @@ fun YBInput(
                             )
                             .background(Color.Transparent)
                     ) {
-                        if (textState.value.isEmpty()) {
+                        if (textState.isEmpty()) {
                             Text(
                                 text = hint, style = textStyle.copy(
                                     color = hintTextColor, fontSize = hintTextSize
@@ -157,7 +160,7 @@ fun YBInput(
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
                                 .padding(horizontal = 10.dp),
-                            text = "${textState.value.length}/${maxLength}",
+                            text = "${textState.length}/${maxLength}",
                             fontSize = 10.sp,
                             color = TertiaryTextColor
                         )
@@ -165,15 +168,13 @@ fun YBInput(
                 }
             })
 
-        AnimatedVisibility(textState.value.isNotEmpty()) {
-            if (showVisibleIcon) {
-                IconButton(onClick = { textVisible = !textVisible }) {
-                    Icon(
-                        painterResource(if (textVisible) YBIcons.Custom.PasswordIsHide else YBIcons.Custom.PasswordIsShow),
-                        tint = TertiaryTextColor,
-                        contentDescription = if (textVisible) "隐藏内容" else "查看内容"
-                    )
-                }
+        AnimatedVisibility(showVisibleIcon) {
+            IconButton(onClick = { textVisible = !textVisible }) {
+                Icon(
+                    painterResource(if (textVisible) YBIcons.Custom.PasswordIsHide else YBIcons.Custom.PasswordIsShow),
+                    tint = TertiaryTextColor,
+                    contentDescription = if (textVisible) "隐藏内容" else "查看内容"
+                )
             }
         }
     }

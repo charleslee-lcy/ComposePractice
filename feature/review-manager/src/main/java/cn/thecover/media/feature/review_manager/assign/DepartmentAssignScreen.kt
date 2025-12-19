@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import cn.thecover.media.core.data.DepartmentAssignListData
 import cn.thecover.media.core.data.UpdateAssignRequest
@@ -95,6 +97,7 @@ internal fun DepartmentAssignScreen(
     var monthPicked by remember { mutableIntStateOf(LocalDate.now().monthValue) }
     var assignScore by remember { mutableStateOf("") }
     val updateAssignStatus by viewModel.updateAssignState.collectAsStateWithLifecycle()
+    val departmentRemainState by viewModel.assignRemainStatus.collectAsStateWithLifecycle()
     val loadingState = rememberTipsDialogState()
 
     LaunchedEffect(viewModel.departYear.intValue) {
@@ -162,7 +165,7 @@ internal fun DepartmentAssignScreen(
                 modifier = Modifier.fillMaxWidth(),
                 item = item,
                 onAssignClick = {
-                    checkedItem = item
+                    checkedItem = item.copy()
                     showAssignDialog.value = true
                 }
             )
@@ -186,66 +189,18 @@ internal fun DepartmentAssignScreen(
             request.userId = checkedItem?.userId ?: 0
             request.departmentId = checkedItem?.departmentId ?: 0
             request.year = viewModel.departYear.intValue.toString()
-            request.janBudget = if (monthPicked == 1) {
-                assignScore
-            } else {
-                checkedItem?.janBudget ?: ""
-            }
-            request.febBudget = if (monthPicked == 2) {
-                assignScore
-            } else {
-                checkedItem?.febBudget ?: ""
-            }
-            request.marBudget = if (monthPicked == 3) {
-                assignScore
-            } else {
-                checkedItem?.marBudget ?: ""
-            }
-            request.aprBudget = if (monthPicked == 4) {
-                assignScore
-            } else {
-                checkedItem?.aprBudget ?: ""
-            }
-            request.mayBudget = if (monthPicked == 5) {
-                assignScore
-            } else {
-                checkedItem?.mayBudget ?: ""
-            }
-            request.junBudget = if (monthPicked == 6) {
-                assignScore
-            } else {
-                checkedItem?.junBudget ?: ""
-            }
-            request.julBudget = if (monthPicked == 7) {
-                assignScore
-            } else {
-                checkedItem?.julBudget ?: ""
-            }
-            request.augBudget = if (monthPicked == 8) {
-                assignScore
-            } else {
-                checkedItem?.augBudget ?: ""
-            }
-            request.sepBudget = if (monthPicked == 9) {
-                assignScore
-            } else {
-                checkedItem?.sepBudget ?: ""
-            }
-            request.octBudget = if (monthPicked == 10) {
-                assignScore
-            } else {
-                checkedItem?.octBudget ?: ""
-            }
-            request.novBudget = if (monthPicked == 11) {
-                assignScore
-            } else {
-                checkedItem?.novBudget ?: ""
-            }
-            request.decBudget = if (monthPicked == 12) {
-                assignScore
-            } else {
-                checkedItem?.decBudget ?: ""
-            }
+            request.janBudget = checkedItem?.janBudget ?: "0"
+            request.febBudget = checkedItem?.febBudget ?: "0"
+            request.marBudget = checkedItem?.marBudget ?: "0"
+            request.aprBudget = checkedItem?.aprBudget ?: "0"
+            request.mayBudget = checkedItem?.mayBudget ?: "0"
+            request.junBudget = checkedItem?.junBudget ?: "0"
+            request.julBudget = checkedItem?.julBudget ?: "0"
+            request.augBudget = checkedItem?.augBudget ?: "0"
+            request.sepBudget = checkedItem?.sepBudget ?: "0"
+            request.octBudget = checkedItem?.octBudget ?: "0"
+            request.novBudget = checkedItem?.novBudget ?: "0"
+            request.decBudget = checkedItem?.decBudget ?: "0"
             viewModel.updateDepartmentAssign(request)
         }
     ) {
@@ -255,6 +210,9 @@ internal fun DepartmentAssignScreen(
 
         LaunchedEffect(Unit) {
             viewModel.getCannotEditMonth()
+            checkedItem?.apply {
+                assignScore = getScoreByPickedMonth(monthPicked, this)
+            }
         }
 
         Column(
@@ -325,6 +283,7 @@ internal fun DepartmentAssignScreen(
                             .width(80.dp)
                         ) {
                             YBInput(
+                                text = assignScore,
                                 textStyle = TextStyle(
                                     fontSize = 14.sp,
                                     color = MainTextColor
@@ -337,6 +296,7 @@ internal fun DepartmentAssignScreen(
                                 ),
                                 onValueChange = {
                                     assignScore = it
+                                    setScoreByPickedMonth(monthPicked, it.ifEmpty { "0" }, this@apply)
                                 }
                             )
                         }
@@ -354,7 +314,7 @@ internal fun DepartmentAssignScreen(
                     fontSize = 14.sp,
                     color = MainTextColor
                 )
-                DepartmentAnnualAssign(this, cannotEditMonthStatus)
+                DepartmentAnnualAssign(departmentRemainState)
                 Spacer(modifier = Modifier.height(15.dp))
             }
         }
@@ -390,6 +350,11 @@ internal fun DepartmentAssignScreen(
             value = months.indexOf(monthPicked),
             onChange = {
                 monthPicked = months[it]
+                checkedItem?.let { data ->
+                    assignScore = getScoreByPickedMonth(monthPicked, data)
+
+                    focusManager.moveFocus(FocusDirection.Right)
+                }
             },
             onCancel = {
                 showMonthPicker = false
@@ -398,6 +363,42 @@ internal fun DepartmentAssignScreen(
     }
 
     YBLoadingDialog(loadingState, enableDismiss = true, onDismissRequest = { loadingState.hide() })
+}
+
+private fun getScoreByPickedMonth(monthPicked: Int, data: DepartmentAssignListData): String {
+    return formatDecimalString(when (monthPicked) {
+        1 -> data.janBudget
+        2 -> data.febBudget
+        3 -> data.marBudget
+        4 -> data.aprBudget
+        5 -> data.mayBudget
+        6 -> data.junBudget
+        7 -> data.julBudget
+        8 -> data.augBudget
+        9 -> data.sepBudget
+        10 -> data.octBudget
+        11 -> data.novBudget
+        12 -> data.decBudget
+        else -> "0"
+    })
+}
+
+private fun setScoreByPickedMonth(monthPicked: Int, score: String, data: DepartmentAssignListData) {
+    when (monthPicked) {
+        1 -> data.janBudget = score
+        2 -> data.febBudget = score
+        3 -> data.marBudget = score
+        4 -> data.aprBudget = score
+        5 -> data.mayBudget = score
+        6 -> data.junBudget = score
+        7 -> data.julBudget = score
+        8 -> data.augBudget = score
+        9 -> data.sepBudget = score
+        10 -> data.octBudget = score
+        11 -> data.novBudget = score
+        12 -> data.decBudget = score
+        else -> {}
+    }
 }
 
 @Composable
@@ -500,8 +501,8 @@ private fun DepartmentAssignHeader(viewModel: ReviewManageViewModel, onSearch: (
         visible = showDatePicker,
         type = DateType.YEAR,
         value = LocalDate.of(viewModel.departYear.intValue, 1, 1),
-        start = LocalDate.of(LocalDate.now().year - 5, 1, 1),
-        end = LocalDate.of(LocalDate.now().year + 4, 1, 1),
+        start = LocalDate.of(2025, 1, 1),
+        end = LocalDate.now().plusYears(10),
         onCancel = { showDatePicker = false },
         onChange = {
             viewModel.departYear.intValue = it.year
