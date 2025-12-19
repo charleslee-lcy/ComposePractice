@@ -100,7 +100,8 @@ internal fun ManuscriptReviewPage(
     val data by viewModel.manuscriptReviewPageState.collectAsState()
     // 计算splitsNum为data.dataList中第一个score等于0的数据的索引
     val splitsNum = remember(data.dataList) {
-        data.dataList?.indexOfFirst { it.id.toLong() == data.firstCutNewsId }?.let {
+        if (viewModel.manuscriptReviewFilterState.value.sortField.contains("分割线以下")) 0 else data.dataList?.indexOfFirst { it.id.toLong() == data.firstCutNewsId }
+            ?.let {
             if (it == -1) data.dataList?.size ?: 0 else it
         } ?: 0
     }
@@ -302,9 +303,12 @@ private fun TotalRankingItem(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                data.score.toString(),
+                                if (data.score % 1 == 0.0) data.score.toInt()
+                                    .toString() else data.score.toString() + if (rank >= rankLine) "(0)" else "",
                                 style = MaterialTheme.typography.titleLarge,
-                                color = MaterialTheme.colorScheme.primary
+                                color = if (rank >= rankLine) MaterialTheme.colorScheme.primary.copy(
+                                    0.6f
+                                ) else MaterialTheme.colorScheme.primary
                             )
 
                             Spacer(modifier = Modifier.width(8.dp))
@@ -372,7 +376,7 @@ private fun ItemFoldedView(
             Text("基础分", style = MaterialTheme.typography.bodySmall, color = SecondaryTextColor)
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                "$basicScore",
+                if (basicScore % 1 == 0.0) basicScore.toInt().toString() else basicScore.toString(),
                 style = MaterialTheme.typography.titleSmall,
                 color = MainTextColor.copy(0.5f)
             )
@@ -381,7 +385,8 @@ private fun ItemFoldedView(
             Text("质量分", style = MaterialTheme.typography.bodySmall, color = SecondaryTextColor)
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                "$qualityScore",
+                if (qualityScore % 1 == 0.0) qualityScore.toInt()
+                    .toString() else qualityScore.toString(),
                 style = MaterialTheme.typography.titleSmall,
                 color = MainTextColor.copy(0.5f)
             )
@@ -390,7 +395,8 @@ private fun ItemFoldedView(
             Text("传播分", style = MaterialTheme.typography.bodySmall, color = SecondaryTextColor)
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                "$diffusionScore",
+                if (diffusionScore % 1 == 0.0) diffusionScore.toInt()
+                    .toString() else diffusionScore.toString(),
                 style = MaterialTheme.typography.titleSmall,
                 color = MainTextColor.copy(0.5f)
             )
@@ -485,8 +491,9 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
         visible = showDatePicker,
         type = DateType.MONTH,
         onCancel = { showDatePicker = false },
-        end = LocalDate.now(),
-        start = LocalDate.of(2024, 1, 1),
+        end = LocalDate.now().plusYears(10),
+        start = LocalDate.of(2025, 1, 1),
+        value = LocalDate.now().minusMonths(1),
         onChange = {
             viewModel.handleUIIntent(ReviewUIIntent.UpdateManuscriptReviewFilter(time = "${it.year}年${it.monthValue}月"))
         }
