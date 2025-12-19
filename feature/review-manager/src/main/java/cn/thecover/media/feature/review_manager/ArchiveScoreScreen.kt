@@ -227,7 +227,14 @@ fun ArchiveScoreScreen(
                 .fillMaxWidth(),
             item = item,
             onDetailClick = {
-                navController.navigateToArchiveDetail(item.wapUrl)
+                if (item.status == 4) {
+                    navController.navigateToArchiveDetail(item.wapUrl)
+                } else {
+                    navController.navigateToArchiveDetail(htmlData = item.content, imgList = listOf(
+                        item.img43,
+                        item.img169
+                    ))
+                }
             },
             onScoreClick = {
                 checkedItem = item
