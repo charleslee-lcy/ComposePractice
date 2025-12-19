@@ -1,6 +1,5 @@
 package cn.thecover.media.feature.basis.mine.modifypassword
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -199,15 +198,15 @@ fun ModifyPasswordInput(textState: MutableState<String>, label: String, hint: St
                             }
                             innerTextField()
                         }
-                        AnimatedVisibility(textState.value.isNotEmpty()) {
-                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                 Icon(
                                     painterResource(if (passwordVisible) YBIcons.Custom.PasswordIsShow else YBIcons.Custom.PasswordIsHide),
                                     tint = TertiaryTextColor,
                                     contentDescription = if (passwordVisible) "隐藏密码" else "查看密码"
                                 )
                             }
-                        }
+
                     }
                 }
             }
