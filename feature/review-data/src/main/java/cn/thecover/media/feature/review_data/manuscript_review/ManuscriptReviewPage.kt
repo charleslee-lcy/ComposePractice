@@ -48,7 +48,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -214,12 +213,29 @@ internal fun ManuscriptReviewPage(
             showEditScorePop.value = false
 
             if (textFiledState.isNotEmpty()) {
-                viewModel.handleReviewDataIntent(
-                    ReviewDataIntent.EditManuscriptScore(
-                        editId,
+                try {
+                    // 确保输入可以正确转换为Double类型
+                    val score = if (textFiledState.endsWith(".")) {
+                        // 如果以小数点结尾，添加0
+                        "${textFiledState}0".toDouble()
+                    } else {
                         textFiledState.toDouble()
+                    }
+                    viewModel.handleReviewDataIntent(
+                        ReviewDataIntent.EditManuscriptScore(
+                            editId,
+                            score
+                        )
                     )
-                )
+                } catch (e: NumberFormatException) {
+                    // 处理可能的数字格式异常
+                    viewModel.handleReviewDataIntent(
+                        ReviewDataIntent.EditManuscriptScore(
+                            editId,
+                            0.0
+                        )
+                    )
+                }
             }
             textFiledState = ""
         },
@@ -232,7 +248,32 @@ internal fun ManuscriptReviewPage(
                 YBInput(
                     text = textFiledState,
                     onValueChange = {
-                        textFiledState = it
+                        // 处理小数输入，限制为小数点后两位
+                        if (it.isEmpty()) {
+                            textFiledState = ""
+                        } else if (it == ".") {
+                            // 单独的小数点，转换为"0."
+                            textFiledState = "0."
+                        } else if (it.matches(Regex("^\\d+\\.\\d{0,2}$")) || it.matches(Regex("^\\d+$"))) {
+                            // 验证是否为有效的数字格式（最多两位小数）
+                            textFiledState = it
+                        } else if (it.contains(".")) {
+                            // 如果包含小数点，但格式不正确，截取小数点后两位
+                            val parts = it.split(".")
+                            if (parts.size >= 2) {
+                                val integerPart = parts[0].ifEmpty { "0" }
+                                val decimalPart = parts[1].take(2)
+                                textFiledState = "$integerPart.$decimalPart"
+                            } else {
+                                textFiledState = parts[0]
+                            }
+                        } else {
+                            // 其他情况只保留数字
+                            val digitsOnly = it.filter { it.isDigit() }
+                            if (digitsOnly.isNotEmpty()) {
+                                textFiledState = digitsOnly
+                            }
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -246,9 +287,7 @@ internal fun ManuscriptReviewPage(
                             PageBackgroundColor,
                             shape = YBShapes.medium
                         ),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number
-                    ),
+                    keyboardOptions = KeyboardOptions.Default,
                     hint = "请输入稿分",
                     maxLines = 1,
                     textStyle = TextStyle(
