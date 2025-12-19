@@ -62,7 +62,7 @@ fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel) {
         manus.value = data.dataList ?: emptyList()
         isLoadingMore.value = data.isLoading
         isRefreshing.value = data.isRefreshing
-        canLoadMore.value = false
+        canLoadMore.value = data.hasNextPage
     }
 
     LaunchedEffect(filterState) {
@@ -83,10 +83,10 @@ fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel) {
             ManuscriptTopRankingHeader(viewModel, filterState)
         },
         onLoadMore = {
-            viewModel.handleReviewDataIntent(ReviewDataIntent.LoadMoreManuscriptReviewData)
+            viewModel.handleReviewDataIntent(ReviewDataIntent.LoadMoreManuscriptTopRanking)
         },
         onRefresh = {
-            viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptReviewData)
+            viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptTopRanking)
         }
     ) { item, index ->
         ManuscriptTopRankingItem(
