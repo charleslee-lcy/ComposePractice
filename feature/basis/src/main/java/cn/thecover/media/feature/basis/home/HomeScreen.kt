@@ -236,7 +236,6 @@ internal fun HomeScreen(
                 }
 
                 // 只有当两个数据列表都不为空时才显示稿件TOP榜单
-                if (homeManuscript.dataList?.isNotEmpty() == true && homeManuscriptDiffusion.dataList?.isNotEmpty() == true) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -296,7 +295,7 @@ internal fun HomeScreen(
                     ManuscriptTopRankingItem(homeManuscript, homeManuscriptDiffusion, viewModel)
                 }
 
-            }
+
         }
     }
 

@@ -116,8 +116,9 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
         visible = showDatePicker,
         type = DateType.MONTH,
         onCancel = { showDatePicker = false },
-        end = LocalDate.now(),
-        start = LocalDate.of(2024, 1, 1),
+        end = LocalDate.now().plusYears(10),
+        start = LocalDate.of(2025, 1, 1),
+        value = LocalDate.now().minusMonths(1),
         onChange = {
             viewModel.handleUIIntent(ReviewUIIntent.UpdateDepartmentTaskFilter("${it.year}年${it.monthValue}月"))
         }

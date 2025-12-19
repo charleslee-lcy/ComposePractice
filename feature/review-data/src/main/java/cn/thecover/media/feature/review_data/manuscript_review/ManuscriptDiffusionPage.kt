@@ -1,6 +1,7 @@
 package cn.thecover.media.feature.review_data.manuscript_review
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -63,6 +65,7 @@ import java.time.LocalDate
  */
 @Composable
 fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
+    val focusManager = LocalFocusManager.current
 
     // 模拟稿件传播数据列表
     val data by viewModel.manuscriptReviewDiffusionPageState.collectAsState()
@@ -86,7 +89,8 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     YBNormalList(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = 12.dp)
+            .clickable { focusManager.clearFocus() },
         items = manus,
         verticalArrangement = Arrangement.spacedBy(12.dp),
         header = {
@@ -125,7 +129,7 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
         }
     ) { item, index ->
 
-        DiffusionItem(item, filter.sortField)
+        DiffusionItem(index + 1, item, filter.sortField)
     }
 
 }
@@ -142,85 +146,97 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
  * @param filterChoice 当前选择的排序字段
  */
 @Composable
-private fun DiffusionItem(data: DiffusionDataEntity, filterChoice: String) {
+private fun DiffusionItem(rank: Int, data: DiffusionDataEntity, filterChoice: String) {
+    // 控制展开/折叠状态
+    var isExpanded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(data) {
+        isExpanded = false
+    }
+
     // 使用排名卡片包装整个内容区域
     DataItemCard {
-        DataItemRankingRow(ranking = data.rank) {
+        DataItemRankingRow(ranking = rank) {
             // 可折叠的内容区域，包含基础信息和详细数据
-            ExpandItemColumn(offset = -12, content = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    // 显示稿件头部信息：标题、作者、编辑
-                    ManuScriptItemHeader(
-                        title = data.title,
-                        author = data.reporter.joinToString("、") { it.name },
-                        editor = data.editor.joinToString("、") { it.name },
-                    )
-                    // 显示传播评分数据行：公式传播分和最终传播分
-                    PrimaryItemScoreRow(
-                        items = arrayOf(
-                            Triple(
-                                "公式传播分",
-                                data.formulaSpreadScore.toString(),
-                                if (filterChoice.contains("公式传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
-                            Triple(
-                                "最终传播分",
-                                data.spreadScore.toString(),
-                                if (filterChoice.contains("最终传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
+            ExpandItemColumn(
+                offset = -12,
+                expand = isExpanded,
+                onExpandChange = { isExpanded = it },
+                content = {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        // 显示稿件头部信息：标题、作者、编辑
+                        ManuScriptItemHeader(
+                            title = data.title,
+                            author = data.reporter.joinToString("、") { it.name },
+                            editor = data.editor.joinToString("、") { it.name },
                         )
-                    )
-                }
-            }, foldContent = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    // 显示转载数据：核心媒体、一级媒体、二级媒体转载数
-                    PrimaryItemScoreRow(
-                        items = arrayOf(
-                            Triple(
-                                "核心媒体转载数",
-                                data.coreMediaReprintCount.toString(),
-                                if (filterChoice.contains("核心媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
-                            Triple(
-                                "一级媒体转载数",
-                                data.level1MediaReprintCount.toString(),
-                                if (filterChoice.contains("一级媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
-                            Triple(
-                                "二级媒体转载数",
-                                data.level2MediaReprintCount.toString(),
-                                if (filterChoice.contains("二级媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
+                        // 显示传播评分数据行：公式传播分和最终传播分
+                        PrimaryItemScoreRow(
+                            items = arrayOf(
+                                Triple(
+                                    "公式传播分",
+                                    if (data.formulaSpreadScore % 1 == 0.0) data.formulaSpreadScore.toInt()
+                                        .toString() else data.formulaSpreadScore.toString(),
+                                    if (filterChoice.contains("公式传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                                Triple(
+                                    "最终传播分",
+                                    if (data.spreadScore % 1 == 0.0) data.spreadScore.toInt()
+                                        .toString() else data.spreadScore.toString(),
+                                    if (filterChoice.contains("最终传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                            )
                         )
-                    )
-                    // 显示用户互动数据：阅读数、分享数、点赞数、评论数
-                    PrimaryItemScoreRow(
-                        items = arrayOf(
-                            Triple(
-                                "阅读数",
-                                data.readCount.toString(),
-                                if (filterChoice.contains("阅读数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
-                            Triple(
-                                "分享数",
-                                data.shareCount.toString(),
-                                if (filterChoice.contains("分享数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
-                            Triple(
-                                "点赞数",
-                                data.likeCount.toString(),
-                                if (filterChoice.contains("点赞数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
-                            Triple(
-                                "评论数",
-                                data.commentCount.toString(),
-                                if (filterChoice.contains("评论数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
+                    }
+                }, foldContent = {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        // 显示转载数据：核心媒体、一级媒体、二级媒体转载数
+                        PrimaryItemScoreRow(
+                            items = arrayOf(
+                                Triple(
+                                    "核心媒体转载数",
+                                    data.coreMediaReprintCount.toString(),
+                                    if (filterChoice.contains("核心媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                                Triple(
+                                    "一级媒体转载数",
+                                    data.level1MediaReprintCount.toString(),
+                                    if (filterChoice.contains("一级媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                                Triple(
+                                    "二级媒体转载数",
+                                    data.level2MediaReprintCount.toString(),
+                                    if (filterChoice.contains("二级媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                            )
                         )
-                    )
-                }
-
-            })
+                        // 显示用户互动数据：阅读数、分享数、点赞数、评论数
+                        PrimaryItemScoreRow(
+                            items = arrayOf(
+                                Triple(
+                                    "阅读数",
+                                    data.readCount.toString(),
+                                    if (filterChoice.contains("阅读数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                                Triple(
+                                    "分享数",
+                                    data.shareCount.toString(),
+                                    if (filterChoice.contains("分享数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                                Triple(
+                                    "点赞数",
+                                    data.likeCount.toString(),
+                                    if (filterChoice.contains("点赞数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                                Triple(
+                                    "评论数",
+                                    data.commentCount.toString(),
+                                    if (filterChoice.contains("评论数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                            )
+                        )
+                    }
+                })
         }
     }
 }
@@ -307,10 +323,21 @@ private fun ManuscriptDiffusionHeader(
                 data = selectSearchChoice, label = "请输入搜索内容", dataList = listOf(
                     "稿件名称", "稿件 ID", "记者"
                 ), onValueChange = { valueType, value ->
+                    // 过滤掉文本末尾的换行符，防止换行字符被带到接口
+                    val filteredValue = value.replace(Regex("[\\r\\n]+"), "")
                     viewModel.handleUIIntent(
                         ReviewUIIntent.UpdateManuscriptDiffusionFilter(
                             searchType = valueType,
-                            searchText = value
+                            searchText = filteredValue
+                        )
+                    )
+                }, onSearch = { valueType, value ->
+                    // 过滤掉文本末尾的换行符，防止换行字符被带到接口
+                    val filteredValue = value.replace(Regex("[\\r\\n]+"), "")
+                    viewModel.handleUIIntent(
+                        ReviewUIIntent.UpdateManuscriptDiffusionFilter(
+                            searchType = valueType,
+                            searchText = filteredValue
                         )
                     )
                 })
@@ -320,10 +347,11 @@ private fun ManuscriptDiffusionHeader(
     // 日期选择器弹窗组件
     YBDatePicker(
         visible = showDatePicker,
-        end = LocalDate.now(),
-        start = LocalDate.of(2024, 1, 1),
+        end = LocalDate.now().plusYears(10),
+        start = LocalDate.of(2025, 1, 1),
         type = DateType.MONTH,
         onCancel = { showDatePicker = false },
+        value = LocalDate.now().minusMonths(1),
         onChange = {
             viewModel.handleUIIntent(ReviewUIIntent.UpdateManuscriptDiffusionFilter(time = "${it.year}年${it.monthValue}月"))
         }
@@ -334,9 +362,11 @@ private fun ManuscriptDiffusionHeader(
 @Preview
 private fun ManuscriptDiffusionHeaderPreview() {
     YBTheme {
-        ManuscriptDiffusionPage(viewModel(
-            factory = PreviewReviewDataViewModelFactory()
-        ))
+        ManuscriptDiffusionPage(
+            viewModel(
+                factory = PreviewReviewDataViewModelFactory()
+            )
+        )
     }
 
 }

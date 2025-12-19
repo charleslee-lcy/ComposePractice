@@ -38,7 +38,7 @@ class ReviewDataRepository @Inject constructor(
         return try {
             val response = reviewApiService.getManuscriptReviewData(
                 ManuscriptReviewRequest(
-                    newsId = id,
+                    ynNewsId = id,
                     newsTitle = title,
                     rankType = rankType,
                     reporterName = reporter,
@@ -125,7 +125,7 @@ class ReviewDataRepository @Inject constructor(
         return try {
             val response = reviewApiService.getManuscriptDiffusionData(
                 ManuscriptDiffusionRequest(
-                    newsId = id,
+                    ynNewsId = id,
                     newsTitle = title,
                     sortConditions = listOf(
                         SortConditions.putSortConditions(sortConditions)

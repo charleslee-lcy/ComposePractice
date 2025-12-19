@@ -55,14 +55,14 @@ fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel) {
     val manus = remember { mutableStateOf(data.dataList ?: emptyList()) }
     val isLoadingMore = remember { mutableStateOf(data.isLoading) }
     val isRefreshing = remember { mutableStateOf(data.isRefreshing) }
-    val canLoadMore = remember { mutableStateOf(data.hasNextPage) }
+    val canLoadMore = remember { mutableStateOf(false) }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(data) {
         manus.value = data.dataList ?: emptyList()
         isLoadingMore.value = data.isLoading
         isRefreshing.value = data.isRefreshing
-        canLoadMore.value = data.hasNextPage
+        canLoadMore.value = false
     }
 
     LaunchedEffect(filterState) {
@@ -118,29 +118,36 @@ private fun ManuscriptTopRankingItem(
                 modifier = Modifier,
             ) {
                 // 显示稿件头部信息（标题、作者、编辑）
-                ManuScriptItemHeader(title = data.title, author = data.reporter.joinToString(", ") { it.name })
+                ManuScriptItemHeader(
+                    title = data.title,
+                    author = data.reporter.joinToString("、 ") { it.name },
+                )
                 Spacer(Modifier.height(8.dp))
                 // 显示稿件的各项评分数据行
                 PrimaryItemScoreRow(
                     items = arrayOf(
                         Triple(
                             "总分",
-                            data.score.toString(),
+                            if ((data.score % 1).toFloat() == 0f) data.score.toInt()
+                                .toString() else data.score.toString(),
                             if (filterChoice.contains("总分")) ScoreItemType.PRIMARY_WITH_BORDER else ScoreItemType.PRIMARY
                         ),
                         Triple(
                             "基础分",
-                            data.basicScore.toString(),
+                            if ((data.basicScore % 1).toFloat() == 0f) data.basicScore.toInt()
+                                .toString() else data.basicScore.toString(),
                             if (filterChoice.contains("基础分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                         ),
                         Triple(
                             "传播分",
-                            data.diffusionScore.toString(),
+                            if ((data.diffusionScore % 1).toFloat() == 0f) data.diffusionScore.toInt()
+                                .toString() else data.diffusionScore.toString(),
                             if (filterChoice.contains("传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                         ),
                         Triple(
                             "质量分",
-                            data.qualityScore.toString(),
+                            if ((data.qualityScore % 1).toFloat() == 0f) data.qualityScore.toInt()
+                                .toString() else data.qualityScore.toString(),
                             if (filterChoice.contains("质量分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                         ),
                     )
@@ -215,8 +222,9 @@ private fun ManuscriptTopRankingHeader(
         visible = showDatePicker,
         type = DateType.MONTH,
         onCancel = { showDatePicker = false },
-        end = LocalDate.now(),
-        start = LocalDate.of(2024, 1, 1),
+        end = LocalDate.now().plusYears(10),
+        start = LocalDate.of(2025, 1, 1),
+        value = LocalDate.now().minusMonths(1),
         onChange = {
             viewModel.handleUIIntent(
                 ReviewUIIntent.UpdateManuscriptTopFilter(
