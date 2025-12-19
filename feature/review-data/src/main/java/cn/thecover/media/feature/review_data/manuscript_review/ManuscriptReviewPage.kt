@@ -482,7 +482,16 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
                             searchText = value
                         )
                     )
-                })
+                },
+                onSearch = { valueType, value ->
+                    viewModel.handleUIIntent(
+                        ReviewUIIntent.UpdateManuscriptReviewFilter(
+                            searchType = valueType,
+                            searchText = value
+                        )
+                    )
+                },
+            )
         }
     }
 
