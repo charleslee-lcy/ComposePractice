@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.basis.home.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,26 +54,17 @@ internal fun ManuscriptTopRankingItem(
     homeManuscriptDiffusion: PaginatedResult<DiffusionDataEntity>,
     viewModel: HomeViewModel
 ) {
-    // 根据数据是否为空动态创建标题和页面
+    // 始终显示 tab，无论数据是否为空
     val availableTabs = mutableListOf<String>()
     val availablePages = mutableListOf<@Composable () -> Unit>()
 
-    // 添加稿件TOP10 tab（如果有数据）
-    if (homeManuscript.dataList?.isNotEmpty() == true) {
-        availableTabs.add("稿件TOP10")
-        availablePages.add { TopManuscriptPage(viewModel) }
-    }
+    // 添加稿件TOP10 tab
+    availableTabs.add("稿件TOP10")
+    availablePages.add { TopManuscriptPage(viewModel, homeManuscript) }
 
-    // 添加稿件传播力TOP10 tab（如果有数据）
-    if (homeManuscriptDiffusion.dataList?.isNotEmpty() == true) {
-        availableTabs.add("稿件传播力TOP10")
-        availablePages.add { TopDiffusionPage(viewModel) }
-    }
-
-    // 如果没有任何数据，不显示任何内容
-    if (availableTabs.isEmpty()) {
-        return
-    }
+    // 添加稿件传播力TOP10 tab
+    availableTabs.add("稿件传播力TOP10")
+    availablePages.add { TopDiffusionPage(viewModel, homeManuscriptDiffusion) }
     
     val currentIndex = remember { mutableIntStateOf(0) }
     Card(
@@ -79,7 +72,7 @@ internal fun ManuscriptTopRankingItem(
             .fillMaxWidth()
             .padding(start = 15.dp, end = 15.dp, bottom = 15.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(12.dp),
     ) {
         Column {
@@ -93,9 +86,9 @@ internal fun ManuscriptTopRankingItem(
                         onClick = {
                             currentIndex.intValue = index
                             // 切换 tab 时调用相应接口
-                            if (index == 0 && availableTabs.contains("稿件TOP10")) {
+                            if (index == 0) {
                                 viewModel.getHomeManuscript()
-                            } else if (index == 1 && availableTabs.contains("稿件传播力TOP10")) {
+                            } else if (index == 1) {
                                 viewModel.getHomeManuscriptDiffusion()
                             }
                         },
@@ -111,17 +104,38 @@ internal fun ManuscriptTopRankingItem(
     }
 }
 
+@SuppressLint("UNUSED_PARAMETER")
 @Composable
-private fun TopManuscriptPage(viewModel: HomeViewModel) {
+private fun TopManuscriptPage(
+    viewModel: HomeViewModel,
+    _homeManuscript: PaginatedResult<ManuscriptReviewDataEntity>
+) {
     Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
 
         val uiState by viewModel.homeManuscriptUiState.collectAsState()
+
+        // 如果数据为空，显示暂无数据提示
+        if (uiState.dataList?.isEmpty() != false) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 40.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "暂无数据",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = SecondaryTextColor
+                )
+            }
+            return@Column
+        }
+        
         uiState.dataList?.forEachIndexed { index, item ->
             DataItemRankingRow(index + 1) {
                 ManuScriptItemHeader(
                     item.title,
                     author = item.reporter.joinToString("、") { it.name },
-                    editor = item.reporter.joinToString("、") { it.name },
                 )
             }
 
@@ -161,10 +175,31 @@ private fun TopManuscriptPage(viewModel: HomeViewModel) {
     }
 }
 
+@SuppressLint("UNUSED_PARAMETER")
 @Composable
-private fun TopDiffusionPage(viewModel: HomeViewModel) {
+private fun TopDiffusionPage(
+    viewModel: HomeViewModel,
+    _homeManuscriptDiffusion: PaginatedResult<DiffusionDataEntity>
+) {
     val uiState by viewModel.homeManuscriptDiffusionUiState.collectAsState()
     Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+
+        // 如果数据为空，显示暂无数据提示
+        if (uiState.dataList?.isEmpty() != false) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 40.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "暂无数据",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = SecondaryTextColor
+                )
+            }
+            return@Column
+        }
 
         uiState.dataList?.forEachIndexed { index, item ->
 
@@ -172,7 +207,6 @@ private fun TopDiffusionPage(viewModel: HomeViewModel) {
                 ManuScriptItemHeader(
                     item.title,
                     author = item.reporter.joinToString("、") { it.name },
-                    editor = item.editor.joinToString("、") { it.name },
                 )
             }
 
@@ -201,8 +235,6 @@ private fun TopDiffusionPage(viewModel: HomeViewModel) {
                 )
             }
         }
-
-
     }
 }
 
@@ -235,7 +267,6 @@ internal fun DataItemRankingRow(ranking: Int = 0, content: @Composable () -> Uni
 internal fun ManuScriptItemHeader(
     title: String = "",
     author: String = "",
-    editor: String = "",
 ) {
     // 稿件名称
     Column {

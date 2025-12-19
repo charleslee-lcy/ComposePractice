@@ -212,6 +212,7 @@ class ReviewDataViewModel @Inject constructor(
                     intent.state?.let { newState = newState.copy(sortField = it) }
                     intent.searchType?.let { newState = newState.copy(searchField = it) }
                     intent.searchText?.let { newState = newState.copy(searchText = it) }
+                    newState = newState.copy(time = System.currentTimeMillis())
                     newState
                 }
             }
@@ -223,6 +224,7 @@ class ReviewDataViewModel @Inject constructor(
                     intent.state?.let { newState = newState.copy(sortField = it) }
                     intent.searchType?.let { newState = newState.copy(searchField = it) }
                     intent.searchText?.let { newState = newState.copy(searchText = it) }
+                    newState = newState.copy(time = System.currentTimeMillis())
                     newState
                 }
             }

@@ -11,5 +11,6 @@ data class ManuscriptReviewFilterState(
     override val selectedDate: String = "${if (LocalDate.now().monthValue == 1) LocalDate.now().year - 1 else LocalDate.now().year}年${if (LocalDate.now().monthValue == 1) 12 else LocalDate.now().monthValue - 1}月",
     val sortField: String = "",
     val searchField: String = "",
-    val searchText: String = ""
+    val searchText: String = "",
+    val time: Long = System.currentTimeMillis()
 ): FilterState()
