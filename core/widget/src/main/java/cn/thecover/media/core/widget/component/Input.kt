@@ -171,7 +171,7 @@ fun YBInput(
         AnimatedVisibility(showVisibleIcon) {
             IconButton(onClick = { textVisible = !textVisible }) {
                 Icon(
-                    painterResource(if (textVisible) YBIcons.Custom.PasswordIsHide else YBIcons.Custom.PasswordIsShow),
+                    painterResource(if (textVisible) YBIcons.Custom.PasswordIsShow else YBIcons.Custom.PasswordIsHide),
                     tint = TertiaryTextColor,
                     contentDescription = if (textVisible) "隐藏内容" else "查看内容"
                 )
