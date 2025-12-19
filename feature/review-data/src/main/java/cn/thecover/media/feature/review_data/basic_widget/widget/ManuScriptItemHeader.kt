@@ -44,7 +44,7 @@ internal fun ManuScriptItemHeader(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
                     ) {
                         Text(
                             "记者：${author}",
@@ -54,7 +54,7 @@ internal fun ManuScriptItemHeader(
                             overflow = TextOverflow.Ellipsis
                         )
                     }
-                    Spacer(Modifier.width(12.dp))
+                    Spacer(Modifier.width(32.dp))
                     Column(
                         modifier = Modifier.weight(1f)
                     ) {

@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
@@ -58,6 +60,7 @@ import androidx.compose.ui.util.fastCoerceAtLeast
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cn.thecover.media.core.data.ManuscriptReviewDataEntity
 import cn.thecover.media.core.widget.R
+import cn.thecover.media.core.widget.component.ItemScoreRow
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.YBNormalList
@@ -71,7 +74,6 @@ import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
-import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
 import cn.thecover.media.core.widget.theme.YBTheme
@@ -381,6 +383,12 @@ private fun TotalRankingItem(
 
                             Spacer(modifier = Modifier.weight(1f))
                             YBButton(
+                                shape = RoundedCornerShape(2.dp),
+                                modifier = Modifier.padding(top = 4.dp),
+                                contentPadding = PaddingValues(
+                                    horizontal = 12.dp,
+                                    vertical = 8.5.dp
+                                ),
                                 content = {
                                     Text(
                                         "修改稿分",
@@ -397,6 +405,7 @@ private fun TotalRankingItem(
                 },
                 foldContent = {
                     ItemFoldedView(
+                        addSubScore = data.addSubScore,
                         basicScore = data.basicScore,
                         qualityScore = data.qualityScore,
                         diffusionScore = data.diffusionScore
@@ -410,6 +419,7 @@ private fun TotalRankingItem(
 
 @Composable
 private fun ItemFoldedView(
+    addSubScore: Double = 0.0,
     basicScore: Double = 0.0,
     qualityScore: Double = 0.0,
     diffusionScore: Double = 0.0
@@ -417,41 +427,38 @@ private fun ItemFoldedView(
     Column {
         HorizontalDivider(
             modifier = Modifier
-                .padding(bottom = 15.dp)
+                .padding(bottom = 12.dp)
                 .fillMaxWidth()
                 .height(0.5.dp),
             color = MaterialTheme.colorScheme.outline
         )
 
         Row(verticalAlignment = Alignment.Bottom) {
-            Text("基础分", style = MaterialTheme.typography.bodySmall, color = SecondaryTextColor)
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                if (basicScore % 1 == 0.0) basicScore.toInt().toString() else basicScore.toString(),
-                style = MaterialTheme.typography.titleSmall,
-                color = MainTextColor.copy(0.5f)
+            ItemScoreRow(
+                modifier = Modifier,
+                items = arrayOf(
+                    Pair(
+                        "加减分",
+                        if (addSubScore % 1 == 0.0) addSubScore.toInt()
+                            .toString() else addSubScore.toString()
+                    ),
+                    Pair(
+                        "基础分",
+                        if (basicScore % 1 == 0.0) basicScore.toInt()
+                            .toString() else basicScore.toString()
+                    ),
+                    Pair(
+                        "质量分",
+                        if (qualityScore % 1 == 0.0) qualityScore.toInt()
+                            .toString() else qualityScore.toString()
+                    ),
+                    Pair(
+                        "传播分",
+                        if (diffusionScore % 1 == 0.0) diffusionScore.toInt()
+                            .toString() else diffusionScore.toString()
+                    )
+                )
             )
-
-            Spacer(modifier = Modifier.weight(1f))
-            Text("质量分", style = MaterialTheme.typography.bodySmall, color = SecondaryTextColor)
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                if (qualityScore % 1 == 0.0) qualityScore.toInt()
-                    .toString() else qualityScore.toString(),
-                style = MaterialTheme.typography.titleSmall,
-                color = MainTextColor.copy(0.5f)
-            )
-            Spacer(modifier = Modifier.weight(1f))
-
-            Text("传播分", style = MaterialTheme.typography.bodySmall, color = SecondaryTextColor)
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                if (diffusionScore % 1 == 0.0) diffusionScore.toInt()
-                    .toString() else diffusionScore.toString(),
-                style = MaterialTheme.typography.titleSmall,
-                color = MainTextColor.copy(0.5f)
-            )
-
         }
 
     }
