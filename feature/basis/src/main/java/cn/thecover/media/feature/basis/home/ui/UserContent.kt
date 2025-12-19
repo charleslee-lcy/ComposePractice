@@ -40,6 +40,18 @@ import cn.thecover.media.core.widget.ui.ComponentPreview
 
 val normalCardElevation = 0.5.dp
 
+// 格式化分数，确保整数不显示小数点
+fun formatScore(score: String): String {
+    return try {
+        val num = score.toDoubleOrNull()
+        if (num == null) score
+        else if (num % 1 == 0.0) num.toInt().toString()
+        else score
+    } catch (_: Exception) {
+        score
+    }
+}
+
 @Composable
 internal fun ReporterUserContent(homeInfo: HomeInfo) {
     Column(
@@ -96,7 +108,7 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                         modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                     )
                     Text(
-                        text = homeInfo.finalScore,
+                        text = formatScore(homeInfo.finalScore),
                         color = MainTextColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -119,7 +131,7 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                             modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                         )
                         Text(
-                            text = homeInfo.money,
+                            text = formatScore(homeInfo.money),
                             color = MainTextColor,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.SemiBold,
@@ -323,7 +335,7 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = if (homeInfo.layoutScore + homeInfo.newsScore > 0) (homeInfo.layoutScore + homeInfo.newsScore).toString() else "0",
+                        text = if (homeInfo.layoutScore + homeInfo.newsScore > 0) formatScore((homeInfo.layoutScore + homeInfo.newsScore).toString()) else "0",
                         color = if (homeInfo.layoutScore + homeInfo.newsScore > 0) MainTextColor else MsgColor,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -522,7 +534,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                         modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                     )
                     Text(
-                        text = homeInfo.passRate,
+                        text = if (homeInfo.passRate == "0") "0%" else formatScore(homeInfo.passRate),
                         color = MainTextColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -544,7 +556,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                         modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                     )
                     Text(
-                        text = homeInfo.deptAverageScore,
+                        text = if (homeInfo.deptAverageScore == "0") "0" else formatScore(homeInfo.deptAverageScore),
                         color = MainTextColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -574,7 +586,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                         modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                     )
                     Text(
-                        text = homeInfo.finalCoefficient,
+                        text = if (homeInfo.finalCoefficient == "0") "0" else formatScore(homeInfo.finalCoefficient),
                         color = MainTextColor,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -596,7 +608,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                         modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                     )
                     Text(
-                        text = homeInfo.finalScore,
+                        text = formatScore(homeInfo.finalScore),
                         color = MainTextColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -627,7 +639,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                             modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                         )
                         Text(
-                            text = homeInfo.money,
+                            text = formatScore(homeInfo.money),
                             color = MainTextColor,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.SemiBold,
@@ -698,7 +710,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = homeInfo.quotaCoefficient,
+                        text = if (homeInfo.quotaCoefficient == "0") "0" else formatScore(homeInfo.quotaCoefficient),
                         color = MainTextColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -714,7 +726,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = homeInfo.finalCoefficient,
+                        text = if (homeInfo.finalCoefficient == "0") "0" else formatScore(homeInfo.finalCoefficient),
                         color = if (homeInfo.finalCoefficient == "0") MainTextColor else MsgColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -905,7 +917,7 @@ internal fun ReviewerUserContent(homeInfo: HomeInfo) {
                         modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                     )
                     Text(
-                        text = homeInfo.finalScore,
+                        text = formatScore(homeInfo.finalScore),
                         color = MainTextColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -928,7 +940,7 @@ internal fun ReviewerUserContent(homeInfo: HomeInfo) {
                             modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                         )
                         Text(
-                            text = homeInfo.money,
+                            text = formatScore(homeInfo.money),
                             color = MainTextColor,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.SemiBold,
@@ -959,7 +971,7 @@ internal fun ReviewerUserContent(homeInfo: HomeInfo) {
                         modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                     )
                     Text(
-                        text = homeInfo.quotaBasicScore,
+                        text = formatScore(homeInfo.quotaBasicScore),
                         color = MainTextColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -981,7 +993,7 @@ internal fun ReviewerUserContent(homeInfo: HomeInfo) {
                         modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                     )
                     Text(
-                        text = homeInfo.finalCoefficient,
+                        text = if (homeInfo.finalCoefficient == "0") "0" else formatScore(homeInfo.finalCoefficient),
                         color = MainTextColor,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -1051,7 +1063,7 @@ internal fun ReviewerUserContent(homeInfo: HomeInfo) {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = homeInfo.quotaCoefficient,
+                        text = if (homeInfo.quotaCoefficient == "0") "0" else formatScore(homeInfo.quotaCoefficient),
                         color = MainTextColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -1067,7 +1079,7 @@ internal fun ReviewerUserContent(homeInfo: HomeInfo) {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = homeInfo.finalCoefficient,
+                        text = if (homeInfo.finalCoefficient == "0") "0" else formatScore(homeInfo.finalCoefficient),
                         color = if (homeInfo.finalCoefficient == "0") MainTextColor else MsgColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
