@@ -24,9 +24,9 @@ data class ManuscriptReviewDataEntity(
     @SerializedName("cutNews")
     val isCutNews: Boolean = false,
     val leaderScoreModified: Boolean = false,
-
     @SerializedName("totalScore")
     val score: Double = 0.0,//稿件总分
+    val addSubScore: Double = 0.0,//加减分
     @SerializedName("basicScore")
     val basicScore: Double = 0.0,//基础分
     @SerializedName("qualityScore")

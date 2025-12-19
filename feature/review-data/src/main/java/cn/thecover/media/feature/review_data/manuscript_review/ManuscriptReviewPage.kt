@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
@@ -58,6 +60,7 @@ import androidx.compose.ui.util.fastCoerceAtLeast
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cn.thecover.media.core.data.ManuscriptReviewDataEntity
 import cn.thecover.media.core.widget.R
+import cn.thecover.media.core.widget.component.ItemScoreRow
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.YBNormalList
@@ -71,7 +74,6 @@ import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
-import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
 import cn.thecover.media.core.widget.theme.YBTheme
@@ -108,7 +110,14 @@ internal fun ManuscriptReviewPage(
         } ?: 0
     }
 
+    // 观察稿分修改操作的状态
+    val editScoreSuccess by viewModel.editManuscriptScoreSuccess.collectAsState()
+    
     val showEditScorePop = remember { mutableStateOf(false) }
+    // 弹窗内的错误提示信息
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    // 文本输入框的状态
+    var textFiledState by remember { mutableStateOf("") }
 
     var editId by remember { mutableIntStateOf(0) }
     // 创建 MutableState 用于列表组件
@@ -122,6 +131,11 @@ internal fun ManuscriptReviewPage(
         isLoadingMore.value = data.isLoading
         isRefreshing.value = data.isRefreshing
         canLoadMore.value = data.hasNextPage
+
+        // 监听错误信息并显示 Toast
+        data.error?.let { errorMessage ->
+            viewModel.handleReviewDataIntent(ReviewDataIntent.ShowToast(errorMessage))
+        }
     }
 
     YBNormalList(
@@ -141,6 +155,7 @@ internal fun ManuscriptReviewPage(
                     .background(color = MaterialTheme.colorScheme.background)
             ) {
                 ManuscriptTotalRankingHeader(viewModel = viewModel)
+                if (!data.dataList.isNullOrEmpty() && data.total > 0) {
                 Text(
                     text = buildAnnotatedString {
                         append("共 ")
@@ -155,6 +170,7 @@ internal fun ManuscriptReviewPage(
                         .padding(start = 24.dp, top = 8.dp)
 
                 )
+                }
             }
         },
         onLoadMore = {
@@ -189,29 +205,68 @@ internal fun ManuscriptReviewPage(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 TotalRankingItem(index + 1, rankLine = splitsNum + 1, item, onItemClick = {
-                    showEditScorePop.value = true
+                    // 先清除错误信息，再打开弹窗
+                    errorMessage = null
                     editId = it
+                    // 立即设置文本框的值为当前稿分
+                    val currentItem = manus.value.firstOrNull { it.id == editId }
+                    if (currentItem != null) {
+                        textFiledState = if (currentItem.score % 1 == 0.0) {
+                            currentItem.score.toInt().toString()
+                        } else {
+                            currentItem.score.toString()
+                        }
+                    }
+                    showEditScorePop.value = true
                 })
             }
 
         }
     }
-    var textFiledState by remember { mutableStateOf("") }
 
     LaunchedEffect(showEditScorePop) {
         if (showEditScorePop.value) {
-            val item = manus.value.firstOrNull { it.id == editId }
-            if (item != null) {
-                textFiledState = item.score.toString()
+            // 只有在文本框为空时才设置默认值，避免覆盖用户可能的输入
+            if (textFiledState.isEmpty()) {
+                val item = manus.value.firstOrNull { it.id == editId }
+                if (item != null) {
+                    textFiledState = if (item.score % 1 == 0.0) {
+                        item.score.toInt().toString()
+                    } else {
+                        item.score.toString()
+                    }
+                }
             }
+            // 清除错误信息，确保每次打开弹窗时都是干净的
+            errorMessage = null
+        } else {
+            // 当弹窗关闭时，也清除错误信息
+            errorMessage = null
+        }
+    }
+
+    // 监听稿分修改操作的结果
+    LaunchedEffect(editScoreSuccess) {
+        // 只有在弹窗打开且editScoreSuccess不为null时才处理
+        if (showEditScorePop.value && editScoreSuccess != null) {
+            if (editScoreSuccess == true) {
+                // 修改成功，关闭弹窗并清空文本框
+                showEditScorePop.value = false
+                textFiledState = ""
+            } else {
+                // 修改失败，显示错误信息
+                val toastState = viewModel.iconTipsDialogState.value
+                errorMessage = toastState.message
+            }
+            // 无论是成功还是失败，都重置状态
+            viewModel.resetEditScoreSuccess()
         }
     }
     YBDialog (
         dialogState = showEditScorePop,
+        handleConfirmDismiss = true,
         title = "修改稿分",
         onConfirm = {
-            showEditScorePop.value = false
-
             if (textFiledState.isNotEmpty()) {
                 try {
                     // 确保输入可以正确转换为Double类型
@@ -236,8 +291,12 @@ internal fun ManuscriptReviewPage(
                         )
                     )
                 }
+            } else {
+                // 如果输入为空，显示错误提示
+                errorMessage = "请输入有效的稿分"
             }
-            textFiledState = ""
+            // 不立即关闭弹窗，等待接口返回结果后再关闭
+            // 不在这里清空textFiledState，只在成功时才清空
         },
         content = {
             Column(
@@ -274,6 +333,8 @@ internal fun ManuscriptReviewPage(
                                 textFiledState = digitsOnly
                             }
                         }
+                        // 用户输入时清除错误信息
+                        errorMessage = null
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -297,11 +358,25 @@ internal fun ManuscriptReviewPage(
                     contentAlignment = Alignment.CenterStart,
                     contentPadding = 8.dp
                 )
+
+                // 显示错误信息
+                if (errorMessage != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = errorMessage!!,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         },
         onDismissRequest = {
             showEditScorePop.value = false
-            textFiledState = ""
+            // 不立即清空文本框，保留用户可能需要重新编辑的值
+            errorMessage = null
+            // 重置编辑状态
+            viewModel.resetEditScoreSuccess()
         }
     )
 
@@ -381,6 +456,12 @@ private fun TotalRankingItem(
 
                             Spacer(modifier = Modifier.weight(1f))
                             YBButton(
+                                shape = RoundedCornerShape(2.dp),
+                                modifier = Modifier.padding(top = 4.dp),
+                                contentPadding = PaddingValues(
+                                    horizontal = 12.dp,
+                                    vertical = 8.5.dp
+                                ),
                                 content = {
                                     Text(
                                         "修改稿分",
@@ -397,6 +478,7 @@ private fun TotalRankingItem(
                 },
                 foldContent = {
                     ItemFoldedView(
+                        addSubScore = data.addSubScore,
                         basicScore = data.basicScore,
                         qualityScore = data.qualityScore,
                         diffusionScore = data.diffusionScore
@@ -410,6 +492,7 @@ private fun TotalRankingItem(
 
 @Composable
 private fun ItemFoldedView(
+    addSubScore: Double = 0.0,
     basicScore: Double = 0.0,
     qualityScore: Double = 0.0,
     diffusionScore: Double = 0.0
@@ -417,41 +500,38 @@ private fun ItemFoldedView(
     Column {
         HorizontalDivider(
             modifier = Modifier
-                .padding(bottom = 15.dp)
+                .padding(bottom = 12.dp)
                 .fillMaxWidth()
                 .height(0.5.dp),
             color = MaterialTheme.colorScheme.outline
         )
 
         Row(verticalAlignment = Alignment.Bottom) {
-            Text("基础分", style = MaterialTheme.typography.bodySmall, color = SecondaryTextColor)
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                if (basicScore % 1 == 0.0) basicScore.toInt().toString() else basicScore.toString(),
-                style = MaterialTheme.typography.titleSmall,
-                color = MainTextColor.copy(0.5f)
+            ItemScoreRow(
+                modifier = Modifier,
+                items = arrayOf(
+                    Pair(
+                        "加减分",
+                        if (addSubScore % 1 == 0.0) addSubScore.toInt()
+                            .toString() else addSubScore.toString()
+                    ),
+                    Pair(
+                        "基础分",
+                        if (basicScore % 1 == 0.0) basicScore.toInt()
+                            .toString() else basicScore.toString()
+                    ),
+                    Pair(
+                        "质量分",
+                        if (qualityScore % 1 == 0.0) qualityScore.toInt()
+                            .toString() else qualityScore.toString()
+                    ),
+                    Pair(
+                        "传播分",
+                        if (diffusionScore % 1 == 0.0) diffusionScore.toInt()
+                            .toString() else diffusionScore.toString()
+                    )
+                )
             )
-
-            Spacer(modifier = Modifier.weight(1f))
-            Text("质量分", style = MaterialTheme.typography.bodySmall, color = SecondaryTextColor)
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                if (qualityScore % 1 == 0.0) qualityScore.toInt()
-                    .toString() else qualityScore.toString(),
-                style = MaterialTheme.typography.titleSmall,
-                color = MainTextColor.copy(0.5f)
-            )
-            Spacer(modifier = Modifier.weight(1f))
-
-            Text("传播分", style = MaterialTheme.typography.bodySmall, color = SecondaryTextColor)
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                if (diffusionScore % 1 == 0.0) diffusionScore.toInt()
-                    .toString() else diffusionScore.toString(),
-                style = MaterialTheme.typography.titleSmall,
-                color = MainTextColor.copy(0.5f)
-            )
-
         }
 
     }

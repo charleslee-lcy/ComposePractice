@@ -3,6 +3,7 @@ package cn.thecover.media.feature.review_data.manuscript_review
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +36,7 @@ import cn.thecover.media.core.data.DiffusionDataEntity
 import cn.thecover.media.core.widget.component.PrimaryItemScoreRow
 import cn.thecover.media.core.widget.component.ScoreItemType
 import cn.thecover.media.core.widget.component.YBNormalList
+import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.search.FilterSearchTextField
@@ -78,60 +81,80 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     val isRefreshing = remember { mutableStateOf(data.isRefreshing) }
     val canLoadMore = remember { mutableStateOf(data.hasNextPage) }
 
+    // Toast 相关状态
+    val snackbarHostState = remember { SnackbarHostState() }
+    val toastMessage by viewModel.iconTipsDialogState.collectAsState()
+
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(data) {
         manus.value = data.dataList ?: emptyList() ?: emptyList()
         isLoadingMore.value = data.isLoading
         isRefreshing.value = data.isRefreshing
         canLoadMore.value = data.hasNextPage
-    }
 
-    YBNormalList(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp)
-            .clickable { focusManager.clearFocus() },
-        items = manus,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        header = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.background(color = MaterialTheme.colorScheme.background)
-            ) {
-                ManuscriptDiffusionHeader(viewModel, filter)
-                if (!data.dataList.isNullOrEmpty()) {
-                    Text(
-                        text = buildAnnotatedString {
-                            append("共 ")
-                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                                append(data.total.toString())
-                            }
-                            append(" 条记录")
-                        },
-                        style = MaterialTheme.typography.labelMedium,
-                        color = TertiaryTextColor,
-                        modifier = Modifier
-                            .padding(start = 12.dp)
-                            .offset(y = (-4).dp)
-                    )
-                }
-            }
-
-        },
-        isLoadingMore = isLoadingMore,
-        isRefreshing = isRefreshing,
-        canLoadMore = canLoadMore,
-        onLoadMore = {
-            viewModel.handleReviewDataIntent(ReviewDataIntent.LoadMoreManuscriptDiffusion)
-        },
-        onRefresh = {
-            viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptDiffusion)
+        // 监听错误信息并显示 Toast
+        data.error?.let { errorMessage ->
+            viewModel.handleReviewDataIntent(ReviewDataIntent.ShowToast(errorMessage))
         }
-    ) { item, index ->
-
-        DiffusionItem(index + 1, item, filter.sortField)
     }
 
+    // 监听Toast消息
+    LaunchedEffect(toastMessage.time) {
+        if (toastMessage.message.isNotEmpty()) {
+            snackbarHostState.showSnackbar(toastMessage.message)
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        YBNormalList(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp)
+                .clickable { focusManager.clearFocus() },
+            items = manus,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            header = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.background(color = MaterialTheme.colorScheme.background)
+                ) {
+                    ManuscriptDiffusionHeader(viewModel, filter)
+                    if (!data.dataList.isNullOrEmpty() && data.total > 0) {
+                        Text(
+                            text = buildAnnotatedString {
+                                append("共 ")
+                                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                                    append(data.total.toString())
+                                }
+                                append(" 条记录")
+                            },
+                            style = MaterialTheme.typography.labelMedium,
+                            color = TertiaryTextColor,
+                            modifier = Modifier
+                                .padding(start = 12.dp)
+                                .offset(y = (-4).dp)
+                        )
+                    }
+                }
+
+            },
+            isLoadingMore = isLoadingMore,
+            isRefreshing = isRefreshing,
+            canLoadMore = canLoadMore,
+            onLoadMore = {
+                viewModel.handleReviewDataIntent(ReviewDataIntent.LoadMoreManuscriptDiffusion)
+            },
+            onRefresh = {
+                viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptDiffusion)
+            }
+        ) { item, index ->
+
+            DiffusionItem(index + 1, item, filter.sortField)
+        }
+
+        // Toast 组件
+        YBToast(snackBarHostState = snackbarHostState)
+    }
 }
 
 

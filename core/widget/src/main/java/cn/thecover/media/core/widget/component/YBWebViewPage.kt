@@ -162,7 +162,10 @@ fun YBWebViewPage(
                         webChromeClient = object : WebChromeClient() {
                             override fun onReceivedTitle(view: WebView?, title: String?) {
                                 super.onReceivedTitle(view, title)
-                                title?.let { webTitle = it }
+                                // 如果设置了defaultTitle，则不更新标题，保持显示defaultTitle
+                                if (defaultTitle.isEmpty()) {
+                                    title?.let { webTitle = it }
+                                }
                                 onReceivedTitle?.invoke(title ?: "")
                             }
                         }

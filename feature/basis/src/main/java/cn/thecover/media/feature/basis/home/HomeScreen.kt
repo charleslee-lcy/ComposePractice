@@ -133,7 +133,7 @@ internal fun HomeScreen(
     val observer = remember {
         LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                viewModel.getUnreadMessageCount()
+                fetchHomeData()
             }
         }
     }

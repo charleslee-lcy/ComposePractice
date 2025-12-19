@@ -171,6 +171,7 @@ fun ItemScoreRow(
         // 遍历所有数据项，为每个项创建数据评分视图
         items.forEach { item ->
             DataScoreItem(
+                backgroundColor = MaterialTheme.colorScheme.surface,
                 item = item.first,
                 value = item.second,
                 modifier = Modifier.weight(1f),

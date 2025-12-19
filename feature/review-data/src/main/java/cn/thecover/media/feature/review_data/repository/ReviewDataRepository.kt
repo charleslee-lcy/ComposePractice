@@ -100,7 +100,7 @@ class ReviewDataRepository @Inject constructor(
                         dataList = body.dataList,
                         currentPage = body.currentPage,
                         totalPages = body.total,
-                        hasNextPage = body.lastId?.toInt() != -1,
+                        hasNextPage = false,
                         lastId = body.lastId
                     )
                 )
