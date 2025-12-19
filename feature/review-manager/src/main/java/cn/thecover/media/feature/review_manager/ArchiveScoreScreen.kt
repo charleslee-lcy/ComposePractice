@@ -13,17 +13,22 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -52,8 +57,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -66,8 +73,10 @@ import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.GradientLeftBottom
 import cn.thecover.media.core.widget.GradientLeftTop
+import cn.thecover.media.core.widget.YBShape
 import cn.thecover.media.core.widget.component.YBCoordinatorList
 import cn.thecover.media.core.widget.component.YBImage
+import cn.thecover.media.core.widget.component.YBLabel
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.SingleColumnPicker
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
@@ -78,6 +87,7 @@ import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.gradientShape
 import cn.thecover.media.core.widget.state.TipsDialogState
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
+import cn.thecover.media.core.widget.theme.BlockDividerColor
 import cn.thecover.media.core.widget.theme.EditHintTextColor
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -232,6 +242,8 @@ fun ArchiveScoreScreen(
         visible = showScoreDialog.value,
         isShowTopActionBar = true,
         draggable = false,
+        padding = PaddingValues(top = 20.dp),
+        topActionBarHorizontalPadding = 20.dp,
         onClose = {
             showScoreDialog.value = false
             checkedItem = null
@@ -247,78 +259,110 @@ fun ArchiveScoreScreen(
         val scoreLevelStatus by viewModel.scoreLevelState.collectAsStateWithLifecycle()
         val scoreGroupStatus by viewModel.scoreGroupState.collectAsStateWithLifecycle()
 
-        var scoreList1 by remember { mutableStateOf(listOf<String>()) }
-        var scoreList2 by remember { mutableStateOf(listOf<String>()) }
-        var scoreList3 by remember { mutableStateOf(listOf<String>()) }
-
         LaunchedEffect(Unit) {
             viewModel.getScoreLevelInfo()
             viewModel.getUserGroupInfo()
-
-            val newList1 = mutableListOf<String>()
-            val newList2 = mutableListOf<String>()
-            val newList3 = mutableListOf<String>()
-
-            checkedItem?.scoreLevels?.takeIf { it.isNotEmpty() }?.let { list ->
-                list.forEach {
-                    when(it.scoreGroupId) {
-                        1 -> newList1.add(it.scoreLevelName ?: "-")
-                        2 -> newList2.add(it.scoreLevelName ?: "-")
-                        else -> newList3.add(it.scoreLevelName ?: "-")
-                    }
-                }
-
-                // 替换整个状态以触发重组
-                scoreList1 = newList1
-                scoreList2 = newList2
-                scoreList3 = newList3
-            }
         }
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(5.dp))
             ScoreInfoContent(
-                title = "值班副总编辑",
-                enable = scoreGroupStatus.map { it.type }.contains(1),
+                title = scoreGroupStatus.firstOrNull()?.scoreName?.ifEmpty { "--" } ?: "--",
+                enable = scoreGroupStatus.isNotEmpty(),
                 scoreLevelList = scoreLevelStatus,
-                scoredList = scoreList1
-            ) {
-                scoreLevel = it
-            }
-            HorizontalDivider(
-                modifier = Modifier
-                    .padding(top = 15.dp)
-                    .fillMaxWidth(),
-                thickness = 0.5.dp,
-                color = OutlineColor
-            )
-            ScoreInfoContent(
-                title = "值班编委",
-                enable = scoreGroupStatus.map { it.type }.contains(2),
-                scoreLevelList = scoreLevelStatus,
-                scoredList = scoreList2
-            ) {
-                scoreLevel = it
-            }
-            HorizontalDivider(
-                modifier = Modifier
-                    .padding(top = 15.dp)
-                    .fillMaxWidth(),
-                thickness = 0.5.dp,
-                color = OutlineColor
-            )
-            ScoreInfoContent(
-                title = "专家",
-                enable = scoreGroupStatus.map { it.type }.contains(3),
-                scoreLevelList = scoreLevelStatus,
-                scoredList = scoreList3
             ) {
                 scoreLevel = it
             }
             Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.fillMaxWidth()
+                .height(8.dp)
+                .background(BlockDividerColor)
+            )
+            YBLabel(
+                modifier = Modifier.padding(start = 20.dp, top = 15.dp),
+                label = {
+                    Text(
+                        text = "已打分记录",
+                        color = MainTextColor,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                },
+                space = 5.dp,
+                leadingIcon = {
+                    YBShape(
+                        modifier = Modifier.size(6.dp, 16.dp),
+                        colors = listOf(MainColor, Color.Transparent),
+                        start = GradientLeftTop,
+                        end = GradientLeftBottom
+                    )
+                })
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp)
+                    .heightIn(min = 150.dp, max = 300.dp)
+            ) {
+                if (!checkedItem?.scoreLevels.isNullOrEmpty()) {
+                    itemsIndexed(checkedItem?.scoreLevels ?: listOf()) {index, item ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                                .background(if (index % 2 == 0) PageBackgroundColor else Color.White)
+                                .padding(start = 20.dp, end = 10.dp, top = 8.dp, bottom = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = item.scoreTime,
+                                color = MainTextColor,
+                                fontSize = 14.sp
+                            )
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(horizontal = 20.dp)
+                            ) {
+                                Text(
+                                    text = item.scoreGroupName,
+                                    color = MainTextColor,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    fontSize = 14.sp
+                                )
+                                Text(
+                                    text = item.userName,
+                                    color = MainTextColor,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                            Text(
+                                modifier = Modifier.width(30.dp),
+                                text = item.scoreLevelName ?: "-",
+                                color = MainTextColor,
+                                textAlign = TextAlign.Center,
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                } else {
+                    item {
+                        Text(
+                            modifier = Modifier.padding(start = 20.dp, top = 15.dp),
+                            text = "暂无打分记录",
+                            color = MainTextColor,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(15.dp))
+                }
+            }
         }
 
     }
@@ -329,7 +373,6 @@ private fun ScoreInfoContent(
     title: String,
     enable: Boolean = false,
     scoreLevelList: List<ScoreLevelData> = listOf(),
-    scoredList: List<String> = listOf(),
     onScoreSelect: (Int) -> Unit = {_ -> }
 ) {
     val showScoreFilter = remember { mutableStateOf(false) }
@@ -343,103 +386,44 @@ private fun ScoreInfoContent(
 
     Row(
         modifier = Modifier
-            .padding(top = 15.dp)
+            .padding(top = 15.dp, start = 20.dp, end = 20.dp)
             .fillMaxWidth()
             .height(36.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            modifier = Modifier.weight(1f),
             text = title,
             style = scoreTitleStyle(enable)
         )
-        Box(
-            modifier = Modifier.weight(3f)
-        ) {
-            Row(
-                modifier = Modifier
-                    .padding(start = 10.dp)
-                    .size(81.dp, 36.dp)
-                    .background(
-                        color = if (enable) PageBackgroundColor else OutlineColor,
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .clickableWithoutRipple {
-                        if (enable) {
-                            showScoreFilter.value = true
-                        }
-                    },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = if (enable && scoreLevelList.isNotEmpty()) scoreLevelList[currentIndex].levelCode else "A",
-                    textAlign = TextAlign.Center,
-                    style = scoreTitleStyle(enable)
-                )
-                Icon(
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .size(18.dp),
-                    painter = painterResource(cn.thecover.media.core.widget.R.mipmap.ic_arrow_down),
-                    contentDescription = "",
-                    tint = TertiaryTextColor
-                )
-            }
-        }
-    }
-    Row(
-        modifier = Modifier
-            .padding(top = 8.dp)
-            .fillMaxWidth()
-            .height(36.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier.weight(1f),
-            text = "已打分记录",
-            fontSize = 14.sp,
-            color = MainTextColor,
-            textAlign = TextAlign.End,
-            fontWeight = FontWeight.SemiBold
-        )
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(5),
+        Row(
             modifier = Modifier
                 .padding(start = 10.dp)
-                .weight(3f),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            if (scoredList.isEmpty()) {
-                item {
-                    Text(
-                        text = "无",
-                        color = TertiaryTextColor,
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.background(
-                            color = OutlineColor,
-                            shape = RoundedCornerShape(4.dp)
-                        )
-                    )
-                }
-            } else {
-                scoredList.forEach {
-                    item {
-                        Text(
-                            text = it,
-                            color = MainColor,
-                            fontSize = 14.sp,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.background(
-                                color = Color(0xFFEAF0FF),
-                                shape = RoundedCornerShape(4.dp)
-                            )
-                        )
+                .size(81.dp, 36.dp)
+                .background(
+                    color = if (enable) PageBackgroundColor else OutlineColor,
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .clickableWithoutRipple {
+                    if (enable) {
+                        showScoreFilter.value = true
                     }
-                }
-            }
+                },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = if (enable && scoreLevelList.isNotEmpty()) scoreLevelList[currentIndex].levelCode else "A",
+                textAlign = TextAlign.Center,
+                style = scoreTitleStyle(enable)
+            )
+            Icon(
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .size(18.dp),
+                painter = painterResource(cn.thecover.media.core.widget.R.mipmap.ic_arrow_down),
+                contentDescription = "",
+                tint = TertiaryTextColor
+            )
         }
     }
 
@@ -458,7 +442,7 @@ private fun ScoreInfoContent(
 }
 
 private fun scoreTitleStyle(enable: Boolean) = TextStyle(
-    fontSize = 14.sp,
+    fontSize = 16.sp,
     color = if (enable) MainTextColor else TertiaryTextColor,
     fontWeight = FontWeight.SemiBold,
     textAlign = TextAlign.End
