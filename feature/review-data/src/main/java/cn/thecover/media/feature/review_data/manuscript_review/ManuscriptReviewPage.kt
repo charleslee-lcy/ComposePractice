@@ -491,8 +491,9 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
         visible = showDatePicker,
         type = DateType.MONTH,
         onCancel = { showDatePicker = false },
-        end = LocalDate.now(),
-        start = LocalDate.of(2024, 1, 1),
+        end = LocalDate.now().plusYears(10),
+        start = LocalDate.of(2025, 1, 1),
+        value = LocalDate.now().minusMonths(1),
         onChange = {
             viewModel.handleUIIntent(ReviewUIIntent.UpdateManuscriptReviewFilter(time = "${it.year}年${it.monthValue}月"))
         }

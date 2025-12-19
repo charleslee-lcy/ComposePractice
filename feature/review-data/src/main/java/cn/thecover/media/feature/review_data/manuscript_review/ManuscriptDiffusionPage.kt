@@ -322,10 +322,11 @@ private fun ManuscriptDiffusionHeader(
     // 日期选择器弹窗组件
     YBDatePicker(
         visible = showDatePicker,
-        end = LocalDate.now(),
-        start = LocalDate.of(2024, 1, 1),
+        end = LocalDate.now().plusYears(10),
+        start = LocalDate.of(2025, 1, 1),
         type = DateType.MONTH,
         onCancel = { showDatePicker = false },
+        value = LocalDate.now().minusMonths(1),
         onChange = {
             viewModel.handleUIIntent(ReviewUIIntent.UpdateManuscriptDiffusionFilter(time = "${it.year}年${it.monthValue}月"))
         }
