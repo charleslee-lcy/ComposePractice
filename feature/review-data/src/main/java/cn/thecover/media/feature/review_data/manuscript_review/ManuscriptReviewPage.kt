@@ -155,6 +155,7 @@ internal fun ManuscriptReviewPage(
                     .background(color = MaterialTheme.colorScheme.background)
             ) {
                 ManuscriptTotalRankingHeader(viewModel = viewModel)
+                if (!data.dataList.isNullOrEmpty() && data.total > 0) {
                 Text(
                     text = buildAnnotatedString {
                         append("共 ")
@@ -169,6 +170,7 @@ internal fun ManuscriptReviewPage(
                         .padding(start = 24.dp, top = 8.dp)
 
                 )
+                }
             }
         },
         onLoadMore = {

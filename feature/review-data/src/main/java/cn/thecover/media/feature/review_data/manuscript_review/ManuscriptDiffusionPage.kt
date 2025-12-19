@@ -119,7 +119,7 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
                     modifier = Modifier.background(color = MaterialTheme.colorScheme.background)
                 ) {
                     ManuscriptDiffusionHeader(viewModel, filter)
-                    if (!data.dataList.isNullOrEmpty()) {
+                    if (!data.dataList.isNullOrEmpty() && data.total > 0) {
                         Text(
                             text = buildAnnotatedString {
                                 append("共 ")
