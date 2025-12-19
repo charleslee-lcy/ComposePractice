@@ -116,6 +116,8 @@ internal fun ManuscriptReviewPage(
     val showEditScorePop = remember { mutableStateOf(false) }
     // 弹窗内的错误提示信息
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    // 文本输入框的状态
+    var textFiledState by remember { mutableStateOf("") }
 
     var editId by remember { mutableIntStateOf(0) }
     // 创建 MutableState 用于列表组件
@@ -203,20 +205,35 @@ internal fun ManuscriptReviewPage(
                 TotalRankingItem(index + 1, rankLine = splitsNum + 1, item, onItemClick = {
                     // 先清除错误信息，再打开弹窗
                     errorMessage = null
-                    showEditScorePop.value = true
                     editId = it
+                    // 立即设置文本框的值为当前稿分
+                    val currentItem = manus.value.firstOrNull { it.id == editId }
+                    if (currentItem != null) {
+                        textFiledState = if (currentItem.score % 1 == 0.0) {
+                            currentItem.score.toInt().toString()
+                        } else {
+                            currentItem.score.toString()
+                        }
+                    }
+                    showEditScorePop.value = true
                 })
             }
 
         }
     }
-    var textFiledState by remember { mutableStateOf("") }
 
     LaunchedEffect(showEditScorePop) {
         if (showEditScorePop.value) {
-            val item = manus.value.firstOrNull { it.id == editId }
-            if (item != null) {
-                textFiledState = item.score.toString()
+            // 只有在文本框为空时才设置默认值，避免覆盖用户可能的输入
+            if (textFiledState.isEmpty()) {
+                val item = manus.value.firstOrNull { it.id == editId }
+                if (item != null) {
+                    textFiledState = if (item.score % 1 == 0.0) {
+                        item.score.toInt().toString()
+                    } else {
+                        item.score.toString()
+                    }
+                }
             }
             // 清除错误信息，确保每次打开弹窗时都是干净的
             errorMessage = null
@@ -231,7 +248,7 @@ internal fun ManuscriptReviewPage(
         // 只有在弹窗打开且editScoreSuccess不为null时才处理
         if (showEditScorePop.value && editScoreSuccess != null) {
             if (editScoreSuccess == true) {
-                // 修改成功，关闭弹窗
+                // 修改成功，关闭弹窗并清空文本框
                 showEditScorePop.value = false
                 textFiledState = ""
             } else {
@@ -354,7 +371,7 @@ internal fun ManuscriptReviewPage(
         },
         onDismissRequest = {
             showEditScorePop.value = false
-            textFiledState = ""
+            // 不立即清空文本框，保留用户可能需要重新编辑的值
             errorMessage = null
             // 重置编辑状态
             viewModel.resetEditScoreSuccess()
