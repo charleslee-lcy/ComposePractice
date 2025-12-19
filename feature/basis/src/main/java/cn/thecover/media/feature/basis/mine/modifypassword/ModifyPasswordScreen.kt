@@ -114,7 +114,7 @@ fun ModifyPasswordScreen(
                 .background(Color.White)
                 .statusBarsPadding()
         )
-        YBTitleBar (
+        YBTitleBar(
             title = "修改密码", leftOnClick = {
                 navController.popBackStack()
             }, backgroundColor = MaterialTheme.colorScheme.background
@@ -137,7 +137,7 @@ fun ModifyPasswordScreen(
             ModifyPasswordInput(confirmPass, "确认密码", "请再次输入新密码")
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = "*密码不小于8位，必须包含数字、字母、特殊符号\n*修改后，电脑端也需要用新密码登录",
+                text = "*密码长度为 8-20位，必须包含数字、字母、特殊符号\n*修改后，电脑端也需要用新密码登录",
                 color = TertiaryTextColor,
                 fontSize = 12.sp
             )
@@ -151,7 +151,8 @@ fun ModifyPasswordScreen(
                     commit(oldPass.value, newPass.value, confirmPass.value)
                 },
                 borderColor = Color.Transparent,
-                enabled = oldPass.value.length >= 8 && newPass.value.length >= 8 && confirmPass.value.length >= 8,
+                enabled = oldPass.value.length >= 8 && newPass.value.length >= 8 && confirmPass.value.length >= 8 &&
+                        oldPass.value.length <= 20 && newPass.value.length <= 20 && confirmPass.value.length <= 20,
                 shape = RoundedCornerShape(2.dp)
             )
         }
@@ -200,12 +201,12 @@ fun ModifyPasswordInput(textState: MutableState<String>, label: String, hint: St
                         }
 
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                Icon(
-                                    painterResource(if (passwordVisible) YBIcons.Custom.PasswordIsShow else YBIcons.Custom.PasswordIsHide),
-                                    tint = TertiaryTextColor,
-                                    contentDescription = if (passwordVisible) "隐藏密码" else "查看密码"
-                                )
-                            }
+                            Icon(
+                                painterResource(if (passwordVisible) YBIcons.Custom.PasswordIsShow else YBIcons.Custom.PasswordIsHide),
+                                tint = TertiaryTextColor,
+                                contentDescription = if (passwordVisible) "隐藏密码" else "查看密码"
+                            )
+                        }
 
                     }
                 }
