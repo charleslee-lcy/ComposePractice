@@ -16,8 +16,8 @@ data class ScoreArchiveListRequest(
     var endPublishDate: String = "2025-12-08",
     var searchType: Int = 3, //搜索类型 1-记者 2-稿件ID 3-稿件名称
     var searchKeyword: String? = null, //搜索关键词
-    var newsScoreStatus: String = "", //稿件打分状态 0-未打分 1-已打分
-    var userScoreStatus: String = "" //本人打分状态 0-未打分 1-已打分
+    var newsScoreStatus: String? = null, //稿件打分状态 0-未打分 1-已打分
+    var userScoreStatus: String? = null //本人打分状态 0-未打分 1-已打分
 )
 
 @Serializable
