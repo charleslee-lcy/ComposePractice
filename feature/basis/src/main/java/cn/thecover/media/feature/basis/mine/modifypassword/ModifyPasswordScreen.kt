@@ -137,7 +137,7 @@ fun ModifyPasswordScreen(
             ModifyPasswordInput(confirmPass, "确认密码", "请再次输入新密码")
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = "*密码长度为 8-20位，必须包含数字、字母、特殊符号\n*修改后，电脑端也需要用新密码登录",
+                text = "*密码长度不小于 8 位，必须包含数字、字母、特殊符号\n*修改后，电脑端也需要用新密码登录",
                 color = TertiaryTextColor,
                 fontSize = 12.sp
             )
