@@ -108,6 +108,10 @@ class ReviewDataViewModel @Inject constructor(
     private val _departmentTaskFilterState = MutableStateFlow(DepartmentReviewDateFilterState())
     val departmentTaskFilterState = _departmentTaskFilterState
 
+    fun resetEditScoreSuccess() {
+        _editManuscriptScoreSuccess.value = null
+    }
+
 
     fun handleReviewDataIntent(intent: ReviewDataIntent) {
         when (intent) {
@@ -181,6 +185,15 @@ class ReviewDataViewModel @Inject constructor(
                     }
                 }
             }
+
+            is ReviewDataIntent.ShowToast -> {
+                _iconTipsDialogState.update {
+                    it.copy(
+                        message = intent.message,
+                        time = System.currentTimeMillis()
+                    )
+                }
+            }
         }
     }
 
@@ -243,6 +256,10 @@ class ReviewDataViewModel @Inject constructor(
         }
     }
 
+    // 稿分修改操作状态，用于通知UI是否成功
+    private val _editManuscriptScoreSuccess = MutableStateFlow<Boolean?>(null)
+    val editManuscriptScoreSuccess: StateFlow<Boolean?> = _editManuscriptScoreSuccess
+
     private fun updateManuscriptScore(id: Int, newScore: Double) {
 
         viewModelScope.launch {
@@ -269,7 +286,18 @@ class ReviewDataViewModel @Inject constructor(
                         dataList = updatedManuscripts
                     )
                 }
+
+                // 通知UI更新成功
+                _editManuscriptScoreSuccess.value = true
+                _iconTipsDialogState.update {
+                    it.copy(
+                        message = "稿分修改成功",
+                        time = System.currentTimeMillis()
+                    )
+                }
             } else if (result is RepositoryResult.Error) {
+                // 通知UI更新失败
+                _editManuscriptScoreSuccess.value = false
                 _iconTipsDialogState.update {
                     it.copy(
                         message = result.exception.message ?: "修改稿件分失败",

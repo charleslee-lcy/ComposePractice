@@ -110,7 +110,12 @@ internal fun ManuscriptReviewPage(
         } ?: 0
     }
 
+    // 观察稿分修改操作的状态
+    val editScoreSuccess by viewModel.editManuscriptScoreSuccess.collectAsState()
+    
     val showEditScorePop = remember { mutableStateOf(false) }
+    // 弹窗内的错误提示信息
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     var editId by remember { mutableIntStateOf(0) }
     // 创建 MutableState 用于列表组件
@@ -191,6 +196,8 @@ internal fun ManuscriptReviewPage(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 TotalRankingItem(index + 1, rankLine = splitsNum + 1, item, onItemClick = {
+                    // 先清除错误信息，再打开弹窗
+                    errorMessage = null
                     showEditScorePop.value = true
                     editId = it
                 })
@@ -206,14 +213,36 @@ internal fun ManuscriptReviewPage(
             if (item != null) {
                 textFiledState = item.score.toString()
             }
+            // 清除错误信息，确保每次打开弹窗时都是干净的
+            errorMessage = null
+        } else {
+            // 当弹窗关闭时，也清除错误信息
+            errorMessage = null
+        }
+    }
+
+    // 监听稿分修改操作的结果
+    LaunchedEffect(editScoreSuccess) {
+        // 只有在弹窗打开且editScoreSuccess不为null时才处理
+        if (showEditScorePop.value && editScoreSuccess != null) {
+            if (editScoreSuccess == true) {
+                // 修改成功，关闭弹窗
+                showEditScorePop.value = false
+                textFiledState = ""
+            } else {
+                // 修改失败，显示错误信息
+                val toastState = viewModel.iconTipsDialogState.value
+                errorMessage = toastState.message
+            }
+            // 无论是成功还是失败，都重置状态
+            viewModel.resetEditScoreSuccess()
         }
     }
     YBDialog (
         dialogState = showEditScorePop,
+        handleConfirmDismiss = true,
         title = "修改稿分",
         onConfirm = {
-            showEditScorePop.value = false
-
             if (textFiledState.isNotEmpty()) {
                 try {
                     // 确保输入可以正确转换为Double类型
@@ -238,8 +267,12 @@ internal fun ManuscriptReviewPage(
                         )
                     )
                 }
+            } else {
+                // 如果输入为空，显示错误提示
+                errorMessage = "请输入有效的稿分"
             }
-            textFiledState = ""
+            // 不立即关闭弹窗，等待接口返回结果后再关闭
+            // 不在这里清空textFiledState，只在成功时才清空
         },
         content = {
             Column(
@@ -276,6 +309,8 @@ internal fun ManuscriptReviewPage(
                                 textFiledState = digitsOnly
                             }
                         }
+                        // 用户输入时清除错误信息
+                        errorMessage = null
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -299,11 +334,25 @@ internal fun ManuscriptReviewPage(
                     contentAlignment = Alignment.CenterStart,
                     contentPadding = 8.dp
                 )
+
+                // 显示错误信息
+                if (errorMessage != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = errorMessage!!,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         },
         onDismissRequest = {
             showEditScorePop.value = false
             textFiledState = ""
+            errorMessage = null
+            // 重置编辑状态
+            viewModel.resetEditScoreSuccess()
         }
     )
 
