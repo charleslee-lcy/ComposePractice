@@ -118,7 +118,10 @@ private fun ManuscriptTopRankingItem(
                 modifier = Modifier,
             ) {
                 // 显示稿件头部信息（标题、作者、编辑）
-                ManuScriptItemHeader(title = data.title, author = data.reporter.joinToString(", ") { it.name })
+                ManuScriptItemHeader(
+                    title = data.title,
+                    author = data.reporter.joinToString("、 ") { it.name },
+                )
                 Spacer(Modifier.height(8.dp))
                 // 显示稿件的各项评分数据行
                 PrimaryItemScoreRow(
