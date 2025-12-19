@@ -129,6 +129,11 @@ internal fun ManuscriptReviewPage(
         isLoadingMore.value = data.isLoading
         isRefreshing.value = data.isRefreshing
         canLoadMore.value = data.hasNextPage
+
+        // 监听错误信息并显示 Toast
+        data.error?.let { errorMessage ->
+            viewModel.handleReviewDataIntent(ReviewDataIntent.ShowToast(errorMessage))
+        }
     }
 
     YBNormalList(

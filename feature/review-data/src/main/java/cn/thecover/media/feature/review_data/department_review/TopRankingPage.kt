@@ -1,14 +1,17 @@
 package cn.thecover.media.feature.review_data.department_review
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cn.thecover.media.core.widget.component.YBNormalList
+import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -66,20 +70,37 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
     // 初始化为 true，确保列表可以滚动，后续会根据数据更新
     val canLoadMore = remember { mutableStateOf(true) }
 
+    // Toast 相关状态
+    val snackbarHostState = remember { SnackbarHostState() }
+    val toastMessage by viewModel.iconTipsDialogState.collectAsState()
+
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(departmentTotalData) {
         departmentList.value = departmentTotalData.dataList ?: emptyList()
         isLoadingMore.value = departmentTotalData.isLoading
         isRefreshing.value = departmentTotalData.isRefreshing
         canLoadMore.value = departmentTotalData.hasNextPage
+
+        // 监听错误信息并显示 Toast
+        departmentTotalData.error?.let { errorMessage ->
+            viewModel.handleReviewDataIntent(ReviewDataIntent.ShowToast(errorMessage))
+        }
     }
 
+    // 监听Toast消息
+    LaunchedEffect(toastMessage.time) {
+        if (toastMessage.message.isNotEmpty()) {
+            snackbarHostState.showSnackbar(toastMessage.message)
+        }
+    }
 
     LaunchedEffect(datePickedState) {
         viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshDepartmentTopRanking)
     }
-    // 构建页面布局，包含日期选择和部门排名列表
-    YBNormalList(
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        // 构建页面布局，包含日期选择和部门排名列表
+        YBNormalList(
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .fillMaxSize(),
@@ -112,6 +133,10 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
             if ((item.averageScore % 1).toFloat() == 0f) item.averageScore.toInt()
                 .toDouble() else item.averageScore
         )
+    }
+
+        // Toast 组件
+        YBToast(snackBarHostState = snackbarHostState)
     }
 
     // 月份选择器组件，用于选择查看排名的月份

@@ -1,6 +1,7 @@
 package cn.thecover.media.feature.review_data.department_review
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import cn.thecover.media.core.widget.component.YBNormalList
+import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -63,18 +66,36 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     val isRefreshing = remember { mutableStateOf(taskState.isRefreshing) }
     val canLoadMore = remember { mutableStateOf(taskState.hasNextPage) }
 
+    // Toast 相关状态
+    val snackbarHostState = remember { SnackbarHostState() }
+    val toastMessage by viewModel.iconTipsDialogState.collectAsState()
+
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(taskState) {
         departmentTaskList.value = taskState.dataList ?: emptyList()
         isLoadingMore.value = taskState.isLoading
         isRefreshing.value = taskState.isRefreshing
         canLoadMore.value = taskState.hasNextPage
+
+        // 监听错误信息并显示 Toast
+        taskState.error?.let { errorMessage ->
+            viewModel.handleReviewDataIntent(ReviewDataIntent.ShowToast(errorMessage))
+        }
     }
+
+    // 监听Toast消息
+    LaunchedEffect(toastMessage.time) {
+        if (toastMessage.message.isNotEmpty()) {
+            snackbarHostState.showSnackbar(toastMessage.message)
+        }
+    }
+    
     LaunchedEffect(datePickedState) {
         viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshDepartmentTaskData)
     }
 
-    YBNormalList(
+    Box(modifier = Modifier.fillMaxWidth()) {
+        YBNormalList(
         items = departmentTaskList,
         modifier = Modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -110,6 +131,9 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
         )
     }
 
+        // Toast 组件
+        YBToast(snackBarHostState = snackbarHostState)
+    }
 
     // 月份选择器弹窗，当 showDatePicker 为 true 时显示
     YBDatePicker(

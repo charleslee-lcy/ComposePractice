@@ -66,6 +66,7 @@ internal fun DepartmentReviewScreen(
     val depart by viewmodel.departmentReviewPageState.collectAsState()
     // 创建部门数据列表
     var snackBarHostState  by remember { mutableStateOf(SnackbarHostState()) }
+    val toastMessage by viewmodel.iconTipsDialogState.collectAsState()
     // 创建 MutableState 用于列表组件
     val departmentList = remember { mutableStateOf(depart.dataList ?: emptyList()) }
     val isLoadingMore = remember { mutableStateOf(depart.isLoading) }
@@ -80,6 +81,13 @@ internal fun DepartmentReviewScreen(
         canLoadMore.value = depart.hasNextPage
         depart.error?.let {
             snackBarHostState.showToast(it)
+        }
+    }
+
+    // 监听Toast消息
+    LaunchedEffect(toastMessage.time) {
+        if (toastMessage.message.isNotEmpty()) {
+            snackBarHostState.showToast(toastMessage.message)
         }
     }
 

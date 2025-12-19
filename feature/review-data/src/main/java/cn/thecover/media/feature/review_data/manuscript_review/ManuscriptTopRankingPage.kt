@@ -1,6 +1,7 @@
 package cn.thecover.media.feature.review_data.manuscript_review
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +29,7 @@ import cn.thecover.media.core.data.ReporterEntity
 import cn.thecover.media.core.widget.component.PrimaryItemScoreRow
 import cn.thecover.media.core.widget.component.ScoreItemType
 import cn.thecover.media.core.widget.component.YBNormalList
+import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.YBTheme
@@ -57,43 +60,63 @@ fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel) {
     val isRefreshing = remember { mutableStateOf(data.isRefreshing) }
     val canLoadMore = remember { mutableStateOf(false) }
 
+    // Toast 相关状态
+    val snackbarHostState = remember { SnackbarHostState() }
+    val toastMessage by viewModel.iconTipsDialogState.collectAsState()
+
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(data) {
         manus.value = data.dataList ?: emptyList()
         isLoadingMore.value = data.isLoading
         isRefreshing.value = data.isRefreshing
         canLoadMore.value = data.hasNextPage
+
+        // 监听错误信息并显示 Toast
+        data.error?.let { errorMessage ->
+            viewModel.handleReviewDataIntent(ReviewDataIntent.ShowToast(errorMessage))
+        }
+    }
+
+    // 监听Toast消息
+    LaunchedEffect(toastMessage.time) {
+        if (toastMessage.message.isNotEmpty()) {
+            snackbarHostState.showSnackbar(toastMessage.message)
+        }
     }
 
     LaunchedEffect(filterState) {
         viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptTopRanking)
     }
 
-
-    YBNormalList(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp),
-        items = manus,
-        isLoadingMore = isLoadingMore,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        isRefreshing = isRefreshing,
-        canLoadMore = canLoadMore,
-        header = {
-            ManuscriptTopRankingHeader(viewModel, filterState)
-        },
-        onLoadMore = {
-            viewModel.handleReviewDataIntent(ReviewDataIntent.LoadMoreManuscriptTopRanking)
-        },
-        onRefresh = {
-            viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptTopRanking)
+    Box(modifier = Modifier.fillMaxWidth()) {
+        YBNormalList(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
+            items = manus,
+            isLoadingMore = isLoadingMore,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            isRefreshing = isRefreshing,
+            canLoadMore = canLoadMore,
+            header = {
+                ManuscriptTopRankingHeader(viewModel, filterState)
+            },
+            onLoadMore = {
+                viewModel.handleReviewDataIntent(ReviewDataIntent.LoadMoreManuscriptTopRanking)
+            },
+            onRefresh = {
+                viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptTopRanking)
+            }
+        ) { item, index ->
+            ManuscriptTopRankingItem(
+                num = index + 1,
+                data = data.dataList?.get(index) ?: ManuscriptReviewDataEntity(),
+                filterChoice = filterState.sortField
+            )
         }
-    ) { item, index ->
-        ManuscriptTopRankingItem(
-            num = index + 1,
-            data = data.dataList?.get(index) ?: ManuscriptReviewDataEntity(),
-            filterChoice = filterState.sortField
-        )
+
+        // Toast 组件
+        YBToast(snackBarHostState = snackbarHostState)
     }
 }
 
