@@ -540,7 +540,7 @@ fun AppealDetailScreen(
         }
     )
 
-    var reasons = ""
+    var reasons by remember { mutableStateOf("") }
 
     YBDialog(
         dialogState = showRejectDialog,
@@ -560,6 +560,7 @@ fun AppealDetailScreen(
                     Text(text = "驳回意见：", fontSize = 14.sp, color = MainTextColor)
                 }
                 YBInput(
+                    text = reasons,
                     modifier = Modifier
                         .padding(top = 4.dp)
                         .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(12.dp))
@@ -580,7 +581,7 @@ fun AppealDetailScreen(
                     contentPadding = 12.dp,
                     contentAlignment = Alignment.TopStart,
                     onValueChange = {
-                        reasons = it
+                        reasons = it.trim()
                     }
                 )
             }

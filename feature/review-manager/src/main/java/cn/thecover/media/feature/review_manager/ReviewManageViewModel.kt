@@ -207,12 +207,12 @@ class ReviewManageViewModel @Inject constructor(
         when(userScoreStatus.intValue) {
             1 -> { request.userScoreStatus = "0" }
             2 -> { request.userScoreStatus = "1" }
-            else -> {}
+            else -> { request.userScoreStatus = null }
         }
         when(newsScoreStatus.intValue) {
             1 -> { request.newsScoreStatus = "0" }
             2 -> { request.newsScoreStatus = "1" }
-            else -> {}
+            else -> { request.newsScoreStatus = null }
         }
         when(searchType.intValue) {
             0 -> { request.searchType = 3 }
