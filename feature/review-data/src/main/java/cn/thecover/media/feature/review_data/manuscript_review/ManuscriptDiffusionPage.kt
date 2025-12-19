@@ -1,6 +1,7 @@
 package cn.thecover.media.feature.review_data.manuscript_review
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -63,6 +65,7 @@ import java.time.LocalDate
  */
 @Composable
 fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
+    val focusManager = LocalFocusManager.current
 
     // 模拟稿件传播数据列表
     val data by viewModel.manuscriptReviewDiffusionPageState.collectAsState()
@@ -86,7 +89,8 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     YBNormalList(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = 12.dp)
+            .clickable { focusManager.clearFocus() },
         items = manus,
         verticalArrangement = Arrangement.spacedBy(12.dp),
         header = {
@@ -309,10 +313,21 @@ private fun ManuscriptDiffusionHeader(
                 data = selectSearchChoice, label = "请输入搜索内容", dataList = listOf(
                     "稿件名称", "稿件 ID", "记者"
                 ), onValueChange = { valueType, value ->
+                    // 过滤掉文本末尾的换行符，防止换行字符被带到接口
+                    val filteredValue = value.replace(Regex("[\\r\\n]+"), "")
                     viewModel.handleUIIntent(
                         ReviewUIIntent.UpdateManuscriptDiffusionFilter(
                             searchType = valueType,
-                            searchText = value
+                            searchText = filteredValue
+                        )
+                    )
+                }, onSearch = { valueType, value ->
+                    // 过滤掉文本末尾的换行符，防止换行字符被带到接口
+                    val filteredValue = value.replace(Regex("[\\r\\n]+"), "")
+                    viewModel.handleUIIntent(
+                        ReviewUIIntent.UpdateManuscriptDiffusionFilter(
+                            searchType = valueType,
+                            searchText = filteredValue
                         )
                     )
                 })

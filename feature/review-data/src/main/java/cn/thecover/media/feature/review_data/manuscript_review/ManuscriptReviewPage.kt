@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +43,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -97,6 +99,7 @@ internal fun ManuscriptReviewPage(
     modifier: Modifier = Modifier,
     viewModel: ReviewDataViewModel
 ) {
+    val focusManager = LocalFocusManager.current
     val data by viewModel.manuscriptReviewPageState.collectAsState()
     // 计算splitsNum为data.dataList中第一个score等于0的数据的索引
     val splitsNum = remember(data.dataList) {
@@ -124,7 +127,8 @@ internal fun ManuscriptReviewPage(
 
     YBNormalList(
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { focusManager.clearFocus() },
         items = manus,
         isLoadingMore = isLoadingMore,
         isRefreshing = isRefreshing,
@@ -477,18 +481,22 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
                 data = selectSearchChoice, label = "请输入搜索内容", dataList = listOf(
                     "稿件名称", "稿件 ID", "记者"
                 ), onValueChange = { valueType, value ->
+                    // 过滤掉文本末尾的换行符，防止换行字符被带到接口
+                    val filteredValue = value.replace(Regex("[\\r\\n]+"), "")
                     viewModel.handleUIIntent(
                         ReviewUIIntent.UpdateManuscriptReviewFilter(
                             searchType = valueType,
-                            searchText = value
+                            searchText = filteredValue
                         )
                     )
                 },
                 onSearch = { valueType, value ->
+                    // 过滤掉文本末尾的换行符，防止换行字符被带到接口
+                    val filteredValue = value.replace(Regex("[\\r\\n]+"), "")
                     viewModel.handleUIIntent(
                         ReviewUIIntent.UpdateManuscriptReviewFilter(
                             searchType = valueType,
-                            searchText = value
+                            searchText = filteredValue
                         )
                     )
                 },
