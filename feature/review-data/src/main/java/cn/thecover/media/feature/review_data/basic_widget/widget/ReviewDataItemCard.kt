@@ -21,10 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -79,17 +76,20 @@ internal fun DataItemCard(
  * 可展开/折叠的内容列组件，支持带动画的展开与收起效果。
  *
  * @param offset 展开按钮相对于左边的偏移量（单位：dp）。
+ * @param expand 当前展开/折叠状态，由外部控制。
+ * @param onExpandChange 展开/折叠状态变更回调。
  * @param content 主要内容部分。
  * @param foldContent 折叠后隐藏的内容部分。
  */
 @Composable
 internal fun ExpandItemColumn(
     offset: Int = 0,
+    expand: Boolean,
+    onExpandChange: (Boolean) -> Unit,
     content: @Composable () -> Unit,
     foldContent: @Composable () -> Unit,
-    expandIconRes: Int= YBIcons.Custom.Expand
+    expandIconRes: Int = YBIcons.Custom.Expand
 ) {
-    var expand by remember { mutableStateOf(false) }
     val animRotate = remember {
         Animatable(0f)
     }
@@ -117,7 +117,7 @@ internal fun ExpandItemColumn(
                 .fillMaxWidth()
                 .offset(x = offset.dp)
                 .clickableWithoutRipple {
-                    expand = !expand
+                    onExpandChange(!expand)
                 },
             contentAlignment = Alignment.Center
         ) {

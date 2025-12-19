@@ -287,6 +287,11 @@ private fun TotalRankingItem(
     data: ManuscriptReviewDataEntity,
     onItemClick: (Int) -> Unit
 ) {
+    // 控制展开/折叠状态
+    var isExpanded by remember { mutableStateOf(false) }
+    LaunchedEffect(data) {
+        isExpanded = false
+    }
     DataItemCard(
         containerColor = if (rank < rankLine) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.tertiaryContainer
     ) {
@@ -295,6 +300,8 @@ private fun TotalRankingItem(
         ) {
             ExpandItemColumn(
                 offset = -12,
+                expand = isExpanded,
+                onExpandChange = { isExpanded = it },
                 content = {
                     Column {
                         // 显示稿件头部信息：标题、作者、编辑

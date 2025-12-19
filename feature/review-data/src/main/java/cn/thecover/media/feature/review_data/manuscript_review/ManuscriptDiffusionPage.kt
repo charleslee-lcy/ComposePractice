@@ -147,86 +147,96 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
  */
 @Composable
 private fun DiffusionItem(rank: Int, data: DiffusionDataEntity, filterChoice: String) {
+    // 控制展开/折叠状态
+    var isExpanded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(data) {
+        isExpanded = false
+    }
+
     // 使用排名卡片包装整个内容区域
     DataItemCard {
         DataItemRankingRow(ranking = rank) {
             // 可折叠的内容区域，包含基础信息和详细数据
-            ExpandItemColumn(offset = -12, content = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    // 显示稿件头部信息：标题、作者、编辑
-                    ManuScriptItemHeader(
-                        title = data.title,
-                        author = data.reporter.joinToString("、") { it.name },
-                        editor = data.editor.joinToString("、") { it.name },
-                    )
-                    // 显示传播评分数据行：公式传播分和最终传播分
-                    PrimaryItemScoreRow(
-                        items = arrayOf(
-                            Triple(
-                                "公式传播分",
-                                if (data.formulaSpreadScore % 1 == 0.0) data.formulaSpreadScore.toInt()
-                                    .toString() else data.formulaSpreadScore.toString(),
-                                if (filterChoice.contains("公式传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
-                            Triple(
-                                "最终传播分",
-                                if (data.spreadScore % 1 == 0.0) data.spreadScore.toInt()
-                                    .toString() else data.spreadScore.toString(),
-                                if (filterChoice.contains("最终传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
+            ExpandItemColumn(
+                offset = -12,
+                expand = isExpanded,
+                onExpandChange = { isExpanded = it },
+                content = {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        // 显示稿件头部信息：标题、作者、编辑
+                        ManuScriptItemHeader(
+                            title = data.title,
+                            author = data.reporter.joinToString("、") { it.name },
+                            editor = data.editor.joinToString("、") { it.name },
                         )
-                    )
-                }
-            }, foldContent = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    // 显示转载数据：核心媒体、一级媒体、二级媒体转载数
-                    PrimaryItemScoreRow(
-                        items = arrayOf(
-                            Triple(
-                                "核心媒体转载数",
-                                data.coreMediaReprintCount.toString(),
-                                if (filterChoice.contains("核心媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
-                            Triple(
-                                "一级媒体转载数",
-                                data.level1MediaReprintCount.toString(),
-                                if (filterChoice.contains("一级媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
-                            Triple(
-                                "二级媒体转载数",
-                                data.level2MediaReprintCount.toString(),
-                                if (filterChoice.contains("二级媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
+                        // 显示传播评分数据行：公式传播分和最终传播分
+                        PrimaryItemScoreRow(
+                            items = arrayOf(
+                                Triple(
+                                    "公式传播分",
+                                    if (data.formulaSpreadScore % 1 == 0.0) data.formulaSpreadScore.toInt()
+                                        .toString() else data.formulaSpreadScore.toString(),
+                                    if (filterChoice.contains("公式传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                                Triple(
+                                    "最终传播分",
+                                    if (data.spreadScore % 1 == 0.0) data.spreadScore.toInt()
+                                        .toString() else data.spreadScore.toString(),
+                                    if (filterChoice.contains("最终传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                            )
                         )
-                    )
-                    // 显示用户互动数据：阅读数、分享数、点赞数、评论数
-                    PrimaryItemScoreRow(
-                        items = arrayOf(
-                            Triple(
-                                "阅读数",
-                                data.readCount.toString(),
-                                if (filterChoice.contains("阅读数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
-                            Triple(
-                                "分享数",
-                                data.shareCount.toString(),
-                                if (filterChoice.contains("分享数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
-                            Triple(
-                                "点赞数",
-                                data.likeCount.toString(),
-                                if (filterChoice.contains("点赞数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
-                            Triple(
-                                "评论数",
-                                data.commentCount.toString(),
-                                if (filterChoice.contains("评论数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
-                            ),
+                    }
+                }, foldContent = {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        // 显示转载数据：核心媒体、一级媒体、二级媒体转载数
+                        PrimaryItemScoreRow(
+                            items = arrayOf(
+                                Triple(
+                                    "核心媒体转载数",
+                                    data.coreMediaReprintCount.toString(),
+                                    if (filterChoice.contains("核心媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                                Triple(
+                                    "一级媒体转载数",
+                                    data.level1MediaReprintCount.toString(),
+                                    if (filterChoice.contains("一级媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                                Triple(
+                                    "二级媒体转载数",
+                                    data.level2MediaReprintCount.toString(),
+                                    if (filterChoice.contains("二级媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                            )
                         )
-                    )
-                }
-
-            })
+                        // 显示用户互动数据：阅读数、分享数、点赞数、评论数
+                        PrimaryItemScoreRow(
+                            items = arrayOf(
+                                Triple(
+                                    "阅读数",
+                                    data.readCount.toString(),
+                                    if (filterChoice.contains("阅读数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                                Triple(
+                                    "分享数",
+                                    data.shareCount.toString(),
+                                    if (filterChoice.contains("分享数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                                Triple(
+                                    "点赞数",
+                                    data.likeCount.toString(),
+                                    if (filterChoice.contains("点赞数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                                Triple(
+                                    "评论数",
+                                    data.commentCount.toString(),
+                                    if (filterChoice.contains("评论数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
+                                ),
+                            )
+                        )
+                    }
+                })
         }
     }
 }
@@ -352,9 +362,11 @@ private fun ManuscriptDiffusionHeader(
 @Preview
 private fun ManuscriptDiffusionHeaderPreview() {
     YBTheme {
-        ManuscriptDiffusionPage(viewModel(
-            factory = PreviewReviewDataViewModelFactory()
-        ))
+        ManuscriptDiffusionPage(
+            viewModel(
+                factory = PreviewReviewDataViewModelFactory()
+            )
+        )
     }
 
 }
