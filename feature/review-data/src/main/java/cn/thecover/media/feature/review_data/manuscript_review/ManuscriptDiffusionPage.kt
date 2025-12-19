@@ -125,7 +125,7 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
         }
     ) { item, index ->
 
-        DiffusionItem(item, filter.sortField)
+        DiffusionItem(index + 1, item, filter.sortField)
     }
 
 }
@@ -142,10 +142,10 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
  * @param filterChoice 当前选择的排序字段
  */
 @Composable
-private fun DiffusionItem(data: DiffusionDataEntity, filterChoice: String) {
+private fun DiffusionItem(rank: Int, data: DiffusionDataEntity, filterChoice: String) {
     // 使用排名卡片包装整个内容区域
     DataItemCard {
-        DataItemRankingRow(ranking = data.rank) {
+        DataItemRankingRow(ranking = rank) {
             // 可折叠的内容区域，包含基础信息和详细数据
             ExpandItemColumn(offset = -12, content = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
