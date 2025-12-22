@@ -29,22 +29,23 @@ class AuthInterceptor @Inject constructor(
         if (!request.url.toString().startsWith(URLConstant.YB_BASE_URL))
             return chain.proceed(request)
 
+        val newRequest = request.newBuilder()
         val newHttpUrl = requestUrl.newBuilder()
             .addQueryParameter("client", "android")
             .build()
 
         val token = getToken(context)
-        if (token.isEmpty()) return chain.proceed(request)
-
-        val newRequest = request.newBuilder()
-            .removeHeader("Authorization-API")
-            .addHeader("Authorization-API", "bearer $token")
+        if (token.isNotEmpty()) {
+            newRequest.removeHeader("Authorization-API")
+                .addHeader("Authorization-API", "bearer $token")
+        }
 
         // 只处理POST请求且body为JSON类型
-        if (request.method == "POST" && requestBody is RequestBody) {
-            val newBody = modifyRequestBody(requestBody)
-            newRequest.method(request.method, newBody)
-        }
+//        if (request.method == "POST" && requestBody is RequestBody) {
+//            val newBody = modifyRequestBody(requestBody)
+//            newRequest.method(request.method, newBody)
+//        }
+
         newRequest.url(newHttpUrl)
         return chain.proceed(newRequest.build())
     }

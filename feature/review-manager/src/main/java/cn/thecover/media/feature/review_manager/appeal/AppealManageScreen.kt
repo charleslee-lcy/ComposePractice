@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.review_manager.appeal
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.core.network.BaseUiState
+import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.YBTab
 import cn.thecover.media.core.widget.component.YBTabRow
@@ -60,6 +63,8 @@ internal fun AppealManageScreen(
         FilterType(0, "我的申诉"),
         FilterType(1, "申诉审批")
     )
+    val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { tabs.size })
     val currentTabIndex = remember { mutableIntStateOf(0) }
     val scope = rememberCoroutineScope()
@@ -83,11 +88,13 @@ internal fun AppealManageScreen(
             currentTabIndex.intValue = currentPage
             when (currentTabIndex.intValue) {
                 0 -> {
-//                    viewModel.myAppealSearchKeyword.value = ""
+                    focusManager.clearFocus()
+                    viewModel.myAppealSearchKeyword.value = ""
                     viewModel.getMyAppealList(isRefresh = true)
                 }
                 1 -> {
-//                    viewModel.appealManageSearchKeyword.value = ""
+                    focusManager.clearFocus()
+                    viewModel.appealManageSearchKeyword.value = ""
                     viewModel.getAppealTabInfo()
                     viewModel.getAppealManageList(isRefresh = true)
                 }
@@ -99,9 +106,23 @@ internal fun AppealManageScreen(
 
     val appealNewsInfo by viewModel.appealNewsUiState.collectAsStateWithLifecycle()
     LaunchedEffect(appealNewsInfo) {
-        if (appealNewsInfo.isSuccess) {
-            navController.navigateToArchiveDetail(appealNewsInfo.data?.wapUrl ?: "")
-            viewModel.appealNewsUiState.value = BaseUiState()
+        when(appealNewsInfo.status) {
+            HttpStatus.SUCCESS -> {
+                if (appealNewsInfo.data?.status == 4) {
+                    navController.navigateToArchiveDetail(appealNewsInfo.data?.wapUrl ?: "")
+                } else {
+                    navController.navigateToArchiveDetail(htmlData = appealNewsInfo.data?.content ?: "", imgList = listOf(
+                        appealNewsInfo.data?.img43 ?: "",
+                        appealNewsInfo.data?.img169 ?: ""
+                    ))
+                }
+
+                viewModel.appealNewsUiState.value = BaseUiState()
+            }
+            HttpStatus.ERROR -> {
+                Toast.makeText(context, appealNewsInfo.errorMsg, Toast.LENGTH_SHORT).show()
+            }
+            else -> {}
         }
     }
 
@@ -121,11 +142,6 @@ internal fun AppealManageScreen(
                     normalTextColor = TertiaryTextColor,
                     onClick = {
                         currentTabIndex.intValue = index
-                        // 在点击时立即清空搜索框
-//                        when (index) {
-//                            0 -> viewModel.myAppealSearchKeyword.value = ""
-//                            1 -> viewModel.appealManageSearchKeyword.value = ""
-//                        }
                         scope.launch {
                             pagerState.animateScrollToPage(index)
                         }

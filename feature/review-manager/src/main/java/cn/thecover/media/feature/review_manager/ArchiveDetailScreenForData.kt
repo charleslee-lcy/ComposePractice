@@ -1,7 +1,5 @@
 package cn.thecover.media.feature.review_manager
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.view.ViewGroup
@@ -16,8 +14,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -33,23 +35,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import androidx.navigation.NavController
-import cn.thecover.media.core.widget.component.PreviewImages
+import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.YBTitleBar
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
-import com.mohamedrejeb.calf.ui.web.rememberWebViewState
 
 @Composable
-internal fun ArchiveDetailRoute(
+internal fun ArchiveDetailForDataRoute(
     modifier: Modifier = Modifier,
-    url: String,
+    htmlData: String,
+    imgList: List<String>,
     navController: NavController
 ) {
-    ArchiveDetailScreen(modifier, url, navController)
+    ArchiveDetailForDataScreen(modifier, htmlData, imgList, navController)
 }
 
 /**
@@ -58,9 +61,10 @@ internal fun ArchiveDetailRoute(
  * 15708478830@163.com
  */
 @Composable
-fun ArchiveDetailScreen(
+fun ArchiveDetailForDataScreen(
     modifier: Modifier = Modifier,
-    url: String,
+    htmlData: String,
+    imgList: List<String>,
     navController: NavController
 ) {
 
@@ -76,7 +80,7 @@ fun ArchiveDetailScreen(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        WebViewContent(showImages, url, navController)
+        WebViewContent(showImages, htmlData, imgList, navController)
 //        PreviewImages(imagesData, showImages)
     }
 }
@@ -84,13 +88,11 @@ fun ArchiveDetailScreen(
 @Composable
 private fun WebViewContent(
     showImages: MutableState<Boolean>,
-    url: String,
+    htmlData: String,
+    imgList: List<String>,
     navController: NavController
 ) {
     val scrollState = rememberScrollState()
-    val webViewState = rememberWebViewState(
-        url = url
-    )
     var webView: WebView? by remember { mutableStateOf(null) }
     var isLoading by remember { mutableStateOf(true) }
     var isError by remember { mutableStateOf(false) }
@@ -98,6 +100,7 @@ private fun WebViewContent(
 
     Column(
         modifier = Modifier
+            .padding(horizontal = 15.dp)
             .fillMaxSize()
             .background(Color.White)
     ) {
@@ -118,6 +121,22 @@ private fun WebViewContent(
                 }
                 .verticalScroll(scrollState),
         ) {
+            imgList.forEachIndexed { index, url ->
+                if (url.isNotEmpty()) {
+                    YBImage(
+                        imageUrl = url,
+                        modifier = if (index == 0) {
+                            Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(4f / 3f)
+                        } else {
+                            Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(16f / 9f)
+                        }
+                    )
+                }
+            }
             Box(modifier = Modifier.fillMaxSize()) {
                 AndroidView(
                     factory = { context ->
@@ -203,14 +222,20 @@ private fun WebViewContent(
                                 }
                             }
 
-                            loadUrl(url)
+                            val buffer = StringBuffer()
+                                .append(context.getString(R.string.html_style))
+                                .append(htmlData)
+                                .append("</div></body>")
+                            loadDataWithBaseURL("file:///android_res/", buffer.toString(), "text/html", "utf-8", null)
                             webView = this
                         }
                     },
                     update = { view ->
-                        if (view.url != url) {
-                            view.loadUrl(url)
-                        }
+                        val buffer = StringBuffer()
+                            .append(view.context.getString(R.string.html_style))
+                            .append(htmlData)
+                            .append("</div></body>")
+                        view.loadDataWithBaseURL("file:///android_res/", buffer.toString(), "text/html", "utf-8", null)
                     }
                 )
 

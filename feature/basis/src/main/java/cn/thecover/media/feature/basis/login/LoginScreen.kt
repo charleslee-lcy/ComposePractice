@@ -120,6 +120,11 @@ internal fun LoginScreen(
             HttpStatus.ERROR -> {
                 loadingState.hide()
                 Toast.makeText(context, loginState.errorMsg, Toast.LENGTH_SHORT).show()
+
+                // 接口提示用户需要修改密码（包括初登验证、长时间未修改密码检测、后台操作重置了密码等等），需跳转到修改密码页面
+                if (loginState.errorCode == 414) {
+                    navController.navigateToModifyPassword()
+                }
             }
             else -> {}
         }
