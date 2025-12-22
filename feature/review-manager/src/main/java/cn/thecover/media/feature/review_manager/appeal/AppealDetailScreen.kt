@@ -730,20 +730,29 @@ private fun ApprovalFlowItem(
                     fontSize = 14.sp
                 )
                 Text(
-                    modifier = Modifier.padding(end = 6.dp),
+                    modifier = Modifier.padding(start = 6.dp),
                     text = node.createTime,
                     color = MainTextColor,
                     fontSize = 14.sp
                 )
             }
             if (node.operation == 4 && !node.remark.isNullOrEmpty()) {
-                Text(
-                    modifier = Modifier
-                        .padding(horizontal = 6.dp),
-                    text = "审批意见：${node.remark ?: "-"}",
-                    color = MainTextColor,
-                    fontSize = 14.sp
-                )
+                Row {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 6.dp),
+                        text = "审批意见：",
+                        color = SecondaryTextColor,
+                        fontSize = 14.sp
+                    )
+                    Text(
+                        modifier = Modifier.weight(1f).padding(top = 2.dp),
+                        text = node.remark ?: "-",
+                        color = MainTextColor,
+                        lineHeight = 20.sp,
+                        fontSize = 14.sp
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(12.dp))
         }
