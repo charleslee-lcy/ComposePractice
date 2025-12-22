@@ -39,7 +39,7 @@ data class ScoreRuleData(
 
 @Serializable
 data class ScoreLevelData(
-    val id: Long = 0L,
+    val id: Int = 0,
     val levelCode: String = "",
     val levelNum: Int = 0,
     val qualityScore: Double,
@@ -97,9 +97,9 @@ data class Reporter(
 data class ScoreLevel(
     val id: Long = 0L,
     val newsId: Long = 0L,
-    val score: String = "",
+    val score: String? = null,
     val scoreGroupId: Int = 0,
-    val scoreGroupName: String = "",
+    val scoreGroupName: String? = null,
     val scoreLevel: String = "",
     val scoreLevelName: String? = null,
     val scoreTime: String = "",
