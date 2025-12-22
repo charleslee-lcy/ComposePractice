@@ -7,6 +7,7 @@ import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import cn.thecover.media.core.data.ArchiveListData
+import cn.thecover.media.feature.review_manager.ArchiveDetailForDataRoute
 import cn.thecover.media.feature.review_manager.ArchiveDetailRoute
 import cn.thecover.media.feature.review_manager.ReviewManageRoute
 import cn.thecover.media.feature.review_manager.appeal.AppealDetailRoute
@@ -23,6 +24,7 @@ import kotlinx.serialization.Serializable
 @Serializable object ReviewManageRoute
 @Serializable data class AppealDetailRoute(val appealId: Long, val canEdit: Boolean)
 @Serializable data class ArchiveDetailRoute(val url: String)
+@Serializable data class ArchiveDetailRoute1(val htmlData: String, val imgList: List<String>)
 
 
 fun NavController.navigateToReviewManage(navOptions: NavOptions? = null) =
@@ -33,6 +35,12 @@ fun NavController.navigateToAppealDetail(appealId: Long, canEdit: Boolean, navOp
 
 fun NavController.navigateToArchiveDetail(url: String, navOptions: NavOptionsBuilder.() -> Unit = {}) {
     navigate(route = ArchiveDetailRoute(url = url)) {
+        navOptions()
+    }
+}
+
+fun NavController.navigateToArchiveDetail(htmlData: String, imgList: List<String>, navOptions: NavOptionsBuilder.() -> Unit = {}) {
+    navigate(route = ArchiveDetailRoute1(htmlData = htmlData, imgList = imgList)) {
         navOptions()
     }
 }
@@ -48,5 +56,9 @@ fun NavGraphBuilder.reviewManageScreen(navController: NavController, routeToMsgS
     composable<ArchiveDetailRoute> {
         val data = it.toRoute<ArchiveDetailRoute>()
         ArchiveDetailRoute(url = data.url, navController = navController)
+    }
+    composable<ArchiveDetailRoute1> {
+        val data = it.toRoute<ArchiveDetailRoute1>()
+        ArchiveDetailForDataRoute(htmlData = data.htmlData, imgList = data.imgList, navController = navController)
     }
 }

@@ -108,7 +108,15 @@ internal fun AppealManageScreen(
     LaunchedEffect(appealNewsInfo) {
         when(appealNewsInfo.status) {
             HttpStatus.SUCCESS -> {
-                navController.navigateToArchiveDetail(appealNewsInfo.data?.wapUrl ?: "")
+                if (appealNewsInfo.data?.status == 4) {
+                    navController.navigateToArchiveDetail(appealNewsInfo.data?.wapUrl ?: "")
+                } else {
+                    navController.navigateToArchiveDetail(htmlData = appealNewsInfo.data?.content ?: "", imgList = listOf(
+                        appealNewsInfo.data?.img43 ?: "",
+                        appealNewsInfo.data?.img169 ?: ""
+                    ))
+                }
+
                 viewModel.appealNewsUiState.value = BaseUiState()
             }
             HttpStatus.ERROR -> {

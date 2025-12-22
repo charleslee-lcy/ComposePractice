@@ -33,6 +33,8 @@ import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -41,6 +43,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import retrofit2.Retrofit
 import java.time.LocalDate
@@ -466,7 +469,9 @@ class ReviewManageViewModel @Inject constructor(
             else -> { request.searchType = 3 }
         }
         request.searchKeyword = appealManageSearchKeyword.value.ifEmpty { null }
-        viewModelScope.launch {
+        viewModelScope.launch(CoroutineExceptionHandler { _, exception ->
+            tabInfoState.value = mutableListOf(0, 0, 0)
+        }) {
             val dealingDeferred = async { apiService.getAppealManageList(request.copy(status = "1")) }
             val passDeferred = async { apiService.getAppealManageList(request.copy(status = "2")) }
             val rejectDeferred = async { apiService.getAppealManageList(request.copy(status = "4")) }
@@ -476,14 +481,16 @@ class ReviewManageViewModel @Inject constructor(
             val passResult = passDeferred.await()
             val rejectResult = rejectDeferred.await()
 
-            // 统一处理数据条数
-            val resultList = mutableListOf<Int>()
-            resultList.add(dealingResult.data?.total ?: 0)
-            resultList.add(passResult.data?.total ?: 0)
-            resultList.add(rejectResult.data?.total ?: 0)
+            withContext(Dispatchers.Main) {
+                // 统一处理数据条数
+                val resultList = mutableListOf<Int>()
+                resultList.add(dealingResult.data?.total ?: 0)
+                resultList.add(passResult.data?.total ?: 0)
+                resultList.add(rejectResult.data?.total ?: 0)
 
-            // 更新UI状态
-            tabInfoState.value = resultList
+                // 更新UI状态
+                tabInfoState.value = resultList
+            }
         }
     }
 
