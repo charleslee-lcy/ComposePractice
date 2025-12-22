@@ -1,6 +1,7 @@
 package cn.thecover.media.feature.review_manager.appeal
 
 import android.R.attr.text
+import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -82,6 +83,7 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
         FilterType(type = 3, desc = "申诉理由")
     )
 
+    val context = LocalContext.current
     val listState = rememberLazyListState()
     val items = remember { mutableStateOf(listOf<AppealListData>()) }
     val isRefreshing = remember { mutableStateOf(false) }
@@ -100,6 +102,11 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
         isLoadingMore.value = appealManageListUiState.isLoading
         canLoadMore.value = appealManageListUiState.canLoadMore
         items.value = appealManageListUiState.list
+
+        appealManageListUiState.msg?.apply {
+            Toast.makeText(context, this, Toast.LENGTH_SHORT).show()
+            appealManageListUiState.msg = null
+        }
     }
 
     LaunchedEffect(tabInfoUiState) {

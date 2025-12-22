@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.review_manager.appeal
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -45,6 +46,7 @@ fun MyAppealContent(viewModel: ReviewManageViewModel, navController: NavControll
         FilterType(type = 3, desc = "申诉理由")
     )
 
+    val context = LocalContext.current
     val listState = rememberLazyListState()
     val items = remember { mutableStateOf(listOf<AppealListData>()) }
     val isRefreshing = remember { mutableStateOf(false) }
@@ -58,6 +60,11 @@ fun MyAppealContent(viewModel: ReviewManageViewModel, navController: NavControll
         isLoadingMore.value = myAppealListUiState.isLoading
         canLoadMore.value = myAppealListUiState.canLoadMore
         items.value = myAppealListUiState.list
+
+        myAppealListUiState.msg?.apply {
+            Toast.makeText(context, this, Toast.LENGTH_SHORT).show()
+            myAppealListUiState.msg = null
+        }
     }
 
     Column(
