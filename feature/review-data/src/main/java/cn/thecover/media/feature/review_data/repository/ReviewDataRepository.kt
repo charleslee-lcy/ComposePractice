@@ -65,7 +65,7 @@ class ReviewDataRepository @Inject constructor(
                 RepositoryResult.Error(Exception(response.message))
             }
         } catch (e: Exception) {
-            RepositoryResult.Error(e)
+            RepositoryResult.Error(Exception("网络请求出错了"))
         }
     }
 
@@ -108,7 +108,7 @@ class ReviewDataRepository @Inject constructor(
                 RepositoryResult.Error(Exception(response.message))
             }
         } catch (e: Exception) {
-            RepositoryResult.Error(e)
+            RepositoryResult.Error(Exception("网络请求出错了"))
         }
     }
 
@@ -153,7 +153,7 @@ class ReviewDataRepository @Inject constructor(
             }
 
         } catch (e: Exception) {
-            RepositoryResult.Error(e)
+            RepositoryResult.Error(Exception("网络请求出错了"))
         }
     }
 
@@ -193,7 +193,7 @@ class ReviewDataRepository @Inject constructor(
             }
 
         } catch (e: Exception) {
-            RepositoryResult.Error(e)
+            RepositoryResult.Error(Exception("网络请求出错了"))
         }
     }
 
@@ -261,7 +261,7 @@ class ReviewDataRepository @Inject constructor(
             }
 
         } catch (e: Exception) {
-            RepositoryResult.Error(e)
+            RepositoryResult.Error(Exception("网络请求出错了"))
         }
     }
 
@@ -290,7 +290,7 @@ class ReviewDataRepository @Inject constructor(
             }
 
         } catch (e: Exception) {
-            RepositoryResult.Error(e)
+            RepositoryResult.Error(Exception("网络请求出错了"))
         }
     }
 
@@ -304,7 +304,7 @@ class ReviewDataRepository @Inject constructor(
                 RepositoryResult.Error(Exception(response.message))
             }
         } catch (e: Exception) {
-            RepositoryResult.Error(e)
+            RepositoryResult.Error(Exception("网络请求出错了"))
         }
     }
 

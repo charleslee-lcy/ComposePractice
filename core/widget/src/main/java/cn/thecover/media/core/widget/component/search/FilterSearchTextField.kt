@@ -5,14 +5,12 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
@@ -28,15 +26,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastCoerceAtLeast
 import cn.thecover.media.core.widget.R
+import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
+import cn.thecover.media.core.widget.theme.EditHintTextColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
@@ -149,55 +150,29 @@ fun FilterSearchTextField(
         )
 
         // 文本输入框，用于输入搜索关键词
-        BasicTextField(
-            value = textState.value,
-            onValueChange = {
-                textState.value = it
-                onValueChange(data.value, textState.value)
-            },
-            keyboardOptions = KeyboardOptions(
+        YBInput(
+            text = textState.value,
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 15.dp),
+            textStyle = TextStyle(
+                fontSize = 13.sp, color = MainTextColor
+            ),
+            hint = "请输入搜索内容",
+            hintTextSize = 13.sp,
+            hintTextColor = EditHintTextColor,
+            keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Search
             ),
             keyboardActions = KeyboardActions(
                 onSearch = {
-                    onSearch(data.value, textState.value)
-                },
-                onDone = {
-                    // 兼容低版本系统，当回车键按下时也执行搜索
-                    onSearch(data.value, textState.value)
-                },
-                onGo = {
-                    // 兼容更多键盘类型，执行搜索
-                    onSearch(data.value, textState.value)
+                    onSearch.invoke(data.value, textState.value)
                 }
             ),
-            modifier = Modifier.fillMaxWidth(),
-            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-            decorationBox = { innerTextField ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.Transparent)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-
-                        Box(modifier = Modifier.weight(1f)) {
-                            // 当输入框为空时显示提示文本
-                            if (textState.value.isEmpty()) {
-                                Text(
-                                    label,
-                                    color = TertiaryTextColor,
-                                    style = MaterialTheme.typography.labelMedium
-                                )
-                            }
-                            // 实际的输入框内容
-                            innerTextField()
-                        }
-
-                    }
-                }
-            }
-        )
+            onValueChange = {
+                textState.value = it
+                onValueChange(data.value, textState.value)
+            })
     }
 }
 

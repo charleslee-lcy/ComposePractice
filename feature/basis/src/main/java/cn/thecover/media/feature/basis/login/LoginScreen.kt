@@ -47,10 +47,8 @@ import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.datastore.Keys
 import cn.thecover.media.core.widget.datastore.saveData
-import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.EditHintTextColor
-import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
@@ -60,7 +58,7 @@ import cn.thecover.media.core.widget.ui.Visibility
 import cn.thecover.media.feature.basis.R
 import cn.thecover.media.feature.basis.home.HomeViewModel
 import cn.thecover.media.feature.basis.home.navigation.navigateToHome
-import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPassword
+import cn.thecover.media.feature.basis.mine.navigation.navigateToModifyPasswordWithoutLogin
 
 
 /**
@@ -94,6 +92,37 @@ internal fun LoginScreen(
 
     val loginState = viewModel.loginUiState.collectAsStateWithLifecycle().value
 
+    // 监听是否需要清除密码字段和恢复用户名
+    val navControllerEntry = navController.currentBackStackEntry
+    LaunchedEffect(navControllerEntry) {
+        // 检查是否是从修改密码页面返回的，如果是，则只清除密码字段，恢复用户名
+        navControllerEntry?.savedStateHandle?.get<Boolean>("clearPassword")?.let { shouldClear ->
+            if (shouldClear) {
+                passwordText = ""
+                // 恢复用户名
+                navControllerEntry?.savedStateHandle?.get<String>("username")
+                    ?.let { savedUsername ->
+                        nameText = savedUsername
+                        // 从ViewModel中保存用户名
+                        viewModel.setTempUsername(savedUsername)
+                    }
+                navControllerEntry.savedStateHandle.remove<Boolean>("clearPassword")
+                navControllerEntry.savedStateHandle.remove<String>("username")
+            }
+        }
+    }
+
+    // 从ViewModel恢复用户名
+    LaunchedEffect(Unit) {
+        viewModel.getTempUsername()?.let { savedUsername ->
+            if (savedUsername.isNotEmpty()) {
+                nameText = savedUsername
+                // 清除ViewModel中的临时用户名
+                viewModel.clearTempUsername()
+            }
+        }
+    }
+
     LaunchedEffect(loginState) {
         when (loginState.status) {
             HttpStatus.LOADING -> {
@@ -123,7 +152,16 @@ internal fun LoginScreen(
 
                 // 接口提示用户需要修改密码（包括初登验证、长时间未修改密码检测、后台操作重置了密码等等），需跳转到修改密码页面
                 if (loginState.errorCode == 414) {
-                    navController.navigateToModifyPassword()
+                    // 导航到修改密码页面，传递用户名和临时密码
+                    navController.navigateToModifyPasswordWithoutLogin(
+                        username = nameText,
+                        tempPassword = "",
+                        navOptions = navOptions {
+                            popUpTo(navController.graph.id) {
+                                inclusive = true
+                            }
+                        }
+                    )
                 }
             }
             else -> {}

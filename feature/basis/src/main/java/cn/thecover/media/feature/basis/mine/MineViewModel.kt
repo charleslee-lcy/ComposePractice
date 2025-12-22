@@ -18,6 +18,7 @@ import cn.thecover.media.feature.basis.message.intent.MessageIntent
 import cn.thecover.media.feature.basis.mine.data.HelpWebContentResponse
 import cn.thecover.media.feature.basis.mine.data.OneTimeUiState
 import cn.thecover.media.feature.basis.mine.data.requestParams.ModifyPasswordRequest
+import cn.thecover.media.feature.basis.mine.data.requestParams.ModifyPasswordWithoutLoginRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,6 +52,7 @@ class MineViewModel @Inject constructor(
 
     private val _cacheClearState = MutableStateFlow(CACHE_CLEAR_STATE_INITIAL)
     val cacheClearState: StateFlow<Int> = _cacheClearState
+
 
 
     private val _messageListState: MutableStateFlow<MessageDataListState> =
@@ -196,6 +198,35 @@ class MineViewModel @Inject constructor(
                                     )
                                 }
                                 logout()
+                            } else {
+                                _oneTimeUiState.update { OneTimeUiState(toastMessage = result.errorMsg) }
+                            }
+                        }
+                }
+            }
+
+            is MineIntent.ModifyPasswordWithoutLogin -> {
+                viewModelScope.launch {
+                    flow {
+                        val apiService = retrofit.get().create(MineApi::class.java)
+                        val response = apiService.modifyPasswordWithoutLogin(
+                            ModifyPasswordWithoutLoginRequest(
+                                username = mineIntent.username,
+                                oldPassword = DESUtil.simpleEncrypt(mineIntent.oldPassword),
+                                password = DESUtil.simpleEncrypt(mineIntent.password),
+                                passwordVerify = DESUtil.simpleEncrypt(mineIntent.passwordVerify)
+                            )
+                        )
+                        emit(response)
+                    }.asResult()
+                        .collect { result ->
+                            if (result.status == HttpStatus.SUCCESS) {
+                                _oneTimeUiState.update {
+                                    OneTimeUiState(
+                                        toastMessage = "修改密码成功",
+                                        shouldNavigateToLogin = true
+                                    )
+                                }
                             } else {
                                 _oneTimeUiState.update { OneTimeUiState(toastMessage = result.errorMsg) }
                             }
