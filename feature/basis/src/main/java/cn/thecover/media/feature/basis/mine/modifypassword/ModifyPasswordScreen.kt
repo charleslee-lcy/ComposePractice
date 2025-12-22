@@ -59,7 +59,10 @@ import cn.thecover.media.feature.basis.mine.MineViewModel
 internal fun ModifyPasswordRoute(
     modifier: Modifier = Modifier,
     viewModel: MineViewModel = hiltViewModel(),
-    navController: NavController
+    navController: NavController,
+    isFromLogin: Boolean = false,
+    username: String = "",
+    tempPassword: String = ""
 ) {
     val snackBarHostState: SnackbarHostState = remember { SnackbarHostState() }
     val oneTimeUiState by viewModel.oneTimeUiState.collectAsStateWithLifecycle()
@@ -78,13 +81,41 @@ internal fun ModifyPasswordRoute(
                 navController.navigate(LoginRoute) {
                     popUpTo(0) { inclusive = true }
                 }
+                // 如果是从登录页面跳转过来的，需要清除密码字段，但保留用户名
+                if (isFromLogin) {
+                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                        "clearPassword",
+                        true
+                    )
+                    navController.currentBackStackEntry?.savedStateHandle?.set("username", username)
+                }
             }
         }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        ModifyPasswordScreen(modifier, navController, snackBarHostState) { old, new, confirm ->
-            viewModel.handleIntent(MineIntent.ModifyPassword(old, new, confirm))
+        ModifyPasswordScreen(
+            modifier,
+            navController,
+            snackBarHostState,
+            isFromLogin,
+            username,
+            tempPassword
+        ) { old, new, confirm ->
+            if (isFromLogin) {
+                // 未登录状态的修改密码
+                viewModel.handleIntent(
+                    MineIntent.ModifyPasswordWithoutLogin(
+                        username,
+                        old,
+                        new,
+                        confirm
+                    )
+                )
+            } else {
+                // 已登录状态的修改密码
+                viewModel.handleIntent(MineIntent.ModifyPassword(old, new, confirm))
+            }
         }
 
         YBToast(snackBarHostState = snackBarHostState)
@@ -97,9 +128,12 @@ fun ModifyPasswordScreen(
     modifier: Modifier,
     navController: NavController,
     snackBarHostState: SnackbarHostState,
+    isFromLogin: Boolean,
+    username: String,
+    tempPassword: String,
     commit: (String, String, String) -> Unit
 ) {
-    val oldPass = remember { mutableStateOf("") }
+    val oldPass = remember { mutableStateOf(if (isFromLogin) tempPassword else "") }
     val newPass = remember { mutableStateOf("") }
     val confirmPass = remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -111,12 +145,26 @@ fun ModifyPasswordScreen(
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.background)
                 .statusBarsPadding()
         )
         YBTitleBar(
             title = "修改密码", leftOnClick = {
-                navController.popBackStack()
+                if (isFromLogin) {
+                    // 如果是从登录页面跳转过来的，需要保留用户名
+                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                        "clearPassword",
+                        true
+                    )
+                    navController.currentBackStackEntry?.savedStateHandle?.set("username", username)
+                    // 直接导航到登录页面
+                    navController.navigate(LoginRoute) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                } else {
+                    // 如果是从已登录状态进入的，正常返回
+                    navController.popBackStack()
+                }
             }, backgroundColor = MaterialTheme.colorScheme.background
         )
         HorizontalDivider(
@@ -161,18 +209,23 @@ fun ModifyPasswordScreen(
 }
 
 @Composable
-fun ModifyPasswordInput(textState: MutableState<String>, label: String, hint: String?) {
+fun ModifyPasswordInput(
+    textState: MutableState<String>,
+    label: String,
+    hint: String?,
+    isPassword: Boolean = true
+) {
     var passwordVisible by remember { mutableStateOf(false) }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
         BasicTextField(
             value = textState.value,
             onValueChange = { textState.value = it },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = if (passwordVisible) {
-                VisualTransformation.None
-            } else {
+            modifier = Modifier.weight(1f),
+            visualTransformation = if (isPassword && !passwordVisible) {
                 PasswordVisualTransformation()
+            } else {
+                VisualTransformation.None
             },
             decorationBox = { innerTextField ->
                 Box(
@@ -199,19 +252,20 @@ fun ModifyPasswordInput(textState: MutableState<String>, label: String, hint: St
                             }
                             innerTextField()
                         }
-
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(
-                                painterResource(if (passwordVisible) YBIcons.Custom.PasswordIsShow else YBIcons.Custom.PasswordIsHide),
-                                tint = TertiaryTextColor,
-                                contentDescription = if (passwordVisible) "隐藏密码" else "查看密码"
-                            )
-                        }
-
                     }
                 }
             }
         )
+
+        if (isPassword) {
+            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                Icon(
+                    painterResource(if (passwordVisible) YBIcons.Custom.PasswordIsShow else YBIcons.Custom.PasswordIsHide),
+                    tint = TertiaryTextColor,
+                    contentDescription = if (passwordVisible) "隐藏密码" else "查看密码"
+                )
+            }
+        }
     }
     HorizontalDivider(
         modifier = Modifier

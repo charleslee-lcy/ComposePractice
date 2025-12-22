@@ -240,6 +240,24 @@ private fun ManuscriptTopRankingHeader(
         }
     }
 
+    // 解析当前选中的日期字符串，转换为LocalDate对象
+    val selectedDate = try {
+        // 日期格式为 "yyyy年M月"，例如 "2025年8月"
+        val regex = """(\d{4})年(\d{1,2})月""".toRegex()
+        val matchResult = regex.find(filterState.selectedDate)
+        if (matchResult != null) {
+            val year = matchResult.groupValues[1].toInt()
+            val month = matchResult.groupValues[2].toInt()
+            LocalDate.of(year, month, 1)
+        } else {
+            // 如果解析失败，默认使用上个月
+            LocalDate.now().minusMonths(1)
+        }
+    } catch (e: Exception) {
+        // 如果解析失败，默认使用上个月
+        LocalDate.now().minusMonths(1)
+    }
+
     // 月份选择器弹窗，用于选择目标月份
     YBDatePicker(
         visible = showDatePicker,
@@ -247,7 +265,7 @@ private fun ManuscriptTopRankingHeader(
         onCancel = { showDatePicker = false },
         end = LocalDate.now().plusYears(10),
         start = LocalDate.of(2025, 1, 1),
-        value = LocalDate.now().minusMonths(1),
+        value = selectedDate,
         onChange = {
             viewModel.handleUIIntent(
                 ReviewUIIntent.UpdateManuscriptTopFilter(

@@ -62,6 +62,9 @@ class HomeViewModel @Inject constructor(
     // 用于跟踪当前用户ID
     private var currentUserId: Long = 0L
 
+    // 用于临时存储用户名
+    private var tempUsername: String? = null
+
     val homeManuscriptUiState = MutableStateFlow(PaginatedResult<ManuscriptReviewDataEntity>())
     val homeManuscriptDiffusionUiState = MutableStateFlow(PaginatedResult<DiffusionDataEntity>())
     var hasHomeDataFetched by mutableStateOf(false)
@@ -77,6 +80,27 @@ class HomeViewModel @Inject constructor(
         hasHomeDataFetched = false
         canShowToast = true
         currentUserId = 0L
+    }
+
+    /**
+     * 设置临时用户名
+     */
+    fun setTempUsername(username: String) {
+        tempUsername = username
+    }
+
+    /**
+     * 获取临时用户名
+     */
+    fun getTempUsername(): String? {
+        return tempUsername
+    }
+
+    /**
+     * 清除临时用户名
+     */
+    fun clearTempUsername() {
+        tempUsername = null
     }
 
     fun login(username: String, password: String) {
@@ -165,7 +189,18 @@ class HomeViewModel @Inject constructor(
                             it.copy(status = HttpStatus.LOADING)
                         }
                     } else {
-                        homeUiState.value = result
+                        // 检查 errorCode 是否为 1，如果是，则将 HomeInfo 中的 status 设置为 1
+                        val updatedResult = if (result.errorCode != 0) {
+                            val updatedHomeInfo = HomeInfo(
+                                status = 1,
+                                statusInfo = result.errorMsg
+                            )
+                            result.copy(data = updatedHomeInfo)
+                        } else {
+                            result
+                        }
+
+                        homeUiState.value = updatedResult
                     }
                 }
         }
@@ -208,6 +243,13 @@ class HomeViewModel @Inject constructor(
                         homeManuscriptUiState.update {
                             result.data ?: PaginatedResult()
                         }
+                    } else {
+                        // 保存错误信息
+                        homeManuscriptUiState.update {
+                            PaginatedResult<ManuscriptReviewDataEntity>().copy(
+                                error = result.errorMsg
+                            )
+                        }
                     }
                 }
         }
@@ -235,8 +277,14 @@ class HomeViewModel @Inject constructor(
                         homeManuscriptDiffusionUiState.update {
                             result.data ?: PaginatedResult()
                         }
+                    } else {
+                        // 保存错误信息
+                        homeManuscriptDiffusionUiState.update {
+                            PaginatedResult<DiffusionDataEntity>().copy(
+                                error = result.errorMsg
+                            )
+                        }
                     }
-
                 }
         }
     }

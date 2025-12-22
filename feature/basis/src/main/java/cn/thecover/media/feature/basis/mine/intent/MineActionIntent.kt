@@ -11,6 +11,13 @@ sealed class MineNavigationIntent {
     @Serializable
     data object ModifyPassword : MineNavigationIntent()
     @Serializable
+    data class ModifyPasswordWithoutLogin(
+        val isFromLogin: Boolean = true,
+        val username: String = "",
+        val tempPassword: String = ""
+    ) : MineNavigationIntent()
+
+    @Serializable
     data object HelpCenter : MineNavigationIntent()
 
     //非导航意图

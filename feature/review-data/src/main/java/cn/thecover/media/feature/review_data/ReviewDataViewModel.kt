@@ -519,8 +519,8 @@ class ReviewDataViewModel @Inject constructor(
 
 
             val result = repository.fetchDepartmentTaskPage(
-                departmentDataFilterState.value.getYearAsInt(),
-                departmentDataFilterState.value.getMonthAsInt(),
+                departmentTaskFilterState.value.getYearAsInt(),
+                departmentTaskFilterState.value.getMonthAsInt(),
             )
 
             when (result) {

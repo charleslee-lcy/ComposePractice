@@ -121,13 +121,12 @@ fun DataScoreItem(
             // modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE)
         )
         Spacer(Modifier.height(5.dp))
-        Text(
-            value,
-            style = MaterialTheme.typography.titleSmall,
-            color = textColor,
-            maxLines = 2,
+        AutoResizeText(
+            text = value,
+            maxLines = 1,
+            modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
-            //modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE)
+            color = textColor,
         )
     }
 }

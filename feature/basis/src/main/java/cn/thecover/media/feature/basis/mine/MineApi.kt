@@ -3,6 +3,7 @@ package cn.thecover.media.feature.basis.mine
 import cn.thecover.media.core.data.NetworkResponse
 import cn.thecover.media.feature.basis.mine.data.HelpWebContentResponse
 import cn.thecover.media.feature.basis.mine.data.requestParams.ModifyPasswordRequest
+import cn.thecover.media.feature.basis.mine.data.requestParams.ModifyPasswordWithoutLoginRequest
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -18,4 +19,7 @@ interface MineApi {
 
     @POST(value = "api/user/updatePassword")
     suspend fun modifyPassword(@Body requestData: ModifyPasswordRequest): NetworkResponse<Nothing?>
+
+    @POST(value = "api/user/updatePasswordNoLogin")
+    suspend fun modifyPasswordWithoutLogin(@Body requestData: ModifyPasswordWithoutLoginRequest): NetworkResponse<Nothing?>
 }
