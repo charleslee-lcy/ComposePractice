@@ -243,6 +243,13 @@ class HomeViewModel @Inject constructor(
                         homeManuscriptUiState.update {
                             result.data ?: PaginatedResult()
                         }
+                    } else {
+                        // 保存错误信息
+                        homeManuscriptUiState.update {
+                            PaginatedResult<ManuscriptReviewDataEntity>().copy(
+                                error = result.errorMsg
+                            )
+                        }
                     }
                 }
         }
@@ -270,8 +277,14 @@ class HomeViewModel @Inject constructor(
                         homeManuscriptDiffusionUiState.update {
                             result.data ?: PaginatedResult()
                         }
+                    } else {
+                        // 保存错误信息
+                        homeManuscriptDiffusionUiState.update {
+                            PaginatedResult<DiffusionDataEntity>().copy(
+                                error = result.errorMsg
+                            )
+                        }
                     }
-
                 }
         }
     }

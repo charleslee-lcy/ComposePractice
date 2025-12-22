@@ -114,6 +114,23 @@ private fun TopManuscriptPage(
 
         val uiState by viewModel.homeManuscriptUiState.collectAsState()
 
+        // 检查是否有错误
+        if (!uiState.error.isNullOrEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 40.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = uiState.error ?: "请求错误",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = SecondaryTextColor
+                )
+            }
+            return@Column
+        }
+
         // 如果数据为空，显示暂无数据提示
         if (uiState.dataList?.isEmpty() != false) {
             Column(
@@ -183,6 +200,23 @@ private fun TopDiffusionPage(
 ) {
     val uiState by viewModel.homeManuscriptDiffusionUiState.collectAsState()
     Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+
+        // 检查是否有错误
+        if (!uiState.error.isNullOrEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 40.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = uiState.error ?: "请求错误",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = SecondaryTextColor
+                )
+            }
+            return@Column
+        }
 
         // 如果数据为空，显示暂无数据提示
         if (uiState.dataList?.isEmpty() != false) {
