@@ -531,7 +531,7 @@ fun AppealDetailScreen(
                 id = appealId,
                 operation = 2,
                 curNodeId = detailInfoStatus.data?.curNodeId,
-                nextNodeId = detailInfoStatus.data?.nextNodeId
+                nextNodeId = detailInfoStatus.data?.nextNodeId ?: ""
             )
         },
         cancelText = "取消",
@@ -597,7 +597,7 @@ fun AppealDetailScreen(
                 operation = 4,
                 reasons = reasons,
                 curNodeId = detailInfoStatus.data?.curNodeId,
-                nextNodeId = detailInfoStatus.data?.nextNodeId
+                nextNodeId = detailInfoStatus.data?.nextNodeId ?: ""
             )
             showRejectDialog.value = false
         },

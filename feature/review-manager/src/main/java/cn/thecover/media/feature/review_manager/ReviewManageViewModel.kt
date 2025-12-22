@@ -586,7 +586,7 @@ class ReviewManageViewModel @Inject constructor(
                         nextNodeId > 0L
                     }?.let { nextNodeId ->
                         detail.data?.let { data ->
-                            data.nextNodeId = nextNodeId
+                            data.nextNodeId = nextNodeId.toString()
                         }
                     }
                 }
@@ -619,7 +619,7 @@ class ReviewManageViewModel @Inject constructor(
     /**
      * 处理申诉详情，operation: 2-通过，4-驳回
      */
-    fun auditAppealDetailInfo(id: Long, operation: Int, reasons: String? = null, curNodeId: Long?, nextNodeId: Long?) {
+    fun auditAppealDetailInfo(id: Long, operation: Int, reasons: String? = null, curNodeId: Long?, nextNodeId: String = "") {
         viewModelScope.launch {
             flow {
                 val request = AuditDetailRequest()
