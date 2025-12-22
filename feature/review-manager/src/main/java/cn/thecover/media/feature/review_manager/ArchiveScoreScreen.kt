@@ -244,6 +244,7 @@ fun ArchiveScoreScreen(
     }
 
     var scoreLevel by remember { mutableIntStateOf(0) }
+    var hasPermission by remember { mutableStateOf(false) }
 
     YBPopup(
         visible = showScoreDialog.value,
@@ -256,11 +257,17 @@ fun ArchiveScoreScreen(
             checkedItem = null
         },
         onConfirm = {
-            viewModel.updateScore(
-                scoreGroupId = viewModel.scoreGroupState.value.takeIf { it.isNotEmpty() }?.first()?.id ?: 0,
-                scoreLevel = scoreLevel,
-                newsId = checkedItem?.id
-            )
+            if (hasPermission) {
+                viewModel.updateScore(
+                    scoreGroupId = viewModel.scoreGroupState.value.takeIf { it.isNotEmpty() }
+                        ?.first()?.id ?: 0,
+                    scoreLevel = scoreLevel,
+                    newsId = checkedItem?.id
+                )
+            } else {
+                showScoreDialog.value = false
+                checkedItem = null
+            }
         }
     ) {
         val scoreLevelStatus by viewModel.scoreLevelState.collectAsStateWithLifecycle()
@@ -271,23 +278,30 @@ fun ArchiveScoreScreen(
             viewModel.getUserGroupInfo()
         }
 
+        LaunchedEffect(scoreGroupStatus) {
+            hasPermission = scoreGroupStatus.isNotEmpty()
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
             Spacer(modifier = Modifier.height(5.dp))
-            ScoreInfoContent(
-                title = scoreGroupStatus.firstOrNull()?.scoreName?.ifEmpty { "--" } ?: "--",
-                enable = scoreGroupStatus.isNotEmpty(),
-                scoreLevelList = scoreLevelStatus,
-            ) {
-                scoreLevel = it
+            if (hasPermission) {
+                ScoreInfoContent(
+                    title = scoreGroupStatus.firstOrNull()?.scoreName?.ifEmpty { "--" } ?: "--",
+                    enable = scoreGroupStatus.isNotEmpty(),
+                    scoreLevelList = scoreLevelStatus,
+                ) {
+                    scoreLevel = it
+                }
+                Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.fillMaxWidth()
+                    .height(8.dp)
+                    .background(BlockDividerColor)
+                )
             }
-            Spacer(modifier = Modifier.height(15.dp))
-            Spacer(modifier = Modifier.fillMaxWidth()
-                .height(8.dp)
-                .background(BlockDividerColor)
-            )
+
             YBLabel(
                 modifier = Modifier.padding(start = 20.dp, top = 15.dp),
                 label = {
@@ -333,7 +347,7 @@ fun ArchiveScoreScreen(
                                     .padding(horizontal = 20.dp)
                             ) {
                                 Text(
-                                    text = item.scoreGroupName,
+                                    text = item.scoreGroupName?.ifEmpty { "-" } ?: "-",
                                     color = MainTextColor,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
@@ -387,7 +401,7 @@ private fun ScoreInfoContent(
 
     LaunchedEffect(Unit) {
         if(enable && scoreLevelList.isNotEmpty()) {
-            onScoreSelect.invoke(scoreLevelList[currentIndex].levelNum)
+            onScoreSelect.invoke(scoreLevelList[currentIndex].id)
         }
     }
 
@@ -440,7 +454,7 @@ private fun ScoreInfoContent(
         value = currentIndex,
         onChange = {
             currentIndex = it
-            onScoreSelect.invoke(scoreLevelList[it].levelNum)
+            onScoreSelect.invoke(scoreLevelList[it].id)
         },
         onCancel = {
             showScoreFilter.value = false
@@ -700,7 +714,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                         Text(
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.Center,
-                            text = item.scoreLevelName ?: "--",
+                            text = item.scoreLevelName ?: "-",
                             fontSize = 14.sp,
                             color = MainTextColor
                         )
