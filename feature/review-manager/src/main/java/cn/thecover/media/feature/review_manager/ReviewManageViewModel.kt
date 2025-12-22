@@ -411,6 +411,7 @@ class ReviewManageViewModel @Inject constructor(
         when(appealManageSearchType.intValue) {
             0 -> { request.searchType = 1 }
             1 -> { request.searchType = 5 }
+            2 -> { request.searchType = 2 }
             else -> { request.searchType = 3 }
         }
         request.searchKeyword = appealManageSearchKeyword.value.ifEmpty { null }
@@ -586,7 +587,7 @@ class ReviewManageViewModel @Inject constructor(
                         nextNodeId > 0L
                     }?.let { nextNodeId ->
                         detail.data?.let { data ->
-                            data.nextNodeId = nextNodeId
+                            data.nextNodeId = nextNodeId.toString()
                         }
                     }
                 }
@@ -619,7 +620,7 @@ class ReviewManageViewModel @Inject constructor(
     /**
      * 处理申诉详情，operation: 2-通过，4-驳回
      */
-    fun auditAppealDetailInfo(id: Long, operation: Int, reasons: String? = null, curNodeId: Long?, nextNodeId: Long?) {
+    fun auditAppealDetailInfo(id: Long, operation: Int, reasons: String? = null, curNodeId: Long?, nextNodeId: String = "") {
         viewModelScope.launch {
             flow {
                 val request = AuditDetailRequest()

@@ -15,8 +15,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,7 +30,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cn.thecover.media.core.data.AppealListData
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
@@ -44,9 +41,6 @@ import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 import cn.thecover.media.feature.review_manager.ReviewManageViewModel
-import cn.thecover.media.feature.review_manager.navigation.navigateToArchiveDetail
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 
 /**
@@ -112,6 +106,8 @@ fun AppealListItem(
                         lineHeight = 20.sp,
                         fontWeight = FontWeight.SemiBold
                     ),
+                    maxLines = 2,  // 添加这一行限制最大行数
+                    overflow = TextOverflow.Ellipsis,
                     onClick = { offset ->
                         // 精确判断点击位置是否在"查看稿件"注解上
                         annotatedText.getStringAnnotations("VIEW_ARTICLE", offset, offset)

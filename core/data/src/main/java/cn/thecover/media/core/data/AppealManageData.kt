@@ -33,7 +33,7 @@ data class AppealNewsRequest(
 data class AuditDetailRequest(
     var id: Long = 0L,
     var curNodeId: Long? = null,
-    var nextNodeId: Long? = null,
+    var nextNodeId: String = "",
     var operation: Int = 0,
     var reasons: String? = null
 )
@@ -92,7 +92,7 @@ data class AppealListData(
     val updateTime: String = "",
     val updater: Long = 0L,
     var curNodeId: Long = 0L,
-    var nextNodeId: Long = 0L,
+    var nextNodeId: String = "",
     val users: List<User> = emptyList()
 )
 

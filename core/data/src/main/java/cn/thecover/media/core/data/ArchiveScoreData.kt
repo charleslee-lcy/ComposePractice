@@ -105,6 +105,6 @@ data class ScoreLevel(
     val scoreTime: String = "",
     val self: Boolean = false,
     val userId: Long = 0L,
-    val userName: String = ""
+    val userName: String? = null
 ): java.io.Serializable
 
