@@ -140,6 +140,7 @@ class ReviewManageViewModel @Inject constructor(
 
     val appealNewsUiState = MutableStateFlow(BaseUiState<AppealNewsData>())
     val appealDetailUiState = MutableStateFlow(BaseUiState<AppealListData>())
+    var isFromAppealDetail by mutableStateOf(false)
     val auditEnableState = MutableStateFlow(BaseUiState<AppealSwitchInfo>())
     val auditDetailUiState = MutableStateFlow(BaseUiState<Any>())
     // ======================================== 申诉管理 end ========================================

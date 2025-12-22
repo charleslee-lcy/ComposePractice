@@ -74,9 +74,13 @@ internal fun AppealManageScreen(
         val userInfo = Gson().fromJson(userInfoJson, UserInfo::class.java)
         userInfo?.apply {
             if (hasAuditAppealAuth) {
-                currentTabIndex.intValue = 1
-                scope.launch {
-                    pagerState.animateScrollToPage(1)
+                if (!viewModel.isFromAppealDetail) {
+                    currentTabIndex.intValue = 1
+                    scope.launch {
+                        pagerState.animateScrollToPage(1)
+                    }
+                } else {
+                    viewModel.isFromAppealDetail = false
                 }
             }
         }
