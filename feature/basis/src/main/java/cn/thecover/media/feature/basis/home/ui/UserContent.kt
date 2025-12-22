@@ -401,7 +401,17 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                         )
                         Text(
                             text = if (homeInfo.layoutScore + homeInfo.newsScore > 0) formatScore((homeInfo.layoutScore + homeInfo.newsScore).toString()) else "0",
-                            color = if (homeInfo.layoutScore + homeInfo.newsScore > 0) MainTextColor else MsgColor,
+                            color = if (homeInfo.layoutScore + homeInfo.newsScore > 0) {
+                                // 检查是否完成了定额任务（定额基数分 > 0）
+                                if (homeInfo.quotaBasicScore.isNotEmpty() && homeInfo.quotaBasicScore != "0") {
+                                    val quotaBasicScore =
+                                        homeInfo.quotaBasicScore.toDoubleOrNull() ?: 0.0
+                                    // 实际完成数大于等于定额基数分时不标红，小于时标红
+                                    if ((homeInfo.layoutScore + homeInfo.newsScore) >= quotaBasicScore) MainTextColor else MsgColor
+                                } else {
+                                    MainTextColor
+                                }
+                            } else MsgColor,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.SemiBold,
                         )
@@ -481,10 +491,19 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                             )
                             Text(
                                 text = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) "${homeInfo.innerTaskFinishedNum}条" else "0",
-                                color = if (homeInfo.innerTaskFinishedNum.isEmpty() || homeInfo.innerTaskFinishedNum.contains(
-                                        "0"
-                                    )
-                                ) MsgColor else MainTextColor,
+                                color = {
+                                    if (homeInfo.innerTaskFinishedNum.isEmpty()) {
+                                        MsgColor // 未完成
+                                    } else {
+                                        // 比较实际完成数和目标任务数
+                                        val finishedNum =
+                                            homeInfo.innerTaskFinishedNum.toDoubleOrNull() ?: 0.0
+                                        val goalNum =
+                                            homeInfo.innerTaskGoalNum.toDoubleOrNull() ?: 0.0
+                                        // 实际完成数大于等于目标任务数时不标红，小于时标红
+                                        if (finishedNum >= goalNum) MainTextColor else MsgColor
+                                    }
+                                }(),
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.SemiBold,
                             )
@@ -931,7 +950,19 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                             )
                             Text(
                                 text = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) "${homeInfo.innerTaskFinishedNum}条" else "0",
-                                color = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) MsgColor else MainTextColor,
+                                color = {
+                                    if (homeInfo.innerTaskFinishedNum.isEmpty()) {
+                                        MsgColor // 未完成
+                                    } else {
+                                        // 比较实际完成数和目标任务数
+                                        val finishedNum =
+                                            homeInfo.innerTaskFinishedNum.toDoubleOrNull() ?: 0.0
+                                        val goalNum =
+                                            homeInfo.innerTaskGoalNum.toDoubleOrNull() ?: 0.0
+                                        // 实际完成数大于等于目标任务数时不标红，小于时标红
+                                        if (finishedNum >= goalNum) MainTextColor else MsgColor
+                                    }
+                                }(),
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.SemiBold,
                             )
@@ -1340,7 +1371,19 @@ internal fun ReviewerUserContent(homeInfo: HomeInfo) {
                             )
                             Text(
                                 text = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) "${homeInfo.innerTaskFinishedNum}条" else "0",
-                                color = if (homeInfo.innerTaskFinishedNum.isNotEmpty()) MsgColor else MainTextColor,
+                                color = {
+                                    if (homeInfo.innerTaskFinishedNum.isEmpty()) {
+                                        MsgColor // 未完成
+                                    } else {
+                                        // 比较实际完成数和目标任务数
+                                        val finishedNum =
+                                            homeInfo.innerTaskFinishedNum.toDoubleOrNull() ?: 0.0
+                                        val goalNum =
+                                            homeInfo.innerTaskGoalNum.toDoubleOrNull() ?: 0.0
+                                        // 实际完成数大于等于目标任务数时不标红，小于时标红
+                                        if (finishedNum >= goalNum) MainTextColor else MsgColor
+                                    }
+                                }(),
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.SemiBold,
                             )
