@@ -145,6 +145,19 @@ internal fun AppealManageScreen(
                     selected = index == currentTabIndex.intValue,
                     normalTextColor = TertiaryTextColor,
                     onClick = {
+                        if (currentTabIndex.intValue == index) {
+                            when (currentTabIndex.intValue) {
+                                0 -> {
+                                    focusManager.clearFocus()
+                                    viewModel.getMyAppealList(isRefresh = true)
+                                }
+                                1 -> {
+                                    focusManager.clearFocus()
+                                    viewModel.getAppealTabInfo()
+                                    viewModel.getAppealManageList(isRefresh = true)
+                                }
+                            }
+                        }
                         currentTabIndex.intValue = index
                         scope.launch {
                             pagerState.animateScrollToPage(index)
