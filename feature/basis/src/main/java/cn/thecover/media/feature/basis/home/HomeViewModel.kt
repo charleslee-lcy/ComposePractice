@@ -62,6 +62,9 @@ class HomeViewModel @Inject constructor(
     // 用于跟踪当前用户ID
     private var currentUserId: Long = 0L
 
+    // 用于临时存储用户名
+    private var tempUsername: String? = null
+
     val homeManuscriptUiState = MutableStateFlow(PaginatedResult<ManuscriptReviewDataEntity>())
     val homeManuscriptDiffusionUiState = MutableStateFlow(PaginatedResult<DiffusionDataEntity>())
     var hasHomeDataFetched by mutableStateOf(false)
@@ -77,6 +80,27 @@ class HomeViewModel @Inject constructor(
         hasHomeDataFetched = false
         canShowToast = true
         currentUserId = 0L
+    }
+
+    /**
+     * 设置临时用户名
+     */
+    fun setTempUsername(username: String) {
+        tempUsername = username
+    }
+
+    /**
+     * 获取临时用户名
+     */
+    fun getTempUsername(): String? {
+        return tempUsername
+    }
+
+    /**
+     * 清除临时用户名
+     */
+    fun clearTempUsername() {
+        tempUsername = null
     }
 
     fun login(username: String, password: String) {

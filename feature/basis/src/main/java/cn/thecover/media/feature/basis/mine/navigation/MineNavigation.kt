@@ -20,6 +20,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import cn.thecover.media.feature.basis.mine.MineRoute
 import cn.thecover.media.feature.basis.mine.help.HelpCenterRoute
 import cn.thecover.media.feature.basis.mine.intent.MineNavigationIntent
@@ -36,6 +37,16 @@ fun NavController.navigateToMine(navOptions: NavOptions) = navigate(route = Mine
 fun NavController.navigateToModifyPassword(navOptions: NavOptions? = null) =
     navigate(MineNavigationIntent.ModifyPassword, navOptions)
 
+fun NavController.navigateToModifyPasswordWithoutLogin(
+    username: String = "",
+    tempPassword: String = "",
+    navOptions: NavOptions? = null
+) =
+    navigate(
+        MineNavigationIntent.ModifyPasswordWithoutLogin(true, username, tempPassword),
+        navOptions
+    )
+
 fun NavController.navigateToHelpCenter(navOptions: NavOptions? = null) =
     navigate(MineNavigationIntent.HelpCenter, navOptions)
 
@@ -48,6 +59,17 @@ fun NavGraphBuilder.mineScreen(navi: NavController) {
     // 修改密码页面路由
     composable<MineNavigationIntent.ModifyPassword> {
         ModifyPasswordRoute(navController = navi) // 需要创建该页面组件
+    }
+
+    // 未登录状态下修改密码页面路由
+    composable<MineNavigationIntent.ModifyPasswordWithoutLogin> { backStackEntry ->
+        val route = backStackEntry.toRoute<MineNavigationIntent.ModifyPasswordWithoutLogin>()
+        ModifyPasswordRoute(
+            navController = navi,
+            isFromLogin = route.isFromLogin,
+            username = route.username,
+            tempPassword = route.tempPassword
+        )
     }
 
     composable<MineNavigationIntent.HelpCenter>{
