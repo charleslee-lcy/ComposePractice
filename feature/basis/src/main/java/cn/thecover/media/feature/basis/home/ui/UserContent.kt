@@ -161,30 +161,37 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                         }
                     } else {
                         // 当不显示稿费时，显示定额基数分
-                        Card(
-                            modifier = Modifier
-                                .weight(1f),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
-                            elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
-                            shape = RoundedCornerShape(12.dp)
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(
-                                text = "定额基数分",
-                                color = SecondaryTextColor,
-                                fontSize = 14.sp,
-                                modifier = Modifier.padding(start = 12.dp, top = 12.dp)
-                            )
-                            Text(
-                                text = homeInfo.quotaBasicScore,
-                                color = MainTextColor,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier.padding(
-                                    start = 12.dp,
-                                    top = 2.dp,
-                                    bottom = 12.dp
+                            Card(
+                                modifier = Modifier
+                                    .padding(end = 8.dp)
+                                    .weight(1f),
+                                colors = CardDefaults.cardColors(containerColor = Color.White),
+                                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text(
+                                    text = "定额基数分",
+                                    color = SecondaryTextColor,
+                                    fontSize = 14.sp,
+                                    modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                                 )
-                            )
+                                Text(
+                                    text = homeInfo.quotaBasicScore,
+                                    color = MainTextColor,
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    modifier = Modifier.padding(
+                                        start = 12.dp,
+                                        top = 2.dp,
+                                        bottom = 12.dp
+                                    )
+                                )
+                            }
+                            // 右侧添加一个空白区域来保持宽度一致
+                            Spacer(modifier = Modifier.weight(1f))
                         }
                     }
                 }
@@ -290,7 +297,7 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                                 )
                             )
                         }
-                        // 添加一个空的Spacer来保持右侧空间
+                        // 右侧添加一个空白区域来保持宽度一致
                         Spacer(modifier = Modifier.weight(1f))
                     }
                 }
@@ -615,7 +622,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                             modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                         )
                         Text(
-                            text = if (homeInfo.passRate == "0") "0%" else formatScore(homeInfo.passRate),
+                            text = if (homeInfo.passRate == "0") "0%" else "${formatScore(homeInfo.passRate)}%",
                             color = MainTextColor,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.SemiBold,
@@ -735,6 +742,8 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                                 )
                             )
                         }
+                        // 右侧添加一个空白区域来保持宽度一致
+                        Spacer(modifier = Modifier.weight(1f))
                     }
                 }
             }
