@@ -69,6 +69,7 @@ import cn.thecover.media.core.common.util.toMillisecond
 import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.core.data.ScoreLevelData
 import cn.thecover.media.core.data.ScoreRuleData
+import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.GradientLeftBottom
@@ -197,10 +198,12 @@ fun ArchiveScoreScreen(
                 showScoreDialog.value = false
                 checkedItem = null
                 Toast.makeText(context, "打分成功", Toast.LENGTH_SHORT).show()
+                viewModel.updateScoreState.value = BaseUiState()
             }
             HttpStatus.ERROR -> {
                 loadingState.hide()
                 Toast.makeText(context, updateScoreStatus.errorMsg.ifEmpty { "打分失败" }, Toast.LENGTH_SHORT).show()
+                viewModel.updateScoreState.value = BaseUiState()
             }
             else -> {}
         }
