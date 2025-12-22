@@ -244,6 +244,7 @@ fun ArchiveScoreScreen(
     }
 
     var scoreLevel by remember { mutableIntStateOf(0) }
+    var hasPermission by remember { mutableStateOf(false) }
 
     YBPopup(
         visible = showScoreDialog.value,
@@ -256,16 +257,21 @@ fun ArchiveScoreScreen(
             checkedItem = null
         },
         onConfirm = {
-            viewModel.updateScore(
-                scoreGroupId = viewModel.scoreGroupState.value.takeIf { it.isNotEmpty() }?.first()?.id ?: 0,
-                scoreLevel = scoreLevel,
-                newsId = checkedItem?.id
-            )
+            if (hasPermission) {
+                viewModel.updateScore(
+                    scoreGroupId = viewModel.scoreGroupState.value.takeIf { it.isNotEmpty() }
+                        ?.first()?.id ?: 0,
+                    scoreLevel = scoreLevel,
+                    newsId = checkedItem?.id
+                )
+            } else {
+                showScoreDialog.value = false
+                checkedItem = null
+            }
         }
     ) {
         val scoreLevelStatus by viewModel.scoreLevelState.collectAsStateWithLifecycle()
         val scoreGroupStatus by viewModel.scoreGroupState.collectAsStateWithLifecycle()
-        var hasPermission by remember { mutableStateOf(false) }
 
         LaunchedEffect(Unit) {
             viewModel.getScoreLevelInfo()

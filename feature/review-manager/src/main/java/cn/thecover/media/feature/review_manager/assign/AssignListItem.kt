@@ -17,6 +17,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -24,6 +28,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.thecover.media.core.data.DepartmentAssignListData
@@ -156,16 +163,50 @@ fun DepartmentAnnualAssign(item: DepartmentAssignListData) {
                         color = SecondaryTextColor,
                         fontSize = 14.sp
                     )
-                    Text(
+                    // 使用可自动调整大小的文本组件替代原来的 Text
+                    AutoResizeText(
                         text = formatDecimalString(handleMonthData(item, it)),
-                        color = MainTextColor,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold
+                        maxLines = 1,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
                     )
                 }
             }
         }
     }
+}
+
+@Composable
+fun AutoResizeText(
+    text: String,
+    modifier: Modifier = Modifier,
+    maxLines: Int = 1,
+    maxFontSize: TextUnit = 14.sp,
+    minFontSize: TextUnit = 8.sp,
+    color: Color = MainTextColor,
+    fontWeight: FontWeight = FontWeight.SemiBold,
+    textAlign: TextAlign = TextAlign.Center // 添加文本对齐参数
+) {
+    var fontSize by remember { mutableStateOf(maxFontSize) }
+    var readyToDraw by remember { mutableStateOf(false) }
+
+    Text(
+        text = text,
+        modifier = modifier,
+        color = color,
+        fontSize = fontSize,
+        fontWeight = fontWeight,
+        maxLines = maxLines,
+        textAlign = textAlign,
+        onTextLayout = { textLayoutResult ->
+            if (textLayoutResult.didOverflowWidth && fontSize > minFontSize) {
+                fontSize = (fontSize.value * 0.9f).sp
+            } else {
+                readyToDraw = true
+            }
+        },
+        softWrap = false
+    )
 }
 
 private fun handleMonthData(item: DepartmentAssignListData, index: Int): String {
