@@ -17,10 +17,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -29,11 +25,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.thecover.media.core.data.DepartmentAssignListData
+import cn.thecover.media.core.widget.component.AutoResizeText
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.MainColor
@@ -107,12 +102,14 @@ fun AssignListItem(
                 Spacer(modifier = Modifier.weight(1f))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.clickableWithoutRipple {
-                        // 分配分数
-                        if (item.status == 1) {
-                            onAssignClick?.invoke()
+                    modifier = Modifier
+                        .clickableWithoutRipple {
+                            // 分配分数
+                            if (item.status == 1) {
+                                onAssignClick?.invoke()
+                            }
                         }
-                    }.alpha(if (item.status == 0) 0.4f else 1f)
+                        .alpha(if (item.status == 0) 0.4f else 1f)
                 ) {
                     Text(
                         text = "分配分数",
@@ -141,7 +138,9 @@ fun AssignListItem(
 @Composable
 fun DepartmentAnnualAssign(item: DepartmentAssignListData) {
     LazyVerticalGrid (
-        modifier = Modifier.padding(top = 16.dp).height(136.dp),
+        modifier = Modifier
+            .padding(top = 16.dp)
+            .height(136.dp),
         columns = GridCells.Fixed(6),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -174,39 +173,6 @@ fun DepartmentAnnualAssign(item: DepartmentAssignListData) {
             }
         }
     }
-}
-
-@Composable
-fun AutoResizeText(
-    text: String,
-    modifier: Modifier = Modifier,
-    maxLines: Int = 1,
-    maxFontSize: TextUnit = 14.sp,
-    minFontSize: TextUnit = 8.sp,
-    color: Color = MainTextColor,
-    fontWeight: FontWeight = FontWeight.SemiBold,
-    textAlign: TextAlign = TextAlign.Center // 添加文本对齐参数
-) {
-    var fontSize by remember { mutableStateOf(maxFontSize) }
-    var readyToDraw by remember { mutableStateOf(false) }
-
-    Text(
-        text = text,
-        modifier = modifier,
-        color = color,
-        fontSize = fontSize,
-        fontWeight = fontWeight,
-        maxLines = maxLines,
-        textAlign = textAlign,
-        onTextLayout = { textLayoutResult ->
-            if (textLayoutResult.didOverflowWidth && fontSize > minFontSize) {
-                fontSize = (fontSize.value * 0.9f).sp
-            } else {
-                readyToDraw = true
-            }
-        },
-        softWrap = false
-    )
 }
 
 private fun handleMonthData(item: DepartmentAssignListData, index: Int): String {
