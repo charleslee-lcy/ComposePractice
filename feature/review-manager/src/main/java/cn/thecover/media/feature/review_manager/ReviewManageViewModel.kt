@@ -411,6 +411,7 @@ class ReviewManageViewModel @Inject constructor(
         when(appealManageSearchType.intValue) {
             0 -> { request.searchType = 1 }
             1 -> { request.searchType = 5 }
+            2 -> { request.searchType = 2 }
             else -> { request.searchType = 3 }
         }
         request.searchKeyword = appealManageSearchKeyword.value.ifEmpty { null }
