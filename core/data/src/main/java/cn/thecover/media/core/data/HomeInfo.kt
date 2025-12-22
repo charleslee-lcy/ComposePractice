@@ -32,4 +32,6 @@ data class HomeInfo(
     val quotaCoefficient: String = "0",  //定额系数
     val innerTaskGoalNum: String = "",  //内参任务目标任务数
     val innerTaskFinishedNum: String = "", //内参任务实际完成数
+    val status: Int = 0,  //接口状态，0-正常，1-功能未开启
+    val statusInfo: String = ""
 )

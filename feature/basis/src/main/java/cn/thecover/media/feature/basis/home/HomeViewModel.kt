@@ -165,7 +165,18 @@ class HomeViewModel @Inject constructor(
                             it.copy(status = HttpStatus.LOADING)
                         }
                     } else {
-                        homeUiState.value = result
+                        // 检查 errorCode 是否为 1，如果是，则将 HomeInfo 中的 status 设置为 1
+                        val updatedResult = if (result.errorCode == 1) {
+                            val updatedHomeInfo = HomeInfo(
+                                status = 1,
+                                statusInfo = result.errorMsg
+                            )
+                            result.copy(data = updatedHomeInfo)
+                        } else {
+                            result
+                        }
+
+                        homeUiState.value = updatedResult
                     }
                 }
         }
