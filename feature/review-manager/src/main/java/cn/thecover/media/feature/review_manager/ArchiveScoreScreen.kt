@@ -196,10 +196,11 @@ fun ArchiveScoreScreen(
                 loadingState.hide()
                 showScoreDialog.value = false
                 checkedItem = null
+                Toast.makeText(context, "打分成功", Toast.LENGTH_SHORT).show()
             }
             HttpStatus.ERROR -> {
                 loadingState.hide()
-                Toast.makeText(context, updateScoreStatus.errorMsg, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, updateScoreStatus.errorMsg.ifEmpty { "打分失败" }, Toast.LENGTH_SHORT).show()
             }
             else -> {}
         }
