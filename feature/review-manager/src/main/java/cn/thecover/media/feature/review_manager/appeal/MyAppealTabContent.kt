@@ -106,6 +106,7 @@ fun MyAppealContent(viewModel: ReviewManageViewModel, navController: NavControll
             ) {
                 // 跳转到申诉详情页
                 navController.navigateToAppealDetail(item.id, false)
+                viewModel.isFromAppealDetail = true
             }
         }
     }
