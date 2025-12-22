@@ -333,7 +333,7 @@ fun ArchiveScoreScreen(
                                     .padding(horizontal = 20.dp)
                             ) {
                                 Text(
-                                    text = item.scoreGroupName,
+                                    text = item.scoreGroupName?.ifEmpty { "-" } ?: "-",
                                     color = MainTextColor,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
@@ -387,7 +387,7 @@ private fun ScoreInfoContent(
 
     LaunchedEffect(Unit) {
         if(enable && scoreLevelList.isNotEmpty()) {
-            onScoreSelect.invoke(scoreLevelList[currentIndex].levelNum)
+            onScoreSelect.invoke(scoreLevelList[currentIndex].id)
         }
     }
 
@@ -440,7 +440,7 @@ private fun ScoreInfoContent(
         value = currentIndex,
         onChange = {
             currentIndex = it
-            onScoreSelect.invoke(scoreLevelList[it].levelNum)
+            onScoreSelect.invoke(scoreLevelList[it].id)
         },
         onCancel = {
             showScoreFilter.value = false
@@ -700,7 +700,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                         Text(
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.Center,
-                            text = item.scoreLevelName ?: "--",
+                            text = item.scoreLevelName ?: "-",
                             fontSize = 14.sp,
                             color = MainTextColor
                         )
