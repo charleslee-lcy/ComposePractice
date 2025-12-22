@@ -265,10 +265,15 @@ fun ArchiveScoreScreen(
     ) {
         val scoreLevelStatus by viewModel.scoreLevelState.collectAsStateWithLifecycle()
         val scoreGroupStatus by viewModel.scoreGroupState.collectAsStateWithLifecycle()
+        var hasPermission by remember { mutableStateOf(false) }
 
         LaunchedEffect(Unit) {
             viewModel.getScoreLevelInfo()
             viewModel.getUserGroupInfo()
+        }
+
+        LaunchedEffect(scoreGroupStatus) {
+            hasPermission = scoreGroupStatus.isNotEmpty()
         }
 
         Column(
@@ -276,18 +281,21 @@ fun ArchiveScoreScreen(
                 .fillMaxWidth()
         ) {
             Spacer(modifier = Modifier.height(5.dp))
-            ScoreInfoContent(
-                title = scoreGroupStatus.firstOrNull()?.scoreName?.ifEmpty { "--" } ?: "--",
-                enable = scoreGroupStatus.isNotEmpty(),
-                scoreLevelList = scoreLevelStatus,
-            ) {
-                scoreLevel = it
+            if (hasPermission) {
+                ScoreInfoContent(
+                    title = scoreGroupStatus.firstOrNull()?.scoreName?.ifEmpty { "--" } ?: "--",
+                    enable = scoreGroupStatus.isNotEmpty(),
+                    scoreLevelList = scoreLevelStatus,
+                ) {
+                    scoreLevel = it
+                }
+                Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.fillMaxWidth()
+                    .height(8.dp)
+                    .background(BlockDividerColor)
+                )
             }
-            Spacer(modifier = Modifier.height(15.dp))
-            Spacer(modifier = Modifier.fillMaxWidth()
-                .height(8.dp)
-                .background(BlockDividerColor)
-            )
+
             YBLabel(
                 modifier = Modifier.padding(start = 20.dp, top = 15.dp),
                 label = {
