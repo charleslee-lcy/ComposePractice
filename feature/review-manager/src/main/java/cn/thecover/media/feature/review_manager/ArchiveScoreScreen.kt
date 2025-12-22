@@ -344,7 +344,7 @@ fun ArchiveScoreScreen(
                             Column(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .padding(horizontal = 20.dp)
+                                    .padding(horizontal = 15.dp)
                             ) {
                                 Text(
                                     text = item.scoreGroupName?.ifEmpty { "-" } ?: "-",
@@ -353,16 +353,38 @@ fun ArchiveScoreScreen(
                                     overflow = TextOverflow.Ellipsis,
                                     fontSize = 14.sp
                                 )
-                                Text(
-                                    text = item.userName,
-                                    color = MainTextColor,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.SemiBold
-                                )
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        modifier = Modifier.weight(1f, false),
+                                        text = item.userName?.ifEmpty { "-" } ?: "-",
+                                        color = MainTextColor,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    if (item.self) {
+                                        Text(
+                                            modifier = Modifier.padding(start = 5.dp)
+                                                .background(
+                                                    color = MainColor,
+                                                    shape = RoundedCornerShape(2.dp)
+                                                ).padding(horizontal = 2.dp, vertical = 1.dp),
+                                            text = "本人",
+                                            color = Color.White,
+                                            fontSize = 10.sp,
+                                            lineHeight = 10.sp,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                }
                             }
                             Text(
                                 modifier = Modifier.width(30.dp),
-                                text = item.scoreLevelName ?: "-",
+                                text = item.scoreLevelName?.ifEmpty { "-" } ?: "-",
                                 color = MainTextColor,
                                 textAlign = TextAlign.Center,
                                 fontSize = 14.sp
