@@ -146,6 +146,10 @@ fun ArchiveScoreScreen(
         isLoadingMore.value = archiveListUiState.isLoading
         canLoadMore.value = archiveListUiState.canLoadMore
         items.value = archiveListUiState.list
+        archiveListUiState.msg?.apply {
+            Toast.makeText(context, this, Toast.LENGTH_SHORT).show()
+            archiveListUiState.msg = null
+        }
     }
 
     ArchiveScoreScreen(
