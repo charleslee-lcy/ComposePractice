@@ -125,6 +125,7 @@ internal fun AppealManageScreen(
                     )
                 }
 
+                viewModel.isFromAppealDetail = true
                 viewModel.appealNewsUiState.value = BaseUiState()
             }
             HttpStatus.ERROR -> {
