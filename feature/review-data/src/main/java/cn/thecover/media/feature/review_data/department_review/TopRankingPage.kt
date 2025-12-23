@@ -32,6 +32,7 @@ import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
+import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.feature.review_data.PreviewReviewDataViewModelFactory
 import cn.thecover.media.feature.review_data.ReviewDataViewModel
@@ -102,39 +103,62 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
     Box(modifier = Modifier.fillMaxWidth()) {
         // 构建页面布局，包含日期选择和部门排名列表
         YBNormalList(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        items = departmentList,
-        isLoadingMore = isLoadingMore,
-        isRefreshing = isRefreshing,
-        canLoadMore = canLoadMore,
-        onLoadMore = {
-            viewModel.handleReviewDataIntent(ReviewDataIntent.LoadMoreDepartmentTopRanking)
-        },
-        onRefresh = {
-            viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshDepartmentTopRanking)
-        },
-        header = {
-            DataItemCard {
-                Column {
-                    Text(text = "时间")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    DataItemSelectionView(label = datePickedState.selectedDate) {
-                        showDatePicker = true
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            items = departmentList,
+            isLoadingMore = isLoadingMore,
+            isRefreshing = isRefreshing,
+            canLoadMore = canLoadMore,
+            onLoadMore = {
+                viewModel.handleReviewDataIntent(ReviewDataIntent.LoadMoreDepartmentTopRanking)
+            },
+            onRefresh = {
+                viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshDepartmentTopRanking)
+            },
+            header = {
+                DataItemCard {
+                    Column {
+                        Text(text = "时间")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        DataItemSelectionView(label = datePickedState.selectedDate) {
+                            showDatePicker = true
+                        }
                     }
                 }
             }
+        ) { item, index ->
+            if (index == 0) {
+                Row(modifier = Modifier.padding(bottom = 8.dp)) {
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        "排名",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TertiaryTextColor
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(
+                        "部门名称",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TertiaryTextColor
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        "部门人均得分",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TertiaryTextColor
+                    )
+                }
+
+            }
+            TopRankingItem(
+                index + 1,
+                item.departmentName,
+                if ((item.averageScore % 1).toFloat() == 0f) item.averageScore.toInt()
+                    .toDouble() else item.averageScore
+            )
         }
-    ) { item, index ->
-        TopRankingItem(
-            index + 1,
-            item.departmentName,
-            if ((item.averageScore % 1).toFloat() == 0f) item.averageScore.toInt()
-                .toDouble() else item.averageScore
-        )
-    }
 
         // Toast 组件
         YBToast(snackBarHostState = snackbarHostState)
@@ -187,18 +211,15 @@ private fun TopRankingItem(ranking: Int, departmentName: String, score: Double) 
         DataItemRankingRow(ranking) {
             // 水平排列部门名称和得分信息
             Row(verticalAlignment = Alignment.CenterVertically) {
+                Spacer(modifier = Modifier.width(16.dp))
                 AutoResizeText(
                     text = departmentName,
                     color = MainTextColor,
                     maxLines = 1,
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    "部门人均得分",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MainTextColor
-                )
-                Spacer(modifier = Modifier.width(4.dp))
+
+
                 Text(
                     if (score % 1 == 0.0) score.toInt().toString() else score.toString(),
                     style = MaterialTheme.typography.titleSmall,
@@ -214,9 +235,11 @@ private fun TopRankingItem(ranking: Int, departmentName: String, score: Double) 
 @Preview(showBackground = true)
 fun TopRankingItemPreview() {
     YBTheme {
-        DepartmentTopRankingPage(viewModel(
-            factory = PreviewReviewDataViewModelFactory()
-        ))
+        DepartmentTopRankingPage(
+            viewModel(
+                factory = PreviewReviewDataViewModelFactory()
+            )
+        )
     }
 
 }
