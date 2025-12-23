@@ -55,6 +55,7 @@ import cn.thecover.media.core.widget.theme.YBShapes
  *
  * @param dataList 下拉菜单的数据列表，默认为 ["稿件名称", "记者", "稿件ID"]
  * @param data 当前选中的下拉菜单项，使用 MutableState 包装以便响应式更新
+ * @param initialText 文本输入框的初始值，用于从外部同步状态
  * @param label 输入框的提示文本
  */
 @Composable
@@ -62,7 +63,9 @@ fun FilterSearchTextField(
     dataList: List<String> = listOf(
         "稿件名称", "稿件 ID", "记者"
     ),
-    data: MutableState<String>, label: String = "请输入搜索内容",
+    data: MutableState<String>,
+    initialText: String = "",
+    label: String = "请输入搜索内容",
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     onValueChange: (String, String) -> Unit = { _, _ -> },
     onSearch: (String, String) -> Unit = { _, _ -> },
@@ -72,7 +75,14 @@ fun FilterSearchTextField(
     // 动画旋转值，用于下拉箭头图标旋转效果
     val animRotate = remember { Animatable(0f) }
     // 文本输入框的内容状态
-    val textState = remember { mutableStateOf("") }
+    val textState = remember { mutableStateOf(initialText) }
+
+    // 同步外部传入的初始文本
+    LaunchedEffect(initialText) {
+        if (textState.value != initialText) {
+            textState.value = initialText
+        }
+    }
 
     // 使用TextMeasurer精确测量文本宽度
     val textMeasurer = rememberTextMeasurer()
