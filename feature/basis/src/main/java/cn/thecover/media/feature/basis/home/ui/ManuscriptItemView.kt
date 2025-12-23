@@ -16,11 +16,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -67,6 +67,11 @@ internal fun ManuscriptTopRankingItem(
     availablePages.add { TopDiffusionPage(viewModel, homeManuscriptDiffusion) }
     
     val currentIndex = remember { mutableIntStateOf(0) }
+
+    // 组件初始化时加载第一个tab的数据
+    LaunchedEffect(Unit) {
+        viewModel.getHomeManuscript()
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -85,10 +90,12 @@ internal fun ManuscriptTopRankingItem(
                         selected = index == currentIndex.intValue,
                         onClick = {
                             currentIndex.intValue = index
-                            // 切换 tab 时调用相应接口
+                            // 修复：切换 tab 时调用正确接口
                             if (index == 0) {
+                                // 稿件TOP10
                                 viewModel.getHomeManuscript()
                             } else if (index == 1) {
+                                // 稿件传播力TOP10
                                 viewModel.getHomeManuscriptDiffusion()
                             }
                         },
@@ -131,8 +138,8 @@ private fun TopManuscriptPage(
             return@Column
         }
 
-        // 如果数据为空，显示暂无数据提示
-        if (uiState.dataList?.isEmpty() != false) {
+        // 如果数据为空且不在加载中，显示暂无数据提示
+        if (uiState.dataList?.isEmpty() != false && !uiState.isLoading) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -218,8 +225,8 @@ private fun TopDiffusionPage(
             return@Column
         }
 
-        // 如果数据为空，显示暂无数据提示
-        if (uiState.dataList?.isEmpty() != false) {
+        // 如果数据为空且不在加载中，显示暂无数据提示
+        if (uiState.dataList?.isEmpty() != false && !uiState.isLoading) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
