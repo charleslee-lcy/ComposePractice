@@ -1,6 +1,5 @@
 package cn.thecover.media.feature.review_manager.assign
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -32,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -45,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import cn.thecover.media.core.data.DepartmentAssignListData
 import cn.thecover.media.core.data.UpdateAssignRequest
@@ -368,7 +365,9 @@ internal fun DepartmentAssignScreen(
         }
 
         val monthStrings = months.map {
-            "${it}月"
+            "${it}月${checkedItem?.let { data -> 
+                " 已分配（${getScoreByPickedMonth(it, data)}）分"
+            } ?: kotlin.run { "" }}"
         }
         SingleColumnPicker(
             visible = showMonthPicker,
@@ -379,7 +378,7 @@ internal fun DepartmentAssignScreen(
                 checkedItem?.let { data ->
                     assignScore = getScoreByPickedMonth(monthPicked, data)
 
-                    focusManager.moveFocus(FocusDirection.Right)
+//                    focusManager.moveFocus(FocusDirection.Right)
                 }
             },
             onCancel = {
