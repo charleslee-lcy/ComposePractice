@@ -76,15 +76,16 @@ fun YBInput(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     onValueChange: (String) -> Unit = {},
     contentPadding: Dp = 0.dp,
-    contentAlignment: Alignment = Alignment.CenterStart
+    contentAlignment: Alignment = Alignment.CenterStart,
+    ignoreEmptyInput: Boolean = false,
 ) {
     var textVisible by remember { mutableStateOf(!isPassword) }
     val focusRequester = remember { FocusRequester() }
     val textStyle = textStyle
-    var textState by remember { mutableStateOf(text) }
+    var textState by remember { mutableStateOf(if (ignoreEmptyInput) text.trim() else text) }
 
-    LaunchedEffect(text) {
-        textState = text
+    LaunchedEffect(if (ignoreEmptyInput) text.trim() else text) {
+        textState = if (ignoreEmptyInput) text.trim() else text
     }
 
     LaunchedEffect(Unit) {
@@ -110,12 +111,12 @@ fun YBInput(
                 }
                 if (result.length > maxLength) {
                     val cutText = result.take(maxLength)
-                    textState = cutText
-                    onValueChange.invoke(cutText)
+                    textState = if (ignoreEmptyInput) cutText.trim() else cutText
+                    onValueChange.invoke(textState)
                     return@BasicTextField
                 }
-                textState = result
-                onValueChange.invoke(result)
+                textState = if (ignoreEmptyInput) result.trim() else result
+                onValueChange.invoke(textState)
             },
             modifier = Modifier
                 .focusRequester(focusRequester)

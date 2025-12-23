@@ -580,8 +580,9 @@ fun AppealDetailScreen(
                     maxLength = 200,
                     contentPadding = 12.dp,
                     contentAlignment = Alignment.TopStart,
-                    onValueChange = {
-                        reasons = it.trim()
+                    ignoreEmptyInput = true,
+                    onValueChange = { input ->
+                        reasons = input
                     }
                 )
             }
