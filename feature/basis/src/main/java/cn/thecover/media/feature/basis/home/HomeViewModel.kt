@@ -239,16 +239,33 @@ class HomeViewModel @Inject constructor(
                 emit(response)
             }.asResult()
                 .collect { result ->
-                    if (result.status == HttpStatus.SUCCESS) {
-                        homeManuscriptUiState.update {
-                            result.data ?: PaginatedResult()
+                    when (result.status) {
+                        HttpStatus.LOADING -> {
+                            // 保持当前状态，只设置加载标志
+                            homeManuscriptUiState.update { it.copy(isLoading = true) }
                         }
-                    } else {
-                        // 保存错误信息
-                        homeManuscriptUiState.update {
-                            PaginatedResult<ManuscriptReviewDataEntity>().copy(
-                                error = result.errorMsg
-                            )
+
+                        HttpStatus.SUCCESS -> {
+                            homeManuscriptUiState.update {
+                                if (result.data?.dataList?.isNotEmpty() == true) {
+                                    it.copy(
+                                        dataList = result.data?.dataList,
+                                        isLoading = false
+                                    )
+                                } else {
+                                    it.copy(isLoading = false)
+                                }
+                            }
+                        }
+
+                        else -> {
+                            // 保存错误信息
+                            homeManuscriptUiState.update {
+                                PaginatedResult<ManuscriptReviewDataEntity>().copy(
+                                    error = result.errorMsg,
+                                    isLoading = false
+                                )
+                            }
                         }
                     }
                 }
@@ -273,16 +290,33 @@ class HomeViewModel @Inject constructor(
                 emit(response)
             }.asResult()
                 .collect { result ->
-                    if (result.status == HttpStatus.SUCCESS) {
-                        homeManuscriptDiffusionUiState.update {
-                            result.data ?: PaginatedResult()
+                    when (result.status) {
+                        HttpStatus.LOADING -> {
+                            // 保持当前状态，只设置加载标志
+                            homeManuscriptDiffusionUiState.update { it.copy(isLoading = true) }
                         }
-                    } else {
-                        // 保存错误信息
-                        homeManuscriptDiffusionUiState.update {
-                            PaginatedResult<DiffusionDataEntity>().copy(
-                                error = result.errorMsg
-                            )
+
+                        HttpStatus.SUCCESS -> {
+                            homeManuscriptDiffusionUiState.update {
+                                if (result.data?.dataList?.isNotEmpty() == true) {
+                                    it.copy(
+                                        dataList = result.data?.dataList,
+                                        isLoading = false
+                                    )
+                                } else {
+                                    it.copy(isLoading = false)
+                                }
+                            }
+                        }
+
+                        else -> {
+                            // 保存错误信息
+                            homeManuscriptDiffusionUiState.update {
+                                PaginatedResult<DiffusionDataEntity>().copy(
+                                    error = result.errorMsg,
+                                    isLoading = false
+                                )
+                            }
                         }
                     }
                 }

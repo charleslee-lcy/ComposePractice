@@ -17,6 +17,7 @@ import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEnti
 import cn.thecover.media.feature.review_data.data.params.RepositoryResult
 import cn.thecover.media.feature.review_data.repository.ReviewDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -110,6 +111,13 @@ class ReviewDataViewModel @Inject constructor(
 
     fun resetEditScoreSuccess() {
         _editManuscriptScoreSuccess.value = null
+        viewModelScope.launch {
+            delay(1000)
+            _iconTipsDialogState.update {
+                it.copy(time = 0)
+            }
+        }
+
     }
 
 

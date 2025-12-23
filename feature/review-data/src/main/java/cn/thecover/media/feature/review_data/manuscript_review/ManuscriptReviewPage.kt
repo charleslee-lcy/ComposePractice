@@ -163,7 +163,7 @@ internal fun ManuscriptReviewPage(
                     .background(color = MaterialTheme.colorScheme.background)
             ) {
                 ManuscriptTotalRankingHeader(viewModel = viewModel)
-                if (!data.dataList.isNullOrEmpty() && data.total > 0) {
+
                 Text(
                     text = buildAnnotatedString {
                         append("共 ")
@@ -178,7 +178,7 @@ internal fun ManuscriptReviewPage(
                         .padding(start = 24.dp, top = 8.dp)
 
                 )
-                }
+
             }
         },
         onLoadMore = {
@@ -398,7 +398,7 @@ internal fun ManuscriptReviewPage(
 
     val toastState by viewModel.iconTipsDialogState.collectAsState()
     LaunchedEffect(toastState.time) {
-        if (toastState.message.isNotEmpty()) {
+        if (toastState.message.isNotEmpty() && toastState.time != 0L) {
             snackBarHostState.showSnackbar(toastState.message)
         }
     }

@@ -119,8 +119,8 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
                     modifier = Modifier.background(color = MaterialTheme.colorScheme.background)
                 ) {
                     ManuscriptDiffusionHeader(viewModel, filter)
-                    if (!data.dataList.isNullOrEmpty() && data.total > 0) {
-                        Text(
+
+                    Text(
                             text = buildAnnotatedString {
                                 append("共 ")
                                 withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
@@ -135,7 +135,7 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
                                 .offset(y = (-4).dp)
                         )
                     }
-                }
+
 
             },
             isLoadingMore = isLoadingMore,

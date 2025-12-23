@@ -26,9 +26,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -72,6 +74,24 @@ fun FilterSearchTextField(
     // 文本输入框的内容状态
     val textState = remember { mutableStateOf("") }
 
+    // 使用TextMeasurer精确测量文本宽度
+    val textMeasurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+
+    // 计算所有文本项的宽度
+    val itemWidths = dataList.map { item ->
+        textMeasurer.measure(
+            text = item,
+            style = MaterialTheme.typography.labelMedium
+        ).size.width
+    }
+
+    // 获取最宽项的宽度
+    val maxItemWidth = itemWidths.maxOrNull() ?: 0
+
+    // 将像素转换为dp，并添加内边距和箭头图标宽度
+    val filterMenuWidth = with(density) { (maxItemWidth.toDp() + 44.dp).coerceAtLeast(80.dp) }
+
     // 当菜单展开状态改变时，触发动画旋转箭头图标
     LaunchedEffect(showDrop.value) {
         animRotate.animateTo(
@@ -110,6 +130,7 @@ fun FilterSearchTextField(
             // 触发下拉菜单展开的点击区域
             Row(
                 modifier = Modifier
+                    .width(filterMenuWidth)
                     .background(
                         backgroundColor,
                         shape = YBShapes.extraSmall
@@ -127,7 +148,7 @@ fun FilterSearchTextField(
                     style = MaterialTheme.typography.labelMedium,
                     color = MainTextColor
                 )
-                Spacer(Modifier.width(4.dp))
+                Spacer(Modifier.weight(1f))
                 // 下拉箭头图标，根据菜单状态旋转
                 Icon(
                     painterResource(R.mipmap.ic_arrow_down),

@@ -47,35 +47,35 @@ internal fun ManuScriptItemHeader(
                         modifier = Modifier
                     ) {
                         Text(
-                            "记者：${author}",
+                            "记者：${author}" + if (editor.isNotEmpty()) "     编辑：${editor}" else "",
                             style = MaterialTheme.typography.bodySmall,
                             color = SecondaryTextColor,
-                            maxLines = 2,
+                            maxLines = 3,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
                     Spacer(Modifier.width(32.dp))
-                    Column(
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(
-                            "编辑：${editor}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = SecondaryTextColor,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
+//                    Column(
+//                        modifier = Modifier.weight(1f)
+//                    ) {
+//                        Text(
+//                            "编辑：${editor}",
+//                            style = MaterialTheme.typography.bodySmall,
+//                            color = SecondaryTextColor,
+//                            maxLines = 1,
+//                            overflow = TextOverflow.Ellipsis
+//                        )
+//                    }
                 }
             }
 
             author.isNotEmpty() -> {
                 // 只有记者
                 Text(
-                    "记者：${author}",
+                    "记者：${author}" + if (editor.isNotEmpty()) "     编辑：${editor}" else "",
                     style = MaterialTheme.typography.bodySmall,
                     color = SecondaryTextColor,
-                    maxLines = 2,
+                    maxLines = 3,
                     overflow = TextOverflow.Ellipsis
                 )
             }
