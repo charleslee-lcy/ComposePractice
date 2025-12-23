@@ -60,7 +60,8 @@ fun YBWebViewPage(
     defaultTitle: String = "",
     onBackRequested: (() -> Unit)? = null,
     onLoadingStateChanged: ((Boolean) -> Unit)? = null,
-    onReceivedTitle: ((String) -> Unit)? = null
+    onReceivedTitle: ((String) -> Unit)? = null,
+    statusBarColor: Color = MaterialTheme.colorScheme.background
 ) {
     val loadingState = rememberTipsDialogState()
     var isLoading by remember { mutableStateOf(true) }
@@ -75,7 +76,7 @@ fun YBWebViewPage(
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(statusBarColor)
                 .statusBarsPadding()
         )
         YBTitleBar (

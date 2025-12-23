@@ -193,7 +193,7 @@ class MineViewModel @Inject constructor(
                             if (result.status == HttpStatus.SUCCESS) {
                                 _oneTimeUiState.update {
                                     OneTimeUiState(
-                                        toastMessage = "修改密码成功",
+                                        toastMessage = "密码修改成功，请重新登录",
                                         shouldNavigateToLogin = true
                                     )
                                 }
@@ -223,7 +223,7 @@ class MineViewModel @Inject constructor(
                             if (result.status == HttpStatus.SUCCESS) {
                                 _oneTimeUiState.update {
                                     OneTimeUiState(
-                                        toastMessage = "修改密码成功",
+                                        toastMessage = "密码修改成功，请重新登录",
                                         shouldNavigateToLogin = true
                                     )
                                 }
