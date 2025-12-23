@@ -109,7 +109,7 @@ fun DataScoreItem(
                 color = backgroundColor,
                 shape = YBShapes.small
             )
-            .padding(vertical = 12.dp),
+            .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
