@@ -110,7 +110,7 @@ fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel) {
         ) { item, index ->
             ManuscriptTopRankingItem(
                 num = index + 1,
-                data = data.dataList?.get(index) ?: ManuscriptReviewDataEntity(),
+                data = item ?: ManuscriptReviewDataEntity(),
                 filterChoice = filterState.sortField
             )
         }
