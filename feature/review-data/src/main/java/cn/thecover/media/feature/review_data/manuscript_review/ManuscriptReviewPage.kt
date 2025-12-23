@@ -398,7 +398,7 @@ internal fun ManuscriptReviewPage(
 
     val toastState by viewModel.iconTipsDialogState.collectAsState()
     LaunchedEffect(toastState.time) {
-        if (toastState.message.isNotEmpty()) {
+        if (toastState.message.isNotEmpty() && toastState.time != 0L) {
             snackBarHostState.showSnackbar(toastState.message)
         }
     }
