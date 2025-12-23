@@ -131,6 +131,10 @@ internal fun DepartmentAssignScreen(
         isLoadingMore.value = departmentListUiState.isLoading
         canLoadMore.value = departmentListUiState.canLoadMore
         items.value = departmentListUiState.list
+        departmentListUiState.msg?.apply {
+            Toast.makeText(context, this, Toast.LENGTH_SHORT).show()
+            departmentListUiState.msg = null
+        }
     }
 
     LaunchedEffect(updateAssignStatus) {

@@ -270,6 +270,7 @@ class ReviewManageViewModel @Inject constructor(
                                     isLoading = false,
                                     isRefreshing = false,
                                     canLoadMore = true,
+                                    list = listOf(),
                                     msg = result.errorMsg
                                 )
                             }
@@ -363,6 +364,7 @@ class ReviewManageViewModel @Inject constructor(
                                 isLoading = false,
                                 isRefreshing = false,
                                 canLoadMore = true,
+                                list = listOf(),
                                 msg = result.errorMsg
                             )
                         }
@@ -693,7 +695,7 @@ data class ArchiveListUiState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val canLoadMore: Boolean = true,
-    val msg: String? = null
+    var msg: String? = null
 )
 
 @Serializable
@@ -702,7 +704,7 @@ data class DepartmentAssignListUiState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val canLoadMore: Boolean = true,
-    val msg: String? = null
+    var msg: String? = null
 )
 
 @Serializable
