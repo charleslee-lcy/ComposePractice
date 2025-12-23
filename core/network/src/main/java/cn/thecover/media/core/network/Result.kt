@@ -16,11 +16,16 @@
 
 package cn.thecover.media.core.network
 
+import android.R.attr.action
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import androidx.compose.ui.res.stringResource
+import cn.thecover.media.core.data.LogoutEvent
 import cn.thecover.media.core.data.NetworkResponse
+import cn.thecover.media.core.data.ToastEvent
+import cn.thecover.media.core.widget.event.FlowBus
+import cn.thecover.media.core.widget.event.FlowEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -43,6 +48,10 @@ fun <T> Flow<NetworkResponse<T>>.asResult(): Flow<BaseUiState<T>> =
         val result = if (it.status == HTTP_STATUS_SUCCESS) {
             BaseUiState(it.data, HttpStatus.SUCCESS, HTTP_STATUS_SUCCESS, it.message)
         } else {
+            // 处理403退出登录状态
+            if (it.status == HTTP_STATUS_LOGOUT) {
+                FlowBus.post(FlowEvent(action = "logout", data = LogoutEvent()))
+            }
             BaseUiState(it.data, HttpStatus.ERROR, it.status, it.message.ifEmpty { "请求失败" })
         }
         result

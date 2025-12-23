@@ -13,6 +13,7 @@ object EventConstants {
 data class FlowEvent<T>(
     val action: String,
     val data: T,
+    val timestamp: Long = System.currentTimeMillis(),
     val extras: List<Param> = emptyList(),
 ) {
     data class Param(val key: String, val value: String)

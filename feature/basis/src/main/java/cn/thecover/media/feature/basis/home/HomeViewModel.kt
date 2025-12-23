@@ -136,20 +136,6 @@ class HomeViewModel @Inject constructor(
                 emit(result)
             }.asResult()
                 .collect { result ->
-                    if (result.errorCode == HTTP_STATUS_LOGOUT) {
-                        showToast("请先登录", TOAST_TYPE_WARNING)
-                        // 清楚token和用户信息缓存
-                        clearData(context, Keys.USER_TOKEN)
-                        clearData(context, Keys.USER_INFO)
-                        navController.navigateToLogin(navOptions {
-                            // 清除所有之前的页面
-                            popUpTo(navController.graph.id) {
-                                inclusive = true
-                            }
-                            launchSingleTop = true
-                        })
-                    }
-
                     result.data?.let {
                         // 检测用户ID是否变化
                         if (currentUserId != 0L && currentUserId != it.userId) {
