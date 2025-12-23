@@ -352,6 +352,7 @@ fun FilterSearchBar(
                     onSearch.invoke(searchText)
                 }
             ),
+            ignoreEmptyInput = true,
             onValueChange = {
                 searchText = it
             })
