@@ -69,6 +69,7 @@ import cn.thecover.media.core.common.util.toMillisecond
 import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.core.data.ScoreLevelData
 import cn.thecover.media.core.data.ScoreRuleData
+import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
@@ -84,6 +85,8 @@ import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBDialog
 import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.component.popup.YBPopup
+import cn.thecover.media.core.widget.datastore.Keys
+import cn.thecover.media.core.widget.datastore.rememberDataStoreState
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.gradientShape
 import cn.thecover.media.core.widget.state.TipsDialogState
@@ -102,7 +105,9 @@ import cn.thecover.media.feature.review_manager.appeal.FilterSearchBar
 import cn.thecover.media.feature.review_manager.appeal.FilterType
 import cn.thecover.media.feature.review_manager.assign.FilterDropMenuView
 import cn.thecover.media.feature.review_manager.navigation.navigateToArchiveDetail
+import com.google.gson.Gson
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -248,7 +253,11 @@ fun ArchiveScoreScreen(
     }
 
     var scoreLevel by remember { mutableIntStateOf(0) }
-    var hasPermission by remember { mutableStateOf(false) }
+    // 是否有稿件打分的分组
+    var hasGroupPermission by remember { mutableStateOf(false) }
+    // 是否有稿件打分操作权限
+    var hasNewsScoreOperationAuth by remember { mutableStateOf(false) }
+    var hasNewsScoreListAuth by remember { mutableStateOf(false) }
 
     YBPopup(
         visible = showScoreDialog.value,
@@ -261,7 +270,7 @@ fun ArchiveScoreScreen(
             checkedItem = null
         },
         onConfirm = {
-            if (hasPermission) {
+            if (hasGroupPermission && hasNewsScoreOperationAuth) {
                 viewModel.updateScore(
                     scoreGroupId = viewModel.scoreGroupState.value.takeIf { it.isNotEmpty() }
                         ?.first()?.id ?: 0,
@@ -274,16 +283,27 @@ fun ArchiveScoreScreen(
             }
         }
     ) {
+        val context = LocalContext.current
         val scoreLevelStatus by viewModel.scoreLevelState.collectAsStateWithLifecycle()
         val scoreGroupStatus by viewModel.scoreGroupState.collectAsStateWithLifecycle()
+        val userInfoJson = rememberDataStoreState(Keys.USER_INFO, "")
 
         LaunchedEffect(Unit) {
             viewModel.getScoreLevelInfo()
             viewModel.getUserGroupInfo()
+            viewModel.getUserInfo(context)
+        }
+
+        LaunchedEffect(userInfoJson) {
+            val userInfo = Gson().fromJson(userInfoJson, UserInfo::class.java)
+            userInfo?.apply {
+                hasNewsScoreOperationAuth = hasNewsScoreOperationAuth()
+                hasNewsScoreListAuth = hasNewsScoreListAuth()
+            }
         }
 
         LaunchedEffect(scoreGroupStatus) {
-            hasPermission = scoreGroupStatus.isNotEmpty()
+            hasGroupPermission = scoreGroupStatus.isNotEmpty()
         }
 
         Column(
@@ -291,7 +311,7 @@ fun ArchiveScoreScreen(
                 .fillMaxWidth()
         ) {
             Spacer(modifier = Modifier.height(5.dp))
-            if (hasPermission) {
+            if (hasGroupPermission && hasNewsScoreOperationAuth) {
                 ScoreInfoContent(
                     title = scoreGroupStatus.firstOrNull()?.scoreName?.ifEmpty { "--" } ?: "--",
                     enable = scoreGroupStatus.isNotEmpty(),
@@ -361,18 +381,21 @@ fun ArchiveScoreScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text(
-                                        modifier = Modifier.weight(1f, false),
-                                        text = item.userName?.ifEmpty { "-" } ?: "-",
-                                        color = MainTextColor,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
+                                    if (hasNewsScoreListAuth) {
+                                        Text(
+                                            modifier = Modifier.weight(1f, false),
+                                            text = item.userName?.ifEmpty { "-" } ?: "-",
+                                            color = MainTextColor,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                        Spacer(modifier = Modifier.width(5.dp))
+                                    }
                                     if (item.self) {
                                         Text(
-                                            modifier = Modifier.padding(start = 5.dp)
+                                            modifier = Modifier
                                                 .background(
                                                     color = MainColor,
                                                     shape = RoundedCornerShape(2.dp)
