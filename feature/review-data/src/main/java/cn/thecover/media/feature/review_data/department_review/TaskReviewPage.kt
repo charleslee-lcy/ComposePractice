@@ -77,10 +77,10 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
         isRefreshing.value = taskState.isRefreshing
         canLoadMore.value = taskState.hasNextPage
 
-        // 监听错误信息并显示 Toast
-        taskState.error?.let { errorMessage ->
-            viewModel.handleReviewDataIntent(ReviewDataIntent.ShowToast(errorMessage))
-        }
+//        // 监听错误信息并显示 Toast
+//        taskState.error?.let { errorMessage ->
+//            viewModel.handleReviewDataIntent(ReviewDataIntent.ShowToast(errorMessage))
+//        }
     }
 
     // 监听Toast消息

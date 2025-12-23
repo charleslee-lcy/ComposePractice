@@ -83,10 +83,10 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
         isRefreshing.value = departmentTotalData.isRefreshing
         canLoadMore.value = departmentTotalData.hasNextPage
 
-        // 监听错误信息并显示 Toast
-        departmentTotalData.error?.let { errorMessage ->
-            viewModel.handleReviewDataIntent(ReviewDataIntent.ShowToast(errorMessage))
-        }
+//        // 监听错误信息并显示 Toast
+//        departmentTotalData.error?.let { errorMessage ->
+//            viewModel.handleReviewDataIntent(ReviewDataIntent.ShowToast(errorMessage))
+//        }
     }
 
     // 监听Toast消息

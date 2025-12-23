@@ -140,10 +140,7 @@ internal fun ManuscriptReviewPage(
         isRefreshing.value = data.isRefreshing
         canLoadMore.value = data.hasNextPage
 
-        // 监听错误信息并显示 Toast
-        data.error?.let { errorMessage ->
-            viewModel.handleReviewDataIntent(ReviewDataIntent.ShowToast(errorMessage))
-        }
+
     }
 
     YBNormalList(
@@ -577,7 +574,14 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
     val selectSearchChoice = remember { mutableStateOf(filterState.searchField) }
 
 
+    // 同步状态
     LaunchedEffect(filterState) {
+        if (selectFilterChoice.value != filterState.sortField) {
+            selectFilterChoice.value = filterState.sortField
+        }
+        if (selectSearchChoice.value != filterState.searchField) {
+            selectSearchChoice.value = filterState.searchField
+        }
         viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptReviewData)
     }
 
@@ -622,9 +626,13 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
 
             // 搜索输入区域
             FilterSearchTextField(
-                data = selectSearchChoice, label = "请输入搜索内容", dataList = listOf(
+                data = selectSearchChoice,
+                initialText = filterState.searchText,
+                label = "请输入搜索内容",
+                dataList = listOf(
                     "稿件名称", "稿件 ID", "记者"
-                ), onValueChange = { valueType, value ->
+                ),
+                onValueChange = { valueType, value ->
                     // 过滤掉文本末尾的换行符，防止换行字符被带到接口
                     val filteredValue = value.replace(Regex("[\\r\\n]+"), "")
                     viewModel.handleUIIntent(
