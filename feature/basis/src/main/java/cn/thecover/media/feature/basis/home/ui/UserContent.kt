@@ -249,7 +249,7 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                                     true -> "合格"
                                     else -> "不合格"
                                 },
-                                color = if (homeInfo.assessmentResult == null) MainTextColor else MsgColor,
+                                color = if (homeInfo.assessmentResult == null || homeInfo.assessmentResult == true) MainTextColor else MsgColor,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 modifier = Modifier.padding(
@@ -287,7 +287,7 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                                     true -> "合格"
                                     else -> "不合格"
                                 },
-                                color = if (homeInfo.assessmentResult == null) MainTextColor else MsgColor,
+                                color = if (homeInfo.assessmentResult == null || homeInfo.assessmentResult == true) MainTextColor else MsgColor,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 modifier = Modifier.padding(

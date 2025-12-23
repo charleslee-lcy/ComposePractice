@@ -79,9 +79,7 @@ internal fun DepartmentReviewScreen(
         isLoadingMore.value = depart.isLoading
         isRefreshing.value = depart.isRefreshing
         canLoadMore.value = depart.hasNextPage
-        depart.error?.let {
-            snackBarHostState.showToast(it)
-        }
+
     }
 
     // 监听Toast消息
