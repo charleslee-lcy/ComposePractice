@@ -9,5 +9,5 @@ import java.time.LocalDate
 
 data class DepartmentFilterState(
     override val selectedDate: String = "${if (LocalDate.now().monthValue == 1) LocalDate.now().year - 1 else LocalDate.now().year}年${if (LocalDate.now().monthValue == 1) 12 else LocalDate.now().monthValue - 1}月",
-    val sortField: String = "部门总稿费"
+    val sortField: String = "部门人员平均分"
 ): FilterState()

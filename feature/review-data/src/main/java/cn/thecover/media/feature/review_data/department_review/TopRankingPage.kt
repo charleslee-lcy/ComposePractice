@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cn.thecover.media.core.widget.component.AutoResizeText
 import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.component.picker.DateType
@@ -186,7 +187,11 @@ private fun TopRankingItem(ranking: Int, departmentName: String, score: Double) 
         DataItemRankingRow(ranking) {
             // 水平排列部门名称和得分信息
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = departmentName, style = MaterialTheme.typography.titleSmall, maxLines = 1, modifier = Modifier.weight(1f))
+                AutoResizeText(
+                    text = departmentName,
+                    color = MainTextColor,
+                    maxLines = 1,
+                )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
                     "部门人均得分",

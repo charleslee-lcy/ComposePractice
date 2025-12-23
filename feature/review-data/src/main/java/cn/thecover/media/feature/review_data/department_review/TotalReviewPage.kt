@@ -260,7 +260,7 @@ private fun DepartmentReviewItem(
                 PrimaryItemScoreRow(
                     items = arrayOf(
                         Triple(
-                            "总稿费",
+                            "部门总稿费",
                             if (totalPayment % 1 == 0.0) totalPayment.toInt()
                                 .toString() else totalPayment.toString(),
                             if (filterText.contains("总稿费")) ScoreItemType.PRIMARY_WITH_BORDER else ScoreItemType.PRIMARY
