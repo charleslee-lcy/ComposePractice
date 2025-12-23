@@ -107,7 +107,6 @@ import cn.thecover.media.feature.review_manager.assign.FilterDropMenuView
 import cn.thecover.media.feature.review_manager.navigation.navigateToArchiveDetail
 import com.google.gson.Gson
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -537,6 +536,11 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
         FilterType(type = 2, desc = "待打分"),
         FilterType(type = 3, desc = "已打分")
     )
+    val scoreStateFilters1 = listOf(
+        FilterType(type = 1, desc = "全部"),
+        FilterType(type = 2, desc = "未完成"),
+        FilterType(type = 3, desc = "已完成")
+    )
 
     val searchFilters = listOf(
         FilterType(type = 3, desc = "稿件名称"),
@@ -683,7 +687,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 FilterDropMenuView(
-                    filterData = scoreStateFilters,
+                    filterData = scoreStateFilters1,
                     initialIndex = viewModel.newsScoreStatus.intValue
                 ) { _, index ->
                     viewModel.newsScoreStatus.intValue = index
