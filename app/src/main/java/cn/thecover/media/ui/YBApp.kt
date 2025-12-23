@@ -36,8 +36,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarDuration.Indefinite
 import androidx.compose.material3.SnackbarDuration.Short
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -47,6 +45,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -66,20 +65,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
-import cn.thecover.media.core.widget.R
+import cn.thecover.media.core.data.ToastEvent
 import cn.thecover.media.core.widget.component.YBBackground
 import cn.thecover.media.core.widget.component.YBGradientBackground
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.YBNavigationBar
 import cn.thecover.media.core.widget.component.YBNavigationBarItem
+import cn.thecover.media.core.widget.component.YBToast
+import cn.thecover.media.core.widget.event.FlowBus
 import cn.thecover.media.core.widget.theme.GradientColors
-import cn.thecover.media.core.widget.theme.LocalGradientColors
 import cn.thecover.media.core.widget.theme.MsgColor
-import cn.thecover.media.core.widget.theme.Orange90
 import cn.thecover.media.core.widget.theme.OutlineColor
-import cn.thecover.media.core.widget.theme.Red40
-import cn.thecover.media.navigation.TopLevelDestination
 import cn.thecover.media.navigation.YBNavHost
+import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
 @Composable
@@ -219,6 +217,19 @@ private fun MainContent(
     snackBarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        FlowBus.observeEvent<ToastEvent>("toast") {
+            scope.launch {
+                snackBarHostState.showSnackbar(
+                    message = it.data.message,
+                    actionLabel = it.data.action,
+                    duration = Short
+                )
+            }
+        }
+    }
+
     Scaffold(
         modifier = modifier,
         containerColor = Color.Transparent,
@@ -233,7 +244,8 @@ private fun MainContent(
                     ),
                 ),
                 snackbar = {
-                    Snackbar(it, contentColor = Red40, containerColor = Orange90)
+//                    Snackbar(it, contentColor = Red40, containerColor = Orange90)
+                    YBToast(snackBarHostState = snackBarHostState)
                 }
             )
         },

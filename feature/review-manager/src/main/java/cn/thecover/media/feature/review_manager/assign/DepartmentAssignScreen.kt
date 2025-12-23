@@ -49,8 +49,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import cn.thecover.media.core.data.DepartmentAssignListData
 import cn.thecover.media.core.data.UpdateAssignRequest
+import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
+import cn.thecover.media.core.widget.component.TOAST_TYPE_ERROR
+import cn.thecover.media.core.widget.component.TOAST_TYPE_SUCCESS
+import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.YBLabel
@@ -61,6 +65,7 @@ import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBDialog
 import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.component.popup.YBPopup
+import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.DividerColor
 import cn.thecover.media.core.widget.theme.MainColor
@@ -132,7 +137,7 @@ internal fun DepartmentAssignScreen(
         canLoadMore.value = departmentListUiState.canLoadMore
         items.value = departmentListUiState.list
         departmentListUiState.msg?.apply {
-            Toast.makeText(context, this, Toast.LENGTH_SHORT).show()
+            showToast(this, TOAST_TYPE_ERROR)
             departmentListUiState.msg = null
         }
     }
@@ -144,12 +149,15 @@ internal fun DepartmentAssignScreen(
             }
             HttpStatus.SUCCESS -> {
                 loadingState.hide()
+                showToast("分配成功", TOAST_TYPE_SUCCESS)
                 showAssignDialog.value = false
                 checkedItem = null
+                viewModel.updateAssignState.value = BaseUiState()
             }
             HttpStatus.ERROR -> {
                 loadingState.hide()
-                Toast.makeText(context, updateAssignStatus.errorMsg, Toast.LENGTH_SHORT).show()
+                showToast(updateAssignStatus.errorMsg.ifEmpty { "分配失败" }, TOAST_TYPE_ERROR)
+                viewModel.updateAssignState.value = BaseUiState()
             }
             else -> {}
         }
@@ -200,7 +208,7 @@ internal fun DepartmentAssignScreen(
         },
         onConfirm = {
             if (assignScore.isEmpty()) {
-                Toast.makeText(context, "请输入分配分数", Toast.LENGTH_SHORT).show()
+                showToast("请输入分配分数", TOAST_TYPE_WARNING)
                 return@YBPopup
             }
             val request = UpdateAssignRequest()

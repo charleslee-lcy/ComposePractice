@@ -37,8 +37,10 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import cn.thecover.media.core.widget.component.PreviewImages
+import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
 import cn.thecover.media.core.widget.component.YBTitleBar
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
+import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 import com.mohamedrejeb.calf.ui.web.rememberWebViewState
@@ -186,7 +188,7 @@ private fun WebViewContent(
                                                 if (intent.resolveActivity(packageManager) != null) {
                                                     startActivity(intent)
                                                 } else {
-                                                    Toast.makeText(this, "请先安装云新闻应用", Toast.LENGTH_SHORT).show()
+                                                    showToast(msg = "请先安装云新闻应用", action = TOAST_TYPE_WARNING)
                                                 }
                                             }
                                         } catch (e: Exception) {
