@@ -1,5 +1,7 @@
 package cn.thecover.media.feature.review_manager
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -7,6 +9,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import androidx.navigation.navOptions
 import cn.thecover.media.core.common.util.formatToDateString
 import cn.thecover.media.core.common.util.toMillisecond
 import cn.thecover.media.core.data.AppealDetailRequest
@@ -30,8 +34,13 @@ import cn.thecover.media.core.data.UpdateAssignRequest
 import cn.thecover.media.core.data.UpdateScoreRequest
 import cn.thecover.media.core.data.UserScoreGroup
 import cn.thecover.media.core.network.BaseUiState
+import cn.thecover.media.core.network.HTTP_STATUS_LOGOUT
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
+import cn.thecover.media.core.widget.datastore.Keys
+import cn.thecover.media.core.widget.datastore.clearData
+import cn.thecover.media.core.widget.datastore.saveData
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -654,6 +663,23 @@ class ReviewManageViewModel @Inject constructor(
                         _unreadMessageCount.update { result.data ?: 0 }
                     } else {
                         _unreadMessageCount.update { 0 }
+                    }
+                }
+        }
+    }
+
+    /**
+     * 获取接口用户信息
+     */
+    fun getUserInfo(context: Context) {
+        viewModelScope.launch {
+            flow {
+                val result = apiService.getUserInfo()
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    result.data?.let {
+                        saveData(context, Keys.USER_INFO, Gson().toJson(it))
                     }
                 }
         }

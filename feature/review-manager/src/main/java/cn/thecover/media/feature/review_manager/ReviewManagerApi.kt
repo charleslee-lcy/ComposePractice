@@ -21,6 +21,7 @@ import cn.thecover.media.core.data.ScoreLevelData
 import cn.thecover.media.core.data.ScoreRuleData
 import cn.thecover.media.core.data.UpdateAssignRequest
 import cn.thecover.media.core.data.UpdateScoreRequest
+import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.core.data.UserScoreGroup
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -36,6 +37,9 @@ interface ReviewManagerApi {
     //获取未读消息数
     @GET(value = "api/mgr/unReadNotificationCount")
     suspend fun getUnreadMessageCount(): NetworkResponse<Int>
+
+    @POST(value = "api/user/getUserInfo")
+    suspend fun getUserInfo(): NetworkResponse<UserInfo>
 
     /**
      * 稿件打分等级情况
