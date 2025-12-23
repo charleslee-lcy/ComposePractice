@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastCoerceAtLeast
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cn.thecover.media.core.data.ManuscriptReviewDataEntity
+import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.component.ItemScoreRow
 import cn.thecover.media.core.widget.component.YBButton
@@ -70,6 +71,8 @@ import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
 import cn.thecover.media.core.widget.component.popup.YBDialog
 import cn.thecover.media.core.widget.component.search.FilterSearchTextField
+import cn.thecover.media.core.widget.datastore.Keys
+import cn.thecover.media.core.widget.datastore.rememberDataStoreState
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -88,6 +91,7 @@ import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemRanking
 import cn.thecover.media.feature.review_data.basic_widget.widget.DataItemSelectionView
 import cn.thecover.media.feature.review_data.basic_widget.widget.ExpandItemColumn
 import cn.thecover.media.feature.review_data.basic_widget.widget.ManuScriptItemHeader
+import com.google.gson.Gson
 import java.time.LocalDate
 
 /**
@@ -112,13 +116,17 @@ internal fun ManuscriptReviewPage(
 
     // 观察稿分修改操作的状态
     val editScoreSuccess by viewModel.editManuscriptScoreSuccess.collectAsState()
-    
+    val userInfoJson = rememberDataStoreState(Keys.USER_INFO, "")
     val showEditScorePop = remember { mutableStateOf(false) }
     // 弹窗内的错误提示信息
     var errorMessage by remember { mutableStateOf<String?>(null) }
     // 文本输入框的状态
     var textFiledState by remember { mutableStateOf("") }
-
+    val showModifyState = remember { mutableStateOf(false) }
+    LaunchedEffect(userInfoJson) {
+        val userInfo = Gson().fromJson(userInfoJson, UserInfo::class.java)
+        showModifyState.value = userInfo?.hasModifyNewsScoreAuth == true
+    }
     var editId by remember { mutableIntStateOf(0) }
     // 创建 MutableState 用于列表组件
     val manus = remember { mutableStateOf(data.dataList ?: emptyList()) }
@@ -204,7 +212,12 @@ internal fun ManuscriptReviewPage(
             ) {
                 Spacer(modifier = Modifier.height(12.dp))
 
-                TotalRankingItem(index + 1, rankLine = splitsNum + 1, item, onItemClick = {
+                TotalRankingItem(
+                    index + 1,
+                    rankLine = splitsNum + 1,
+                    item,
+                    showModifyState.value,
+                    onItemClick = {
                     // 先清除错误信息，再打开弹窗
                     errorMessage = null
                     editId = it
@@ -399,7 +412,9 @@ private fun TotalRankingItem(
     rank: Int,
     rankLine: Int,
     data: ManuscriptReviewDataEntity,
-    onItemClick: (Int) -> Unit
+    showModify: Boolean,
+    onItemClick: (Int) -> Unit,
+
 ) {
     // 控制展开/折叠状态
     var isExpanded by remember { mutableStateOf(false) }
@@ -455,24 +470,27 @@ private fun TotalRankingItem(
                             }
 
                             Spacer(modifier = Modifier.weight(1f))
-                            YBButton(
-                                shape = RoundedCornerShape(2.dp),
-                                modifier = Modifier.padding(top = 4.dp),
-                                contentPadding = PaddingValues(
-                                    horizontal = 12.dp,
-                                    vertical = 8.5.dp
-                                ),
-                                content = {
-                                    Text(
-                                        "修改稿分",
-                                        style = MaterialTheme.typography.labelMedium
-                                    )
-                                },
-                                onClick = {
-                                    onItemClick.invoke(data.id)
-                                },
+                            if (showModify) {
+                                YBButton(
+                                    shape = RoundedCornerShape(2.dp),
+                                    modifier = Modifier.padding(top = 4.dp),
+                                    contentPadding = PaddingValues(
+                                        horizontal = 12.dp,
+                                        vertical = 8.5.dp
+                                    ),
+                                    content = {
+                                        Text(
+                                            "修改稿分",
+                                            style = MaterialTheme.typography.labelMedium
+                                        )
+                                    },
+                                    onClick = {
+                                        onItemClick.invoke(data.id)
+                                    },
 
-                                )
+                                    )
+                            }
+
                         }
                     }
                 },
