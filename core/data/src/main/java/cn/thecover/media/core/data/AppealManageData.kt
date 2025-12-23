@@ -40,7 +40,6 @@ data class AuditDetailRequest(
 
 @Serializable
 data class AppealNewsData(
-    val audioUrl: String? = null,
     val broadcastScore: String? = null,
     val categoryId: Int,
     val content: String,
@@ -62,6 +61,7 @@ data class AppealNewsData(
     val status: Int,
     val title: String,
     val updateTime: Long,
+    val audioUrl: String? = null,
     val videoUrl: String? = null,
     val wapUrl: String = "",
     val writeTimeType: Int,

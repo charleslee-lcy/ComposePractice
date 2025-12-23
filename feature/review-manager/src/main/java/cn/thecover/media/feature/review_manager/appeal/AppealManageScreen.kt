@@ -30,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import cn.thecover.media.core.common.util.attachMediaForHtmlData
 import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
@@ -115,10 +116,13 @@ internal fun AppealManageScreen(
                 if (appealNewsInfo.data?.status == 4) {
                     navController.navigateToArchiveDetail(appealNewsInfo.data?.wapUrl ?: "")
                 } else {
-                    navController.navigateToArchiveDetail(htmlData = appealNewsInfo.data?.content ?: "", imgList = listOf(
-                        appealNewsInfo.data?.img43 ?: "",
-                        appealNewsInfo.data?.img169 ?: ""
-                    ))
+                    navController.navigateToArchiveDetail(
+                        htmlData = attachMediaForHtmlData(appealNewsInfo.data?.content ?: "", appealNewsInfo.data?.videoUrl, appealNewsInfo.data?.audioUrl),
+                        imgList = listOf(
+                            appealNewsInfo.data?.img43 ?: "",
+                            appealNewsInfo.data?.img169 ?: ""
+                        )
+                    )
                 }
 
                 viewModel.appealNewsUiState.value = BaseUiState()
