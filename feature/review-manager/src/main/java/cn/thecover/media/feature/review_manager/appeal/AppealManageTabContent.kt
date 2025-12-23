@@ -78,9 +78,9 @@ import cn.thecover.media.feature.review_manager.navigation.navigateToAppealDetai
 fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavController) {
     val filters = listOf(
         FilterType(type = 0, desc = "稿件标题"),
-        FilterType(type = 1, desc = "人员姓名"),
-        FilterType(type = 2, desc = "申诉人"),
-        FilterType(type = 3, desc = "申诉理由")
+        FilterType(type = 1, desc = "申诉人"),
+        FilterType(type = 2, desc = "申诉理由"),
+        FilterType(type = 3, desc = "人员姓名")
     )
 
     val context = LocalContext.current

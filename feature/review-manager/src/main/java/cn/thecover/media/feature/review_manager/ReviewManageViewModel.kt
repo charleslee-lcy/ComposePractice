@@ -417,9 +417,9 @@ class ReviewManageViewModel @Inject constructor(
         }
         when(appealManageSearchType.intValue) {
             0 -> { request.searchType = 1 }
-            1 -> { request.searchType = 5 }
-            2 -> { request.searchType = 2 }
-            else -> { request.searchType = 3 }
+            1 -> { request.searchType = 2 }
+            2 -> { request.searchType = 3 }
+            else -> { request.searchType = 5 }
         }
         request.searchKeyword = appealManageSearchKeyword.value.ifEmpty { null }
         viewModelScope.launch {
@@ -474,9 +474,9 @@ class ReviewManageViewModel @Inject constructor(
         val request = AppealManageRequest()
         when(appealManageSearchType.intValue) {
             0 -> { request.searchType = 1 }
-            1 -> { request.searchType = 5 }
-            2 -> { request.searchType = 2 }
-            else -> { request.searchType = 3 }
+            1 -> { request.searchType = 2 }
+            2 -> { request.searchType = 3 }
+            else -> { request.searchType = 5 }
         }
         request.searchKeyword = appealManageSearchKeyword.value.ifEmpty { null }
         viewModelScope.launch(CoroutineExceptionHandler { _, exception ->
@@ -512,9 +512,9 @@ class ReviewManageViewModel @Inject constructor(
         }
         when(myAppealSearchType.intValue) {
             0 -> { request.searchType = 1 }
-            1 -> { request.searchType = 5 }
-            2 -> { request.searchType = 2 }
-            else -> { request.searchType = 3 }
+            1 -> { request.searchType = 2 }
+            2 -> { request.searchType = 3 }
+            else -> { request.searchType = 5 }
         }
         request.searchKeyword = myAppealSearchKeyword.value.ifEmpty { null }
         viewModelScope.launch {
