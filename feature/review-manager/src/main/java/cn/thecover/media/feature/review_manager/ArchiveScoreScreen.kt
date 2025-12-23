@@ -125,12 +125,9 @@ fun ArchiveScoreScreen(
     val items = remember { mutableStateOf(listOf<ArchiveListData>()) }
     val archiveListUiState by viewModel.archiveListDataState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(viewModel.startLocalDate, viewModel.endLocalDate) {
         // 获取打分规则
         viewModel.getScoreRuleInfo()
-    }
-
-    LaunchedEffect(viewModel.startLocalDate, viewModel.endLocalDate) {
         // 获取稿件评分列表
         viewModel.getArchiveList(isRefresh = true)
     }
@@ -156,6 +153,7 @@ fun ArchiveScoreScreen(
         loadingState = loadingState,
         onRefresh = {
             viewModel.getArchiveList(isRefresh = true)
+            viewModel.getScoreRuleInfo()
         },
         onLoadMore = {
             viewModel.getArchiveList(isRefresh = false)
@@ -166,6 +164,7 @@ fun ArchiveScoreScreen(
 //                return@ArchiveScoreScreen
 //            }
             viewModel.getArchiveList(isRefresh = true)
+            viewModel.getScoreRuleInfo()
             focusManager.clearFocus()
         }
     )
@@ -527,7 +526,8 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
     var isStartDatePickerShow by remember { mutableStateOf(true) }
     var datePickerShow by remember { mutableStateOf(false) }
     val scoreRuleStatus by viewModel.scoreRuleStatus.collectAsStateWithLifecycle()
-    var currentIndex = remember { mutableIntStateOf(0) }
+    val currentIndex = remember { mutableIntStateOf(0) }
+    var scoreRuleData by remember { mutableStateOf(listOf<ScoreRuleData>()) }
 
     val scoreStateFilters = listOf(
         FilterType(type = 1, desc = "全部"),
@@ -547,15 +547,21 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
     )
 
     LaunchedEffect(scoreRuleStatus) {
-        if (scoreRuleStatus.isNotEmpty()) {
-            while (true) {
-                delay(4000) // 每3秒切换一次
-                currentIndex.intValue = (currentIndex.intValue + 1) % scoreRuleStatus.size
+        if (scoreRuleStatus.isSuccess) {
+            if (scoreRuleStatus.data?.isNotEmpty() == true) {
+                scoreRuleData = scoreRuleStatus.data ?: listOf()
+                while (true) {
+                    delay(4000) // 每3秒切换一次
+                    currentIndex.intValue =
+                        (currentIndex.intValue + 1) % scoreRuleData.size
+                }
             }
+        } else if (scoreRuleStatus.isError) {
+            scoreRuleData = listOf()
         }
     }
 
-    if (scoreRuleStatus.isNotEmpty()) {
+    if (scoreRuleData.isNotEmpty()) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -564,7 +570,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
             shape = RoundedCornerShape(8.dp)
         ) {
-            ArchiveScoreFlipItem(scoreRuleStatus, currentIndex) {
+            ArchiveScoreFlipItem(scoreRuleData, currentIndex) {
                 showScoreDialog.value = true
             }
         }
@@ -671,6 +677,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                 ) { _, index ->
                     viewModel.userScoreStatus.intValue = index
                     viewModel.getArchiveList(isRefresh = true)
+                    viewModel.getScoreRuleInfo()
                 }
             }
             Spacer(Modifier.width(12.dp))
@@ -690,6 +697,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                 ) { _, index ->
                     viewModel.newsScoreStatus.intValue = index
                     viewModel.getArchiveList(isRefresh = true)
+                    viewModel.getScoreRuleInfo()
                 }
             }
         }
@@ -758,7 +766,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                         fontWeight = FontWeight.SemiBold
                     )
                 }
-                scoreRuleStatus.forEachIndexed { index, item ->
+                scoreRuleData.forEachIndexed { index, item ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

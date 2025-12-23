@@ -1,7 +1,6 @@
 package cn.thecover.media.feature.review_manager
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -9,8 +8,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
-import androidx.navigation.navOptions
 import cn.thecover.media.core.common.util.formatToDateString
 import cn.thecover.media.core.common.util.toMillisecond
 import cn.thecover.media.core.data.AppealDetailRequest
@@ -34,11 +31,9 @@ import cn.thecover.media.core.data.UpdateAssignRequest
 import cn.thecover.media.core.data.UpdateScoreRequest
 import cn.thecover.media.core.data.UserScoreGroup
 import cn.thecover.media.core.network.BaseUiState
-import cn.thecover.media.core.network.HTTP_STATUS_LOGOUT
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
 import cn.thecover.media.core.widget.datastore.Keys
-import cn.thecover.media.core.widget.datastore.clearData
 import cn.thecover.media.core.widget.datastore.saveData
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -94,7 +89,7 @@ class ReviewManageViewModel @Inject constructor(
         initialValue = ArchiveListUiState(),
     )
     private val archiveRequest = ScoreArchiveListRequest()
-    val scoreRuleStatus = MutableStateFlow(listOf<ScoreRuleData>())
+    val scoreRuleStatus = MutableStateFlow(BaseUiState(listOf<ScoreRuleData>()))
     val scoreLevelState = MutableStateFlow(listOf(ScoreLevelData(levelCode = "A", levelNum = 0, qualityScore = 0.0, qualityType = 0)))
     val scoreGroupState = MutableStateFlow(listOf<UserScoreGroup>())
     val updateScoreState = MutableStateFlow(BaseUiState<Any>())
@@ -164,7 +159,7 @@ class ReviewManageViewModel @Inject constructor(
                 emit(result)
             }.asResult()
                 .collect { result ->
-                    scoreRuleStatus.value = result.data ?: emptyList()
+                    scoreRuleStatus.value = result
                 }
         }
     }
@@ -204,6 +199,7 @@ class ReviewManageViewModel @Inject constructor(
                     updateScoreState.value = result
                     if (result.status == HttpStatus.SUCCESS) {
                         getArchiveList(isRefresh = true)
+                        getScoreRuleInfo()
                     }
                 }
         }

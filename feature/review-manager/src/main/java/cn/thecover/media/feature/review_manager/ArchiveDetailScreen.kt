@@ -127,7 +127,7 @@ private fun WebViewContent(
                                 ViewGroup.LayoutParams.MATCH_PARENT
                             )
 
-                            // WebView基础配置
+                            // 在WebView配置中添加以下设置
                             settings.apply {
                                 javaScriptEnabled = true
                                 useWideViewPort = true
@@ -136,6 +136,14 @@ private fun WebViewContent(
                                 builtInZoomControls = false
                                 displayZoomControls = false
                                 setSupportZoom(false)
+                                // 添加以下配置
+                                layoutAlgorithm = android.webkit.WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING
+                                loadWithOverviewMode = true
+                                useWideViewPort = true
+                                databaseEnabled = true
+                                setGeolocationEnabled(true)
+                                // 设置默认缩放
+                                defaultZoom = android.webkit.WebSettings.ZoomDensity.FAR
                             }
 
                             // 设置WebView客户端
@@ -152,7 +160,7 @@ private fun WebViewContent(
                                 override fun onPageFinished(view: WebView?, url: String?) {
                                     super.onPageFinished(view, url)
                                     isLoading = false
-                                }
+                                                     }
 
                                 override fun onReceivedError(
                                     view: WebView?,
