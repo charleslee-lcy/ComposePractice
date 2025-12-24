@@ -456,19 +456,22 @@ private fun TotalRankingItem(
 
                             Spacer(modifier = Modifier.width(8.dp))
                             AnimatedVisibility(data.leaderScoreModified) {
-                                Text(
-                                    "改",
+                                Box(
                                     modifier = Modifier
+                                        .size(16.dp)
                                         .background(
                                             shape = MaterialTheme.shapes.extraSmall,
                                             color = MaterialTheme.colorScheme.error.copy(0.1f)
-                                        )
-                                        .size(16.dp)
-                                        .padding(top = 2.dp),
-                                    color = MaterialTheme.colorScheme.error,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    textAlign = TextAlign.Center
-                                )
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        "改",
+                                        color = MaterialTheme.colorScheme.error,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
                             }
 
                             Spacer(modifier = Modifier.weight(1f))
