@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -117,6 +118,7 @@ private fun TopBar(
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: ""
+    val focusManager = LocalFocusManager.current
 
     Box(
         modifier = Modifier
@@ -142,6 +144,8 @@ private fun TopBar(
         Row(
             modifier = Modifier
                 .clickableWithoutRipple {
+                    // 点击下拉菜单时先隐藏软键盘
+                    focusManager.clearFocus()
                     showReviewDataMenu.value = !showReviewDataMenu.value
                 }
                 .padding(horizontal = 10.dp)
