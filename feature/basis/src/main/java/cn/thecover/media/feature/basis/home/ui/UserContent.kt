@@ -161,48 +161,42 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                         }
                     } else {
                         // 当不显示稿费时，显示定额基数分
-                        Row(
-                            modifier = Modifier.fillMaxWidth()
+                        Card(
+                            modifier = Modifier
+                                .weight(1f),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                            shape = RoundedCornerShape(12.dp)
                         ) {
-                            Card(
-                                modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .weight(1f),
-                                colors = CardDefaults.cardColors(containerColor = Color.White),
-                                elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
-                                shape = RoundedCornerShape(12.dp)
-                            ) {
-                                Text(
-                                    text = "定额基数分",
-                                    color = SecondaryTextColor,
-                                    fontSize = 14.sp,
-                                    modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                            Text(
+                                text = "定额基数分",
+                                color = SecondaryTextColor,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                            )
+                            Text(
+                                text = homeInfo.quotaBasicScore,
+                                color = MainTextColor,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(
+                                    start = 12.dp,
+                                    top = 2.dp,
+                                    bottom = 12.dp
                                 )
-                                Text(
-                                    text = homeInfo.quotaBasicScore,
-                                    color = MainTextColor,
-                                    fontSize = 20.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    modifier = Modifier.padding(
-                                        start = 12.dp,
-                                        top = 2.dp,
-                                        bottom = 12.dp
-                                    )
-                                )
-                            }
-                            // 右侧添加一个空白区域来保持宽度一致
-                            Spacer(modifier = Modifier.weight(1f))
+                            )
                         }
                     }
                 }
 
-                // 第二行卡片（只在showMoney为true时显示）
-                if (homeInfo.showMoney) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp)
-                    ) {
+                // 第二行卡片
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                ) {
+                    if (homeInfo.showMoney) {
+                        // 当显示稿费时，显示定额基数分和本月考核结果
                         Card(
                             modifier = Modifier
                                 .padding(end = 8.dp)
@@ -259,14 +253,8 @@ internal fun ReporterUserContent(homeInfo: HomeInfo) {
                                 )
                             )
                         }
-                    }
-                } else {
-                    // 当不显示稿费时，只显示考核结果
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp)
-                    ) {
+                    } else {
+                        // 当不显示稿费时，只显示考核结果
                         Card(
                             modifier = Modifier
                                 .padding(end = 8.dp)
@@ -705,36 +693,69 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                         )
                     }
 
-                    Card(
-                        modifier = Modifier
-                            .weight(1f),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            text = "本月绩效最终得分",
-                            color = SecondaryTextColor,
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(start = 12.dp, top = 12.dp)
-                        )
-                        Text(
-                            text = formatScore(homeInfo.finalScore),
-                            color = MainTextColor,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
-                        )
+                    if (homeInfo.showMoney) {
+                        Card(
+                            modifier = Modifier
+                                .weight(1f),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "本月绩效最终得分",
+                                color = SecondaryTextColor,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                            )
+                            Text(
+                                text = formatScore(homeInfo.finalScore),
+                                color = MainTextColor,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(
+                                    start = 12.dp,
+                                    top = 2.dp,
+                                    bottom = 12.dp
+                                )
+                            )
+                        }
+                    } else {
+                        // 当不显示稿费时，显示本月绩效最终得分
+                        Card(
+                            modifier = Modifier
+                                .weight(1f),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "本月绩效最终得分",
+                                color = SecondaryTextColor,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                            )
+                            Text(
+                                text = formatScore(homeInfo.finalScore),
+                                color = MainTextColor,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(
+                                    start = 12.dp,
+                                    top = 2.dp,
+                                    bottom = 12.dp
+                                )
+                            )
+                        }
                     }
                 }
 
-                // 第四行卡片（只在showMoney为true时显示）
-                if (homeInfo.showMoney) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp)
-                    ) {
+                // 第四行卡片
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                ) {
+                    if (homeInfo.showMoney) {
                         Card(
                             modifier = Modifier
                                 .padding(end = 8.dp)
