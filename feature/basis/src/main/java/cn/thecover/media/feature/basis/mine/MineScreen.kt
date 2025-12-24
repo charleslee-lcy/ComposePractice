@@ -1,6 +1,5 @@
 package cn.thecover.media.feature.basis.mine
 
-import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -46,6 +45,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
+import cn.thecover.media.core.common.Constants
 import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
@@ -237,7 +237,7 @@ enum class MineFunctionType(
     Version(
         YBIcons.Custom.MineVersion,
         "版本",
-        "v1.0.0"
+        "v${Constants.APP_VERSION}"
     ),
     Cache(icon = YBIcons.Custom.MineClearCache, "缓存", " "), ModifyPassword(
         icon = YBIcons.Custom.MineModifyPassword, "修改密码",

@@ -641,14 +641,14 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
                     "稿件名称", "稿件 ID", "记者"
                 ),
                 onValueChange = { valueType, value ->
-                    // 过滤掉文本末尾的换行符，防止换行字符被带到接口
-                    val filteredValue = value.replace(Regex("[\\r\\n]+"), "")
-                    viewModel.handleUIIntent(
-                        ReviewUIIntent.UpdateManuscriptReviewFilter(
-                            searchType = valueType,
-                            searchText = filteredValue
-                        )
-                    )
+//                    // 过滤掉文本末尾的换行符，防止换行字符被带到接口
+//                    val filteredValue = value.replace(Regex("[\\r\\n]+"), "")
+//                    viewModel.handleUIIntent(
+//                        ReviewUIIntent.UpdateManuscriptReviewFilter(
+//                            searchType = valueType,
+//                            searchText = filteredValue
+//                        )
+//                    )
                 },
                 onSearch = { valueType, value ->
                     // 过滤掉文本末尾的换行符，防止换行字符被带到接口
