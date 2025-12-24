@@ -22,6 +22,7 @@ fun showToast(msg: String, action: String? = null) {
  * 使用页面内定义toast
  */
 suspend fun SnackbarHostState.showToast(msg: String, action: String? = null) {
+    currentSnackbarData?.dismiss()
     showSnackbar(
         message = msg,
         actionLabel = action,

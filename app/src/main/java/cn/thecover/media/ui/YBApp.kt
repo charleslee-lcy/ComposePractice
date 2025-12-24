@@ -238,11 +238,7 @@ private fun MainContent(
     LaunchedEffect(Unit) {
         FlowBus.observeEvent<ToastEvent>("toast") {
             scope.launch {
-                snackBarHostState.showSnackbar(
-                    message = it.data.message,
-                    actionLabel = it.data.action,
-                    duration = Short
-                )
+                snackBarHostState.showToast(it.data.message, it.data.action)
             }
         }
 
