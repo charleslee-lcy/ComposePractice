@@ -11,7 +11,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -25,15 +24,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -60,21 +55,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.toColorInt
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import cn.thecover.media.core.common.util.attachMediaForHtmlData
 import cn.thecover.media.core.common.util.toMillisecond
 import cn.thecover.media.core.data.ArchiveListData
 import cn.thecover.media.core.data.ScoreLevelData
 import cn.thecover.media.core.data.ScoreRuleData
+import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.GradientLeftBottom
 import cn.thecover.media.core.widget.GradientLeftTop
 import cn.thecover.media.core.widget.YBShape
+import cn.thecover.media.core.widget.component.TOAST_TYPE_ERROR
+import cn.thecover.media.core.widget.component.TOAST_TYPE_SUCCESS
+import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
 import cn.thecover.media.core.widget.component.YBCoordinatorList
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.YBLabel
@@ -84,7 +83,10 @@ import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBDialog
 import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.component.popup.YBPopup
+import cn.thecover.media.core.widget.datastore.Keys
+import cn.thecover.media.core.widget.datastore.rememberDataStoreState
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
+import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.core.widget.gradientShape
 import cn.thecover.media.core.widget.state.TipsDialogState
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
@@ -102,6 +104,7 @@ import cn.thecover.media.feature.review_manager.appeal.FilterSearchBar
 import cn.thecover.media.feature.review_manager.appeal.FilterType
 import cn.thecover.media.feature.review_manager.assign.FilterDropMenuView
 import cn.thecover.media.feature.review_manager.navigation.navigateToArchiveDetail
+import com.google.gson.Gson
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -126,12 +129,9 @@ fun ArchiveScoreScreen(
     val items = remember { mutableStateOf(listOf<ArchiveListData>()) }
     val archiveListUiState by viewModel.archiveListDataState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(viewModel.startLocalDate, viewModel.endLocalDate) {
         // 获取打分规则
         viewModel.getScoreRuleInfo()
-    }
-
-    LaunchedEffect(viewModel.startLocalDate, viewModel.endLocalDate) {
         // 获取稿件评分列表
         viewModel.getArchiveList(isRefresh = true)
     }
@@ -141,6 +141,10 @@ fun ArchiveScoreScreen(
         isLoadingMore.value = archiveListUiState.isLoading
         canLoadMore.value = archiveListUiState.canLoadMore
         items.value = archiveListUiState.list
+        archiveListUiState.msg?.apply {
+            showToast(this, TOAST_TYPE_ERROR)
+            archiveListUiState.msg = null
+        }
     }
 
     ArchiveScoreScreen(
@@ -153,16 +157,18 @@ fun ArchiveScoreScreen(
         loadingState = loadingState,
         onRefresh = {
             viewModel.getArchiveList(isRefresh = true)
+            viewModel.getScoreRuleInfo()
         },
         onLoadMore = {
             viewModel.getArchiveList(isRefresh = false)
         },
         onSearch = {
 //            if (it.isEmpty()) {
-//                Toast.makeText(context, "搜索内容不能为空", Toast.LENGTH_SHORT).show()
+//                showToast("搜索内容不能为空", TOAST_TYPE_WARNING)
 //                return@ArchiveScoreScreen
 //            }
             viewModel.getArchiveList(isRefresh = true)
+            viewModel.getScoreRuleInfo()
             focusManager.clearFocus()
         }
     )
@@ -197,12 +203,12 @@ fun ArchiveScoreScreen(
                 loadingState.hide()
                 showScoreDialog.value = false
                 checkedItem = null
-                Toast.makeText(context, "打分成功", Toast.LENGTH_SHORT).show()
+                showToast(msg = "打分成功", action = TOAST_TYPE_SUCCESS)
                 viewModel.updateScoreState.value = BaseUiState()
             }
             HttpStatus.ERROR -> {
                 loadingState.hide()
-                Toast.makeText(context, updateScoreStatus.errorMsg.ifEmpty { "打分失败" }, Toast.LENGTH_SHORT).show()
+                showToast(msg = updateScoreStatus.errorMsg.ifEmpty { "打分失败" }, action = TOAST_TYPE_ERROR)
                 viewModel.updateScoreState.value = BaseUiState()
             }
             else -> {}
@@ -234,10 +240,13 @@ fun ArchiveScoreScreen(
                 if (item.status == 4) {
                     navController.navigateToArchiveDetail(item.wapUrl)
                 } else {
-                    navController.navigateToArchiveDetail(htmlData = item.content, imgList = listOf(
-                        item.img43,
-                        item.img169
-                    ))
+                    navController.navigateToArchiveDetail(
+                        htmlData = attachMediaForHtmlData(item.content, item.videoUrl, item.audioUrl),
+                        imgList = listOf(
+                            item.img43,
+                            item.img169
+                        )
+                    )
                 }
             },
             onScoreClick = {
@@ -248,7 +257,11 @@ fun ArchiveScoreScreen(
     }
 
     var scoreLevel by remember { mutableIntStateOf(0) }
-    var hasPermission by remember { mutableStateOf(false) }
+    // 是否有稿件打分的分组
+    var hasGroupPermission by remember { mutableStateOf(false) }
+    // 是否有稿件打分操作权限
+    var hasNewsScoreOperationAuth by remember { mutableStateOf(false) }
+    var hasNewsScoreListAuth by remember { mutableStateOf(false) }
 
     YBPopup(
         visible = showScoreDialog.value,
@@ -261,7 +274,7 @@ fun ArchiveScoreScreen(
             checkedItem = null
         },
         onConfirm = {
-            if (hasPermission) {
+            if (hasGroupPermission && hasNewsScoreOperationAuth) {
                 viewModel.updateScore(
                     scoreGroupId = viewModel.scoreGroupState.value.takeIf { it.isNotEmpty() }
                         ?.first()?.id ?: 0,
@@ -274,16 +287,27 @@ fun ArchiveScoreScreen(
             }
         }
     ) {
+        val context = LocalContext.current
         val scoreLevelStatus by viewModel.scoreLevelState.collectAsStateWithLifecycle()
         val scoreGroupStatus by viewModel.scoreGroupState.collectAsStateWithLifecycle()
+        val userInfoJson = rememberDataStoreState(Keys.USER_INFO, "")
 
         LaunchedEffect(Unit) {
             viewModel.getScoreLevelInfo()
             viewModel.getUserGroupInfo()
+            viewModel.getUserInfo(context)
+        }
+
+        LaunchedEffect(userInfoJson) {
+            val userInfo = Gson().fromJson(userInfoJson, UserInfo::class.java)
+            userInfo?.apply {
+                hasNewsScoreOperationAuth = hasNewsScoreOperationAuth()
+                hasNewsScoreListAuth = hasNewsScoreListAuth()
+            }
         }
 
         LaunchedEffect(scoreGroupStatus) {
-            hasPermission = scoreGroupStatus.isNotEmpty()
+            hasGroupPermission = scoreGroupStatus.isNotEmpty()
         }
 
         Column(
@@ -291,7 +315,7 @@ fun ArchiveScoreScreen(
                 .fillMaxWidth()
         ) {
             Spacer(modifier = Modifier.height(5.dp))
-            if (hasPermission) {
+            if (hasGroupPermission && hasNewsScoreOperationAuth) {
                 ScoreInfoContent(
                     title = scoreGroupStatus.firstOrNull()?.scoreName?.ifEmpty { "--" } ?: "--",
                     enable = scoreGroupStatus.isNotEmpty(),
@@ -361,18 +385,21 @@ fun ArchiveScoreScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text(
-                                        modifier = Modifier.weight(1f, false),
-                                        text = item.userName?.ifEmpty { "-" } ?: "-",
-                                        color = MainTextColor,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
+                                    if (hasNewsScoreListAuth) {
+                                        Text(
+                                            modifier = Modifier.weight(1f, false),
+                                            text = item.userName?.ifEmpty { "-" } ?: "-",
+                                            color = MainTextColor,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                        Spacer(modifier = Modifier.width(5.dp))
+                                    }
                                     if (item.self) {
                                         Text(
-                                            modifier = Modifier.padding(start = 5.dp)
+                                            modifier = Modifier
                                                 .background(
                                                     color = MainColor,
                                                     shape = RoundedCornerShape(2.dp)
@@ -503,12 +530,18 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
     var isStartDatePickerShow by remember { mutableStateOf(true) }
     var datePickerShow by remember { mutableStateOf(false) }
     val scoreRuleStatus by viewModel.scoreRuleStatus.collectAsStateWithLifecycle()
-    var currentIndex = remember { mutableIntStateOf(0) }
+    val currentIndex = remember { mutableIntStateOf(0) }
+    var scoreRuleData by remember { mutableStateOf(listOf<ScoreRuleData>()) }
 
     val scoreStateFilters = listOf(
         FilterType(type = 1, desc = "全部"),
         FilterType(type = 2, desc = "待打分"),
         FilterType(type = 3, desc = "已打分")
+    )
+    val scoreStateFilters1 = listOf(
+        FilterType(type = 1, desc = "全部"),
+        FilterType(type = 2, desc = "未完成"),
+        FilterType(type = 3, desc = "已完成")
     )
 
     val searchFilters = listOf(
@@ -518,15 +551,21 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
     )
 
     LaunchedEffect(scoreRuleStatus) {
-        if (scoreRuleStatus.isNotEmpty()) {
-            while (true) {
-                delay(4000) // 每3秒切换一次
-                currentIndex.intValue = (currentIndex.intValue + 1) % scoreRuleStatus.size
+        if (scoreRuleStatus.isSuccess) {
+            if (scoreRuleStatus.data?.isNotEmpty() == true) {
+                scoreRuleData = scoreRuleStatus.data ?: listOf()
+                while (true) {
+                    delay(4000) // 每3秒切换一次
+                    currentIndex.intValue =
+                        (currentIndex.intValue + 1) % scoreRuleData.size
+                }
             }
+        } else if (scoreRuleStatus.isError) {
+            scoreRuleData = listOf()
         }
     }
 
-    if (scoreRuleStatus.isNotEmpty()) {
+    if (scoreRuleData.isNotEmpty()) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -535,7 +574,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
             shape = RoundedCornerShape(8.dp)
         ) {
-            ArchiveScoreFlipItem(scoreRuleStatus, currentIndex) {
+            ArchiveScoreFlipItem(scoreRuleData, currentIndex) {
                 showScoreDialog.value = true
             }
         }
@@ -642,6 +681,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                 ) { _, index ->
                     viewModel.userScoreStatus.intValue = index
                     viewModel.getArchiveList(isRefresh = true)
+                    viewModel.getScoreRuleInfo()
                 }
             }
             Spacer(Modifier.width(12.dp))
@@ -656,11 +696,12 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 FilterDropMenuView(
-                    filterData = scoreStateFilters,
+                    filterData = scoreStateFilters1,
                     initialIndex = viewModel.newsScoreStatus.intValue
                 ) { _, index ->
                     viewModel.newsScoreStatus.intValue = index
                     viewModel.getArchiveList(isRefresh = true)
+                    viewModel.getScoreRuleInfo()
                 }
             }
         }
@@ -729,7 +770,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
                         fontWeight = FontWeight.SemiBold
                     )
                 }
-                scoreRuleStatus.forEachIndexed { index, item ->
+                scoreRuleData.forEachIndexed { index, item ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

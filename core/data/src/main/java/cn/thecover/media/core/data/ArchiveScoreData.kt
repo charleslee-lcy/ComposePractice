@@ -63,6 +63,8 @@ data class ArchiveListData(
     val id: Long = 0L,
     val img169: String = "",
     val img43: String = "",
+    val audioUrl: String? = null,
+    val videoUrl: String? = null,
     val listImg: String = "",
     val listKind: Int = 0,
     val newsCategoryName: String = "",

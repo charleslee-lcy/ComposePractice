@@ -15,10 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -30,14 +28,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import cn.thecover.media.core.common.util.attachMediaForHtmlData
 import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
+import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
 import cn.thecover.media.core.widget.component.YBTab
 import cn.thecover.media.core.widget.component.YBTabRow
 import cn.thecover.media.core.widget.datastore.Keys
 import cn.thecover.media.core.widget.datastore.rememberDataStoreState
+import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
@@ -115,16 +116,20 @@ internal fun AppealManageScreen(
                 if (appealNewsInfo.data?.status == 4) {
                     navController.navigateToArchiveDetail(appealNewsInfo.data?.wapUrl ?: "")
                 } else {
-                    navController.navigateToArchiveDetail(htmlData = appealNewsInfo.data?.content ?: "", imgList = listOf(
-                        appealNewsInfo.data?.img43 ?: "",
-                        appealNewsInfo.data?.img169 ?: ""
-                    ))
+                    navController.navigateToArchiveDetail(
+                        htmlData = attachMediaForHtmlData(appealNewsInfo.data?.content ?: "", appealNewsInfo.data?.videoUrl, appealNewsInfo.data?.audioUrl),
+                        imgList = listOf(
+                            appealNewsInfo.data?.img43 ?: "",
+                            appealNewsInfo.data?.img169 ?: ""
+                        )
+                    )
                 }
 
+                viewModel.isFromAppealDetail = true
                 viewModel.appealNewsUiState.value = BaseUiState()
             }
             HttpStatus.ERROR -> {
-                Toast.makeText(context, appealNewsInfo.errorMsg, Toast.LENGTH_SHORT).show()
+                showToast(appealNewsInfo.errorMsg.ifEmpty { "请求失败" }, TOAST_TYPE_WARNING)
             }
             else -> {}
         }
@@ -145,6 +150,19 @@ internal fun AppealManageScreen(
                     selected = index == currentTabIndex.intValue,
                     normalTextColor = TertiaryTextColor,
                     onClick = {
+                        if (currentTabIndex.intValue == index) {
+                            when (currentTabIndex.intValue) {
+                                0 -> {
+                                    focusManager.clearFocus()
+                                    viewModel.getMyAppealList(isRefresh = true)
+                                }
+                                1 -> {
+                                    focusManager.clearFocus()
+                                    viewModel.getAppealTabInfo()
+                                    viewModel.getAppealManageList(isRefresh = true)
+                                }
+                            }
+                        }
                         currentTabIndex.intValue = index
                         scope.launch {
                             pagerState.animateScrollToPage(index)

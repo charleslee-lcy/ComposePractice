@@ -26,9 +26,11 @@ import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HTTP_STATUS_LOGOUT
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
+import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
 import cn.thecover.media.core.widget.datastore.Keys
 import cn.thecover.media.core.widget.datastore.clearData
 import cn.thecover.media.core.widget.datastore.saveData
+import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.feature.basis.HomeApi
 import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
 import cn.thecover.media.feature.basis.message.MessageApi
@@ -134,20 +136,6 @@ class HomeViewModel @Inject constructor(
                 emit(result)
             }.asResult()
                 .collect { result ->
-                    if (result.errorCode == HTTP_STATUS_LOGOUT) {
-                        Toast.makeText(context, "请先登录", Toast.LENGTH_SHORT).show()
-                        // 清楚token和用户信息缓存
-                        clearData(context, Keys.USER_TOKEN)
-                        clearData(context, Keys.USER_INFO)
-                        navController.navigateToLogin(navOptions {
-                            // 清除所有之前的页面
-                            popUpTo(navController.graph.id) {
-                                inclusive = true
-                            }
-                            launchSingleTop = true
-                        })
-                    }
-
                     result.data?.let {
                         // 检测用户ID是否变化
                         if (currentUserId != 0L && currentUserId != it.userId) {

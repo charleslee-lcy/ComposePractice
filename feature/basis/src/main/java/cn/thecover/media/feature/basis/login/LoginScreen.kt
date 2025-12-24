@@ -41,12 +41,15 @@ import androidx.navigation.navOptions
 import cn.thecover.media.core.common.util.DESUtil
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
+import cn.thecover.media.core.widget.component.TOAST_TYPE_ERROR
+import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.datastore.Keys
 import cn.thecover.media.core.widget.datastore.saveData
+import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.EditHintTextColor
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -143,12 +146,12 @@ internal fun LoginScreen(
                         }
                     )
                 } ?: kotlin.run {
-                    Toast.makeText(context, loginState.errorMsg, Toast.LENGTH_SHORT).show()
+                    showToast(loginState.errorMsg.ifEmpty { "登录失败" }, TOAST_TYPE_ERROR)
                 }
             }
             HttpStatus.ERROR -> {
                 loadingState.hide()
-                Toast.makeText(context, loginState.errorMsg, Toast.LENGTH_SHORT).show()
+                showToast(loginState.errorMsg.ifEmpty { "登录失败" }, TOAST_TYPE_ERROR)
 
                 // 接口提示用户需要修改密码（包括初登验证、长时间未修改密码检测、后台操作重置了密码等等），需跳转到修改密码页面
                 if (loginState.errorCode == 414) {
@@ -261,11 +264,11 @@ internal fun LoginScreen(
                     if (!isLoginEnable) return@YBButton
 
                     if (nameText.isEmpty()) {
-                        Toast.makeText(context, "用户名不能为空", Toast.LENGTH_SHORT).show()
+                        showToast("用户名不能为空", TOAST_TYPE_WARNING)
                         return@YBButton
                     }
                     if (passwordText.isEmpty()) {
-                        Toast.makeText(context, "密码不能为空", Toast.LENGTH_SHORT).show()
+                        showToast("密码不能为空", TOAST_TYPE_WARNING)
                         return@YBButton
                     }
                     focusManager.clearFocus()

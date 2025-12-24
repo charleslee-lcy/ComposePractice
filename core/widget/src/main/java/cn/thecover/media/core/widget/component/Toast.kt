@@ -1,13 +1,20 @@
 package cn.thecover.media.core.widget.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -19,8 +26,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import cn.thecover.media.core.widget.R
+import cn.thecover.media.core.widget.theme.MainTextColor
+import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import kotlinx.coroutines.delay
 
 
@@ -37,13 +54,13 @@ suspend fun SnackbarHostState.showToast(message: String) {
 
 /**
  * 自定义toast
- * @param verticalRate 纵向显示的位置，默认为父容器高度的85%
+ * @param bottomRate 距底部的间距，默认为父容器高度的20%
  */
 @Composable
 fun YBToast(
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     duration: Long = 2000L,
-    verticalRate: Float = 0.85f
+    bottomRate: Float = 0.2f
 ) {
     LaunchedEffect(snackBarHostState.currentSnackbarData) {
         delay(duration)
@@ -52,7 +69,7 @@ fun YBToast(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Spacer(Modifier.fillMaxHeight(verticalRate))
+        Spacer(Modifier.weight(1f))
         // 手动放置 SnackBarHost 到中央
         SnackbarHost(
             hostState = snackBarHostState,
@@ -60,7 +77,7 @@ fun YBToast(
         ) {
             CenterSnackBar(it)
         }
-        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.fillMaxHeight(bottomRate))
     }
 }
 
@@ -69,18 +86,72 @@ private fun CenterSnackBar(
     snackBarData: SnackbarData,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = modifier
-            .background(
-                color = Color(0xFFE1E1E1),
-                shape = RoundedCornerShape(12.dp)
-            )
-            .padding(horizontal = 24.dp, vertical = 12.dp),
-        contentAlignment = Alignment.Center
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+        shape = RoundedCornerShape(25.dp),
     ) {
-        Text(
-            text = snackBarData.visuals.message,
-            textAlign = TextAlign.Center,
-        )
+        Box(
+            modifier = modifier
+                .widthIn(max = 300.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            if (!snackBarData.visuals.actionLabel.isNullOrEmpty()) {
+                InlineImageText(
+                    image = painterResource(id = when(snackBarData.visuals.actionLabel) {
+                        TOAST_TYPE_SUCCESS -> R.mipmap.ic_toast_success
+                        TOAST_TYPE_ERROR -> R.mipmap.ic_toast_error
+                        else -> R.mipmap.ic_toast_warning
+                    }),
+                    text = snackBarData.visuals.message
+                )
+            } else {
+                Text(
+                    text = snackBarData.visuals.message,
+                    textAlign = TextAlign.Center,
+                    color = MainTextColor,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        }
     }
+}
+
+const val TOAST_TYPE_SUCCESS = "success"
+const val TOAST_TYPE_ERROR = "error"
+const val TOAST_TYPE_WARNING = "warning"
+
+@Composable
+fun InlineImageText(image: Painter, text: String) {
+    val inlineContent = mapOf(
+        "image" to InlineTextContent(
+            placeholder = Placeholder(
+                width = 24.sp,
+                height = 24.sp,
+                placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+            )
+        ) {
+            Image(
+                painter = image,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    )
+
+    val annotatedString = buildAnnotatedString {
+        appendInlineContent("image", alternateText = "icon")
+        append(" ")
+        append(text)
+    }
+
+    Text(
+        text = annotatedString,
+        inlineContent = inlineContent,
+        color = MainTextColor,
+        fontSize = 15.sp,
+        fontWeight = FontWeight.SemiBold,
+    )
 }

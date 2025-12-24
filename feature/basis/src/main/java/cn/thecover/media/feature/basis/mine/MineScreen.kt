@@ -49,6 +49,7 @@ import androidx.navigation.navOptions
 import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
+import cn.thecover.media.core.widget.component.TOAST_TYPE_ERROR
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.picker.YBTimePicker
 import cn.thecover.media.core.widget.component.popup.YBAutoDismissDialog
@@ -60,6 +61,7 @@ import cn.thecover.media.core.widget.datastore.clearData
 import cn.thecover.media.core.widget.datastore.readData
 import cn.thecover.media.core.widget.datastore.rememberDataStoreState
 import cn.thecover.media.core.widget.datastore.saveData
+import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.state.rememberIconTipsDialogState
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
@@ -141,7 +143,7 @@ internal fun MineScreen(
                 }
                 HttpStatus.ERROR -> {
                     logoutLoadingState.hide()
-                    Toast.makeText(context, logoutUiState.errorMsg, Toast.LENGTH_SHORT).show()
+                    showToast(logoutUiState.errorMsg.ifEmpty { "请求失败" }, TOAST_TYPE_ERROR)
                 }
                 else -> {}
             }

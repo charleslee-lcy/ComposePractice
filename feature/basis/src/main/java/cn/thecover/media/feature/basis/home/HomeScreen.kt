@@ -302,7 +302,7 @@ internal fun HomeScreen(
         }
     }
 
-    YBToast(snackBarHostState = snackBarHostState, verticalRate = 0.9f)
+    YBToast(snackBarHostState = snackBarHostState)
 }
 
 @Composable

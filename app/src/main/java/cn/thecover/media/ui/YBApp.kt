@@ -36,8 +36,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarDuration.Indefinite
 import androidx.compose.material3.SnackbarDuration.Short
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -46,7 +44,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -55,6 +55,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -66,20 +67,29 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
-import cn.thecover.media.core.widget.R
+import androidx.navigation.navOptions
+import cn.thecover.media.core.data.LogoutEvent
+import cn.thecover.media.core.data.ToastEvent
+import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
 import cn.thecover.media.core.widget.component.YBBackground
 import cn.thecover.media.core.widget.component.YBGradientBackground
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.YBNavigationBar
 import cn.thecover.media.core.widget.component.YBNavigationBarItem
+import cn.thecover.media.core.widget.component.YBToast
+import cn.thecover.media.core.widget.datastore.Keys
+import cn.thecover.media.core.widget.datastore.clearData
+import cn.thecover.media.core.widget.event.FlowBus
+import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.core.widget.theme.GradientColors
-import cn.thecover.media.core.widget.theme.LocalGradientColors
 import cn.thecover.media.core.widget.theme.MsgColor
-import cn.thecover.media.core.widget.theme.Orange90
 import cn.thecover.media.core.widget.theme.OutlineColor
-import cn.thecover.media.core.widget.theme.Red40
-import cn.thecover.media.navigation.TopLevelDestination
+import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
 import cn.thecover.media.navigation.YBNavHost
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.reflect.KClass
 
 @Composable
@@ -219,6 +229,51 @@ private fun MainContent(
     snackBarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val logoutProcessing = remember { mutableStateOf(false) } // 防重复标志
+
+    LaunchedEffect(Unit) {
+        FlowBus.observeEvent<ToastEvent>("toast") {
+            scope.launch {
+                snackBarHostState.showSnackbar(
+                    message = it.data.message,
+                    actionLabel = it.data.action,
+                    duration = Short
+                )
+            }
+        }
+
+        FlowBus.observeEvent<LogoutEvent>("logout") {
+            // 防重复检查
+            if (!logoutProcessing.value) {
+                logoutProcessing.value = true
+
+                scope.launch {
+                    try {
+                        // 清除token和用户信息缓存
+                        clearData(context, Keys.USER_TOKEN)
+                        clearData(context, Keys.USER_INFO)
+
+                        withContext(Dispatchers.Main) {
+                            appState.navController.navigateToLogin(navOptions {
+                                // 清除所有之前的页面
+                                popUpTo(appState.navController.graph.id) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            })
+                        }
+                    } finally {
+                        // 重置标志位，允许下次处理
+                        delay(1000) // 确保操作完成后再允许
+                        logoutProcessing.value = false
+                    }
+                }
+            }
+        }
+    }
+
     Scaffold(
         modifier = modifier,
         containerColor = Color.Transparent,
@@ -233,7 +288,8 @@ private fun MainContent(
                     ),
                 ),
                 snackbar = {
-                    Snackbar(it, contentColor = Red40, containerColor = Orange90)
+//                    Snackbar(it, contentColor = Red40, containerColor = Orange90)
+                    YBToast(snackBarHostState = snackBarHostState)
                 }
             )
         },

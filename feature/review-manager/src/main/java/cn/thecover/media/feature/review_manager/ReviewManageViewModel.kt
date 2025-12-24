@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.review_manager
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +33,9 @@ import cn.thecover.media.core.data.UserScoreGroup
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.asResult
+import cn.thecover.media.core.widget.datastore.Keys
+import cn.thecover.media.core.widget.datastore.saveData
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -85,7 +89,7 @@ class ReviewManageViewModel @Inject constructor(
         initialValue = ArchiveListUiState(),
     )
     private val archiveRequest = ScoreArchiveListRequest()
-    val scoreRuleStatus = MutableStateFlow(listOf<ScoreRuleData>())
+    val scoreRuleStatus = MutableStateFlow(BaseUiState(listOf<ScoreRuleData>()))
     val scoreLevelState = MutableStateFlow(listOf(ScoreLevelData(levelCode = "A", levelNum = 0, qualityScore = 0.0, qualityType = 0)))
     val scoreGroupState = MutableStateFlow(listOf<UserScoreGroup>())
     val updateScoreState = MutableStateFlow(BaseUiState<Any>())
@@ -155,7 +159,7 @@ class ReviewManageViewModel @Inject constructor(
                 emit(result)
             }.asResult()
                 .collect { result ->
-                    scoreRuleStatus.value = result.data ?: emptyList()
+                    scoreRuleStatus.value = result
                 }
         }
     }
@@ -195,6 +199,7 @@ class ReviewManageViewModel @Inject constructor(
                     updateScoreState.value = result
                     if (result.status == HttpStatus.SUCCESS) {
                         getArchiveList(isRefresh = true)
+                        getScoreRuleInfo()
                     }
                 }
         }
@@ -261,6 +266,7 @@ class ReviewManageViewModel @Inject constructor(
                                     isLoading = false,
                                     isRefreshing = false,
                                     canLoadMore = true,
+                                    list = listOf(),
                                     msg = result.errorMsg
                                 )
                             }
@@ -354,6 +360,7 @@ class ReviewManageViewModel @Inject constructor(
                                 isLoading = false,
                                 isRefreshing = false,
                                 canLoadMore = true,
+                                list = listOf(),
                                 msg = result.errorMsg
                             )
                         }
@@ -410,9 +417,9 @@ class ReviewManageViewModel @Inject constructor(
         }
         when(appealManageSearchType.intValue) {
             0 -> { request.searchType = 1 }
-            1 -> { request.searchType = 5 }
-            2 -> { request.searchType = 2 }
-            else -> { request.searchType = 3 }
+            1 -> { request.searchType = 2 }
+            2 -> { request.searchType = 3 }
+            else -> { request.searchType = 5 }
         }
         request.searchKeyword = appealManageSearchKeyword.value.ifEmpty { null }
         viewModelScope.launch {
@@ -452,6 +459,7 @@ class ReviewManageViewModel @Inject constructor(
                                 isLoading = false,
                                 isRefreshing = false,
                                 canLoadMore = true,
+                                list = listOf(),
                                 msg = result.errorMsg
                             )
                         }
@@ -466,9 +474,9 @@ class ReviewManageViewModel @Inject constructor(
         val request = AppealManageRequest()
         when(appealManageSearchType.intValue) {
             0 -> { request.searchType = 1 }
-            1 -> { request.searchType = 5 }
-            2 -> { request.searchType = 2 }
-            else -> { request.searchType = 3 }
+            1 -> { request.searchType = 2 }
+            2 -> { request.searchType = 3 }
+            else -> { request.searchType = 5 }
         }
         request.searchKeyword = appealManageSearchKeyword.value.ifEmpty { null }
         viewModelScope.launch(CoroutineExceptionHandler { _, exception ->
@@ -504,9 +512,9 @@ class ReviewManageViewModel @Inject constructor(
         }
         when(myAppealSearchType.intValue) {
             0 -> { request.searchType = 1 }
-            1 -> { request.searchType = 5 }
-            2 -> { request.searchType = 2 }
-            else -> { request.searchType = 3 }
+            1 -> { request.searchType = 2 }
+            2 -> { request.searchType = 3 }
+            else -> { request.searchType = 5 }
         }
         request.searchKeyword = myAppealSearchKeyword.value.ifEmpty { null }
         viewModelScope.launch {
@@ -546,6 +554,7 @@ class ReviewManageViewModel @Inject constructor(
                                 isLoading = false,
                                 isRefreshing = false,
                                 canLoadMore = true,
+                                list = listOf(),
                                 msg = result.errorMsg
                             )
                         }
@@ -657,6 +666,23 @@ class ReviewManageViewModel @Inject constructor(
         }
     }
 
+    /**
+     * 获取接口用户信息
+     */
+    fun getUserInfo(context: Context) {
+        viewModelScope.launch {
+            flow {
+                val result = apiService.getUserInfo()
+                emit(result)
+            }.asResult()
+                .collect { result ->
+                    result.data?.let {
+                        saveData(context, Keys.USER_INFO, Gson().toJson(it))
+                    }
+                }
+        }
+    }
+
 }
 
 @Serializable
@@ -665,7 +691,7 @@ data class ArchiveListUiState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val canLoadMore: Boolean = true,
-    val msg: String? = null
+    var msg: String? = null
 )
 
 @Serializable
@@ -674,7 +700,7 @@ data class DepartmentAssignListUiState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val canLoadMore: Boolean = true,
-    val msg: String? = null
+    var msg: String? = null
 )
 
 @Serializable
@@ -683,5 +709,5 @@ data class AppealListUiState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val canLoadMore: Boolean = true,
-    val msg: String? = null
+    var msg: String? = null
 )

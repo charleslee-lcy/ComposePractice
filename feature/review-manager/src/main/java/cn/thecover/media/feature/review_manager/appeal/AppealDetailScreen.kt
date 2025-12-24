@@ -54,6 +54,9 @@ import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.GradientLeftBottom
 import cn.thecover.media.core.widget.GradientLeftTop
 import cn.thecover.media.core.widget.YBShape
+import cn.thecover.media.core.widget.component.TOAST_TYPE_ERROR
+import cn.thecover.media.core.widget.component.TOAST_TYPE_SUCCESS
+import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
 import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.YBInput
@@ -61,6 +64,7 @@ import cn.thecover.media.core.widget.component.YBLabel
 import cn.thecover.media.core.widget.component.YBTitleBar
 import cn.thecover.media.core.widget.component.popup.YBDialog
 import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
+import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -118,11 +122,7 @@ fun AppealDetailScreen(
             HttpStatus.SUCCESS -> {
                 loadingState.hide()
                 if (detailInfoStatus.data == null) {
-                    Toast.makeText(
-                        context,
-                        detailInfoStatus.errorMsg.ifEmpty { "获取申诉详情失败" },
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showToast(msg = detailInfoStatus.errorMsg.ifEmpty { "获取申诉详情失败" }, action = TOAST_TYPE_WARNING)
                 }
 
                 detailInfoStatus.data?.material?.let {
@@ -138,7 +138,7 @@ fun AppealDetailScreen(
             }
             HttpStatus.ERROR -> {
                 loadingState.hide()
-                Toast.makeText(context, detailInfoStatus.errorMsg, Toast.LENGTH_SHORT).show()
+                showToast(msg = detailInfoStatus.errorMsg.ifEmpty { "获取申诉详情失败" }, action = TOAST_TYPE_WARNING)
             }
             else -> {}
         }
@@ -151,16 +151,12 @@ fun AppealDetailScreen(
             }
             HttpStatus.SUCCESS -> {
                 loadingState.hide()
-                Toast.makeText(context, "操作成功", Toast.LENGTH_SHORT).show()
+                showToast(msg = "操作成功", action = TOAST_TYPE_SUCCESS)
                 navController.popBackStack()
             }
             HttpStatus.ERROR -> {
                 loadingState.hide()
-                Toast.makeText(
-                    context,
-                    auditDetailStatus.errorMsg.ifEmpty { "操作失败" },
-                    Toast.LENGTH_SHORT
-                ).show()
+                showToast(msg = auditDetailStatus.errorMsg.ifEmpty { "操作失败" }, action = TOAST_TYPE_ERROR)
             }
             else -> {}
         }
@@ -181,11 +177,7 @@ fun AppealDetailScreen(
                 }
             }
             HttpStatus.ERROR -> {
-                Toast.makeText(
-                    context,
-                    auditEnableStatus.errorMsg.ifEmpty { "操作失败" },
-                    Toast.LENGTH_SHORT
-                ).show()
+                showToast(msg = auditEnableStatus.errorMsg.ifEmpty { "操作失败" }, action = TOAST_TYPE_ERROR)
             }
             else -> {}
         }
@@ -580,8 +572,9 @@ fun AppealDetailScreen(
                     maxLength = 200,
                     contentPadding = 12.dp,
                     contentAlignment = Alignment.TopStart,
-                    onValueChange = {
-                        reasons = it.trim()
+                    ignoreEmptyInput = true,
+                    onValueChange = { input ->
+                        reasons = input
                     }
                 )
             }
@@ -589,7 +582,7 @@ fun AppealDetailScreen(
         confirmText = "确认",
         onConfirm = {
             if (reasons.isEmpty()) {
-                Toast.makeText(context, "请输入驳回意见", Toast.LENGTH_SHORT).show()
+                showToast(msg = "请输入驳回意见", action = TOAST_TYPE_WARNING)
                 return@YBDialog
             }
             viewModel.auditAppealDetailInfo(
