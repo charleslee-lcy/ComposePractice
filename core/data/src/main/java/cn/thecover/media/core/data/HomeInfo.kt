@@ -29,7 +29,8 @@ data class HomeInfo(
     val passRate: String = "0",    //合格率
     val deptAverageScore: String = "0",  //部门平均分
     val finalCoefficient: String = "0",  //最终系数
-    val quotaCoefficient: String = "0",  //定额系数
+    val quotaCoefficient: String = "0",  //定额系数quotaBasicScore
+    val verifierDistributeScore: String = "0",  //本月分配分
     val innerTaskGoalNum: String = "",  //内参任务目标任务数
     val innerTaskFinishedNum: String = "", //内参任务实际完成数
     val status: Int = 0,  //接口状态，0-正常，1-功能未开启

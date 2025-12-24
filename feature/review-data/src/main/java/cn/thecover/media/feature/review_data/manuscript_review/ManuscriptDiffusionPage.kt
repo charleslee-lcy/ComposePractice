@@ -81,9 +81,9 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     val isRefreshing = remember { mutableStateOf(data.isRefreshing) }
     val canLoadMore = remember { mutableStateOf(data.hasNextPage) }
 
-    // Toast 相关状态
+    // Toast 相关状态 - 使用稿件传播排行页面专用toast
     val snackbarHostState = remember { SnackbarHostState() }
-    val toastMessage by viewModel.iconTipsDialogState.collectAsState()
+    val toastMessage by viewModel.manuscriptDiffusionToastState.collectAsState()
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(data) {

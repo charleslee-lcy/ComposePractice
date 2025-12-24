@@ -220,7 +220,13 @@ fun ModifyPasswordInput(
     Row(verticalAlignment = Alignment.CenterVertically) {
         BasicTextField(
             value = textState.value,
-            onValueChange = { textState.value = it },
+            onValueChange = {
+                // 限制最大长度为20个字符
+                if (it.length <= 20) {
+                    textState.value = it
+                }
+            },
+            maxLines = 1,
             modifier = Modifier.weight(1f),
             visualTransformation = if (isPassword && !passwordVisible) {
                 PasswordVisualTransformation()

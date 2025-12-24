@@ -72,9 +72,9 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
     // 初始化为 true，确保列表可以滚动，后续会根据数据更新
     val canLoadMore = remember { mutableStateOf(true) }
 
-    // Toast 相关状态
+    // Toast 相关状态 - 使用部门TOP榜页面专用toast
     val snackbarHostState = remember { SnackbarHostState() }
-    val toastMessage by viewModel.iconTipsDialogState.collectAsState()
+    val toastMessage by viewModel.departmentTopToastState.collectAsState()
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(departmentTotalData) {

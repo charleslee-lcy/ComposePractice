@@ -1,6 +1,5 @@
 package cn.thecover.media.feature.basis.home.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -60,11 +59,11 @@ internal fun ManuscriptTopRankingItem(
 
     // 添加稿件TOP10 tab
     availableTabs.add("稿件TOP10")
-    availablePages.add { TopManuscriptPage(viewModel, homeManuscript) }
+    availablePages.add { TopManuscriptPage(viewModel) }
 
     // 添加稿件传播力TOP10 tab
     availableTabs.add("稿件传播力TOP10")
-    availablePages.add { TopDiffusionPage(viewModel, homeManuscriptDiffusion) }
+    availablePages.add { TopDiffusionPage(viewModel) }
     
     val currentIndex = remember { mutableIntStateOf(0) }
 
@@ -72,6 +71,7 @@ internal fun ManuscriptTopRankingItem(
     LaunchedEffect(Unit) {
         viewModel.getHomeManuscript()
     }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -111,15 +111,30 @@ internal fun ManuscriptTopRankingItem(
     }
 }
 
-@SuppressLint("UNUSED_PARAMETER")
 @Composable
 private fun TopManuscriptPage(
-    viewModel: HomeViewModel,
-    _homeManuscript: PaginatedResult<ManuscriptReviewDataEntity>
+    viewModel: HomeViewModel
 ) {
     Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
 
         val uiState by viewModel.homeManuscriptUiState.collectAsState()
+
+        // 如果正在加载，显示加载提示
+        if (uiState.isLoading) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 40.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "正在加载...",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = SecondaryTextColor
+                )
+            }
+            return@Column
+        }
 
         // 检查是否有错误
         if (!uiState.error.isNullOrEmpty()) {
@@ -138,8 +153,8 @@ private fun TopManuscriptPage(
             return@Column
         }
 
-        // 如果数据为空且不在加载中，显示暂无数据提示
-        if (uiState.dataList?.isEmpty() != false && !uiState.isLoading) {
+        // 如果数据为空，显示暂无数据提示
+        if (uiState.dataList?.isEmpty() != false) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -154,7 +169,8 @@ private fun TopManuscriptPage(
             }
             return@Column
         }
-        
+
+        // 显示稿件列表数据
         uiState.dataList?.forEachIndexed { index, item ->
             DataItemRankingRow(index + 1) {
                 ManuScriptItemHeader(
@@ -199,14 +215,29 @@ private fun TopManuscriptPage(
     }
 }
 
-@SuppressLint("UNUSED_PARAMETER")
 @Composable
 private fun TopDiffusionPage(
-    viewModel: HomeViewModel,
-    _homeManuscriptDiffusion: PaginatedResult<DiffusionDataEntity>
+    viewModel: HomeViewModel
 ) {
     val uiState by viewModel.homeManuscriptDiffusionUiState.collectAsState()
     Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+
+        // 如果正在加载，显示加载提示
+        if (uiState.isLoading) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 40.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "正在加载...",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = SecondaryTextColor
+                )
+            }
+            return@Column
+        }
 
         // 检查是否有错误
         if (!uiState.error.isNullOrEmpty()) {
@@ -225,8 +256,8 @@ private fun TopDiffusionPage(
             return@Column
         }
 
-        // 如果数据为空且不在加载中，显示暂无数据提示
-        if (uiState.dataList?.isEmpty() != false && !uiState.isLoading) {
+        // 如果数据为空，显示暂无数据提示
+        if (uiState.dataList?.isEmpty() != false) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -242,6 +273,7 @@ private fun TopDiffusionPage(
             return@Column
         }
 
+        // 显示稿件传播力数据
         uiState.dataList?.forEachIndexed { index, item ->
 
             DataItemRankingRow(index + 1) {

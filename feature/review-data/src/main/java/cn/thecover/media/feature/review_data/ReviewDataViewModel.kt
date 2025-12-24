@@ -40,6 +40,30 @@ class ReviewDataViewModel @Inject constructor(
     private val _iconTipsDialogState = MutableStateFlow(UiToastState())
     val iconTipsDialogState: StateFlow<UiToastState> = _iconTipsDialogState
 
+    // 部门TOP榜页面专用toast状态
+    private val _departmentTopToastState = MutableStateFlow(UiToastState())
+    val departmentTopToastState: StateFlow<UiToastState> = _departmentTopToastState
+
+    // 部门总数据排行页面专用toast状态
+    private val _departmentReviewToastState = MutableStateFlow(UiToastState())
+    val departmentReviewToastState: StateFlow<UiToastState> = _departmentReviewToastState
+
+    // 部门任务完成情况页面专用toast状态
+    private val _departmentTaskToastState = MutableStateFlow(UiToastState())
+    val departmentTaskToastState: StateFlow<UiToastState> = _departmentTaskToastState
+
+    // 稿件TOP排行页面专用toast状态
+    private val _manuscriptTopToastState = MutableStateFlow(UiToastState())
+    val manuscriptTopToastState: StateFlow<UiToastState> = _manuscriptTopToastState
+
+    // 稿件传播排行页面专用toast状态
+    private val _manuscriptDiffusionToastState = MutableStateFlow(UiToastState())
+    val manuscriptDiffusionToastState: StateFlow<UiToastState> = _manuscriptDiffusionToastState
+
+    // 稿件总排行页面专用toast状态
+    private val _manuscriptReviewToastState = MutableStateFlow(UiToastState())
+    val manuscriptReviewToastState: StateFlow<UiToastState> = _manuscriptReviewToastState
+
     //部门考核页信息流数据
     private val _departmentReviewPageState =
         MutableStateFlow(PaginatedResult<DepartmentTotalDataEntity>())
@@ -195,11 +219,71 @@ class ReviewDataViewModel @Inject constructor(
             }
 
             is ReviewDataIntent.ShowToast -> {
-                _iconTipsDialogState.update {
-                    it.copy(
-                        message = intent.message,
-                        time = System.currentTimeMillis()
-                    )
+                // 根据页面类型显示不同的toast
+                when (intent.pageType) {
+                    "departmentTop" -> {
+                        _departmentTopToastState.update {
+                            it.copy(
+                                message = intent.message,
+                                time = System.currentTimeMillis()
+                            )
+                        }
+                    }
+
+                    "departmentReview" -> {
+                        _departmentReviewToastState.update {
+                            it.copy(
+                                message = intent.message,
+                                time = System.currentTimeMillis()
+                            )
+                        }
+                    }
+
+                    "departmentTask" -> {
+                        _departmentTaskToastState.update {
+                            it.copy(
+                                message = intent.message,
+                                time = System.currentTimeMillis()
+                            )
+                        }
+                    }
+
+                    "manuscriptTop" -> {
+                        _manuscriptTopToastState.update {
+                            it.copy(
+                                message = intent.message,
+                                time = System.currentTimeMillis()
+                            )
+                        }
+                    }
+
+                    "manuscriptDiffusion" -> {
+                        _manuscriptDiffusionToastState.update {
+                            it.copy(
+                                message = intent.message,
+                                time = System.currentTimeMillis()
+                            )
+                        }
+                    }
+
+                    "manuscriptReview" -> {
+                        _manuscriptReviewToastState.update {
+                            it.copy(
+                                message = intent.message,
+                                time = System.currentTimeMillis()
+                            )
+                        }
+                    }
+
+                    else -> {
+                        // 默认使用原来的全局toast
+                        _iconTipsDialogState.update {
+                            it.copy(
+                                message = intent.message,
+                                time = System.currentTimeMillis()
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -297,14 +381,14 @@ class ReviewDataViewModel @Inject constructor(
 
                 // 通知UI更新成功
                 _editManuscriptScoreSuccess.value = true
-                _iconTipsDialogState.update {
+                _manuscriptReviewToastState.update {
                     it.copy(
                         message = "稿分修改成功",
                         time = System.currentTimeMillis()
                     )
                 }
             } else if (result is RepositoryResult.Error) {
-                // 通知UI更新失败
+                // 通知UI更新失败，不显示toast，但更新全局iconTipsDialogState供弹窗内部使用
                 _editManuscriptScoreSuccess.value = false
                 _iconTipsDialogState.update {
                     it.copy(
@@ -382,6 +466,14 @@ class ReviewDataViewModel @Inject constructor(
                             error = result.exception.message
                         )
                     }
+
+                    // 显示稿件总排行页面专用toast
+                    _manuscriptReviewToastState.update {
+                        it.copy(
+                            message = result.exception.message ?: "加载稿件总排行数据失败",
+                            time = System.currentTimeMillis()
+                        )
+                    }
                 }
 
                 is RepositoryResult.Loading -> {
@@ -449,6 +541,14 @@ class ReviewDataViewModel @Inject constructor(
                             error = result.exception.message
                         )
                     }
+
+                    // 显示稿件传播排行页面专用toast
+                    _manuscriptDiffusionToastState.update {
+                        it.copy(
+                            message = result.exception.message ?: "加载稿件传播数据失败",
+                            time = System.currentTimeMillis()
+                        )
+                    }
                 }
 
                 is RepositoryResult.Loading -> {
@@ -505,6 +605,14 @@ class ReviewDataViewModel @Inject constructor(
                             error = result.exception.message
                         )
                     }
+
+                    // 显示稿件TOP排行页面专用toast
+                    _manuscriptTopToastState.update {
+                        it.copy(
+                            message = result.exception.message ?: "加载稿件TOP排行数据失败",
+                            time = System.currentTimeMillis()
+                        )
+                    }
                 }
 
                 is RepositoryResult.Loading -> {
@@ -553,6 +661,14 @@ class ReviewDataViewModel @Inject constructor(
                             isLoading = false,
                             isRefreshing = false,
                             error = result.exception.message
+                        )
+                    }
+
+                    // 显示部门任务页面专用toast
+                    _departmentTaskToastState.update {
+                        it.copy(
+                            message = result.exception.message ?: "加载部门任务数据失败",
+                            time = System.currentTimeMillis()
                         )
                     }
                 }
@@ -612,6 +728,14 @@ class ReviewDataViewModel @Inject constructor(
                         error = result.exception.message
                     )
                 }
+
+                // 显示部门总数据排行页面专用toast
+                _departmentReviewToastState.update {
+                    it.copy(
+                        message = result.exception.message ?: "加载部门总数据失败",
+                        time = System.currentTimeMillis()
+                    )
+                }
             }
 
 
@@ -662,6 +786,14 @@ class ReviewDataViewModel @Inject constructor(
                         isLoading = false,
                         isRefreshing = false,
                         error = result.exception.message
+                    )
+                }
+
+                // 显示部门TOP榜页面专用toast
+                _departmentTopToastState.update {
+                    it.copy(
+                        message = result.exception.message ?: "加载部门TOP榜数据失败",
+                        time = System.currentTimeMillis()
                     )
                 }
             }
