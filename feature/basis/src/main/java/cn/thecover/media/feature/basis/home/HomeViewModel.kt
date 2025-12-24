@@ -229,20 +229,17 @@ class HomeViewModel @Inject constructor(
                 .collect { result ->
                     when (result.status) {
                         HttpStatus.LOADING -> {
-                            // 保持当前状态，只设置加载标志
+                            // 设置加载状态
                             homeManuscriptUiState.update { it.copy(isLoading = true) }
                         }
 
                         HttpStatus.SUCCESS -> {
                             homeManuscriptUiState.update {
-                                if (result.data?.dataList?.isNotEmpty() == true) {
-                                    it.copy(
-                                        dataList = result.data?.dataList,
-                                        isLoading = false
-                                    )
-                                } else {
-                                    it.copy(isLoading = false)
-                                }
+                                it.copy(
+                                    dataList = result.data?.dataList ?: emptyList(),
+                                    isLoading = false,
+                                    error = null
+                                )
                             }
                         }
 
@@ -280,20 +277,17 @@ class HomeViewModel @Inject constructor(
                 .collect { result ->
                     when (result.status) {
                         HttpStatus.LOADING -> {
-                            // 保持当前状态，只设置加载标志
+                            // 设置加载状态
                             homeManuscriptDiffusionUiState.update { it.copy(isLoading = true) }
                         }
 
                         HttpStatus.SUCCESS -> {
                             homeManuscriptDiffusionUiState.update {
-                                if (result.data?.dataList?.isNotEmpty() == true) {
-                                    it.copy(
-                                        dataList = result.data?.dataList,
-                                        isLoading = false
-                                    )
-                                } else {
-                                    it.copy(isLoading = false)
-                                }
+                                it.copy(
+                                    dataList = result.data?.dataList ?: emptyList(),
+                                    isLoading = false,
+                                    error = null
+                                )
                             }
                         }
 

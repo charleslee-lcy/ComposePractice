@@ -27,5 +27,5 @@ sealed class ReviewDataIntent {
 
     data class EditManuscriptScore(val id: Int, val score: Double) : ReviewDataIntent()
     data object GetUnreadMessageCount : ReviewDataIntent()
-    data class ShowToast(val message: String) : ReviewDataIntent()
+    data class ShowToast(val message: String, val pageType: String = "") : ReviewDataIntent()
 }
