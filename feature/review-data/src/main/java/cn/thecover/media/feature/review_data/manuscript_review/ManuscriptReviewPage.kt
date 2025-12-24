@@ -504,7 +504,8 @@ private fun TotalRankingItem(
                         addSubScore = data.addSubScore,
                         basicScore = data.basicScore,
                         qualityScore = data.qualityScore,
-                        diffusionScore = data.diffusionScore
+                        diffusionScore = data.diffusionScore,
+                        (rank >= rankLine)
                     )
                 },
                 expandIconRes = if (rank < rankLine) YBIcons.Custom.Expand else YBIcons.Custom.ExpandVariant
@@ -518,7 +519,8 @@ private fun ItemFoldedView(
     addSubScore: Double = 0.0,
     basicScore: Double = 0.0,
     qualityScore: Double = 0.0,
-    diffusionScore: Double = 0.0
+    diffusionScore: Double = 0.0,
+    isCut: Boolean = false
 ) {
     Column {
         HorizontalDivider(
@@ -532,6 +534,7 @@ private fun ItemFoldedView(
         Row(verticalAlignment = Alignment.Bottom) {
             ItemScoreRow(
                 modifier = Modifier,
+                backgroundColor = if (isCut) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.surface,
                 items = arrayOf(
                     Pair(
                         "加减分",

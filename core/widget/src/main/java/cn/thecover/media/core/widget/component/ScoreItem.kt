@@ -160,7 +160,8 @@ fun PrimaryScoreItem(
 @Composable
 fun ItemScoreRow(
     vararg items: Pair<String, String>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    backgroundColor: Color
 ) {
     // 创建水平排列的行容器，填充最大宽度，元素间间距12dp
     Row(
@@ -170,7 +171,7 @@ fun ItemScoreRow(
         // 遍历所有数据项，为每个项创建数据评分视图
         items.forEach { item ->
             DataScoreItem(
-                backgroundColor = MaterialTheme.colorScheme.surface,
+                backgroundColor = backgroundColor,
                 item = item.first,
                 value = item.second,
                 modifier = Modifier.weight(1f),
@@ -213,14 +214,7 @@ fun DepartmentReviewDataItemPreview() {
             PrimaryScoreItem(item = "一级媒体转载数", value = "2222", type = ScoreItemType.PRIMARY)
             Spacer(Modifier.height(12.dp))
 
-            ItemScoreRow(
-                items = arrayOf(
-                    Pair("阅读数", "1"),
-                    Pair("分享数", "10"),
-                    Pair("点赞数", "100"),
-                    Pair("评论数", "1000"),
-                )
-            )
+
 
             Spacer(Modifier.height(12.dp))
             PrimaryItemScoreRow(

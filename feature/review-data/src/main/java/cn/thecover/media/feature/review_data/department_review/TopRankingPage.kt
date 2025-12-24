@@ -208,7 +208,7 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
 private fun TopRankingItem(ranking: Int, departmentName: String, score: Double) {
     // 使用排名卡片包装器显示排名信息
     DataItemCard {
-        DataItemRankingRow(ranking) {
+        DataItemRankingRow(ranking, paddingTop = 3) {
             // 水平排列部门名称和得分信息
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Spacer(modifier = Modifier.width(16.dp))
@@ -218,12 +218,11 @@ private fun TopRankingItem(ranking: Int, departmentName: String, score: Double) 
                     maxLines = 1,
                 )
                 Spacer(modifier = Modifier.weight(1f))
-
-
                 Text(
                     if (score % 1 == 0.0) score.toInt().toString() else score.toString(),
                     style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.width(60.dp)
                 )
             }
         }

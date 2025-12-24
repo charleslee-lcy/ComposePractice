@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import cn.thecover.media.core.data.DiffusionDataEntity
 import cn.thecover.media.core.widget.component.PrimaryItemScoreRow
 import cn.thecover.media.core.widget.component.ScoreItemType
@@ -67,7 +68,10 @@ import java.time.LocalDate
  * 页面结构包含一个头部组件、记录总数提示文本以及一个列表项组件用于展示每条稿件数据。
  */
 @Composable
-fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
+fun ManuscriptDiffusionPage(
+    viewModel: ReviewDataViewModel = hiltViewModel(),
+    backStackEntry: NavBackStackEntry? = null
+) {
     val focusManager = LocalFocusManager.current
 
     // 模拟稿件传播数据列表
@@ -84,6 +88,11 @@ fun ManuscriptDiffusionPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     // Toast 相关状态 - 使用稿件传播排行页面专用toast
     val snackbarHostState = remember { SnackbarHostState() }
     val toastMessage by viewModel.manuscriptDiffusionToastState.collectAsState()
+
+    // 监听路由切换，当页面首次显示或切换回来时刷新数据
+    LaunchedEffect(backStackEntry?.id) {
+        viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptDiffusion)
+    }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(data) {
