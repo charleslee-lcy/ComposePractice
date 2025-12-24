@@ -1130,6 +1130,33 @@ internal fun ReviewerUserContent(homeInfo: HomeInfo) {
                                 )
                             )
                         }
+                    } else {
+                        // 当不显示稿费时，显示本月分配得分
+                        Card(
+                            modifier = Modifier
+                                .weight(1f),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "本月分配得分",
+                                color = SecondaryTextColor,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                            )
+                            Text(
+                                text = formatScore(homeInfo.verifierDistributeScore),
+                                color = MainTextColor,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(
+                                    start = 12.dp,
+                                    top = 2.dp,
+                                    bottom = 12.dp
+                                )
+                            )
+                        }
                     }
                 }
 
@@ -1139,51 +1166,94 @@ internal fun ReviewerUserContent(homeInfo: HomeInfo) {
                         .fillMaxWidth()
                         .padding(top = 8.dp)
                 ) {
-                    Card(
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .weight(1f),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            text = "本月分配得分",
-                            color = SecondaryTextColor,
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(start = 12.dp, top = 12.dp)
-                        )
-                        Text(
-                            text = formatScore(homeInfo.verifierDistributeScore),
-                            color = MainTextColor,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
-                        )
-                    }
+                    if (homeInfo.showMoney) {
+                        // 当显示稿费时，显示本月分配得分和本月最终系数
+                        Card(
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .weight(1f),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "本月分配得分",
+                                color = SecondaryTextColor,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                            )
+                            Text(
+                                text = formatScore(homeInfo.verifierDistributeScore),
+                                color = MainTextColor,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(
+                                    start = 12.dp,
+                                    top = 2.dp,
+                                    bottom = 12.dp
+                                )
+                            )
+                        }
 
-                    Card(
-                        modifier = Modifier
-                            .weight(1f),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            text = "本月最终系数",
-                            color = SecondaryTextColor,
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(start = 12.dp, top = 12.dp)
-                        )
-                        Text(
-                            text = if (homeInfo.finalCoefficient == "0") "0" else formatScore(
-                                homeInfo.finalCoefficient
-                            ),
-                            color = MainTextColor,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(start = 12.dp, top = 2.dp, bottom = 12.dp)
-                        )
+                        Card(
+                            modifier = Modifier
+                                .weight(1f),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "本月最终系数",
+                                color = SecondaryTextColor,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                            )
+                            Text(
+                                text = if (homeInfo.finalCoefficient == "0") "0" else formatScore(
+                                    homeInfo.finalCoefficient
+                                ),
+                                color = MainTextColor,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(
+                                    start = 12.dp,
+                                    top = 2.dp,
+                                    bottom = 12.dp
+                                )
+                            )
+                        }
+                    } else {
+                        // 当不显示稿费时，只显示本月最终系数
+                        Card(
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .weight(1f),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(defaultElevation = normalCardElevation),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "本月最终系数",
+                                color = SecondaryTextColor,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                            )
+                            Text(
+                                text = if (homeInfo.finalCoefficient == "0") "0" else formatScore(
+                                    homeInfo.finalCoefficient
+                                ),
+                                color = MainTextColor,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(
+                                    start = 12.dp,
+                                    top = 2.dp,
+                                    bottom = 12.dp
+                                )
+                            )
+                        }
+                        // 右侧添加空白区域保持宽度一致
+                        Spacer(modifier = Modifier.weight(1f))
                     }
                 }
             }
