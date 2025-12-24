@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -49,9 +50,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import cn.thecover.media.core.data.DepartmentAssignListData
 import cn.thecover.media.core.data.UpdateAssignRequest
+import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
+import cn.thecover.media.core.widget.component.CommonInput
 import cn.thecover.media.core.widget.component.TOAST_TYPE_ERROR
 import cn.thecover.media.core.widget.component.TOAST_TYPE_SUCCESS
 import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
@@ -67,6 +70,8 @@ import cn.thecover.media.core.widget.component.popup.YBDialog
 import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.component.popup.YBPopup
 import cn.thecover.media.core.widget.component.showToast
+import cn.thecover.media.core.widget.datastore.Keys
+import cn.thecover.media.core.widget.datastore.rememberDataStoreState
 import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.DividerColor
@@ -78,6 +83,7 @@ import cn.thecover.media.core.widget.ui.PhonePreview
 import cn.thecover.media.feature.review_manager.ReviewManageViewModel
 import cn.thecover.media.feature.review_manager.appeal.FilterSearchBar
 import cn.thecover.media.feature.review_manager.appeal.FilterType
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -203,6 +209,9 @@ internal fun DepartmentAssignScreen(
         }
     }
 
+    // 是否有部门内修改分数操作权限
+    var hasApartmentScoreAuth by remember { mutableStateOf(false) }
+
     YBPopup(
         visible = showAssignDialog.value,
         isShowTopActionBar = true,
@@ -212,12 +221,17 @@ internal fun DepartmentAssignScreen(
             checkedItem = null
         },
         onConfirm = {
-            if (assignScore.isEmpty()) {
-                scope.launch {
-                    snackBarHostState.showToast("请输入分配分数", TOAST_TYPE_WARNING)
-                }
+            if (!hasApartmentScoreAuth) {
+                showAssignDialog.value = false
+                checkedItem = null
                 return@YBPopup
             }
+//            if (assignScore.isEmpty()) {
+//                scope.launch {
+//                    snackBarHostState.showToast("请输入分配分数", TOAST_TYPE_WARNING)
+//                }
+//                return@YBPopup
+//            }
             val request = UpdateAssignRequest()
             request.userId = checkedItem?.userId ?: 0
             request.departmentId = checkedItem?.departmentId ?: 0
@@ -240,11 +254,20 @@ internal fun DepartmentAssignScreen(
         var showMonthPicker by remember { mutableStateOf(false) }
         val departmentRemainStatus by viewModel.assignRemainStatus.collectAsStateWithLifecycle()
         val cannotEditMonthStatus by viewModel.cannotEditMonthState.collectAsStateWithLifecycle()
+        val userInfoJson = rememberDataStoreState(Keys.USER_INFO, "")
 
         LaunchedEffect(Unit) {
             viewModel.getCannotEditMonth()
+            viewModel.getUserInfo(context)
             checkedItem?.apply {
                 assignScore = getScoreByPickedMonth(monthPicked, this)
+            }
+        }
+
+        LaunchedEffect(userInfoJson) {
+            val userInfo = Gson().fromJson(userInfoJson, UserInfo::class.java)
+            userInfo?.apply {
+                hasApartmentScoreAuth = hasApartmentScoreAuth()
             }
         }
 
@@ -267,78 +290,87 @@ internal fun DepartmentAssignScreen(
                     thickness = 1.dp,
                     color = DividerColor
                 )
-                Spacer(modifier = Modifier.height(15.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(36.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "选择月份",
-                        fontSize = 14.sp,
-                        color = MainTextColor
-                    )
-                    Column(
+                if (hasApartmentScoreAuth) {
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Row(
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 10.dp)
+                            .fillMaxWidth()
+                            .height(36.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        DateSelectionView(label = "${monthPicked}月", textAlignCenter = true, onClick = {
-                            showMonthPicker = true
-                        })
-                    }
-                }
-                Row(
-                    modifier = Modifier
-                        .padding(top = 12.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "分配分数",
-                        fontSize = 14.sp,
-                        color = MainTextColor
-                    )
-                    Box(
-                        modifier = Modifier
-                            .padding(start = 10.dp)
-                            .weight(1f)
-                            .height(36.dp)
-                            .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(4.dp))
-                            .background(
-                                PageBackgroundColor
-                            )
-                    )
-                    {
-                        Box(modifier = Modifier
-                            .align(Alignment.Center)
-                            .width(80.dp)
-                        ) {
-                            YBInput(
-                                text = assignScore,
-                                textStyle = TextStyle(
-                                    fontSize = 14.sp,
-                                    color = MainTextColor
-                                ),
-                                hint = "暂未输入",
-                                hintTextSize = 14.sp,
-                                singleLine = true,
-                                keyboardOptions = KeyboardOptions.Default.copy(
-                                    keyboardType = KeyboardType.Number
-                                ),
-                                onValueChange = {
-                                    assignScore = it
-                                    setScoreByPickedMonth(monthPicked, it.ifEmpty { "0" }, this@apply)
-                                }
-                            )
-                        }
                         Text(
-                            modifier = Modifier.align(Alignment.CenterEnd).padding(end = 15.dp),
-                            text = "分",
+                            text = "选择月份",
                             fontSize = 14.sp,
                             color = MainTextColor
                         )
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 10.dp)
+                        ) {
+                            DateSelectionView(
+                                label = "${monthPicked}月",
+                                textAlignCenter = true,
+                                onClick = {
+                                    showMonthPicker = true
+                                })
+                        }
+                    }
+                    Row(
+                        modifier = Modifier
+                            .padding(top = 12.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "分配分数",
+                            fontSize = 14.sp,
+                            color = MainTextColor
+                        )
+                        Row(
+                            modifier = Modifier
+                                .padding(start = 10.dp)
+                                .weight(1f)
+                                .height(36.dp)
+                                .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(4.dp))
+                                .background(
+                                    PageBackgroundColor
+                                ),
+                            verticalAlignment = Alignment.CenterVertically
+                        )
+                        {
+                            CommonInput(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(36.dp),
+                                text = assignScore,
+                                textStyle = TextStyle(
+                                    fontSize = 14.sp,
+                                    color = MainTextColor,
+                                    textAlign = TextAlign.Center
+                                ),
+                                hint = "暂未输入",
+                                hintTextSize = 14.sp,
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Number
+                                ),
+                                contentPadding = PaddingValues(horizontal = 20.dp),
+                                onValueChange = {
+                                    assignScore = it
+                                    setScoreByPickedMonth(
+                                        monthPicked,
+                                        it.ifEmpty { "0" },
+                                        this@apply
+                                    )
+                                }
+                            )
+                            Text(
+                                modifier = Modifier.padding(end = 15.dp),
+                                text = "分",
+                                fontSize = 14.sp,
+                                color = MainTextColor
+                            )
+                        }
                     }
                 }
                 Text(

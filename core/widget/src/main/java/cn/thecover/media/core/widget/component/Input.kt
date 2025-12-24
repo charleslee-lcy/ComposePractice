@@ -4,11 +4,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -34,6 +37,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -84,8 +88,13 @@ fun YBInput(
     val textStyle = textStyle
     var textState by remember { mutableStateOf(if (ignoreEmptyInput) text.trim() else text) }
 
-    LaunchedEffect(if (ignoreEmptyInput) text.trim() else text) {
-        textState = if (ignoreEmptyInput) text.trim() else text
+    LaunchedEffect(if (ignoreEmptyInput) text.replace(Regex("[ \\t]+$"), "") else text) {
+        textState = if (ignoreEmptyInput) {
+            // 只过滤末尾的空格和制表符，保留换行符
+            text.replace(Regex("[ \\t]+$"), "")
+        } else {
+            text
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -105,17 +114,27 @@ fun YBInput(
                     keyboardOptions.keyboardType == KeyboardType.Phone ||
                     keyboardOptions.keyboardType == KeyboardType.NumberPassword
                 ) {
-                    it.filter { it.isDigit() }
+                    it.filter { char -> char.isDigit() }
                 } else {
                     it
                 }
                 if (result.length > maxLength) {
                     val cutText = result.take(maxLength)
-                    textState = if (ignoreEmptyInput) cutText.trim() else cutText
+                    textState = if (ignoreEmptyInput) {
+                        // 只过滤首尾的空格和制表符，保留换行符
+                        cutText.replaceFirst(Regex("^[ \\t]+"), "").replaceFirst(Regex("[ \\t]+$"), "")
+                    } else {
+                        cutText
+                    }
                     onValueChange.invoke(textState)
                     return@BasicTextField
                 }
-                textState = if (ignoreEmptyInput) result.trim() else result
+                textState = if (ignoreEmptyInput) {
+                    // 只过滤首尾的空格和制表符，保留换行符
+                    result.replaceFirst(Regex("^[ \\t]+"), "").replaceFirst(Regex("[ \\t]+$"), "")
+                } else {
+                    result
+                }
                 onValueChange.invoke(textState)
             },
             modifier = Modifier
@@ -181,34 +200,166 @@ fun YBInput(
     }
 }
 
+/**
+ * 普通单行文本输入框
+ */
+@Composable
+fun CommonInput(
+    modifier: Modifier = Modifier,
+    text: String = "",
+    textStyle: TextStyle = TextStyle(
+        fontSize = 13.sp, color = MainTextColor
+    ),
+    showKeyboard: Boolean = false,
+    hint: String = "",
+    hintTextSize: TextUnit = textStyle.fontSize,
+    hintTextColor: Color = EditHintTextColor,
+    maxLength: Int = Int.MAX_VALUE,
+    isPassword: Boolean = false,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    onValueChange: (String) -> Unit = {},
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    ignoreEmptyInput: Boolean = false,
+) {
+    var textVisible by remember { mutableStateOf(!isPassword) }
+    val focusRequester = remember { FocusRequester() }
+    val textStyle = textStyle
+    var textState by remember { mutableStateOf(if (ignoreEmptyInput) text.trim() else text) }
+
+    LaunchedEffect(if (ignoreEmptyInput) text.trim() else text) {
+        textState = if (ignoreEmptyInput) text.trim() else text
+    }
+
+    LaunchedEffect(Unit) {
+        if (showKeyboard) {
+            focusRequester.requestFocus()
+        }
+    }
+
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        BasicTextField(
+            value = textState,
+            onValueChange = {
+                val result = if (keyboardOptions.keyboardType == KeyboardType.Number ||
+                    keyboardOptions.keyboardType == KeyboardType.Phone ||
+                    keyboardOptions.keyboardType == KeyboardType.NumberPassword
+                ) {
+                    it.filter { it.isDigit() }
+                } else {
+                    it
+                }
+                if (result.length > maxLength) {
+                    val cutText = result.take(maxLength)
+                    textState = if (ignoreEmptyInput) cutText.trim() else cutText
+                    onValueChange.invoke(textState)
+                    return@BasicTextField
+                }
+                textState = if (ignoreEmptyInput) result.trim() else result
+                onValueChange.invoke(textState)
+            },
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .weight(1f),
+            textStyle = textStyle.copy(lineHeight = textStyle.fontSize * 1.5f),
+            singleLine = true,
+            cursorBrush = SolidColor(MainColor),
+            keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
+            visualTransformation = if (textVisible) {
+                VisualTransformation.None
+            } else {
+                PasswordVisualTransformation()
+            },
+            decorationBox = { innerTextField ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(contentPadding),
+                    contentAlignment = when (textStyle.textAlign) {
+                        TextAlign.Start -> Alignment.CenterStart
+                        TextAlign.End -> Alignment.CenterEnd
+                        TextAlign.Center -> Alignment.Center
+                        else -> Alignment.CenterStart
+                    }
+                ) {
+                    if (textState.isEmpty()) {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = hint, style = textStyle.copy(
+                                color = hintTextColor, fontSize = hintTextSize
+                            )
+                        )
+                    }
+                    innerTextField()
+                }
+            })
+    }
+}
+
 
 @PhonePreview
 @Composable
 fun YBInputPreview() {
+    var assignScore by remember { mutableStateOf("100") }
     YBTheme {
-        YBInput(
+        Column(
             modifier = Modifier
-                .padding(14.dp)
-                .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(12.dp))
-                .fillMaxWidth()
-                .height(150.dp)
-                .background(
-                    PageBackgroundColor
+                .fillMaxSize()
+                .background(Color.White)
+        ) {
+            YBInput(
+                modifier = Modifier
+                    .padding(14.dp)
+                    .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(12.dp))
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .background(
+                        PageBackgroundColor
+                    ),
+                text = "是否萨达防守打法是FS电风扇地方水电费是",
+                textStyle = TextStyle(
+                    fontSize = 15.sp, color = MainTextColor
                 ),
-            text = "",
-            textStyle = TextStyle(
-                fontSize = 15.sp, color = MainTextColor
-            ),
-            hint = "输入意见，不超过200字",
-            singleLine = false,
-            maxLength = 200,
-            showCount = true,
-            contentPadding = 12.dp,
-            isPassword = true,
-            showVisibleIcon = true,
-            contentAlignment = Alignment.TopStart,
-            onValueChange = {
+                hint = "输入意见，不超过200字",
+                singleLine = false,
+                maxLength = 200,
+                showCount = true,
+                contentPadding = 12.dp,
+                showVisibleIcon = true,
+                contentAlignment = Alignment.Center,
+                onValueChange = {
 
-            })
+                })
+
+            CommonInput(
+                modifier = Modifier
+                    .padding(14.dp)
+                    .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(12.dp))
+                    .width(200.dp)
+                    .height(36.dp)
+                    .background(
+                        PageBackgroundColor
+                    ),
+                text = assignScore,
+                textStyle = TextStyle(
+                    fontSize = 14.sp,
+                    color = MainTextColor,
+                    textAlign = TextAlign.Start
+                ),
+                hint = "暂未输入",
+                hintTextSize = 14.sp,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number
+                ),
+                contentPadding = PaddingValues(horizontal = 12.dp),
+                onValueChange = {
+                    assignScore = it
+                }
+            )
+        }
     }
 }

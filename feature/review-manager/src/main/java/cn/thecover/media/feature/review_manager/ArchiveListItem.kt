@@ -85,30 +85,26 @@ fun ArchiveListItem(
                     modifier = Modifier.weight(1f).padding(end = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (!getReporterNameString(item.reporters).isEmpty()) {
-                        Text(
-                            modifier = Modifier.weight(1f, fill = false),
-                            text = getReporterNameString(item.reporters),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = TertiaryTextColor,
-                            fontSize = 13.sp
-                        )
-                        Spacer(modifier = Modifier.width(13.dp))
-                    }
-                    if (item.newsCategoryName.isNotEmpty()) {
-                        Text(
-                            text = item.newsCategoryName,
-                            color = TertiaryTextColor,
-                            fontSize = 13.sp,
-                            modifier = Modifier
-                                .background(
-                                    color = Color(0xFFF2F2F2),
-                                    shape = RoundedCornerShape(4.dp)
-                                )
-                                .padding(horizontal = 5.dp)
-                        )
-                    }
+                    Text(
+                        modifier = Modifier.weight(1f, fill = false),
+                        text = getReporterNameString(item.reporters).ifEmpty { "-" },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = TertiaryTextColor,
+                        fontSize = 13.sp
+                    )
+                    Spacer(modifier = Modifier.width(13.dp))
+                    Text(
+                        text = item.newsCategoryName.ifEmpty { "-" },
+                        color = TertiaryTextColor,
+                        fontSize = 13.sp,
+                        modifier = Modifier
+                            .background(
+                                color = Color(0xFFF2F2F2),
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                            .padding(horizontal = 5.dp)
+                    )
                 }
 
                 if (item.userScoreStatus.isNotEmpty() && item.userScoreStatus == "1") {

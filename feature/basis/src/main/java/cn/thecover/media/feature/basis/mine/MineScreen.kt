@@ -199,9 +199,6 @@ internal fun MineScreen(
             confirmText = "退出",
             onConfirm = {
                 viewModel.logout()
-                navController.navigate(LoginRoute) {
-                    popUpTo(0) { inclusive = true }
-                }
             },
             cancelText = "取消",
             onCancel = {
