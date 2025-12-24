@@ -97,12 +97,12 @@ fun YBApp(
     appState: YBAppState,
     modifier: Modifier = Modifier,
 ) {
+    val snackBarHostState = remember { SnackbarHostState() }
+
     YBBackground(modifier = modifier) {
         YBGradientBackground(
             gradientColors = GradientColors(),
         ) {
-            val snackBarHostState = remember { SnackbarHostState() }
-
             val isOffline by appState.isOffline.collectAsStateWithLifecycle()
 
             // If user is not connected to the internet show a snack bar to inform them.
@@ -122,6 +122,8 @@ fun YBApp(
             )
         }
     }
+
+    YBToast(snackBarHostState = snackBarHostState)
 }
 
 @Composable
@@ -289,7 +291,6 @@ private fun MainContent(
                 ),
                 snackbar = {
 //                    Snackbar(it, contentColor = Red40, containerColor = Orange90)
-                    YBToast(snackBarHostState = snackBarHostState)
                 }
             )
         },

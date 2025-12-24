@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import cn.thecover.media.core.common.util.DESUtil
+import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.TOAST_TYPE_ERROR
@@ -148,6 +149,8 @@ internal fun LoginScreen(
                 } ?: kotlin.run {
                     showToast(loginState.errorMsg.ifEmpty { "登录失败" }, TOAST_TYPE_ERROR)
                 }
+
+                viewModel.loginUiState.value = BaseUiState()
             }
             HttpStatus.ERROR -> {
                 loadingState.hide()
@@ -166,6 +169,8 @@ internal fun LoginScreen(
                         }
                     )
                 }
+
+                viewModel.loginUiState.value = BaseUiState()
             }
             else -> {}
         }

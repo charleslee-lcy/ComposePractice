@@ -208,6 +208,7 @@ fun ArchiveScoreScreen(
             }
             HttpStatus.ERROR -> {
                 loadingState.hide()
+                showScoreDialog.value = false
                 showToast(msg = updateScoreStatus.errorMsg.ifEmpty { "打分失败" }, action = TOAST_TYPE_ERROR)
                 viewModel.updateScoreState.value = BaseUiState()
             }
