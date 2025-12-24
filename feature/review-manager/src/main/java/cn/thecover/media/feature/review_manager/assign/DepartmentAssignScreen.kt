@@ -20,6 +20,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -28,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,12 +59,14 @@ import cn.thecover.media.core.widget.component.YBButton
 import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.YBLabel
 import cn.thecover.media.core.widget.component.YBNormalList
+import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.SingleColumnPicker
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBDialog
 import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.component.popup.YBPopup
+import cn.thecover.media.core.widget.component.showToast
 import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.DividerColor
@@ -73,6 +78,7 @@ import cn.thecover.media.core.widget.ui.PhonePreview
 import cn.thecover.media.feature.review_manager.ReviewManageViewModel
 import cn.thecover.media.feature.review_manager.appeal.FilterSearchBar
 import cn.thecover.media.feature.review_manager.appeal.FilterType
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 
@@ -97,6 +103,7 @@ internal fun DepartmentAssignScreen(
     val showAssignDialog = remember { mutableStateOf(false) }
     var checkedItem by remember { mutableStateOf<DepartmentAssignListData?>(null) }
 
+    val scope = rememberCoroutineScope()
     val departmentListUiState by viewModel.departmentListDataState.collectAsStateWithLifecycle()
     var isFirstLaunch by remember { mutableStateOf(true) }
     var monthPicked by remember { mutableIntStateOf(LocalDate.now().monthValue) }
@@ -104,6 +111,7 @@ internal fun DepartmentAssignScreen(
     val updateAssignStatus by viewModel.updateAssignState.collectAsStateWithLifecycle()
     val departmentRemainState by viewModel.assignRemainStatus.collectAsStateWithLifecycle()
     val loadingState = rememberTipsDialogState()
+    val snackBarHostState = remember { SnackbarHostState() }
 
     // 监听键盘状态变化
     val imeInsets = WindowInsets.ime
@@ -153,7 +161,7 @@ internal fun DepartmentAssignScreen(
             }
             HttpStatus.ERROR -> {
                 loadingState.hide()
-                showToast(updateAssignStatus.errorMsg.ifEmpty { "分配失败" }, TOAST_TYPE_ERROR)
+                snackBarHostState.showToast(updateAssignStatus.errorMsg.ifEmpty { "分配失败" }, TOAST_TYPE_ERROR)
                 viewModel.updateAssignState.value = BaseUiState()
             }
             else -> {}
@@ -205,7 +213,9 @@ internal fun DepartmentAssignScreen(
         },
         onConfirm = {
             if (assignScore.isEmpty()) {
-                showToast("请输入分配分数", TOAST_TYPE_WARNING)
+                scope.launch {
+                    snackBarHostState.showToast("请输入分配分数", TOAST_TYPE_WARNING)
+                }
                 return@YBPopup
             }
             val request = UpdateAssignRequest()
@@ -385,6 +395,8 @@ internal fun DepartmentAssignScreen(
                 showMonthPicker = false
             }
         )
+
+        YBToast(snackBarHostState = snackBarHostState)
     }
 
     YBLoadingDialog(loadingState, enableDismiss = true, onDismissRequest = { loadingState.hide() })

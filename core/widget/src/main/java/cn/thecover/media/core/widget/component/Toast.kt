@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
@@ -59,25 +60,22 @@ suspend fun SnackbarHostState.showToast(message: String) {
 @Composable
 fun YBToast(
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    duration: Long = 2000L,
-    bottomRate: Float = 0.2f
+    duration: Long = 2000L
 ) {
-    LaunchedEffect(snackBarHostState.currentSnackbarData) {
-        delay(duration)
-        snackBarHostState.currentSnackbarData?.dismiss()
-    }
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Spacer(Modifier.weight(1f))
-        // 手动放置 SnackBarHost 到中央
-        SnackbarHost(
-            hostState = snackBarHostState,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            CenterSnackBar(it)
+    val currentSnackbar = snackBarHostState.currentSnackbarData
+
+    if (currentSnackbar != null) {
+        Popup(
+            alignment = Alignment.BottomCenter,
+            content = {
+                CenterSnackBar(currentSnackbar, modifier = Modifier.padding(bottom = 100.dp))
+            }
+        )
+
+        LaunchedEffect(currentSnackbar) {
+            delay(duration)
+            currentSnackbar.dismiss()
         }
-        Spacer(Modifier.fillMaxHeight(bottomRate))
     }
 }
 
@@ -87,12 +85,13 @@ private fun CenterSnackBar(
     modifier: Modifier = Modifier
 ) {
     Card(
+        modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         shape = RoundedCornerShape(25.dp),
     ) {
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .widthIn(max = 300.dp)
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             contentAlignment = Alignment.Center

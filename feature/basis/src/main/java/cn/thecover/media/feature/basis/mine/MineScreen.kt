@@ -47,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import cn.thecover.media.core.data.UserInfo
+import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.TOAST_TYPE_ERROR
@@ -144,6 +145,7 @@ internal fun MineScreen(
                 HttpStatus.ERROR -> {
                     logoutLoadingState.hide()
                     showToast(logoutUiState.errorMsg.ifEmpty { "请求失败" }, TOAST_TYPE_ERROR)
+                    viewModel.logoutUiState.value = BaseUiState()
                 }
                 else -> {}
             }
