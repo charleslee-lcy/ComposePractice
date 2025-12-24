@@ -33,9 +33,11 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -226,9 +228,23 @@ fun CommonInput(
     val focusRequester = remember { FocusRequester() }
     val textStyle = textStyle
     var textState by remember { mutableStateOf(if (ignoreEmptyInput) text.trim() else text) }
+    var textFieldValue by remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = textState,
+                selection = TextRange(textState.length) // 初始化时光标在最后
+            )
+        )
+    }
 
-    LaunchedEffect(if (ignoreEmptyInput) text.trim() else text) {
-        textState = if (ignoreEmptyInput) text.trim() else text
+    // 当外部text变化时，更新TextFieldValue
+    LaunchedEffect(text) {
+        val newText = if (ignoreEmptyInput) text.trim() else text
+        textFieldValue = TextFieldValue(
+            text = newText,
+            selection = TextRange(newText.length) // 确保光标在最后
+        )
+        textState = newText
     }
 
     LaunchedEffect(Unit) {
@@ -242,23 +258,26 @@ fun CommonInput(
         verticalAlignment = Alignment.CenterVertically
     ) {
         BasicTextField(
-            value = textState,
-            onValueChange = {
+            value = textFieldValue,
+            onValueChange = { newValue ->
                 val result = if (keyboardOptions.keyboardType == KeyboardType.Number ||
                     keyboardOptions.keyboardType == KeyboardType.Phone ||
                     keyboardOptions.keyboardType == KeyboardType.NumberPassword
                 ) {
-                    it.filter { it.isDigit() }
+                    newValue.text.filter { char -> char.isDigit() }
                 } else {
-                    it
+                    newValue.text
                 }
                 if (result.length > maxLength) {
                     val cutText = result.take(maxLength)
                     textState = if (ignoreEmptyInput) cutText.trim() else cutText
-                    onValueChange.invoke(textState)
-                    return@BasicTextField
+                } else {
+                    textState = if (ignoreEmptyInput) result.trim() else result
                 }
-                textState = if (ignoreEmptyInput) result.trim() else result
+                textFieldValue = TextFieldValue(
+                    text = textState,
+                    selection = TextRange(textState.length)
+                )
                 onValueChange.invoke(textState)
             },
             modifier = Modifier
