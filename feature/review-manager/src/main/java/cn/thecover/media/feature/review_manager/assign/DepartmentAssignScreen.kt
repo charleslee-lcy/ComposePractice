@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
@@ -31,7 +32,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -123,6 +126,8 @@ internal fun DepartmentAssignScreen(
     val imeInsets = WindowInsets.ime
     val isKeyboardVisible = imeInsets.getBottom(LocalDensity.current) > 0
 
+    val lazyListState = rememberLazyListState()
+
     LaunchedEffect(isKeyboardVisible) {
         if (!isKeyboardVisible) {
             // 键盘收起时清除焦点
@@ -162,6 +167,16 @@ internal fun DepartmentAssignScreen(
                 loadingState.hide()
                 showToast("分配成功", TOAST_TYPE_SUCCESS)
                 showAssignDialog.value = false
+                checkedItem?.let { checked ->
+                    val updatedList = items.value.map { item ->
+                        if (item.id == checked.id) {
+                            checked // 返回更新后的对象
+                        } else {
+                            item // 保持其他对象不变
+                        }
+                    }
+                    items.value = updatedList
+                }
                 checkedItem = null
                 viewModel.updateAssignState.value = BaseUiState()
             }
@@ -188,6 +203,7 @@ internal fun DepartmentAssignScreen(
         YBNormalList(
             modifier = Modifier.fillMaxSize(),
             items = items,
+            listState = lazyListState,
             isRefreshing = isRefreshing,
             isLoadingMore = isLoadingMore,
             canLoadMore = canLoadMore,
