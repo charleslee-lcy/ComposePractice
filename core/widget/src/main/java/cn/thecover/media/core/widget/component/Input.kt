@@ -88,8 +88,13 @@ fun YBInput(
     val textStyle = textStyle
     var textState by remember { mutableStateOf(if (ignoreEmptyInput) text.trim() else text) }
 
-    LaunchedEffect(if (ignoreEmptyInput) text.trim() else text) {
-        textState = if (ignoreEmptyInput) text.trim() else text
+    LaunchedEffect(if (ignoreEmptyInput) text.replace(Regex("[ \\t]+$"), "") else text) {
+        textState = if (ignoreEmptyInput) {
+            // 只过滤末尾的空格和制表符，保留换行符
+            text.replace(Regex("[ \\t]+$"), "")
+        } else {
+            text
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -109,17 +114,27 @@ fun YBInput(
                     keyboardOptions.keyboardType == KeyboardType.Phone ||
                     keyboardOptions.keyboardType == KeyboardType.NumberPassword
                 ) {
-                    it.filter { it.isDigit() }
+                    it.filter { char -> char.isDigit() }
                 } else {
                     it
                 }
                 if (result.length > maxLength) {
                     val cutText = result.take(maxLength)
-                    textState = if (ignoreEmptyInput) cutText.trim() else cutText
+                    textState = if (ignoreEmptyInput) {
+                        // 只过滤首尾的空格和制表符，保留换行符
+                        cutText.replaceFirst(Regex("^[ \\t]+"), "").replaceFirst(Regex("[ \\t]+$"), "")
+                    } else {
+                        cutText
+                    }
                     onValueChange.invoke(textState)
                     return@BasicTextField
                 }
-                textState = if (ignoreEmptyInput) result.trim() else result
+                textState = if (ignoreEmptyInput) {
+                    // 只过滤首尾的空格和制表符，保留换行符
+                    result.replaceFirst(Regex("^[ \\t]+"), "").replaceFirst(Regex("[ \\t]+$"), "")
+                } else {
+                    result
+                }
                 onValueChange.invoke(textState)
             },
             modifier = Modifier
