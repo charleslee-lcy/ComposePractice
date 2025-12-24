@@ -66,9 +66,9 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     val isRefreshing = remember { mutableStateOf(taskState.isRefreshing) }
     val canLoadMore = remember { mutableStateOf(taskState.hasNextPage) }
 
-    // Toast 相关状态
+    // Toast 相关状态 - 使用部门任务页面专用toast
     val snackbarHostState = remember { SnackbarHostState() }
-    val toastMessage by viewModel.iconTipsDialogState.collectAsState()
+    val toastMessage by viewModel.departmentTaskToastState.collectAsState()
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(taskState) {

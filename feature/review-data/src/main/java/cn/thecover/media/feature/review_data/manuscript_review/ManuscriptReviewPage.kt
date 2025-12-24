@@ -106,13 +106,7 @@ internal fun ManuscriptReviewPage(
 ) {
     val focusManager = LocalFocusManager.current
     val data by viewModel.manuscriptReviewPageState.collectAsState()
-    // 计算splitsNum为data.dataList中第一个score等于0的数据的索引
-    val splitsNum = remember(data.dataList) {
-        if (viewModel.manuscriptReviewFilterState.value.sortField.contains("分割线以下")) 0 else data.dataList?.indexOfFirst { it.id.toLong() == data.firstCutNewsId }
-            ?.let {
-            if (it == -1) data.dataList?.size ?: 0 else it
-        } ?: 0
-    }
+    val filterState by viewModel.manuscriptReviewFilterState.collectAsState()
 
     // 观察稿分修改操作的状态
     val editScoreSuccess by viewModel.editManuscriptScoreSuccess.collectAsState()
@@ -133,14 +127,24 @@ internal fun ManuscriptReviewPage(
     val isLoadingMore = remember { mutableStateOf(data.isLoading) }
     val isRefreshing = remember { mutableStateOf(data.isRefreshing) }
     val canLoadMore = remember { mutableStateOf(true) }
+    val splitsNum = remember { mutableIntStateOf(0) }
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
-    LaunchedEffect(data) {
+    LaunchedEffect(data, filterState) {
         manus.value = data.dataList ?: emptyList()
         isLoadingMore.value = data.isLoading
         isRefreshing.value = data.isRefreshing
         canLoadMore.value = data.hasNextPage
 
-
+        // 更新分割线位置
+        splitsNum.intValue = if (filterState.sortField.contains("分割线以下")) {
+            0
+        } else {
+            if (data.dataList?.indexOfFirst { it.isCutNews } == -1) {
+                data.dataList?.size ?: 0
+            } else {
+                data.dataList?.indexOfFirst { it.isCutNews } ?: 0
+            }
+        }
     }
 
     YBNormalList(
@@ -186,13 +190,13 @@ internal fun ManuscriptReviewPage(
         }
     ) { item, index ->
         val itemBg = when (index) {
-            in 0..<splitsNum -> MaterialTheme.colorScheme.background
-            splitsNum -> Color.Transparent
+            in 0..<splitsNum.intValue -> MaterialTheme.colorScheme.background
+            splitsNum.intValue -> Color.Transparent
             else -> Color(0xFFF5F8FF)
         }
-        Spacer(modifier = Modifier.height(if (index == splitsNum) 36.dp else 0.dp))
+        Spacer(modifier = Modifier.height(if (index == splitsNum.intValue) 36.dp else 0.dp))
         Box {
-            if (index == splitsNum) {
+            if (index == splitsNum.intValue) {
                 Image(
                     painter = painterResource(ReviewDataImages.Background.ManuSplitsLine),
                     contentDescription = "分割线背景",
@@ -211,7 +215,7 @@ internal fun ManuscriptReviewPage(
 
                 TotalRankingItem(
                     index + 1,
-                    rankLine = splitsNum + 1,
+                    rankLine = (splitsNum.intValue + 1),
                     item,
                     showModifyState.value,
                     onItemClick = {
@@ -393,7 +397,8 @@ internal fun ManuscriptReviewPage(
     val snackBarHostState = remember { SnackbarHostState() }
     YBToast(snackBarHostState)
 
-    val toastState by viewModel.iconTipsDialogState.collectAsState()
+    // 使用稿件总排行页面专用toast
+    val toastState by viewModel.manuscriptReviewToastState.collectAsState()
     LaunchedEffect(toastState.time) {
         if (toastState.message.isNotEmpty() && toastState.time != 0L) {
             snackBarHostState.showSnackbar(toastState.message)
