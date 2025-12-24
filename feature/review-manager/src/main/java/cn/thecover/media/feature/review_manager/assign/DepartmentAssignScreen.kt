@@ -212,12 +212,12 @@ internal fun DepartmentAssignScreen(
             checkedItem = null
         },
         onConfirm = {
-            if (assignScore.isEmpty()) {
-                scope.launch {
-                    snackBarHostState.showToast("请输入分配分数", TOAST_TYPE_WARNING)
-                }
-                return@YBPopup
-            }
+//            if (assignScore.isEmpty()) {
+//                scope.launch {
+//                    snackBarHostState.showToast("请输入分配分数", TOAST_TYPE_WARNING)
+//                }
+//                return@YBPopup
+//            }
             val request = UpdateAssignRequest()
             request.userId = checkedItem?.userId ?: 0
             request.departmentId = checkedItem?.departmentId ?: 0
