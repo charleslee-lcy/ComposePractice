@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,6 +54,7 @@ import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
+import cn.thecover.media.core.widget.component.CommonInput
 import cn.thecover.media.core.widget.component.TOAST_TYPE_ERROR
 import cn.thecover.media.core.widget.component.TOAST_TYPE_SUCCESS
 import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
@@ -325,7 +327,7 @@ internal fun DepartmentAssignScreen(
                             fontSize = 14.sp,
                             color = MainTextColor
                         )
-                        Box(
+                        Row(
                             modifier = Modifier
                                 .padding(start = 10.dp)
                                 .weight(1f)
@@ -333,38 +335,37 @@ internal fun DepartmentAssignScreen(
                                 .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(4.dp))
                                 .background(
                                     PageBackgroundColor
-                                )
+                                ),
+                            verticalAlignment = Alignment.CenterVertically
                         )
                         {
-                            Box(
+                            CommonInput(
                                 modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .width(80.dp)
-                            ) {
-                                YBInput(
-                                    text = assignScore,
-                                    textStyle = TextStyle(
-                                        fontSize = 14.sp,
-                                        color = MainTextColor
-                                    ),
-                                    hint = "暂未输入",
-                                    hintTextSize = 14.sp,
-                                    singleLine = true,
-                                    keyboardOptions = KeyboardOptions.Default.copy(
-                                        keyboardType = KeyboardType.Number
-                                    ),
-                                    onValueChange = {
-                                        assignScore = it
-                                        setScoreByPickedMonth(
-                                            monthPicked,
-                                            it.ifEmpty { "0" },
-                                            this@apply
-                                        )
-                                    }
-                                )
-                            }
+                                    .weight(1f)
+                                    .height(36.dp),
+                                text = assignScore,
+                                textStyle = TextStyle(
+                                    fontSize = 14.sp,
+                                    color = MainTextColor,
+                                    textAlign = TextAlign.Center
+                                ),
+                                hint = "暂未输入",
+                                hintTextSize = 14.sp,
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Number
+                                ),
+                                contentPadding = PaddingValues(horizontal = 20.dp),
+                                onValueChange = {
+                                    assignScore = it
+                                    setScoreByPickedMonth(
+                                        monthPicked,
+                                        it.ifEmpty { "0" },
+                                        this@apply
+                                    )
+                                }
+                            )
                             Text(
-                                modifier = Modifier.align(Alignment.CenterEnd).padding(end = 15.dp),
+                                modifier = Modifier.padding(end = 15.dp),
                                 text = "分",
                                 fontSize = 14.sp,
                                 color = MainTextColor
