@@ -119,8 +119,8 @@ private fun TopManuscriptPage(
 
         val uiState by viewModel.homeManuscriptUiState.collectAsState()
 
-        // 如果正在加载，显示加载提示
-        if (uiState.isLoading) {
+        // 如果正在加载且没有已有数据，显示加载提示
+        if (uiState.isLoading && uiState.dataList?.isEmpty() != false) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -222,8 +222,8 @@ private fun TopDiffusionPage(
     val uiState by viewModel.homeManuscriptDiffusionUiState.collectAsState()
     Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
 
-        // 如果正在加载，显示加载提示
-        if (uiState.isLoading) {
+        // 如果正在加载且没有已有数据，显示加载提示
+        if (uiState.isLoading && uiState.dataList?.isEmpty() != false) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()

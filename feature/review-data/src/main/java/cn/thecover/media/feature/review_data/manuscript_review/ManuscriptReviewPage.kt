@@ -504,7 +504,8 @@ private fun TotalRankingItem(
                         addSubScore = data.addSubScore,
                         basicScore = data.basicScore,
                         qualityScore = data.qualityScore,
-                        diffusionScore = data.diffusionScore
+                        diffusionScore = data.diffusionScore,
+                        (rank >= rankLine)
                     )
                 },
                 expandIconRes = if (rank < rankLine) YBIcons.Custom.Expand else YBIcons.Custom.ExpandVariant
@@ -518,7 +519,8 @@ private fun ItemFoldedView(
     addSubScore: Double = 0.0,
     basicScore: Double = 0.0,
     qualityScore: Double = 0.0,
-    diffusionScore: Double = 0.0
+    diffusionScore: Double = 0.0,
+    isCut: Boolean = false
 ) {
     Column {
         HorizontalDivider(
@@ -532,6 +534,7 @@ private fun ItemFoldedView(
         Row(verticalAlignment = Alignment.Bottom) {
             ItemScoreRow(
                 modifier = Modifier,
+                backgroundColor = if (isCut) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.surface,
                 items = arrayOf(
                     Pair(
                         "加减分",
@@ -641,14 +644,14 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
                     "稿件名称", "稿件 ID", "记者"
                 ),
                 onValueChange = { valueType, value ->
-                    // 过滤掉文本末尾的换行符，防止换行字符被带到接口
-                    val filteredValue = value.replace(Regex("[\\r\\n]+"), "")
-                    viewModel.handleUIIntent(
-                        ReviewUIIntent.UpdateManuscriptReviewFilter(
-                            searchType = valueType,
-                            searchText = filteredValue
-                        )
-                    )
+//                    // 过滤掉文本末尾的换行符，防止换行字符被带到接口
+//                    val filteredValue = value.replace(Regex("[\\r\\n]+"), "")
+//                    viewModel.handleUIIntent(
+//                        ReviewUIIntent.UpdateManuscriptReviewFilter(
+//                            searchType = valueType,
+//                            searchText = filteredValue
+//                        )
+//                    )
                 },
                 onSearch = { valueType, value ->
                     // 过滤掉文本末尾的换行符，防止换行字符被带到接口

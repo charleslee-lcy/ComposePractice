@@ -138,13 +138,17 @@ internal fun ExpandItemColumn(
  * @param content 排名之后的主要内容组件。
  */
 @Composable
-internal fun DataItemRankingRow(ranking: Int = 0, content: @Composable () -> Unit) {
+internal fun DataItemRankingRow(
+    ranking: Int = 0,
+    paddingTop: Int = 1,
+    content: @Composable () -> Unit
+) {
     Row(verticalAlignment = Alignment.Top) {
         Text(
             text = ranking.toString(),
             style = MaterialTheme.typography.titleSmall,
             color = ranking.chooseRankingColor(),
-            modifier = Modifier.padding(top = 1.dp, end = 6.dp)
+            modifier = Modifier.padding(top = paddingTop.dp, end = 6.dp)
         )
         content()
     }

@@ -86,23 +86,23 @@ fun NavGraphBuilder.reviewDataScreen(routeToMsgScreen:()-> Unit) {
  * 包括部门和稿件相关的多个页面路由。
  */
 fun NavGraphBuilder.reviewDataPage(viewModel: ReviewDataViewModel ) {
-    composable<DepartmentReviewRoute> {
+    composable<DepartmentReviewRoute> { backStackEntry ->
         DepartmentReviewScreen(viewmodel = viewModel)
     }
-    composable<DepartmentTaskReviewRoute> {
+    composable<DepartmentTaskReviewRoute> { backStackEntry ->
         DepartmentTaskReviewPage(viewModel = viewModel)
     }
-    composable<DepartmentTopRankingRoute> {
+    composable<DepartmentTopRankingRoute> { backStackEntry ->
         DepartmentTopRankingPage(viewModel = viewModel)
     }
-    composable<ManuscriptTopRoute> {
+    composable<ManuscriptTopRoute> { backStackEntry ->
         ManuscriptTopRankingPage(viewModel = viewModel)
     }
-    composable<ManuscriptReviewRoute> {
+    composable<ManuscriptReviewRoute> { backStackEntry ->
         ManuscriptReviewPage(viewModel = viewModel)
     }
-    composable<ManuscriptDiffusionRoute> {
-        ManuscriptDiffusionPage(viewModel = viewModel)
+    composable<ManuscriptDiffusionRoute> { backStackEntry ->
+        ManuscriptDiffusionPage(viewModel = viewModel, backStackEntry = backStackEntry)
     }
 }
 

@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -61,6 +62,7 @@ fun DataItemDropMenuView(
         "部门总完成时间"
     ),
 ) {
+    val focusManager = LocalFocusManager.current
     val showDrop = remember { mutableStateOf(false) }
     val animRotate = remember { Animatable(0f) }
 
@@ -101,6 +103,8 @@ fun DataItemDropMenuView(
                 )
                 .padding(horizontal = 12.dp, vertical = 8.dp)
                 .clickableWithoutRipple {
+                    // 点击下拉菜单时先隐藏软键盘
+                    focusManager.clearFocus()
                     showDrop.value = !showDrop.value
                 },
             verticalAlignment = Alignment.CenterVertically,
@@ -128,6 +132,7 @@ fun DataItemDropMenuView(
  */
 @Composable
 fun DataItemSelectionView(label: String = "", onClick: (() -> Unit)? = null) {
+    val focusManager = LocalFocusManager.current
     // 创建一个行布局容器，包含标签文本、弹性间距和下拉图标
     Row(
         modifier = Modifier
@@ -144,6 +149,8 @@ fun DataItemSelectionView(label: String = "", onClick: (() -> Unit)? = null) {
 
             .padding(horizontal = 12.dp, vertical = 8.dp)
             .clickableWithoutRipple {
+                // 点击选择器时先隐藏软键盘
+                focusManager.clearFocus()
                 onClick?.invoke()
             },
         verticalAlignment = Alignment.CenterVertically,
