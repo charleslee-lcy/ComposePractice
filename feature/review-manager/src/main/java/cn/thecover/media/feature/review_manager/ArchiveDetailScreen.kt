@@ -37,8 +37,10 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import cn.thecover.media.core.widget.component.PreviewImages
+import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
 import cn.thecover.media.core.widget.component.YBTitleBar
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
+import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 import com.mohamedrejeb.calf.ui.web.rememberWebViewState
@@ -127,7 +129,7 @@ private fun WebViewContent(
                                 ViewGroup.LayoutParams.MATCH_PARENT
                             )
 
-                            // WebView基础配置
+                            // 在WebView配置中添加以下设置
                             settings.apply {
                                 javaScriptEnabled = true
                                 useWideViewPort = true
@@ -136,6 +138,14 @@ private fun WebViewContent(
                                 builtInZoomControls = false
                                 displayZoomControls = false
                                 setSupportZoom(false)
+                                // 添加以下配置
+                                layoutAlgorithm = android.webkit.WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING
+                                loadWithOverviewMode = true
+                                useWideViewPort = true
+                                databaseEnabled = true
+                                setGeolocationEnabled(true)
+                                // 设置默认缩放
+                                defaultZoom = android.webkit.WebSettings.ZoomDensity.FAR
                             }
 
                             // 设置WebView客户端
@@ -152,7 +162,7 @@ private fun WebViewContent(
                                 override fun onPageFinished(view: WebView?, url: String?) {
                                     super.onPageFinished(view, url)
                                     isLoading = false
-                                }
+                                                     }
 
                                 override fun onReceivedError(
                                     view: WebView?,
@@ -178,7 +188,7 @@ private fun WebViewContent(
                                                 if (intent.resolveActivity(packageManager) != null) {
                                                     startActivity(intent)
                                                 } else {
-                                                    Toast.makeText(this, "请先安装云新闻应用", Toast.LENGTH_SHORT).show()
+                                                    showToast(msg = "请先安装云新闻应用", action = TOAST_TYPE_WARNING)
                                                 }
                                             }
                                         } catch (e: Exception) {

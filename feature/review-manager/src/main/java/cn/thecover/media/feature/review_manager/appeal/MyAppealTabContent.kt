@@ -1,6 +1,5 @@
 package cn.thecover.media.feature.review_manager.appeal
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -25,7 +24,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import cn.thecover.media.core.data.AppealListData
 import cn.thecover.media.core.network.previewRetrofit
+import cn.thecover.media.core.widget.component.TOAST_TYPE_ERROR
+import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
 import cn.thecover.media.core.widget.component.YBNormalList
+import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 import cn.thecover.media.feature.review_manager.ReviewManageViewModel
@@ -41,9 +43,9 @@ import cn.thecover.media.feature.review_manager.navigation.navigateToAppealDetai
 fun MyAppealContent(viewModel: ReviewManageViewModel, navController: NavController) {
     val filters = listOf(
         FilterType(type = 0, desc = "稿件标题"),
-        FilterType(type = 1, desc = "人员姓名"),
-        FilterType(type = 2, desc = "申诉人"),
-        FilterType(type = 3, desc = "申诉理由")
+        FilterType(type = 1, desc = "申诉人"),
+        FilterType(type = 2, desc = "申诉理由"),
+        FilterType(type = 3, desc = "人员姓名")
     )
 
     val context = LocalContext.current
@@ -62,7 +64,7 @@ fun MyAppealContent(viewModel: ReviewManageViewModel, navController: NavControll
         items.value = myAppealListUiState.list
 
         myAppealListUiState.msg?.apply {
-            Toast.makeText(context, this, Toast.LENGTH_SHORT).show()
+            showToast(msg = this, action = TOAST_TYPE_ERROR)
             myAppealListUiState.msg = null
         }
     }

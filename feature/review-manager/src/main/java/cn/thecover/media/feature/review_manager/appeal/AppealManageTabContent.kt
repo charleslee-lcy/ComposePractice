@@ -1,7 +1,5 @@
 package cn.thecover.media.feature.review_manager.appeal
 
-import android.R.attr.text
-import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -54,11 +52,14 @@ import androidx.navigation.NavController
 import cn.thecover.media.core.data.AppealListData
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.R
+import cn.thecover.media.core.widget.component.TOAST_TYPE_ERROR
+import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
+import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.core.widget.theme.EditHintTextColor
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
@@ -78,9 +79,9 @@ import cn.thecover.media.feature.review_manager.navigation.navigateToAppealDetai
 fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavController) {
     val filters = listOf(
         FilterType(type = 0, desc = "稿件标题"),
-        FilterType(type = 1, desc = "人员姓名"),
-        FilterType(type = 2, desc = "申诉人"),
-        FilterType(type = 3, desc = "申诉理由")
+        FilterType(type = 1, desc = "申诉人"),
+        FilterType(type = 2, desc = "申诉理由"),
+        FilterType(type = 3, desc = "人员姓名")
     )
 
     val context = LocalContext.current
@@ -104,7 +105,7 @@ fun AppealManageTabContent(viewModel: ReviewManageViewModel, navController: NavC
         items.value = appealManageListUiState.list
 
         appealManageListUiState.msg?.apply {
-            Toast.makeText(context, this, Toast.LENGTH_SHORT).show()
+            showToast(msg = this, action = TOAST_TYPE_ERROR)
             appealManageListUiState.msg = null
         }
     }
