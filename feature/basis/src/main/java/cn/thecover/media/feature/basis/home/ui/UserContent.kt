@@ -870,7 +870,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
                             text = if (homeInfo.finalCoefficient == "0") "0" else formatScore(
                                 homeInfo.finalCoefficient
                             ),
-                            color = if (homeInfo.finalCoefficient == "0") MainTextColor else MsgColor,
+                            color = if (homeInfo.finalCoefficient == "0" || homeInfo.finalCoefficient.toDouble() >= homeInfo.quotaCoefficient.toDouble()) MainTextColor else MsgColor,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.SemiBold,
                         )
@@ -1154,7 +1154,7 @@ internal fun ReviewerUserContent(homeInfo: HomeInfo) {
                             modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                         )
                         Text(
-                            text = formatScore(homeInfo.quotaBasicScore),
+                            text = formatScore(homeInfo.verifierDistributeScore),
                             color = MainTextColor,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.SemiBold,
@@ -1291,7 +1291,7 @@ internal fun ReviewerUserContent(homeInfo: HomeInfo) {
                             text = if (homeInfo.finalCoefficient == "0") "0" else formatScore(
                                 homeInfo.finalCoefficient
                             ),
-                            color = if (homeInfo.finalCoefficient == "0") MainTextColor else MsgColor,
+                            color = if (homeInfo.finalCoefficient == "0" || homeInfo.finalCoefficient.toDouble() >= homeInfo.quotaCoefficient.toDouble()) MainTextColor else MsgColor,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.SemiBold,
                         )
