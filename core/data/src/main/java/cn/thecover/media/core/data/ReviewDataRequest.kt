@@ -1,5 +1,7 @@
 package cn.thecover.media.core.data
 
+import cn.thecover.media.core.common.Constants
+
 /**
  * 稿件数据请求参数
  */
@@ -82,4 +84,5 @@ data class ModifyManuscriptScoreRequest(
     val modifyScore: Double,
     val year: Int,
     val month: Int,
+    val vno: String = Constants.APP_VERSION
 )
