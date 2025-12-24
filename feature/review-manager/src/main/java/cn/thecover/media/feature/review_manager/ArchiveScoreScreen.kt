@@ -25,7 +25,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -731,7 +733,10 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
         title = "稿件评分情况",
         widthRate = 0.9f,
         content = {
-            Column {
+            val scrollState = rememberScrollState()
+            Column(
+                modifier = Modifier.heightIn(max = 400.dp).verticalScroll(scrollState)
+            ) {
                 Text(
                     text = "提示：当前等级统计数据包含一篇稿件多个打分的等级数据，仅供打分时参考。",
                     fontSize = 14.sp,
