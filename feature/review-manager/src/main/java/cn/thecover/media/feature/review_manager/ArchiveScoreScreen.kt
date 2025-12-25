@@ -33,6 +33,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -79,6 +80,7 @@ import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
 import cn.thecover.media.core.widget.component.YBCoordinatorList
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.YBLabel
+import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.SingleColumnPicker
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
@@ -195,6 +197,7 @@ fun ArchiveScoreScreen(
     val showScoreDialog = remember { mutableStateOf(false) }
     var checkedItem by remember { mutableStateOf<ArchiveListData?>(null) }
     val updateScoreStatus by viewModel.updateScoreState.collectAsStateWithLifecycle()
+    val snackBarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(updateScoreStatus) {
         when (updateScoreStatus.status) {
@@ -210,8 +213,7 @@ fun ArchiveScoreScreen(
             }
             HttpStatus.ERROR -> {
                 loadingState.hide()
-                showScoreDialog.value = false
-                showToast(msg = updateScoreStatus.errorMsg.ifEmpty { "打分失败" }, action = TOAST_TYPE_ERROR)
+                snackBarHostState.showToast(msg = updateScoreStatus.errorMsg.ifEmpty { "打分失败" }, action = TOAST_TYPE_ERROR)
                 viewModel.updateScoreState.value = BaseUiState()
             }
             else -> {}
@@ -441,6 +443,7 @@ fun ArchiveScoreScreen(
             }
         }
 
+        YBToast(snackBarHostState = snackBarHostState)
     }
 }
 
