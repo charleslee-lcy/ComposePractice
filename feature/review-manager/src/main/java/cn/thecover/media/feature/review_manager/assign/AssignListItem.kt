@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.thecover.media.core.data.DepartmentAssignListData
@@ -67,39 +68,46 @@ fun AssignListItem(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = item.userName,
-                    style = TextStyle(
-                        color = MainTextColor,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                )
-                if (item.userDepartmentId != item.departmentId) {
+                Row(
+                    modifier = Modifier.weight(1f).padding(end = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = "(部门变动)",
+                        modifier = Modifier.weight(1f, false),
+                        text = item.userName,
                         style = TextStyle(
-                            color = MsgColor,
-                            fontSize = 12.sp,
+                            color = MainTextColor,
+                            fontSize = 18.sp,
                             fontWeight = FontWeight.SemiBold
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    if (item.userDepartmentId != item.departmentId) {
+                        Text(
+                            text = "(部门变动)",
+                            style = TextStyle(
+                                color = MsgColor,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
                         )
+                    }
+                    Text(
+                        text = "ID:${item.userId}",
+                        style = TextStyle(
+                            color = TertiaryTextColor,
+                            fontSize = 12.sp
+                        ),
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .background(
+                                color = Color(0xFFF2F2F2),
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
                     )
                 }
-                Text(
-                    text = "ID:${item.userId}",
-                    style = TextStyle(
-                        color = TertiaryTextColor,
-                        fontSize = 12.sp
-                    ),
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .background(
-                            color = Color(0xFFF2F2F2),
-                            shape = RoundedCornerShape(4.dp)
-                        )
-                        .padding(horizontal = 8.dp, vertical = 2.dp)
-                )
-                Spacer(modifier = Modifier.weight(1f))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
@@ -211,9 +219,9 @@ private fun AssignListItemPreview() {
             userDepartmentId = 1,
             userDepartmentName = "部门1",
             userId = 1,
-            userName = "用户1",
+            userName = "用户水1",
             handleTime = "2021-01-01 00:00:00",
-            status = 0
+            status = 1
         )
         AssignListItem(item = item)
     }
