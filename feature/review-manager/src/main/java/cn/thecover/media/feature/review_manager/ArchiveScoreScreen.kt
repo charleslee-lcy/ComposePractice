@@ -230,7 +230,7 @@ fun ArchiveScoreScreen(
         onLoadMore = {
             onLoadMore.invoke()
         },
-        enableCollapsable = true,
+        enableCollapsable = false,
         collapsableContent = {
             ArchiveScoreHeader(viewModel, onSearch = onSearch)
         }) { item, index ->
