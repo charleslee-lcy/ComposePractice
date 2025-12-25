@@ -378,7 +378,7 @@ private fun TopBar(
         visible = datePickerShow,
         value = LocalDate.of(currentYear.value, currentMonth.value, 1),
         start = LocalDate.of(2025, 1, 1),
-        end = LocalDate.of(LocalDate.now().year + 10, 1, 1),
+        end = LocalDate.of(LocalDate.now().year + 10, 12, 31),
         type = DateType.MONTH,
         onCancel = { datePickerShow = false },
         onChange = {

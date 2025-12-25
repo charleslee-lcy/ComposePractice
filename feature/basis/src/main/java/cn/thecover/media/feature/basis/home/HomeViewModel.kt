@@ -158,16 +158,9 @@ class HomeViewModel @Inject constructor(
     fun getHomeInfo(year: Int, month: Int) {
         viewModelScope.launch {
             flow {
-                val start = System.currentTimeMillis()
                 val result = apiService.getHomeInfo(
                     HomeRequest(year, month)
                 )
-
-                val timeInterval = System.currentTimeMillis() - start
-
-                if (timeInterval < 500L) {
-                    delay(500L - timeInterval)
-                }
                 emit(result)
             }.asResult()
                 .collect { result ->

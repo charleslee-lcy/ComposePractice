@@ -1,6 +1,7 @@
 package cn.thecover.media.core.network
 
 import android.content.Context
+import cn.thecover.media.core.common.Constants
 import cn.thecover.media.core.widget.datastore.getToken
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.Interceptor
@@ -31,6 +32,7 @@ class AuthInterceptor @Inject constructor(
 
         val newRequest = request.newBuilder()
         val newHttpUrl = requestUrl.newBuilder()
+            .addQueryParameter("vno", Constants.APP_VERSION)
             .addQueryParameter("client", "android")
             .build()
 
@@ -64,7 +66,9 @@ class AuthInterceptor @Inject constructor(
 
                 // 解析JSON并添加字段
                 val jsonObject = JSONObject(bodyString)
-                jsonObject.put("client", "android")
+                if (!jsonObject.has("vno")) {
+                    jsonObject.put("vno", Constants.APP_VERSION)
+                }
 
                 // 创建新的请求体
                 val newBody = jsonObject.toString().toRequestBody(contentType)
