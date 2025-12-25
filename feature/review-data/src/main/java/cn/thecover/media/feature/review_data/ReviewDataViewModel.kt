@@ -528,8 +528,14 @@ class ReviewDataViewModel @Inject constructor(
                             totalPages = result.data.totalPages,
                             hasNextPage = result.data.hasNextPage,
                             total = if (!isLoadMore) result.data.total else _manuscriptReviewDiffusionPageState.value.total,
-                            lastId = result.data.lastId
+                            lastId = result.data.lastId,
+                            error = null
                         )
+                    }
+
+                    // 清除之前的错误toast消息
+                    _manuscriptDiffusionToastState.update {
+                        it.copy(message = "", time = System.currentTimeMillis())
                     }
                 }
 

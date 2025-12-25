@@ -95,9 +95,14 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
         }
     }
 
-    // 监听Toast消息
+    // 监听Toast消息，只有5秒内的才显示
     LaunchedEffect(toastMessage.time) {
-        if (toastMessage.message.isNotEmpty() && toastMessage.time != 0L && toastMessage.time != lastShownToastTime) {
+        val currentTime = System.currentTimeMillis()
+        if (toastMessage.message.isNotEmpty() &&
+            toastMessage.time != 0L &&
+            toastMessage.time != lastShownToastTime &&
+            currentTime - toastMessage.time <= 5000
+        ) {
             snackbarHostState.showSnackbar(toastMessage.message)
             lastShownToastTime = toastMessage.time
         }
