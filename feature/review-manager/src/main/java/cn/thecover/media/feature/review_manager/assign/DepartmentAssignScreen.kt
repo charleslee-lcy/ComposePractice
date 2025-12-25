@@ -235,6 +235,7 @@ internal fun DepartmentAssignScreen(
         onClose = {
             showAssignDialog.value = false
             checkedItem = null
+            snackBarHostState.currentSnackbarData?.dismiss()
         },
         onConfirm = {
             if (!hasApartmentScoreAuth) {
