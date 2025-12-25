@@ -234,17 +234,17 @@ private fun DiffusionItem(rank: Int, data: DiffusionDataEntity, filterChoice: St
                         PrimaryItemScoreRow(
                             items = arrayOf(
                                 Triple(
-                                    "核心媒体转载数",
+                                    "核心媒体\n转载数",
                                     data.coreMediaReprintCount.toString(),
                                     if (filterChoice.contains("核心媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                                 ),
                                 Triple(
-                                    "一级媒体转载数",
+                                    "一级媒体\n转载数",
                                     data.level1MediaReprintCount.toString(),
                                     if (filterChoice.contains("一级媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                                 ),
                                 Triple(
-                                    "二级媒体转载数",
+                                    "二级媒体\n转载数",
                                     data.level2MediaReprintCount.toString(),
                                     if (filterChoice.contains("二级媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                                 ),
