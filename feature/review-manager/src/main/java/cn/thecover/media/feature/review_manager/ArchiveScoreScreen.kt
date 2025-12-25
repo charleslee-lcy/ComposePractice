@@ -264,7 +264,6 @@ fun ArchiveScoreScreen(
     var hasGroupPermission by remember { mutableStateOf(false) }
     // 是否有稿件打分操作权限
     var hasNewsScoreOperationAuth by remember { mutableStateOf(false) }
-    var hasNewsScoreListAuth by remember { mutableStateOf(false) }
 
     YBPopup(
         visible = showScoreDialog.value,
@@ -305,7 +304,6 @@ fun ArchiveScoreScreen(
             val userInfo = Gson().fromJson(userInfoJson, UserInfo::class.java)
             userInfo?.apply {
                 hasNewsScoreOperationAuth = hasNewsScoreOperationAuth()
-                hasNewsScoreListAuth = hasNewsScoreListAuth()
             }
         }
 
@@ -364,6 +362,7 @@ fun ArchiveScoreScreen(
                         Row(
                             modifier = Modifier.fillMaxWidth()
                                 .background(if (index % 2 == 0) PageBackgroundColor else Color.White)
+                                .heightIn(min = 60.dp)
                                 .padding(start = 20.dp, end = 10.dp, top = 8.dp, bottom = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -388,7 +387,7 @@ fun ArchiveScoreScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    if (hasNewsScoreListAuth) {
+                                    if (!item.userName.isNullOrEmpty()) {
                                         Text(
                                             modifier = Modifier.weight(1f, false),
                                             text = item.userName?.ifEmpty { "-" } ?: "-",
