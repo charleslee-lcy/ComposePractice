@@ -32,6 +32,7 @@ class AuthInterceptor @Inject constructor(
 
         val newRequest = request.newBuilder()
         val newHttpUrl = requestUrl.newBuilder()
+            .addQueryParameter("vno", Constants.APP_VERSION)
             .addQueryParameter("client", "android")
             .build()
 
@@ -42,10 +43,10 @@ class AuthInterceptor @Inject constructor(
         }
 
         // 只处理POST请求且body为JSON类型
-        if (request.method == "POST" && requestBody is RequestBody) {
-            val newBody = modifyRequestBody(requestBody)
-            newRequest.method(request.method, newBody)
-        }
+//        if (request.method == "POST" && requestBody is RequestBody) {
+//            val newBody = modifyRequestBody(requestBody)
+//            newRequest.method(request.method, newBody)
+//        }
 
         newRequest.url(newHttpUrl)
         return chain.proceed(newRequest.build())
