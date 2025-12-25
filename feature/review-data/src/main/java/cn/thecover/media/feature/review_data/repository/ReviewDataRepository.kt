@@ -4,6 +4,7 @@ import cn.thecover.media.core.data.DepartmentReviewRequest
 import cn.thecover.media.core.data.DepartmentTaskRequest
 import cn.thecover.media.core.data.DepartmentTopRequest
 import cn.thecover.media.core.data.DiffusionDataEntity
+import cn.thecover.media.core.data.LogoutEvent
 import cn.thecover.media.core.data.ManuscriptDiffusionRequest
 import cn.thecover.media.core.data.ManuscriptReviewDataEntity
 import cn.thecover.media.core.data.ManuscriptReviewRequest
@@ -12,6 +13,8 @@ import cn.thecover.media.core.data.ModifyManuscriptScoreRequest
 import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.core.data.SortConditions
 import cn.thecover.media.core.data.SortConditions.Companion.DEPT_DATA_AVERAGE_SCORE
+import cn.thecover.media.core.widget.event.FlowBus
+import cn.thecover.media.core.widget.event.FlowEvent
 import cn.thecover.media.feature.review_data.ReviewDataApiService
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
@@ -25,6 +28,10 @@ import jakarta.inject.Inject
 class ReviewDataRepository @Inject constructor(
     private val reviewApiService: ReviewDataApiService
 ) {
+    companion object {
+        private const val HTTP_STATUS_SUCCESS = 0
+        private const val HTTP_STATUS_LOGOUT = 403
+    }
     // 稿件相关数据
     suspend fun fetchManuscriptsPage(
         year: Int,
@@ -47,6 +54,11 @@ class ReviewDataRepository @Inject constructor(
                     lastId = lastId
                 )
             )
+            // 处理403退出登录状态
+            if (response.status == HTTP_STATUS_LOGOUT) {
+                FlowBus.post(FlowEvent(action = "logout", data = LogoutEvent()))
+                return RepositoryResult.Error(Exception("登录已过期"))
+            }
             if (response.isSuccess()) {
                 val body = response.data ?: throw Exception("Empty response")
                 RepositoryResult.Success(
@@ -93,6 +105,11 @@ class ReviewDataRepository @Inject constructor(
                     lastId = lastId
                 )
             )
+            // 处理403退出登录状态
+            if (response.status == HTTP_STATUS_LOGOUT) {
+                FlowBus.post(FlowEvent(action = "logout", data = LogoutEvent()))
+                return RepositoryResult.Error(Exception("登录已过期"))
+            }
             if (response.isSuccess()) {
                 val body = response.data ?: throw Exception("Empty response")
                 RepositoryResult.Success(
@@ -136,6 +153,11 @@ class ReviewDataRepository @Inject constructor(
                     lastId = lastId
                 )
             )
+            // 处理403退出登录状态
+            if (response.status == HTTP_STATUS_LOGOUT) {
+                FlowBus.post(FlowEvent(action = "logout", data = LogoutEvent()))
+                return RepositoryResult.Error(Exception("登录已过期"))
+            }
             if (response.isSuccess()) {
                 val body = response.data ?: throw Exception("Empty response")
                 RepositoryResult.Success(
@@ -176,7 +198,11 @@ class ReviewDataRepository @Inject constructor(
                     )
                 )
             )
-
+            // 处理403退出登录状态
+            if (response.status == HTTP_STATUS_LOGOUT) {
+                FlowBus.post(FlowEvent(action = "logout", data = LogoutEvent()))
+                return RepositoryResult.Error(Exception("登录已过期"))
+            }
             if (response.isSuccess()) {
                 val body = response.data ?: throw Exception("Empty response")
                 RepositoryResult.Success(
@@ -210,7 +236,11 @@ class ReviewDataRepository @Inject constructor(
                     month = month,
                 )
             )
-
+            // 处理403退出登录状态
+            if (response.status == HTTP_STATUS_LOGOUT) {
+                FlowBus.post(FlowEvent(action = "logout", data = LogoutEvent()))
+                return RepositoryResult.Error(Exception("登录已过期"))
+            }
             if (response.isSuccess()) {
                 val body = response.data ?: throw Exception("Empty response")
                 RepositoryResult.Success(
@@ -244,7 +274,11 @@ class ReviewDataRepository @Inject constructor(
                     )
                 )
             )
-
+            // 处理403退出登录状态
+            if (response.status == HTTP_STATUS_LOGOUT) {
+                FlowBus.post(FlowEvent(action = "logout", data = LogoutEvent()))
+                return RepositoryResult.Error(Exception("登录已过期"))
+            }
             if (response.isSuccess()) {
                 val body = response.data ?: throw Exception("Empty response")
                 RepositoryResult.Success(
@@ -280,7 +314,11 @@ class ReviewDataRepository @Inject constructor(
                     month = month
                 )
             )
-
+            // 处理403退出登录状态
+            if (response.status == HTTP_STATUS_LOGOUT) {
+                FlowBus.post(FlowEvent(action = "logout", data = LogoutEvent()))
+                return RepositoryResult.Error(Exception("登录已过期"))
+            }
             if (response.isSuccess()) {
                 RepositoryResult.Success(
                     true
@@ -297,6 +335,11 @@ class ReviewDataRepository @Inject constructor(
     suspend fun getUnreadMessageCount(): RepositoryResult<Int> {
         return try {
             val response = reviewApiService.getUnreadMessageCount()
+            // 处理403退出登录状态
+            if (response.status == HTTP_STATUS_LOGOUT) {
+                FlowBus.post(FlowEvent(action = "logout", data = LogoutEvent()))
+                return RepositoryResult.Error(Exception("登录已过期"))
+            }
             if (response.isSuccess()) {
                 val body = response.data ?: throw Exception("Empty response")
                 RepositoryResult.Success(body)

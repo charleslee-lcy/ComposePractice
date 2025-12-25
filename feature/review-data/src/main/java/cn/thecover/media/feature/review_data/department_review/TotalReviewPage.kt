@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -64,10 +65,16 @@ internal fun DepartmentReviewScreen(
     viewmodel: ReviewDataViewModel = hiltViewModel<ReviewDataViewModel>()
 ) {
     val depart by viewmodel.departmentReviewPageState.collectAsState()
+
+    // 创建列表状态，用于控制滚动位置
+    val listState = rememberLazyListState()
+
     // 创建部门数据列表
     var snackBarHostState  by remember { mutableStateOf(SnackbarHostState()) }
     // 使用部门总数据排行页面专用toast
     val toastMessage by viewmodel.departmentReviewToastState.collectAsState()
+    // 记录上一次显示的toast消息和时间
+    var lastShownToastTime by remember { mutableStateOf(0L) }
     // 创建 MutableState 用于列表组件
     val departmentList = remember { mutableStateOf(depart.dataList ?: emptyList()) }
     val isLoadingMore = remember { mutableStateOf(depart.isLoading) }
@@ -81,12 +88,17 @@ internal fun DepartmentReviewScreen(
         isRefreshing.value = depart.isRefreshing
         canLoadMore.value = depart.hasNextPage
 
+        // 刷新时滚动到顶部
+        if (depart.isRefreshing || (depart.dataList != null && depart.dataList!!.isNotEmpty())) {
+            listState.animateScrollToItem(0)
+        }
     }
 
     // 监听Toast消息
     LaunchedEffect(toastMessage.time) {
-        if (toastMessage.message.isNotEmpty()) {
+        if (toastMessage.message.isNotEmpty() && toastMessage.time != 0L && toastMessage.time != lastShownToastTime) {
             snackBarHostState.showToast(toastMessage.message)
+            lastShownToastTime = toastMessage.time
         }
     }
 
@@ -97,6 +109,7 @@ internal fun DepartmentReviewScreen(
             .fillMaxHeight(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         items = departmentList,
+        listState = listState,
         isLoadingMore = isLoadingMore,
         isRefreshing = isRefreshing,
         canLoadMore = canLoadMore,
@@ -259,7 +272,7 @@ private fun DepartmentReviewItem(
                 PrimaryItemScoreRow(
                     items = arrayOf(
                         Triple(
-                            "部门总稿费",
+                            "总稿费",
                             if (totalPayment % 1 == 0.0) totalPayment.toInt()
                                 .toString() else totalPayment.toString(),
                             if (filterText.contains("总稿费")) ScoreItemType.PRIMARY_WITH_BORDER else ScoreItemType.PRIMARY

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -54,6 +55,10 @@ import java.time.LocalDate
 fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel) {
     val filterState by viewModel.manuscriptTopFilterState.collectAsState()
     val data by viewModel.manuscriptReviewTopPageState.collectAsState()
+
+    // 创建列表状态，用于控制滚动位置
+    val listState = rememberLazyListState()
+
     // 创建 MutableState 用于列表组件
     val manus = remember { mutableStateOf(data.dataList ?: emptyList()) }
     val isLoadingMore = remember { mutableStateOf(data.isLoading) }
@@ -63,6 +68,8 @@ fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel) {
     // Toast 相关状态 - 使用稿件TOP排行页面专用toast
     val snackbarHostState = remember { SnackbarHostState() }
     val toastMessage by viewModel.manuscriptTopToastState.collectAsState()
+    // 记录上一次显示的toast消息和时间
+    var lastShownToastTime by remember { mutableStateOf(0L) }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(data) {
@@ -71,13 +78,17 @@ fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel) {
         isRefreshing.value = data.isRefreshing
         canLoadMore.value = data.hasNextPage
 
-
+        // 刷新时滚动到顶部
+        if (data.isRefreshing || (data.dataList != null && data.dataList!!.isNotEmpty())) {
+            listState.animateScrollToItem(0)
+        }
     }
 
     // 监听Toast消息
     LaunchedEffect(toastMessage.time) {
-        if (toastMessage.message.isNotEmpty()) {
+        if (toastMessage.message.isNotEmpty() && toastMessage.time != 0L && toastMessage.time != lastShownToastTime) {
             snackbarHostState.showSnackbar(toastMessage.message)
+            lastShownToastTime = toastMessage.time
         }
     }
 
@@ -91,6 +102,7 @@ fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel) {
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp),
             items = manus,
+            listState = listState,
             isLoadingMore = isLoadingMore,
             verticalArrangement = Arrangement.spacedBy(12.dp),
             isRefreshing = isRefreshing,

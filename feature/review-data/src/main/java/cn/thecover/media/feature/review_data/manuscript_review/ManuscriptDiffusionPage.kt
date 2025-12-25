@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -79,6 +80,9 @@ fun ManuscriptDiffusionPage(
 
     val filter by viewModel.manuscriptDiffusionFilterState.collectAsState()
 
+    // 创建列表状态，用于控制滚动位置
+    val listState = rememberLazyListState()
+
     // 创建 MutableState 用于列表组件
     val manus = remember { mutableStateOf(data.dataList ?: emptyList()) }
     val isLoadingMore = remember { mutableStateOf(data.isLoading) }
@@ -88,6 +92,8 @@ fun ManuscriptDiffusionPage(
     // Toast 相关状态 - 使用稿件传播排行页面专用toast
     val snackbarHostState = remember { SnackbarHostState() }
     val toastMessage by viewModel.manuscriptDiffusionToastState.collectAsState()
+    // 记录上一次显示的toast消息和时间
+    var lastShownToastTime by remember { mutableStateOf(0L) }
 
     // 监听路由切换，当页面首次显示或切换回来时刷新数据
     LaunchedEffect(backStackEntry?.id) {
@@ -101,13 +107,17 @@ fun ManuscriptDiffusionPage(
         isRefreshing.value = data.isRefreshing
         canLoadMore.value = data.hasNextPage
 
-
+        // 刷新时滚动到顶部
+        if (data.isRefreshing || (data.dataList != null && data.dataList!!.isNotEmpty())) {
+            listState.animateScrollToItem(0)
+        }
     }
 
     // 监听Toast消息
     LaunchedEffect(toastMessage.time) {
-        if (toastMessage.message.isNotEmpty()) {
+        if (toastMessage.message.isNotEmpty() && toastMessage.time != 0L && toastMessage.time != lastShownToastTime) {
             snackbarHostState.showSnackbar(toastMessage.message)
+            lastShownToastTime = toastMessage.time
         }
     }
 
@@ -118,6 +128,7 @@ fun ManuscriptDiffusionPage(
                 .padding(horizontal = 12.dp)
                 .clickable { focusManager.clearFocus() },
             items = manus,
+            listState = listState,
             verticalArrangement = Arrangement.spacedBy(12.dp),
             header = {
                 Column(
@@ -223,17 +234,17 @@ private fun DiffusionItem(rank: Int, data: DiffusionDataEntity, filterChoice: St
                         PrimaryItemScoreRow(
                             items = arrayOf(
                                 Triple(
-                                    "核心媒体转载数",
+                                    "核心媒体\n转载数",
                                     data.coreMediaReprintCount.toString(),
                                     if (filterChoice.contains("核心媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                                 ),
                                 Triple(
-                                    "一级媒体转载数",
+                                    "一级媒体\n转载数",
                                     data.level1MediaReprintCount.toString(),
                                     if (filterChoice.contains("一级媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                                 ),
                                 Triple(
-                                    "二级媒体转载数",
+                                    "二级媒体\n转载数",
                                     data.level2MediaReprintCount.toString(),
                                     if (filterChoice.contains("二级媒体转载数")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                                 ),
@@ -364,13 +375,16 @@ private fun ManuscriptDiffusionHeader(
                 ),
                 onValueChange = { valueType, value ->
 //                    // 过滤掉文本末尾的换行符，防止换行字符被带到接口
-//                    val filteredValue = value.replace(Regex("[\\r\\n]+"), "")
-//                    viewModel.handleUIIntent(
-//                        ReviewUIIntent.UpdateManuscriptDiffusionFilter(
-//                            searchType = valueType,
-//                            searchText = filteredValue
-//                        )
-//                    )
+                    if (value.isEmpty()) {
+                        val filteredValue = value.replace(Regex("[\\r\\n]+"), "")
+                        viewModel.handleUIIntent(
+                            ReviewUIIntent.UpdateManuscriptDiffusionFilter(
+                                searchType = valueType,
+                                searchText = filteredValue
+                            )
+                        )
+                    }
+
                 },
                 onSearch = { valueType, value ->
                     // 过滤掉文本末尾的换行符，防止换行字符被带到接口
