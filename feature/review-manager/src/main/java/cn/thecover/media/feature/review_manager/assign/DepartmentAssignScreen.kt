@@ -115,7 +115,7 @@ internal fun DepartmentAssignScreen(
     val scope = rememberCoroutineScope()
     val departmentListUiState by viewModel.departmentListDataState.collectAsStateWithLifecycle()
     var isFirstLaunch by remember { mutableStateOf(true) }
-    var monthPicked by remember { mutableIntStateOf(LocalDate.now().monthValue) }
+    var monthPicked by remember { mutableIntStateOf(0) }
     var assignScore by remember { mutableStateOf("") }
     val updateAssignStatus by viewModel.updateAssignState.collectAsStateWithLifecycle()
     val departmentRemainState by viewModel.assignRemainStatus.collectAsStateWithLifecycle()
@@ -432,7 +432,7 @@ internal fun DepartmentAssignScreen(
         }.also {
             // 当前选中的月份是否在可分配的月份列表中，不在的话默认取月份列表最后一个
             if (!it.contains(monthPicked)) {
-                monthPicked = it.last()
+                monthPicked = it.first()
             }
         }
 
