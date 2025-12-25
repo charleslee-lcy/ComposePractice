@@ -77,6 +77,7 @@ import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
+import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
 import cn.thecover.media.core.widget.theme.YBTheme
@@ -114,6 +115,8 @@ internal fun ManuscriptReviewPage(
     val showEditScorePop = remember { mutableStateOf(false) }
     // 弹窗内的错误提示信息
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    // 数据计算运行中弹窗状态
+    val showBudgetCutProcessDialog = remember { mutableStateOf(false) }
     // 文本输入框的状态
     var textFiledState by remember { mutableStateOf("") }
     val showModifyState = remember { mutableStateOf(false) }
@@ -128,6 +131,22 @@ internal fun ManuscriptReviewPage(
     val isRefreshing = remember { mutableStateOf(data.isRefreshing) }
     val canLoadMore = remember { mutableStateOf(true) }
     val splitsNum = remember { mutableIntStateOf(0) }
+    // 记录上一次是否在刷新状态，用于检测刷新完成
+    val wasRefreshing = remember { mutableStateOf(false) }
+
+    // 单独监听刷新完成事件，显示 budgetCutProcess 弹窗
+    LaunchedEffect(data.isRefreshing) {
+        // 当刷新状态从 true 变为 false 时，说明刷新完成
+        if (wasRefreshing.value && !data.isRefreshing) {
+            // 确保不是加载更多（加载更多时 isLoading 为 true）
+            if (!data.isLoading && data.budgetCutProcess) {
+                showBudgetCutProcessDialog.value = true
+            }
+        }
+        // 更新刷新状态
+        wasRefreshing.value = data.isRefreshing
+    }
+
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(data, filterState) {
         manus.value = data.dataList ?: emptyList()
@@ -396,6 +415,27 @@ internal fun ManuscriptReviewPage(
 
     val snackBarHostState = remember { SnackbarHostState() }
     YBToast(snackBarHostState)
+
+    // 数据计算运行中弹窗
+    YBDialog(
+        dialogState = showBudgetCutProcessDialog,
+        handleConfirmDismiss = true,
+        title = "数据计算运行中...",
+        onConfirm = {
+            showBudgetCutProcessDialog.value = false
+        },
+        content = {
+            Text(
+                text = "清零（被一刀切）数据暂不展示，请稍后再试",
+                style = MaterialTheme.typography.bodyMedium,
+                color = SecondaryTextColor
+            )
+        },
+        onDismissRequest = {
+            showBudgetCutProcessDialog.value = false
+        },
+        cancelText = null
+    )
 
     // 使用稿件总排行页面专用toast
     val toastState by viewModel.manuscriptReviewToastState.collectAsState()

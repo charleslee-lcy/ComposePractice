@@ -98,7 +98,9 @@ fun YBDialog(
                         .padding()
 
                 ) {
-                    Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
+                    Column(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Spacer(modifier = Modifier.size(24.dp))
                             Spacer(modifier = Modifier.weight(1f))
@@ -106,21 +108,26 @@ fun YBDialog(
                                 Text(title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                             }
                             Spacer(modifier = Modifier.weight(1f))
-                            Icon(imageVector = YBIcons.Close, "关闭弹窗", modifier = Modifier.size(24.dp).clickable{
-                               dialogState.value=false
-                            })
+                            Icon(imageVector = YBIcons.Close, "关闭弹窗", modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                    dialogState.value = false
+                                })
                         }
                         Spacer(modifier = Modifier.size(20.dp))
                         content()
                         Spacer(modifier = Modifier.size(20.dp))
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
                             if(cancelText!=null){
                                 YBButton(
                                     onClick = {
                                         onCancel?.invoke()
                                         dialogState.value = false
                                     },
-                                    modifier = Modifier.weight(1f),
+                                    modifier = Modifier.size(143.dp, 44.dp),
                                     textColor = TertiaryTextColor,
                                     backgroundColor = MaterialTheme.colorScheme.surface,
                                     shape = MaterialTheme.shapes.extraSmall,
@@ -128,6 +135,7 @@ fun YBDialog(
                                 ) {
                                     Text(text = cancelText)
                                 }
+                                Spacer(modifier = Modifier.size(16.dp))
                             }
                             if(confirmText!=null){
                                 YBButton(
@@ -138,7 +146,7 @@ fun YBDialog(
                                         }
                                     },
                                     shape = MaterialTheme.shapes.extraSmall,
-                                    modifier = Modifier.weight(1f),
+                                    modifier = Modifier.size(143.dp, 44.dp),
                                 ) {
                                     Text(text = confirmText)
                                 }
@@ -185,7 +193,9 @@ fun YBFullDialog(
                 }
 
                 Box(
-                    modifier = Modifier.fillMaxSize().background(backgroundColor)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(backgroundColor)
                 ) {
                     content()
                 }
