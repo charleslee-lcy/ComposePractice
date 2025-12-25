@@ -415,8 +415,21 @@ internal fun DepartmentAssignScreen(
             11,
             12
         ).filter {
+            // 筛选出可分配的月份
             !cannotEditMonthStatus.contains(it)
-        }.also{
+        }.filter {
+            // 根据每个用户自己的startMonth,endMonth进行筛选
+            checkedItem?.let { data ->
+                val startMonth = if (data.startMonth > 0) data.startMonth else 1
+                val endMonth = if (data.endMonth > 0) data.endMonth else 12
+                if (startMonth <= endMonth) {
+                    return@let it in startMonth..endMonth
+                } else {
+                    return@let true
+                }
+            } ?: true
+        }.also {
+            // 当前选中的月份是否在可分配的月份列表中，不在的话默认取月份列表最后一个
             if (!it.contains(monthPicked)) {
                 monthPicked = it.last()
             }

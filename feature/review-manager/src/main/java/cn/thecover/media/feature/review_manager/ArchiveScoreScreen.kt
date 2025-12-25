@@ -819,7 +819,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
         type = DateType.DAY,
         title = if (isStartDatePickerShow) "选择开始时间" else "选择结束时间",
         start = if (isStartDatePickerShow) LocalDate.of(2025, 1, 1) else viewModel.startLocalDate,
-        end = LocalDate.now().plusYears(10),
+        end = LocalDate.of(LocalDate.now().year + 10, 12, 31),
         value = if (isStartDatePickerShow) viewModel.startLocalDate else viewModel.endLocalDate,
         onCancel = { datePickerShow = false },
         onChange = {

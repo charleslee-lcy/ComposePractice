@@ -64,6 +64,8 @@ data class DepartmentAssignListData(
     var octBudget: String = "0",
     var novBudget: String = "0",
     var decBudget: String = "0",
+    val startMonth: Int = 0,
+    val endMonth: Int = 0,
     val yearBudget: String = "",
     val yearTotalBudget: String = "",
     val handleTime: String = "",
