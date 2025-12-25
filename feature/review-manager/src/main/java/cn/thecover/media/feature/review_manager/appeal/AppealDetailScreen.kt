@@ -123,6 +123,7 @@ fun AppealDetailScreen(
                 loadingState.hide()
                 if (detailInfoStatus.data == null) {
                     showToast(msg = detailInfoStatus.errorMsg.ifEmpty { "获取申诉详情失败" }, action = TOAST_TYPE_WARNING)
+                    viewModel.appealDetailUiState.value = BaseUiState()
                 }
 
                 detailInfoStatus.data?.material?.let {
@@ -139,6 +140,7 @@ fun AppealDetailScreen(
             HttpStatus.ERROR -> {
                 loadingState.hide()
                 showToast(msg = detailInfoStatus.errorMsg.ifEmpty { "获取申诉详情失败" }, action = TOAST_TYPE_WARNING)
+                viewModel.appealDetailUiState.value = BaseUiState()
             }
             else -> {}
         }
@@ -157,6 +159,7 @@ fun AppealDetailScreen(
             HttpStatus.ERROR -> {
                 loadingState.hide()
                 showToast(msg = auditDetailStatus.errorMsg.ifEmpty { "操作失败" }, action = TOAST_TYPE_ERROR)
+                viewModel.auditDetailUiState.value = BaseUiState()
             }
             else -> {}
         }

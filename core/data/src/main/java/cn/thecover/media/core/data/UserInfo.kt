@@ -31,4 +31,11 @@ data class UserInfo(
     fun hasNewsScoreListAuth(): Boolean {
         return userAuthCodeList?.contains("PERFORMANCE_NEWS_SCORE_LIST") == true
     }
+
+    /**
+     * 是否有部分内修改分数权限
+     */
+    fun hasApartmentScoreAuth(): Boolean {
+        return userAuthCodeList?.contains("PERFORMANCE_DEPARTMENT_ALLOCATE_SCORE_OPERATION") == true
+    }
 }

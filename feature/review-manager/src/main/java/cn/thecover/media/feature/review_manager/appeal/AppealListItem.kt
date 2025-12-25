@@ -15,6 +15,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,6 +59,15 @@ fun AppealListItem(
     item: AppealListData,
     itemClick: () -> Unit = {},
 ) {
+    var lastClick by remember { mutableLongStateOf(0L) }
+
+    fun handleClick(onClick:() -> Unit = {}) {
+        val current = System.currentTimeMillis()
+        if (current - lastClick >= 500L) {
+            lastClick = current
+            onClick.invoke()
+        }
+    }
 
     Box(
         modifier = modifier.padding(top = 12.dp).clickableWithoutRipple { itemClick.invoke() }
@@ -113,10 +126,14 @@ fun AppealListItem(
                         annotatedText.getStringAnnotations("VIEW_ARTICLE", offset, offset)
                             .firstOrNull()?.let {
                                 // 仅当点击在"查看稿件"文本上时才执行操作
-                                viewModel.getAppealNewsInfo(item.newsId)
+                                handleClick {
+                                    viewModel.getAppealNewsInfo(item.newsId)
+                                }
                             } ?: kotlin.run {
-                                itemClick.invoke()
-                        }
+                                handleClick {
+                                    itemClick.invoke()
+                                }
+                            }
                     }
                 )
             } else {

@@ -106,6 +106,7 @@ internal fun ReviewManageScreen(
         modifier = modifier.fillMaxSize()
     ) {
         TopBar(viewModel.pageType, unreadMessageCount, onMessageClick = {
+            viewModel.isFromAppealDetail = true
             routeToMsgScreen.invoke()
         }) { text, index ->
             if (viewModel.pageType != index) {
@@ -116,11 +117,11 @@ internal fun ReviewManageScreen(
         when(viewModel.pageType) {
             ReviewManageType.DEPARTMENT_ASSIGN.index -> {
                 // 部门内分配
-                DepartmentAssignScreen(navController = navController)
+                DepartmentAssignScreen(navController = navController, viewModel = viewModel)
             }
             ReviewManageType.APPEAL_MANAGE.index -> {
                 // 申诉管理
-                AppealManageScreen(navController = navController)
+                AppealManageScreen(navController = navController, viewModel = viewModel)
             }
             else -> {
                 // 稿件打分

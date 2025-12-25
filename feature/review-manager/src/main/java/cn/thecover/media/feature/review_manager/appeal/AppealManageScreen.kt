@@ -130,6 +130,7 @@ internal fun AppealManageScreen(
             }
             HttpStatus.ERROR -> {
                 showToast(appealNewsInfo.errorMsg.ifEmpty { "请求失败" }, TOAST_TYPE_WARNING)
+                viewModel.appealNewsUiState.value = BaseUiState()
             }
             else -> {}
         }

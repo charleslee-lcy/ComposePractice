@@ -300,7 +300,8 @@ class ReviewManageViewModel @Inject constructor(
             }.asResult().collect { result ->
                 result.data?.takeIf { it.isNotEmpty() }?.let {
                     departmentListState.value = it
-                    if (curDepartmentData.value.id == 0L) {
+                    val isInNewData = isCurDataInNewData(curDepartmentData.value, it)
+                    if (!isInNewData || curDepartmentData.value.id == 0L) {
                         curDepartmentData.value = it.first()
                     }
                     getDepartmentAssignRemain()
@@ -308,6 +309,24 @@ class ReviewManageViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    // 递归遍历所有部门及其子部门
+    private fun isCurDataInNewData(curData: DepartmentListData, departments: List<DepartmentListData>): Boolean {
+        for (department in departments) {
+            // 如果当前部门匹配，直接返回true
+            if (curData.id == department.id) {
+                return true
+            }
+
+            // 检查子部门
+            department.children?.let { children ->
+                if (isCurDataInNewData(curData, children)) {
+                    return true  // 一旦在子部门中找到，立即返回true
+                }
+            }
+        }
+        return false  // 遍历完所有部门都没找到，返回false
     }
 
     fun getDepartmentAssignList(isRefresh: Boolean = true, request: DepartmentAssignRequest = departmentRequest) {
@@ -398,7 +417,7 @@ class ReviewManageViewModel @Inject constructor(
                     updateAssignState.value = result
                     if (result.status == HttpStatus.SUCCESS) {
                         getDepartmentAssignRemain()
-                        getDepartmentAssignList(isRefresh = true)
+//                        getDepartmentAssignList(isRefresh = true)
                     }
                 }
         }
