@@ -73,6 +73,8 @@ internal fun DepartmentReviewScreen(
     var snackBarHostState  by remember { mutableStateOf(SnackbarHostState()) }
     // 使用部门总数据排行页面专用toast
     val toastMessage by viewmodel.departmentReviewToastState.collectAsState()
+    // 记录上一次显示的toast消息和时间
+    var lastShownToastTime by remember { mutableStateOf(0L) }
     // 创建 MutableState 用于列表组件
     val departmentList = remember { mutableStateOf(depart.dataList ?: emptyList()) }
     val isLoadingMore = remember { mutableStateOf(depart.isLoading) }
@@ -94,8 +96,9 @@ internal fun DepartmentReviewScreen(
 
     // 监听Toast消息
     LaunchedEffect(toastMessage.time) {
-        if (toastMessage.message.isNotEmpty()) {
+        if (toastMessage.message.isNotEmpty() && toastMessage.time != 0L && toastMessage.time != lastShownToastTime) {
             snackBarHostState.showToast(toastMessage.message)
+            lastShownToastTime = toastMessage.time
         }
     }
 
@@ -269,7 +272,7 @@ private fun DepartmentReviewItem(
                 PrimaryItemScoreRow(
                     items = arrayOf(
                         Triple(
-                            "部门总稿费",
+                            "总稿费",
                             if (totalPayment % 1 == 0.0) totalPayment.toInt()
                                 .toString() else totalPayment.toString(),
                             if (filterText.contains("总稿费")) ScoreItemType.PRIMARY_WITH_BORDER else ScoreItemType.PRIMARY

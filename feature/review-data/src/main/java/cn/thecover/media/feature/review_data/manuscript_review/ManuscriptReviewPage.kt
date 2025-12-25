@@ -448,9 +448,12 @@ internal fun ManuscriptReviewPage(
 
     // 使用稿件总排行页面专用toast
     val toastState by viewModel.manuscriptReviewToastState.collectAsState()
+    // 记录上一次显示的toast消息和时间
+    var lastShownToastTime by remember { mutableStateOf(0L) }
     LaunchedEffect(toastState.time) {
-        if (toastState.message.isNotEmpty() && toastState.time != 0L) {
+        if (toastState.message.isNotEmpty() && toastState.time != 0L && toastState.time != lastShownToastTime) {
             snackBarHostState.showSnackbar(toastState.message)
+            lastShownToastTime = toastState.time
         }
     }
 

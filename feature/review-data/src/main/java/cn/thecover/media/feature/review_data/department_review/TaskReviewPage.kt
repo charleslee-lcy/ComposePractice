@@ -74,6 +74,8 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     // Toast 相关状态 - 使用部门任务页面专用toast
     val snackbarHostState = remember { SnackbarHostState() }
     val toastMessage by viewModel.departmentTaskToastState.collectAsState()
+    // 记录上一次显示的toast消息和时间
+    var lastShownToastTime by remember { mutableStateOf(0L) }
 
     // 使用 LaunchedEffect 监听 StateFlow 变化并同步到 MutableState
     LaunchedEffect(taskState) {
@@ -90,8 +92,9 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
 
     // 监听Toast消息
     LaunchedEffect(toastMessage.time) {
-        if (toastMessage.message.isNotEmpty()) {
+        if (toastMessage.message.isNotEmpty() && toastMessage.time != 0L && toastMessage.time != lastShownToastTime) {
             snackbarHostState.showSnackbar(toastMessage.message)
+            lastShownToastTime = toastMessage.time
         }
     }
 
