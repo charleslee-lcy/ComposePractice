@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -227,6 +228,12 @@ fun ModifyPasswordInput(
                 }
             },
             maxLines = 1,
+            cursorBrush = Brush.verticalGradient(
+                colors = listOf(
+                    MaterialTheme.colorScheme.primary,
+                    MaterialTheme.colorScheme.primary,
+                )
+            ),
             modifier = Modifier.weight(1f),
             visualTransformation = if (isPassword && !passwordVisible) {
                 PasswordVisualTransformation()
