@@ -375,13 +375,16 @@ private fun ManuscriptDiffusionHeader(
                 ),
                 onValueChange = { valueType, value ->
 //                    // 过滤掉文本末尾的换行符，防止换行字符被带到接口
-//                    val filteredValue = value.replace(Regex("[\\r\\n]+"), "")
-//                    viewModel.handleUIIntent(
-//                        ReviewUIIntent.UpdateManuscriptDiffusionFilter(
-//                            searchType = valueType,
-//                            searchText = filteredValue
-//                        )
-//                    )
+                    if (value.isEmpty()) {
+                        val filteredValue = value.replace(Regex("[\\r\\n]+"), "")
+                        viewModel.handleUIIntent(
+                            ReviewUIIntent.UpdateManuscriptDiffusionFilter(
+                                searchType = valueType,
+                                searchText = filteredValue
+                            )
+                        )
+                    }
+
                 },
                 onSearch = { valueType, value ->
                     // 过滤掉文本末尾的换行符，防止换行字符被带到接口
