@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -98,7 +97,9 @@ fun DepartmentDropdownMenu(
     Column(modifier = modifier) {
         anchor()
         DropdownMenu(
-            modifier = Modifier.fillMaxWidth().heightIn(max = 300.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 300.dp),
             expanded = expanded.value,
             containerColor = backgroundColor,
             shadowElevation = 5.dp,
@@ -175,7 +176,9 @@ fun DepartmentMultiMenuItem(
                         text = "${item.name}",
                         color = if (currentItem.id == item.id) MainColor else SecondaryTextColor,
                         fontSize = 14.sp,
-                        modifier = Modifier.weight(1f).padding(start = 0.dp, top = 12.dp, end = 16.dp, bottom = 12.dp)
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 0.dp, top = 12.dp, end = 16.dp, bottom = 12.dp)
                     )
                 }
                 AnimatedVisibility(visible = !item.children.isNullOrEmpty() && isExpanded) {
@@ -233,7 +236,9 @@ fun YBDropdownMenu(
                             color = if (index == currentIndex) MainColor else SecondaryTextColor,
                             fontSize = 14.sp,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 12.dp)
                         )
                     },
                     onClick = {
@@ -291,23 +296,23 @@ fun YBAlignDropdownMenu(
             onDismissRequest = { expanded.value = false }
         ) {
             data.forEachIndexed { index, item ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = "$item",
-                            color = if (index == currentIndex) MainColor else SecondaryTextColor,
-                            fontSize = 13.sp,
-                            lineHeight = 13.sp,
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 5.dp)
-                        )
-                    },
-                    contentPadding = PaddingValues(),
-                    onClick = {
-                        expanded.value = false
-                        currentIndex = index
-                        onItemClick.invoke(item, index)
-                    }
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickableWithoutRipple {
+                            expanded.value = false
+                            currentIndex = index
+                            onItemClick.invoke(item, index)
+                        }
+                        .padding(horizontal = 12.dp, vertical = 8.5.dp)
+                ) {
+                    Text(
+                        text = "$item",
+                        color = if (index == currentIndex) MainColor else SecondaryTextColor,
+                        fontSize = 13.sp,
+                        lineHeight = 13.sp,
+                    )
+                }
                 if (index != data.lastIndex) {
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 12.dp),
@@ -401,7 +406,9 @@ fun YBAlignDropdownMenuPreview() {
                 onItemClick = { text, index ->
                     title = text
                 },
-                modifier = Modifier.width(200.dp).padding(start = 16.dp)
+                modifier = Modifier
+                    .width(200.dp)
+                    .padding(start = 16.dp)
             ) {
                 Row(
                     modifier = Modifier
