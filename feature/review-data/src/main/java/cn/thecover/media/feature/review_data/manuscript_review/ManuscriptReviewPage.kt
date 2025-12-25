@@ -451,7 +451,12 @@ internal fun ManuscriptReviewPage(
     // 记录上一次显示的toast消息和时间
     var lastShownToastTime by remember { mutableStateOf(0L) }
     LaunchedEffect(toastState.time) {
-        if (toastState.message.isNotEmpty() && toastState.time != 0L && toastState.time != lastShownToastTime) {
+        val currentTime = System.currentTimeMillis()
+        if (toastState.message.isNotEmpty() &&
+            toastState.time != 0L &&
+            toastState.time != lastShownToastTime &&
+            currentTime - toastState.time <= 5000
+        ) {
             snackBarHostState.showSnackbar(toastState.message)
             lastShownToastTime = toastState.time
         }
