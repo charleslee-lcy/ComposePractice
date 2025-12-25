@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -64,6 +65,10 @@ internal fun DepartmentReviewScreen(
     viewmodel: ReviewDataViewModel = hiltViewModel<ReviewDataViewModel>()
 ) {
     val depart by viewmodel.departmentReviewPageState.collectAsState()
+
+    // 创建列表状态，用于控制滚动位置
+    val listState = rememberLazyListState()
+
     // 创建部门数据列表
     var snackBarHostState  by remember { mutableStateOf(SnackbarHostState()) }
     // 使用部门总数据排行页面专用toast
@@ -81,6 +86,10 @@ internal fun DepartmentReviewScreen(
         isRefreshing.value = depart.isRefreshing
         canLoadMore.value = depart.hasNextPage
 
+        // 刷新时滚动到顶部
+        if (depart.isRefreshing || (depart.dataList != null && depart.dataList!!.isNotEmpty())) {
+            listState.animateScrollToItem(0)
+        }
     }
 
     // 监听Toast消息
@@ -97,6 +106,7 @@ internal fun DepartmentReviewScreen(
             .fillMaxHeight(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         items = departmentList,
+        listState = listState,
         isLoadingMore = isLoadingMore,
         isRefreshing = isRefreshing,
         canLoadMore = canLoadMore,

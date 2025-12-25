@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -109,6 +110,9 @@ internal fun ManuscriptReviewPage(
     val data by viewModel.manuscriptReviewPageState.collectAsState()
     val filterState by viewModel.manuscriptReviewFilterState.collectAsState()
 
+    // 创建列表状态，用于控制滚动位置
+    val listState = rememberLazyListState()
+
     // 观察稿分修改操作的状态
     val editScoreSuccess by viewModel.editManuscriptScoreSuccess.collectAsState()
     val userInfoJson = rememberDataStoreState(Keys.USER_INFO, "")
@@ -164,6 +168,11 @@ internal fun ManuscriptReviewPage(
                 data.dataList?.indexOfFirst { it.isCutNews } ?: 0
             }
         }
+
+        // 刷新时滚动到顶部
+        if (data.isRefreshing || (data.dataList != null && data.dataList!!.isNotEmpty())) {
+            listState.animateScrollToItem(0)
+        }
     }
 
     YBNormalList(
@@ -171,9 +180,9 @@ internal fun ManuscriptReviewPage(
             .fillMaxWidth()
             .clickable { focusManager.clearFocus() },
         items = manus,
+        listState = listState,
         isLoadingMore = isLoadingMore,
         isRefreshing = isRefreshing,
-
         canLoadMore = canLoadMore,
         header = {
             Column(

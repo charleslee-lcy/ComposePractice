@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -61,6 +62,9 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
     // 部门总数据列表，包含部门ID、名称和平均分数
     val departmentTotalData by viewModel.departmentReviewTopPageState.collectAsState()
 
+    // 创建列表状态，用于控制滚动位置
+    val listState = rememberLazyListState()
+
     // 日期选择器显示状态和选中日期文本状态
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickedState by viewModel.departmentTopFilterState.collectAsState()
@@ -83,10 +87,10 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
         isRefreshing.value = departmentTotalData.isRefreshing
         canLoadMore.value = departmentTotalData.hasNextPage
 
-//        // 监听错误信息并显示 Toast
-//        departmentTotalData.error?.let { errorMessage ->
-//            viewModel.handleReviewDataIntent(ReviewDataIntent.ShowToast(errorMessage))
-//        }
+        // 刷新时滚动到顶部
+        if (departmentTotalData.isRefreshing || (departmentTotalData.dataList != null && departmentTotalData.dataList!!.isNotEmpty())) {
+            listState.animateScrollToItem(0)
+        }
     }
 
     // 监听Toast消息
@@ -108,6 +112,7 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             items = departmentList,
+            listState = listState,
             isLoadingMore = isLoadingMore,
             isRefreshing = isRefreshing,
             canLoadMore = canLoadMore,

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -60,6 +61,10 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     val datePickedState by viewModel.departmentTaskFilterState.collectAsState()
 
     val taskState by viewModel.departmentTaskPageState.collectAsState()
+
+    // 创建列表状态，用于控制滚动位置
+    val listState = rememberLazyListState()
+
     // 创建 MutableState 用于列表组件，将可空列表转换为非空列表
     val departmentTaskList = remember { mutableStateOf(taskState.dataList ?: emptyList()) }
     val isLoadingMore = remember { mutableStateOf(taskState.isLoading) }
@@ -77,10 +82,10 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
         isRefreshing.value = taskState.isRefreshing
         canLoadMore.value = taskState.hasNextPage
 
-//        // 监听错误信息并显示 Toast
-//        taskState.error?.let { errorMessage ->
-//            viewModel.handleReviewDataIntent(ReviewDataIntent.ShowToast(errorMessage))
-//        }
+        // 刷新时滚动到顶部
+        if (taskState.isRefreshing || (taskState.dataList != null && taskState.dataList!!.isNotEmpty())) {
+            listState.animateScrollToItem(0)
+        }
     }
 
     // 监听Toast消息
@@ -97,6 +102,7 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
     Box(modifier = Modifier.fillMaxWidth()) {
         YBNormalList(
             items = departmentTaskList,
+            listState = listState,
             modifier = Modifier.padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             isRefreshing = isRefreshing,

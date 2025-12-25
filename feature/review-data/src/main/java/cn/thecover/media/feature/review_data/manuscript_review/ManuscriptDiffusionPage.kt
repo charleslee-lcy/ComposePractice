@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -79,6 +80,9 @@ fun ManuscriptDiffusionPage(
 
     val filter by viewModel.manuscriptDiffusionFilterState.collectAsState()
 
+    // 创建列表状态，用于控制滚动位置
+    val listState = rememberLazyListState()
+
     // 创建 MutableState 用于列表组件
     val manus = remember { mutableStateOf(data.dataList ?: emptyList()) }
     val isLoadingMore = remember { mutableStateOf(data.isLoading) }
@@ -101,7 +105,10 @@ fun ManuscriptDiffusionPage(
         isRefreshing.value = data.isRefreshing
         canLoadMore.value = data.hasNextPage
 
-
+        // 刷新时滚动到顶部
+        if (data.isRefreshing || (data.dataList != null && data.dataList!!.isNotEmpty())) {
+            listState.animateScrollToItem(0)
+        }
     }
 
     // 监听Toast消息
@@ -118,6 +125,7 @@ fun ManuscriptDiffusionPage(
                 .padding(horizontal = 12.dp)
                 .clickable { focusManager.clearFocus() },
             items = manus,
+            listState = listState,
             verticalArrangement = Arrangement.spacedBy(12.dp),
             header = {
                 Column(
