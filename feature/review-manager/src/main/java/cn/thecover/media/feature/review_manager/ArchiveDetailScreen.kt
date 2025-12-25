@@ -112,130 +112,108 @@ private fun WebViewContent(
         YBTitleBar(title = "稿件详情", leftOnClick = {
             navController.popBackStack()
         })
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickableWithoutRipple {
-                    showImages.value = true
-                }
-                .verticalScroll(scrollState),
-        ) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                AndroidView(
-                    factory = { context ->
-                        WebView(context).apply {
-                            layoutParams = ViewGroup.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.MATCH_PARENT
-                            )
+        AndroidView(
+            factory = { context ->
+                WebView(context).apply {
+                    layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
 
-                            // 在WebView配置中添加以下设置
-                            settings.apply {
-                                javaScriptEnabled = true
-                                useWideViewPort = true
-                                loadWithOverviewMode = true
-                                domStorageEnabled = true
-                                builtInZoomControls = false
-                                displayZoomControls = false
-                                setSupportZoom(false)
-                                // 添加以下配置
-                                layoutAlgorithm = android.webkit.WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING
-                                loadWithOverviewMode = true
-                                useWideViewPort = true
-                                databaseEnabled = true
-                                setGeolocationEnabled(true)
-                                // 设置默认缩放
-                                defaultZoom = android.webkit.WebSettings.ZoomDensity.FAR
-                            }
+                    // 在WebView配置中添加以下设置
+                    settings.apply {
+                        javaScriptEnabled = true
+                        useWideViewPort = true
+                        loadWithOverviewMode = true
+                        domStorageEnabled = true
+                        builtInZoomControls = false
+                        displayZoomControls = false
+                        setSupportZoom(false)
+                        // 添加以下配置
+                        layoutAlgorithm = android.webkit.WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING
+                        loadWithOverviewMode = true
+                        useWideViewPort = true
+                        databaseEnabled = true
+                        setGeolocationEnabled(true)
+                        // 设置默认缩放
+                        defaultZoom = android.webkit.WebSettings.ZoomDensity.FAR
+                    }
 
-                            // 设置WebView客户端
-                            webViewClient = object : WebViewClient() {
-                                override fun onPageStarted(
-                                    view: WebView?,
-                                    url: String?,
-                                    favicon: Bitmap?
-                                ) {
-                                    super.onPageStarted(view, url, favicon)
-                                    isLoading = true
-                                }
-
-                                override fun onPageFinished(view: WebView?, url: String?) {
-                                    super.onPageFinished(view, url)
-                                    isLoading = false
-                                                     }
-
-                                override fun onReceivedError(
-                                    view: WebView?,
-                                    request: WebResourceRequest?,
-                                    error: WebResourceError?
-                                ) {
-                                    super.onReceivedError(view, request, error)
-                                    isLoading = false
-                                }
-
-                                override fun shouldOverrideUrlLoading(
-                                    view: WebView?,
-                                    request: WebResourceRequest?
-                                ): Boolean {
-                                    val url = request?.url.toString()
-                                    if (url.startsWith("yndaily://")) {
-                                        try {
-                                            val uri = url.toUri()
-                                            val intent = Intent(Intent.ACTION_VIEW, uri)
-                                            val context = view?.context
-
-                                            context?.apply {
-                                                if (intent.resolveActivity(packageManager) != null) {
-                                                    startActivity(intent)
-                                                } else {
-                                                    showToast(msg = "请先安装云新闻应用", action = TOAST_TYPE_WARNING)
-                                                }
-                                            }
-                                        } catch (e: Exception) {
-                                            // 处理其他异常情况
-                                            e.printStackTrace()
-                                        }
-                                        view?.takeIf {
-                                            it.canGoBack()
-                                        }?.let {
-                                            it.goBack()
-                                        }
-                                        return true
-                                    }
-                                    return super.shouldOverrideUrlLoading(view, request)
-                                }
-                            }
-
-                            webChromeClient = object : WebChromeClient() {
-                                override fun onReceivedTitle(view: WebView?, title: String?) {
-                                    super.onReceivedTitle(view, title)
-                                    title?.let { webTitle = it }
-                                }
-                            }
-
-                            loadUrl(url)
-                            webView = this
+                    // 设置WebView客户端
+                    webViewClient = object : WebViewClient() {
+                        override fun onPageStarted(
+                            view: WebView?,
+                            url: String?,
+                            favicon: Bitmap?
+                        ) {
+                            super.onPageStarted(view, url, favicon)
+                            isLoading = true
                         }
-                    },
-                    update = { view ->
-                        if (view.url != url) {
-                            view.loadUrl(url)
+
+                        override fun onPageFinished(view: WebView?, url: String?) {
+                            super.onPageFinished(view, url)
+                            isLoading = false
+                        }
+
+                        override fun onReceivedError(
+                            view: WebView?,
+                            request: WebResourceRequest?,
+                            error: WebResourceError?
+                        ) {
+                            super.onReceivedError(view, request, error)
+                            isLoading = false
+                        }
+
+                        override fun shouldOverrideUrlLoading(
+                            view: WebView?,
+                            request: WebResourceRequest?
+                        ): Boolean {
+                            val url = request?.url.toString()
+                            if (url.startsWith("yndaily://")) {
+                                try {
+                                    val uri = url.toUri()
+                                    val intent = Intent(Intent.ACTION_VIEW, uri)
+                                    val context = view?.context
+
+                                    context?.apply {
+                                        if (intent.resolveActivity(packageManager) != null) {
+                                            startActivity(intent)
+                                        } else {
+                                            showToast(msg = "请先安装云新闻应用", action = TOAST_TYPE_WARNING)
+                                        }
+                                    }
+                                } catch (e: Exception) {
+                                    // 处理其他异常情况
+                                    e.printStackTrace()
+                                }
+                                view?.takeIf {
+                                    it.canGoBack()
+                                }?.let {
+                                    it.goBack()
+                                }
+                                return true
+                            }
+                            return super.shouldOverrideUrlLoading(view, request)
                         }
                     }
-                )
 
-//                if (isLoading) {
-//                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-//                }
+                    webChromeClient = object : WebChromeClient() {
+                        override fun onReceivedTitle(view: WebView?, title: String?) {
+                            super.onReceivedTitle(view, title)
+                            title?.let { webTitle = it }
+                        }
+                    }
 
-                if (isError) {
-                    Text(
-                        text = "加载失败，请重试",
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                    loadUrl(url)
+                    webView = this
+                }
+            },
+            update = { view ->
+                if (view.url != url) {
+                    view.loadUrl(url)
                 }
             }
-        }
+        )
     }
 
     BackHandler(true) {

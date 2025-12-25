@@ -417,7 +417,7 @@ class ReviewManageViewModel @Inject constructor(
                     updateAssignState.value = result
                     if (result.status == HttpStatus.SUCCESS) {
                         getDepartmentAssignRemain()
-                        getDepartmentAssignList(isRefresh = true)
+//                        getDepartmentAssignList(isRefresh = true)
                     }
                 }
         }
