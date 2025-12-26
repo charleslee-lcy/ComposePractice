@@ -2,7 +2,6 @@ package cn.thecover.media.feature.review_manager.assign
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,7 +20,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -32,9 +30,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -60,9 +56,7 @@ import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.CommonInput
 import cn.thecover.media.core.widget.component.TOAST_TYPE_ERROR
 import cn.thecover.media.core.widget.component.TOAST_TYPE_SUCCESS
-import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
 import cn.thecover.media.core.widget.component.YBButton
-import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.YBLabel
 import cn.thecover.media.core.widget.component.YBNormalList
 import cn.thecover.media.core.widget.component.YBToast
@@ -72,7 +66,6 @@ import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.popup.YBDialog
 import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.component.popup.YBPopup
-import cn.thecover.media.core.widget.component.showToast
 import cn.thecover.media.core.widget.datastore.Keys
 import cn.thecover.media.core.widget.datastore.rememberDataStoreState
 import cn.thecover.media.core.widget.event.showToast
@@ -87,7 +80,8 @@ import cn.thecover.media.feature.review_manager.ReviewManageViewModel
 import cn.thecover.media.feature.review_manager.appeal.FilterSearchBar
 import cn.thecover.media.feature.review_manager.appeal.FilterType
 import com.google.gson.Gson
-import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 
 
@@ -170,6 +164,7 @@ internal fun DepartmentAssignScreen(
                 checkedItem?.let { checked ->
                     val updatedList = items.value.map { item ->
                         if (item.id == checked.id) {
+                            formatToTwoDecimalPlaces(checked)
                             checked // 返回更新后的对象
                         } else {
                             item // 保持其他对象不变
@@ -298,7 +293,7 @@ internal fun DepartmentAssignScreen(
                 LabelText("部门：", departmentName)
                 LabelText("部门人员：", userName)
                 LabelText("部门年度预算剩余：", "${formatDecimalString(departmentRemainStatus.yearBudget)}分")
-                LabelText("年度已分配总分：", "${formatDecimalString(departmentRemainStatus.yearTotalBudget)}分")
+                LabelText("个人年度已分配总分：", "${formatDecimalString(yearTotalBudget)}分")
 
                 HorizontalDivider(
                     modifier = Modifier
@@ -372,6 +367,7 @@ internal fun DepartmentAssignScreen(
                                     keyboardType = KeyboardType.Number
                                 ),
                                 contentPadding = PaddingValues(horizontal = 20.dp),
+                                isDecimal = true,
                                 onValueChange = {
                                     assignScore = it
                                     setScoreByPickedMonth(
@@ -497,6 +493,45 @@ private fun setScoreByPickedMonth(monthPicked: Int, score: String, data: Departm
         11 -> data.novBudget = score
         12 -> data.decBudget = score
         else -> {}
+    }
+}
+
+fun formatToTwoDecimalPlaces(data: DepartmentAssignListData) {
+    data.janBudget = data.janBudget.formatToTwoDecimalPlaces()
+    data.febBudget = data.febBudget.formatToTwoDecimalPlaces()
+    data.marBudget = data.marBudget.formatToTwoDecimalPlaces()
+    data.aprBudget = data.aprBudget.formatToTwoDecimalPlaces()
+    data.mayBudget = data.mayBudget.formatToTwoDecimalPlaces()
+    data.junBudget = data.junBudget.formatToTwoDecimalPlaces()
+    data.julBudget = data.julBudget.formatToTwoDecimalPlaces()
+    data.augBudget = data.augBudget.formatToTwoDecimalPlaces()
+    data.sepBudget = data.sepBudget.formatToTwoDecimalPlaces()
+    data.octBudget = data.octBudget.formatToTwoDecimalPlaces()
+    data.novBudget = data.novBudget.formatToTwoDecimalPlaces()
+    data.decBudget = data.decBudget.formatToTwoDecimalPlaces()
+
+    // 计算个人已分配总分
+    data.yearTotalBudget = (data.janBudget.toDouble() +
+            data.febBudget.toDouble() +
+            data.marBudget.toDouble() +
+            data.aprBudget.toDouble() +
+            data.mayBudget.toDouble() +
+            data.junBudget.toDouble() +
+            data.julBudget.toDouble() +
+            data.augBudget.toDouble() +
+            data.sepBudget.toDouble() +
+            data.octBudget.toDouble() +
+            data.novBudget.toDouble() +
+            data.decBudget.toDouble()).toString().formatToTwoDecimalPlaces()
+}
+
+fun String.formatToTwoDecimalPlaces(): String {
+    return try {
+        BigDecimal(this)
+            .setScale(2, RoundingMode.HALF_UP)
+            .toString()
+    } catch (e: NumberFormatException) {
+        "0.00"
     }
 }
 

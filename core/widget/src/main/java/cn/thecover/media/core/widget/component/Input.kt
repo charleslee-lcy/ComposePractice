@@ -223,6 +223,7 @@ fun CommonInput(
     onValueChange: (String) -> Unit = {},
     contentPadding: PaddingValues = PaddingValues(0.dp),
     ignoreEmptyInput: Boolean = false,
+    isDecimal: Boolean = false // 添加小数支持参数
 ) {
     var textVisible by remember { mutableStateOf(!isPassword) }
     val focusRequester = remember { FocusRequester() }
@@ -260,7 +261,20 @@ fun CommonInput(
         BasicTextField(
             value = textFieldValue,
             onValueChange = { newValue ->
-                val result = if (keyboardOptions.keyboardType == KeyboardType.Number ||
+                val result = if (isDecimal) {
+                    // 支持数字和小数点的输入
+                    val filtered = newValue.text.filter { char ->
+                        char.isDigit() || char == '.'
+                    }
+                    // 确保只有一个小数点
+                    val parts = filtered.split('.')
+                    if (parts.size > 2) {
+                        // 如果有多个小数点，只保留第一个小数点
+                        parts[0] + "." + parts.drop(1).joinToString("")
+                    } else {
+                        filtered
+                    }
+                } else if (keyboardOptions.keyboardType == KeyboardType.Number ||
                     keyboardOptions.keyboardType == KeyboardType.Phone ||
                     keyboardOptions.keyboardType == KeyboardType.NumberPassword
                 ) {
@@ -268,6 +282,7 @@ fun CommonInput(
                 } else {
                     newValue.text
                 }
+
                 if (result.length > maxLength) {
                     val cutText = result.take(maxLength)
                     textState = if (ignoreEmptyInput) cutText.trim() else cutText
@@ -286,7 +301,11 @@ fun CommonInput(
             textStyle = textStyle.copy(lineHeight = textStyle.fontSize * 1.5f),
             singleLine = true,
             cursorBrush = SolidColor(MainColor),
-            keyboardOptions = keyboardOptions,
+            keyboardOptions = if (isDecimal) {
+                KeyboardOptions(keyboardType = KeyboardType.Decimal)
+            } else {
+                keyboardOptions
+            },
             keyboardActions = keyboardActions,
             visualTransformation = if (textVisible) {
                 VisualTransformation.None

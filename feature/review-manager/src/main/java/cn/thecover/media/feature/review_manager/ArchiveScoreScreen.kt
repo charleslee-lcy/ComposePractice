@@ -250,6 +250,8 @@ fun ArchiveScoreScreen(
                 .padding(horizontal = 15.dp)
                 .fillMaxWidth(),
             item = item,
+            index = index,
+            count = items.value.size,
             onDetailClick = {
                 if (item.status == 4) {
                     navController.navigateToArchiveDetail(item.wapUrl)
@@ -603,7 +605,7 @@ private fun ArchiveScoreHeader(viewModel: ReviewManageViewModel, onSearch: (Stri
 
     Card(
         modifier = Modifier
-            .padding(top = 12.dp, start = 15.dp, end = 15.dp)
+            .padding(top = 12.dp, start = 15.dp, end = 15.dp, bottom = 10.dp)
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
