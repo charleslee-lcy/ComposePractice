@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -127,7 +128,7 @@ fun YBDialog(
                                         onCancel?.invoke()
                                         dialogState.value = false
                                     },
-                                    modifier = Modifier.size(143.dp, 44.dp),
+                                    modifier = Modifier.weight(1f).height(44.dp),
                                     textColor = TertiaryTextColor,
                                     backgroundColor = MaterialTheme.colorScheme.surface,
                                     shape = MaterialTheme.shapes.extraSmall,
@@ -146,7 +147,7 @@ fun YBDialog(
                                         }
                                     },
                                     shape = MaterialTheme.shapes.extraSmall,
-                                    modifier = Modifier.size(143.dp, 44.dp),
+                                    modifier = Modifier.weight(1f).height(44.dp),
                                 ) {
                                     Text(text = confirmText)
                                 }

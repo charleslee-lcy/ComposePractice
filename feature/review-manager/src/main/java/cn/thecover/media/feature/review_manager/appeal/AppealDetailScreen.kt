@@ -22,12 +22,14 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,6 +64,7 @@ import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.YBLabel
 import cn.thecover.media.core.widget.component.YBTitleBar
+import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.component.popup.YBDialog
 import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
 import cn.thecover.media.core.widget.event.showToast
@@ -75,6 +78,7 @@ import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 import cn.thecover.media.feature.review_manager.R
 import cn.thecover.media.feature.review_manager.ReviewManageViewModel
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
 /**
@@ -109,10 +113,21 @@ fun AppealDetailScreen(
     val auditDetailStatus by viewModel.auditDetailUiState.collectAsStateWithLifecycle()
     var attachments by remember { mutableStateOf(listOf<Material>()) }
     val loadingState = rememberTipsDialogState()
+    var reasons by remember { mutableStateOf("") }
+    val snackBarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.getAppealDetailInfo(appealId)
     }
+
+    LaunchedEffect(showRejectDialog.value) {
+        if (!showRejectDialog.value) {
+            reasons = ""
+            snackBarHostState.currentSnackbarData?.dismiss()
+        }
+    }
+
 
     LaunchedEffect(detailInfoStatus) {
         when (detailInfoStatus.status) {
@@ -535,13 +550,10 @@ fun AppealDetailScreen(
         }
     )
 
-    var reasons by remember { mutableStateOf("") }
-
     YBDialog(
         dialogState = showRejectDialog,
         onDismissRequest = {
             showRejectDialog.value = false
-            reasons = ""
         },
         title = "申诉审批",
         content = {
@@ -581,11 +593,14 @@ fun AppealDetailScreen(
                     }
                 )
             }
+            YBToast(snackBarHostState = snackBarHostState)
         },
         confirmText = "确认",
         onConfirm = {
             if (reasons.isEmpty()) {
-                showToast(msg = "请输入驳回意见", action = TOAST_TYPE_WARNING)
+                scope.launch {
+                    snackBarHostState.showToast(msg = "请输入驳回意见", action = TOAST_TYPE_WARNING)
+                }
                 return@YBDialog
             }
             viewModel.auditAppealDetailInfo(

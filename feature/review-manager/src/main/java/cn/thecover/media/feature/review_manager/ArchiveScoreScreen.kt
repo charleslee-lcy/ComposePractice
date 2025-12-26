@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -33,6 +34,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -43,6 +45,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -79,6 +82,7 @@ import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
 import cn.thecover.media.core.widget.component.YBCoordinatorList
 import cn.thecover.media.core.widget.component.YBImage
 import cn.thecover.media.core.widget.component.YBLabel
+import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.SingleColumnPicker
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
@@ -108,6 +112,7 @@ import cn.thecover.media.feature.review_manager.assign.FilterDropMenuView
 import cn.thecover.media.feature.review_manager.navigation.navigateToArchiveDetail
 import com.google.gson.Gson
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -192,9 +197,16 @@ fun ArchiveScoreScreen(
     onSearch: (String) -> Unit = {},
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val showScoreDialog = remember { mutableStateOf(false) }
     var checkedItem by remember { mutableStateOf<ArchiveListData?>(null) }
     val updateScoreStatus by viewModel.updateScoreState.collectAsStateWithLifecycle()
+    val snackBarHostState = remember { SnackbarHostState() }
+    var scoreLevel by remember { mutableIntStateOf(-1) }
+    // 是否有稿件打分的分组
+    var hasGroupPermission by remember { mutableStateOf(false) }
+    // 是否有稿件打分操作权限
+    var hasNewsScoreOperationAuth by remember { mutableStateOf(false) }
 
     LaunchedEffect(updateScoreStatus) {
         when (updateScoreStatus.status) {
@@ -210,8 +222,7 @@ fun ArchiveScoreScreen(
             }
             HttpStatus.ERROR -> {
                 loadingState.hide()
-                showScoreDialog.value = false
-                showToast(msg = updateScoreStatus.errorMsg.ifEmpty { "打分失败" }, action = TOAST_TYPE_ERROR)
+                snackBarHostState.showToast(msg = updateScoreStatus.errorMsg.ifEmpty { "打分失败" }, action = TOAST_TYPE_ERROR)
                 viewModel.updateScoreState.value = BaseUiState()
             }
             else -> {}
@@ -230,7 +241,7 @@ fun ArchiveScoreScreen(
         onLoadMore = {
             onLoadMore.invoke()
         },
-        enableCollapsable = true,
+        enableCollapsable = false,
         collapsableContent = {
             ArchiveScoreHeader(viewModel, onSearch = onSearch)
         }) { item, index ->
@@ -259,12 +270,6 @@ fun ArchiveScoreScreen(
         )
     }
 
-    var scoreLevel by remember { mutableIntStateOf(0) }
-    // 是否有稿件打分的分组
-    var hasGroupPermission by remember { mutableStateOf(false) }
-    // 是否有稿件打分操作权限
-    var hasNewsScoreOperationAuth by remember { mutableStateOf(false) }
-
     YBPopup(
         visible = showScoreDialog.value,
         isShowTopActionBar = true,
@@ -274,9 +279,17 @@ fun ArchiveScoreScreen(
         onClose = {
             showScoreDialog.value = false
             checkedItem = null
+            snackBarHostState.currentSnackbarData?.dismiss()
         },
         onConfirm = {
             if (hasGroupPermission && hasNewsScoreOperationAuth) {
+                // 打分选项判空
+                if (scoreLevel <= 0) {
+                    scope.launch {
+                        snackBarHostState.showToast(msg = "请打分", action = TOAST_TYPE_WARNING)
+                    }
+                    return@YBPopup
+                }
                 viewModel.updateScore(
                     scoreGroupId = viewModel.scoreGroupState.value.takeIf { it.isNotEmpty() }
                         ?.first()?.id ?: 0,
@@ -441,6 +454,7 @@ fun ArchiveScoreScreen(
             }
         }
 
+        YBToast(snackBarHostState = snackBarHostState)
     }
 }
 
@@ -452,12 +466,11 @@ private fun ScoreInfoContent(
     onScoreSelect: (Int) -> Unit = {_ -> }
 ) {
     val showScoreFilter = remember { mutableStateOf(false) }
-    var currentIndex by remember { mutableIntStateOf(0) }
+    var currentIndex by remember { mutableIntStateOf(-1) }
 
     LaunchedEffect(Unit) {
-        if(enable && scoreLevelList.isNotEmpty()) {
-            onScoreSelect.invoke(scoreLevelList[currentIndex].id)
-        }
+        // 默认不选中
+        onScoreSelect.invoke(-1)
     }
 
     Row(
@@ -474,7 +487,8 @@ private fun ScoreInfoContent(
         Row(
             modifier = Modifier
                 .padding(start = 10.dp)
-                .size(81.dp, 36.dp)
+                .widthIn(min = 81.dp, max = 90.dp)
+                .height(36.dp)
                 .background(
                     color = if (enable) PageBackgroundColor else OutlineColor,
                     shape = RoundedCornerShape(4.dp)
@@ -487,10 +501,10 @@ private fun ScoreInfoContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                modifier = Modifier.weight(1f),
-                text = if (enable && scoreLevelList.isNotEmpty()) scoreLevelList[currentIndex].levelCode else "A",
+                modifier = Modifier.weight(1f).padding(start = 8.dp),
+                text = if (currentIndex < 0) "请选择" else if (enable && scoreLevelList.isNotEmpty()) scoreLevelList[currentIndex].levelCode else "A",
                 textAlign = TextAlign.Center,
-                style = scoreTitleStyle(enable)
+                style = if (currentIndex < 0) scoreEmptyStyle() else scoreTitleStyle(enable)
             )
             Icon(
                 modifier = Modifier
@@ -506,7 +520,7 @@ private fun ScoreInfoContent(
     SingleColumnPicker(
         visible = showScoreFilter.value,
         range = scoreLevelList.map { it.levelCode },
-        value = currentIndex,
+        value = if (currentIndex < 0) 0 else currentIndex,
         onChange = {
             currentIndex = it
             onScoreSelect.invoke(scoreLevelList[it].id)
@@ -522,6 +536,11 @@ private fun scoreTitleStyle(enable: Boolean) = TextStyle(
     color = if (enable) MainTextColor else TertiaryTextColor,
     fontWeight = FontWeight.SemiBold,
     textAlign = TextAlign.End
+)
+
+private fun scoreEmptyStyle() = TextStyle(
+    fontSize = 14.sp,
+    color = TertiaryTextColor
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
