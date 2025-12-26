@@ -67,7 +67,7 @@ data class DepartmentAssignListData(
     val startMonth: Int = 0,
     val endMonth: Int = 0,
     val yearBudget: String = "",
-    val yearTotalBudget: String = "",
+    var yearTotalBudget: String = "",
     val handleTime: String = "",
     val status: Int = 0
 )
