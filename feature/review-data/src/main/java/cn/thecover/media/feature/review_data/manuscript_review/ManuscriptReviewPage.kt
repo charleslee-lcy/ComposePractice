@@ -503,8 +503,8 @@ private fun TotalRankingItem(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                if (data.score % 1 == 0.0) data.score.toInt()
-                                    .toString() else data.score.toString() + if (rank >= rankLine) "(0)" else "",
+                                (if (data.score % 1 == 0.0) data.score.toInt()
+                                    .toString() else data.score.toString()) + if (data.isCutNews) "(0)" else "",
                                 style = MaterialTheme.typography.titleLarge,
                                 color = if (rank >= rankLine) MaterialTheme.colorScheme.primary.copy(
                                     0.6f
