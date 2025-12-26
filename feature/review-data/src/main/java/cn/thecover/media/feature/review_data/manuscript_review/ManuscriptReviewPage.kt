@@ -82,6 +82,7 @@ import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.util.formatDecimalString
 import cn.thecover.media.feature.review_data.PreviewReviewDataViewModelFactory
 import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.basic_widget.ReviewDataImages
@@ -170,7 +171,7 @@ internal fun ManuscriptReviewPage(
         }
 
         // 刷新时滚动到顶部
-        if (data.isRefreshing || (data.dataList != null && data.dataList!!.isNotEmpty())) {
+        if (data.isRefreshing) {
             listState.animateScrollToItem(0)
         }
     }
@@ -187,9 +188,9 @@ internal fun ManuscriptReviewPage(
         header = {
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 12.dp)
                     .fillMaxWidth()
                     .background(color = MaterialTheme.colorScheme.background)
+                    .padding(horizontal = 12.dp)
             ) {
                 ManuscriptTotalRankingHeader(viewModel = viewModel)
 
@@ -503,8 +504,7 @@ private fun TotalRankingItem(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                (if (data.score % 1 == 0.0) data.score.toInt()
-                                    .toString() else data.score.toString()) + if (data.isCutNews) "(0)" else "",
+                                formatDecimalString(data.score.toString()) + if (data.isCutNews) "(0)" else "",
                                 style = MaterialTheme.typography.titleLarge,
                                 color = if (data.isCutNews) MaterialTheme.colorScheme.primary.copy(
                                     0.6f

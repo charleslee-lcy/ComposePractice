@@ -93,7 +93,7 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
         canLoadMore.value = departmentTotalData.hasNextPage
 
         // 刷新时滚动到顶部
-        if (departmentTotalData.isRefreshing || (departmentTotalData.dataList != null && departmentTotalData.dataList!!.isNotEmpty())) {
+        if (departmentTotalData.isRefreshing) {
             listState.animateScrollToItem(0)
         }
     }

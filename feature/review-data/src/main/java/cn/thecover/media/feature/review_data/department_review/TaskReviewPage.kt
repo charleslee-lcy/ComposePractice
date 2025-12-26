@@ -85,7 +85,7 @@ fun DepartmentTaskReviewPage(viewModel: ReviewDataViewModel = hiltViewModel()) {
         canLoadMore.value = taskState.hasNextPage
 
         // 刷新时滚动到顶部
-        if (taskState.isRefreshing || (taskState.dataList != null && taskState.dataList!!.isNotEmpty())) {
+        if (taskState.isRefreshing) {
             listState.animateScrollToItem(0)
         }
     }

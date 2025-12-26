@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -70,12 +69,13 @@ import cn.thecover.media.core.widget.datastore.Keys
 import cn.thecover.media.core.widget.datastore.rememberDataStoreState
 import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
-import cn.thecover.media.core.widget.theme.DividerColor
+import cn.thecover.media.core.widget.theme.BlockDividerColor
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
+import cn.thecover.media.core.widget.util.formatDecimalString
 import cn.thecover.media.feature.review_manager.ReviewManageViewModel
 import cn.thecover.media.feature.review_manager.appeal.FilterSearchBar
 import cn.thecover.media.feature.review_manager.appeal.FilterType
@@ -227,6 +227,8 @@ internal fun DepartmentAssignScreen(
         visible = showAssignDialog.value,
         isShowTopActionBar = true,
         draggable = false,
+        padding = PaddingValues(top = 20.dp),
+        topActionBarHorizontalPadding = 20.dp,
         onClose = {
             showAssignDialog.value = false
             checkedItem = null
@@ -289,111 +291,108 @@ internal fun DepartmentAssignScreen(
                 .padding(top = 15.dp)
         ) {
             checkedItem?.apply {
-                LabelText("年度：", viewModel.departYear.intValue.toString())
-                LabelText("部门：", departmentName)
-                LabelText("部门人员：", userName)
-                LabelText("部门年度预算剩余：", "${formatDecimalString(departmentRemainStatus.yearBudget)}分")
-                LabelText("个人年度已分配总分：", "${formatDecimalString(yearTotalBudget)}分")
-
-                HorizontalDivider(
-                    modifier = Modifier
-                        .padding(top = 15.dp)
-                        .fillMaxWidth(),
-                    thickness = 1.dp,
-                    color = DividerColor
-                )
-                if (hasApartmentScoreAuth) {
-                    Spacer(modifier = Modifier.height(15.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(36.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "选择月份",
-                            fontSize = 14.sp,
-                            color = MainTextColor
-                        )
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(start = 10.dp)
-                        ) {
-                            DateSelectionView(
-                                label = "${monthPicked}月",
-                                textAlignCenter = true,
-                                onClick = {
-                                    showMonthPicker = true
-                                })
-                        }
-                    }
-                    Row(
-                        modifier = Modifier
-                            .padding(top = 12.dp)
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "分配分数",
-                            fontSize = 14.sp,
-                            color = MainTextColor
-                        )
+                Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                    LabelText("年度：", viewModel.departYear.intValue.toString())
+                    LabelText("部门：", departmentName)
+                    LabelText("部门人员：", userName)
+                    LabelText("部门年度预算剩余：", "${formatDecimalString(departmentRemainStatus.yearBudget)}分")
+                    LabelText("个人年度已分配总分：", "${formatDecimalString(yearTotalBudget)}分")
+                }
+                Spacer(modifier = Modifier.padding(top = 15.dp).fillMaxWidth().height(8.dp).background(BlockDividerColor))
+                Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                    if (hasApartmentScoreAuth) {
+                        Spacer(modifier = Modifier.height(15.dp))
                         Row(
                             modifier = Modifier
-                                .padding(start = 10.dp)
-                                .weight(1f)
-                                .height(36.dp)
-                                .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(4.dp))
-                                .background(
-                                    PageBackgroundColor
-                                ),
+                                .fillMaxWidth()
+                                .height(36.dp),
                             verticalAlignment = Alignment.CenterVertically
-                        )
-                        {
-                            CommonInput(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(36.dp),
-                                text = assignScore,
-                                textStyle = TextStyle(
-                                    fontSize = 14.sp,
-                                    color = MainTextColor,
-                                    textAlign = TextAlign.Center
-                                ),
-                                hint = "暂未输入",
-                                hintTextSize = 14.sp,
-                                keyboardOptions = KeyboardOptions.Default.copy(
-                                    keyboardType = KeyboardType.Number
-                                ),
-                                contentPadding = PaddingValues(horizontal = 20.dp),
-                                isDecimal = true,
-                                onValueChange = {
-                                    assignScore = it
-                                    setScoreByPickedMonth(
-                                        monthPicked,
-                                        it.ifEmpty { "0" },
-                                        this@apply
-                                    )
-                                }
-                            )
+                        ) {
                             Text(
-                                modifier = Modifier.padding(end = 15.dp),
-                                text = "分",
+                                text = "选择月份",
                                 fontSize = 14.sp,
                                 color = MainTextColor
                             )
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(start = 10.dp)
+                            ) {
+                                DateSelectionView(
+                                    label = "${monthPicked}月",
+                                    textAlignCenter = true,
+                                    onClick = {
+                                        showMonthPicker = true
+                                    })
+                            }
+                        }
+                        Row(
+                            modifier = Modifier
+                                .padding(top = 12.dp)
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "分配分数",
+                                fontSize = 14.sp,
+                                color = MainTextColor
+                            )
+                            Row(
+                                modifier = Modifier
+                                    .padding(start = 10.dp)
+                                    .weight(1f)
+                                    .height(36.dp)
+                                    .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(4.dp))
+                                    .background(
+                                        PageBackgroundColor
+                                    ),
+                                verticalAlignment = Alignment.CenterVertically
+                            )
+                            {
+                                CommonInput(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(36.dp),
+                                    text = assignScore,
+                                    textStyle = TextStyle(
+                                        fontSize = 14.sp,
+                                        color = MainTextColor,
+                                        textAlign = TextAlign.Center
+                                    ),
+                                    hint = "暂未输入",
+                                    hintTextSize = 14.sp,
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        keyboardType = KeyboardType.Number
+                                    ),
+                                    contentPadding = PaddingValues(horizontal = 20.dp),
+                                    isDecimal = true,
+                                    onValueChange = {
+                                        assignScore = it
+                                        setScoreByPickedMonth(
+                                            monthPicked,
+                                            it.ifEmpty { "0" },
+                                            this@apply
+                                        )
+                                    }
+                                )
+                                Text(
+                                    modifier = Modifier.padding(end = 15.dp),
+                                    text = "分",
+                                    fontSize = 14.sp,
+                                    color = MainTextColor
+                                )
+                            }
                         }
                     }
+                    Text(
+                        modifier = Modifier.padding(top = 20.dp),
+                        text = "部门月度预算剩余",
+                        fontSize = 14.sp,
+                        color = MainTextColor
+                    )
+                    DepartmentAnnualAssign(departmentRemainState)
+                    Spacer(modifier = Modifier.height(15.dp))
                 }
-                Text(
-                    modifier = Modifier.padding(top = 20.dp),
-                    text = "部门月度预算剩余",
-                    fontSize = 14.sp,
-                    color = MainTextColor
-                )
-                DepartmentAnnualAssign(departmentRemainState)
-                Spacer(modifier = Modifier.height(15.dp))
             }
         }
 

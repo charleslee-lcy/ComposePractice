@@ -40,7 +40,7 @@ import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
-import java.math.BigDecimal
+import cn.thecover.media.core.widget.util.formatDecimalString
 
 
 /**
@@ -197,14 +197,6 @@ private fun handleMonthData(item: DepartmentAssignListData, index: Int): String 
         10 -> item.octBudget
         11 -> item.novBudget
         else -> item.decBudget
-    }
-}
-
-fun formatDecimalString(decimalString: String): String {
-    return try {
-        BigDecimal(decimalString).stripTrailingZeros().toPlainString()
-    } catch (e: NumberFormatException) {
-        decimalString
     }
 }
 
