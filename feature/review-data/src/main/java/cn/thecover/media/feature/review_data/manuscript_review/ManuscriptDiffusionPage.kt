@@ -96,7 +96,7 @@ fun ManuscriptDiffusionPage(
     var lastShownToastTime by remember { mutableStateOf(0L) }
 
     // 监听路由切换，当页面首次显示或切换回来时刷新数据
-    LaunchedEffect(backStackEntry?.id) {
+    LaunchedEffect(backStackEntry?.id, filter) {
         // 然后刷新数据
         viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptDiffusion)
     }

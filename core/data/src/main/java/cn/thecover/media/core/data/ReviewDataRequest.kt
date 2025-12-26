@@ -48,7 +48,7 @@ data class ManuscriptDiffusionRequest(
 data class DepartmentReviewRequest(
     val year: Int,
     val month: Int,
-    val pageSize: String = "20",
+    val pageSize: String = "100",
     val sortConditions: List<SortConditions> = emptyList(),
     val lastId: Long = -1,
 )
@@ -59,7 +59,7 @@ data class DepartmentReviewRequest(
 data class DepartmentTaskRequest(
     val year: Int,
     val month: Int,
-    val pageSize: String = "20",
+    val pageSize: String = "100",
     val lastId: Long = -1,
 )
 

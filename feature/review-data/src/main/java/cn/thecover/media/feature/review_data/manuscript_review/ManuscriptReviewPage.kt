@@ -482,7 +482,7 @@ private fun TotalRankingItem(
         isExpanded = false
     }
     DataItemCard(
-        containerColor = if (rank < rankLine) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.tertiaryContainer
+        containerColor = if (data.isCutNews) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surface
     ) {
         DataItemRankingRow(
             ranking = rank,
@@ -504,9 +504,9 @@ private fun TotalRankingItem(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                formatDecimalString(data.score.toString()) + if (rank >= rankLine) "(0)" else "",
+                                formatDecimalString(data.score.toString()) + if (data.isCutNews) "(0)" else "",
                                 style = MaterialTheme.typography.titleLarge,
-                                color = if (rank >= rankLine) MaterialTheme.colorScheme.primary.copy(
+                                color = if (data.isCutNews) MaterialTheme.colorScheme.primary.copy(
                                     0.6f
                                 ) else MaterialTheme.colorScheme.primary
                             )
