@@ -23,9 +23,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cn.thecover.media.core.widget.component.AutoResizeText
@@ -163,6 +165,7 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
                         style = MaterialTheme.typography.bodySmall,
                         color = TertiaryTextColor
                     )
+                    Spacer(modifier = Modifier.width(12.dp))
                 }
 
             }
@@ -225,19 +228,18 @@ private fun TopRankingItem(ranking: Int, departmentName: String, score: Double) 
         DataItemRankingRow(ranking, paddingTop = 3) {
             // 水平排列部门名称和得分信息
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Spacer(modifier = Modifier.width(16.dp))
-                AutoResizeText(
+                Text(
                     text = departmentName,
                     color = MainTextColor,
-                    maxLines = 1,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 15.sp,
+                    modifier = Modifier.padding(start = 16.dp, end = 10.dp).weight(1f)
                 )
-                Spacer(modifier = Modifier.weight(1f))
                 Text(
                     if (score % 1 == 0.0) score.toInt().toString() else score.toString(),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier.width(60.dp)
+                    textAlign = TextAlign.End
                 )
             }
         }
@@ -249,11 +251,7 @@ private fun TopRankingItem(ranking: Int, departmentName: String, score: Double) 
 @Preview(showBackground = true)
 fun TopRankingItemPreview() {
     YBTheme {
-        DepartmentTopRankingPage(
-            viewModel(
-                factory = PreviewReviewDataViewModelFactory()
-            )
-        )
+        TopRankingItem(1, "部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称", 4.5)
     }
 
 }
