@@ -82,6 +82,7 @@ import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBShapes
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.util.formatDecimalString
 import cn.thecover.media.feature.review_data.PreviewReviewDataViewModelFactory
 import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.basic_widget.ReviewDataImages
@@ -503,8 +504,7 @@ private fun TotalRankingItem(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                if (data.score % 1 == 0.0) data.score.toInt()
-                                    .toString() else data.score.toString() + if (rank >= rankLine) "(0)" else "",
+                                formatDecimalString(data.score.toString()) + if (rank >= rankLine) "(0)" else "",
                                 style = MaterialTheme.typography.titleLarge,
                                 color = if (rank >= rankLine) MaterialTheme.colorScheme.primary.copy(
                                     0.6f
