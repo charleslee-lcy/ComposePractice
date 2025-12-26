@@ -79,7 +79,7 @@ fun ManuscriptTopRankingPage(viewModel: ReviewDataViewModel) {
         canLoadMore.value = data.hasNextPage
 
         // 刷新时滚动到顶部
-        if (data.isRefreshing || (data.dataList != null && data.dataList!!.isNotEmpty())) {
+        if (data.isRefreshing) {
             listState.animateScrollToItem(0)
         }
     }

@@ -89,7 +89,7 @@ internal fun DepartmentReviewScreen(
         canLoadMore.value = depart.hasNextPage
 
         // 刷新时滚动到顶部
-        if (depart.isRefreshing || (depart.dataList != null && depart.dataList!!.isNotEmpty())) {
+        if (depart.isRefreshing) {
             listState.animateScrollToItem(0)
         }
     }

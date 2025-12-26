@@ -170,7 +170,7 @@ internal fun ManuscriptReviewPage(
         }
 
         // 刷新时滚动到顶部
-        if (data.isRefreshing || (data.dataList != null && data.dataList!!.isNotEmpty())) {
+        if (data.isRefreshing) {
             listState.animateScrollToItem(0)
         }
     }
@@ -187,9 +187,9 @@ internal fun ManuscriptReviewPage(
         header = {
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 12.dp)
                     .fillMaxWidth()
                     .background(color = MaterialTheme.colorScheme.background)
+                    .padding(horizontal = 12.dp)
             ) {
                 ManuscriptTotalRankingHeader(viewModel = viewModel)
 
