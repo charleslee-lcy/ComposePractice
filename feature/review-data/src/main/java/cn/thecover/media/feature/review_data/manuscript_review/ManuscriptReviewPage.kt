@@ -594,7 +594,7 @@ private fun ItemFoldedView(
                 backgroundColor = if (isCut) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.surface,
                 items = arrayOf(
                     Pair(
-                        "加减分",
+                        "稿件加减分",
                         if (addSubScore % 1 == 0.0) addSubScore.toInt()
                             .toString() else addSubScore.toString()
                     ),

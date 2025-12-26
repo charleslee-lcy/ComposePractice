@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import cn.thecover.media.core.data.DiffusionDataEntity
 import cn.thecover.media.core.data.ManuscriptReviewDataEntity
 import cn.thecover.media.core.data.PaginatedResult
+import cn.thecover.media.core.widget.component.TOAST_TYPE_ERROR
+import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
 import cn.thecover.media.feature.review_data.data.DepartmentFilterState
@@ -23,6 +25,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.text.ifEmpty
 
 /**
  *
@@ -176,6 +179,20 @@ class ReviewDataViewModel @Inject constructor(
 
             //稿件板块 数据
             is ReviewDataIntent.RefreshManuscriptReviewData -> {
+                val filter = manuscriptReviewFilterState.value
+                if (filter.searchField.contains("ID") && filter.searchText.isNotEmpty()) {
+                    // 只包含数字的处理逻辑
+                    if (!filter.searchText.all { it.isDigit() }) {
+                        // 显示稿件总排行页面专用toast
+                        _manuscriptReviewToastState.update {
+                            it.copy(
+                                message = "请输入合法的稿件ID",
+                                time = System.currentTimeMillis()
+                            )
+                        }
+                        return
+                    }
+                }
                 loadManuScriptReviewData()
             }
 
@@ -185,6 +202,20 @@ class ReviewDataViewModel @Inject constructor(
 
             //稿件传播排行 数据
             is ReviewDataIntent.RefreshManuscriptDiffusion -> {
+                val filter = manuscriptDiffusionFilterState.value
+                if (filter.searchField.contains("ID") && filter.searchText.isNotEmpty()) {
+                    // 只包含数字的处理逻辑
+                    if (!filter.searchText.all { it.isDigit() }) {
+                        // 显示稿件总排行页面专用toast
+                        _manuscriptDiffusionToastState.update {
+                            it.copy(
+                                message = "请输入合法的稿件ID",
+                                time = System.currentTimeMillis()
+                            )
+                        }
+                        return
+                    }
+                }
                 loadManuScriptReviewDiffusionData()
             }
             //稿件总排行 数据加载更多
