@@ -1,5 +1,6 @@
 package cn.thecover.media.feature.review_manager
 
+import android.R.attr.bottom
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -53,11 +54,13 @@ import cn.thecover.media.core.widget.ui.PhonePreview
 fun ArchiveListItem(
     modifier: Modifier = Modifier,
     item: ArchiveListData,
+    index: Int,
+    count: Int,
     onDetailClick: (() -> Unit)? = null,
     onScoreClick: (() -> Unit)? = null
 ) {
     Card(
-        modifier = modifier.padding(top = 12.dp),
+        modifier = modifier.padding(bottom = if (index == count - 1) 0.dp else 12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         shape = RoundedCornerShape(8.dp),
@@ -258,7 +261,9 @@ private fun ArchiveListItemPreview() {
             reporters = listOf(Reporter(reporterName = "张三"), Reporter(reporterName = "张三"))
         )
         ArchiveListItem(
-            item = item
+            item = item,
+            index = 0,
+            count = 1
         )
     }
 }

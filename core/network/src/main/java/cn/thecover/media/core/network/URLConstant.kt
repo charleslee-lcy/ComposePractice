@@ -9,7 +9,7 @@ package cn.thecover.media.core.network
 object URLConstant {
     val YB_BASE_URL = when(BuildConfig.ENV_CONFIG) {
         1 -> "https://test-ynrb-api.yndaily.com/pms-api/"  //测试
-        2 -> "https://ynrb-api.yndaily.com/pms-api/"  //正式
+        2 -> "http://m-kaohe.yndaily.com:7080/"  //正式
         else -> ""
     }
 }
