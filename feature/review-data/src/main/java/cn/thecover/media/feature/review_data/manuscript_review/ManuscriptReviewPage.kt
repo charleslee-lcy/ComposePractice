@@ -506,7 +506,7 @@ private fun TotalRankingItem(
                                 (if (data.score % 1 == 0.0) data.score.toInt()
                                     .toString() else data.score.toString()) + if (data.isCutNews) "(0)" else "",
                                 style = MaterialTheme.typography.titleLarge,
-                                color = if (rank >= rankLine) MaterialTheme.colorScheme.primary.copy(
+                                color = if (data.isCutNews) MaterialTheme.colorScheme.primary.copy(
                                     0.6f
                                 ) else MaterialTheme.colorScheme.primary
                             )
