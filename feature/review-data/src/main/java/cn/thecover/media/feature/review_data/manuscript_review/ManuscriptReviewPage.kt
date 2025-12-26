@@ -481,7 +481,7 @@ private fun TotalRankingItem(
         isExpanded = false
     }
     DataItemCard(
-        containerColor = if (rank < rankLine) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.tertiaryContainer
+        containerColor = if (data.isCutNews) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surface
     ) {
         DataItemRankingRow(
             ranking = rank,
