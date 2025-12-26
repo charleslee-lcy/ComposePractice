@@ -723,48 +723,83 @@ private fun ApprovalFlowItem(
                     fontSize = 14.sp
                 )
             }
-            Row {
+
+            ConstraintLayout(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                val (operatorNameRef, operationNameRef, createTimeRef, remarkLabelRef, remarkContentRef) = createRefs()
+
                 Text(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 6.dp),
+                    modifier = Modifier.constrainAs(operatorNameRef) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        end.linkTo(operationNameRef.start)
+                        width = Dimension.fillToConstraints
+                    }
+                        .padding(start = 6.dp, end = 3.dp),
                     text = node.operatorName,
                     color = MainTextColor,
                     fontSize = 14.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+
                 Text(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.constrainAs(operationNameRef) {
+                        start.linkTo(operatorNameRef.end)
+                        top.linkTo(parent.top)
+                        end.linkTo(createTimeRef.start)
+                        width = Dimension.fillToConstraints
+                    },
                     text = node.operationName,
                     color = MainTextColor,
                     fontSize = 14.sp
                 )
+
                 Text(
-                    modifier = Modifier.padding(start = 6.dp),
+                    modifier = Modifier.constrainAs(createTimeRef) {
+                        start.linkTo(operationNameRef.end)
+                        top.linkTo(parent.top)
+                        end.linkTo(parent.end)
+                        width = Dimension.wrapContent
+                    }
+                        .padding(start = 3.dp, end = 6.dp),
                     text = node.createTime,
                     color = MainTextColor,
                     fontSize = 14.sp
                 )
-            }
-            if (node.operation == 4 && !node.remark.isNullOrEmpty()) {
-                Row {
+
+                if (node.operation == 4 && !node.remark.isNullOrEmpty()) {
                     Text(
-                        modifier = Modifier
+                        modifier = Modifier.constrainAs(remarkLabelRef) {
+                            start.linkTo(parent.start)
+                            top.linkTo(operatorNameRef.bottom)
+                            end.linkTo(operatorNameRef.end)
+                            width = Dimension.fillToConstraints
+                        }
                             .padding(start = 6.dp),
                         text = "审批意见：",
                         color = SecondaryTextColor,
                         fontSize = 14.sp
                     )
+
                     Text(
-                        modifier = Modifier.weight(1f).padding(top = 2.dp),
+                        modifier = Modifier.constrainAs(remarkContentRef) {
+                            start.linkTo(remarkLabelRef.end)
+                            top.linkTo(remarkLabelRef.top)
+                            end.linkTo(parent.end)
+                            width = Dimension.fillToConstraints
+                        }
+                            .padding(top = 2.dp),
                         text = node.remark ?: "-",
                         color = MainTextColor,
                         lineHeight = 20.sp,
                         fontSize = 14.sp
                     )
                 }
+
             }
+
             Spacer(modifier = Modifier.height(12.dp))
         }
     }
