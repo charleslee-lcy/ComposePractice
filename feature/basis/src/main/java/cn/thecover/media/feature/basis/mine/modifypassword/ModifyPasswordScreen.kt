@@ -12,12 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -30,21 +26,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import cn.thecover.media.core.widget.component.YBButton
+import cn.thecover.media.core.widget.component.YBInput
 import cn.thecover.media.core.widget.component.YBTitleBar
 import cn.thecover.media.core.widget.component.YBToast
-import cn.thecover.media.core.widget.icon.YBIcons
+import cn.thecover.media.core.widget.theme.EditHintTextColor
+import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.feature.basis.home.navigation.LoginRoute
@@ -219,66 +214,30 @@ fun ModifyPasswordInput(
     var passwordVisible by remember { mutableStateOf(false) }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
-        BasicTextField(
-            value = textState.value,
+        Text(label, fontSize = 15.sp, color = SecondaryTextColor, modifier = Modifier.width(64.dp))
+        Spacer(modifier = Modifier.width(16.dp))
+        YBInput(
+            modifier = Modifier
+                .weight(1f)
+                .height(48.dp),
+            textStyle = TextStyle(
+                fontSize = 15.sp, color = MainTextColor
+            ),
+            text = textState.value,
+            hint = hint.toString(),
+            hintTextSize = 15.sp,
+            hintTextColor = EditHintTextColor,
+            maxLines = 1,
+            isPassword = true,
+            showVisibleIcon = true,
             onValueChange = {
                 // 限制最大长度为20个字符
                 if (it.length <= 20) {
                     textState.value = it
                 }
-            },
-            maxLines = 1,
-            cursorBrush = Brush.verticalGradient(
-                colors = listOf(
-                    MaterialTheme.colorScheme.primary,
-                    MaterialTheme.colorScheme.primary,
-                )
-            ),
-            modifier = Modifier.weight(1f),
-            visualTransformation = if (isPassword && !passwordVisible) {
-                PasswordVisualTransformation()
-            } else {
-                VisualTransformation.None
-            },
-            decorationBox = { innerTextField ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.Transparent)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .padding(vertical = 12.dp)
-                                .width(80.dp)
-                        ) {
-                            Text(label, fontSize = 15.sp, color = SecondaryTextColor)
-                        }
-                        Box(modifier = Modifier.weight(1f)) {
-                            if (textState.value.isEmpty()) {
-                                Text(
-                                    hint ?: "",
-                                    fontSize = 15.sp,
-                                    color = TertiaryTextColor,
-                                    style = LocalTextStyle.current
-                                )
-                            }
-                            innerTextField()
-                        }
-                    }
-                }
-            }
-        )
+            })
 
-        if (isPassword) {
-            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                Icon(
-                    painterResource(if (passwordVisible) YBIcons.Custom.PasswordIsShow else YBIcons.Custom.PasswordIsHide),
-                    tint = TertiaryTextColor,
-                    contentDescription = if (passwordVisible) "隐藏密码" else "查看密码"
-                )
-            }
-        }
+
     }
     HorizontalDivider(
         modifier = Modifier

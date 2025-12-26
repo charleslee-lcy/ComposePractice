@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -235,6 +236,7 @@ private fun TopRankingItem(ranking: Int, departmentName: String, score: Double) 
                     if (score % 1 == 0.0) score.toInt().toString() else score.toString(),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.End,
                     modifier = Modifier.width(60.dp)
                 )
             }
