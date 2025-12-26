@@ -128,7 +128,9 @@ fun YBDialog(
                                         onCancel?.invoke()
                                         dialogState.value = false
                                     },
-                                    modifier = Modifier.weight(1f).height(44.dp),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(44.dp),
                                     textColor = TertiaryTextColor,
                                     backgroundColor = MaterialTheme.colorScheme.surface,
                                     shape = MaterialTheme.shapes.extraSmall,
@@ -147,7 +149,10 @@ fun YBDialog(
                                         }
                                     },
                                     shape = MaterialTheme.shapes.extraSmall,
-                                    modifier = Modifier.weight(1f).height(44.dp),
+                                    modifier = Modifier
+                                        .padding(horizontal = if (cancelText == null) 48.dp else 0.dp)
+                                        .weight(1f)
+                                        .height(44.dp),
                                 ) {
                                     Text(text = confirmText)
                                 }
