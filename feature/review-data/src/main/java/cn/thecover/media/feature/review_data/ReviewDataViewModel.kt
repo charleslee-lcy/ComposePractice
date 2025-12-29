@@ -484,7 +484,8 @@ class ReviewDataViewModel @Inject constructor(
                             totalPages = result.data.totalPages,
                             hasNextPage = result.data.hasNextPage,
                             total = if (!isLoadMore) result.data.total else _manuscriptReviewPageState.value.total,
-                            lastId = result.data.lastId
+                            lastId = result.data.lastId,
+                            budgetCutProcess = result.data.budgetCutProcess
                         )
                     }
                 }
@@ -494,7 +495,8 @@ class ReviewDataViewModel @Inject constructor(
                         it.copy(
                             isLoading = false,
                             isRefreshing = false,
-                            error = result.exception.message
+                            error = result.exception.message,
+                            budgetCutProcess = false
                         )
                     }
 

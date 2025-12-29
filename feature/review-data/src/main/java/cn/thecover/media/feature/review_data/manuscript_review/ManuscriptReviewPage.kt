@@ -254,11 +254,7 @@ internal fun ManuscriptReviewPage(
                     // 立即设置文本框的值为当前稿分
                     val currentItem = manus.value.firstOrNull { it.id == editId }
                     if (currentItem != null) {
-                        textFiledState = if (currentItem.score % 1 == 0.0) {
-                            currentItem.score.toInt().toString()
-                        } else {
-                            currentItem.score.toString()
-                        }
+                        textFiledState = formatDecimalString(currentItem.score.toString())
                     }
                     showEditScorePop.value = true
                 })
@@ -591,7 +587,7 @@ private fun ItemFoldedView(
         Row(verticalAlignment = Alignment.Bottom) {
             ItemScoreRow(
                 modifier = Modifier,
-                backgroundColor = if (isCut) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.surface,
+                backgroundColor = if (isCut) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surface,
                 items = arrayOf(
                     Pair(
                         "稿件加减分",
@@ -906,6 +902,6 @@ fun ManuscriptReviewScreenPreview() {
 @Preview(showSystemUi = false)
 fun ManuscriptFoldItemPreview() {
     YBTheme {
-        ItemFoldedView()
+        ItemFoldedView(isCut = true)
     }
 }
