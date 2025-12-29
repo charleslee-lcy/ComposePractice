@@ -254,11 +254,7 @@ internal fun ManuscriptReviewPage(
                     // 立即设置文本框的值为当前稿分
                     val currentItem = manus.value.firstOrNull { it.id == editId }
                     if (currentItem != null) {
-                        textFiledState = if (currentItem.score % 1 == 0.0) {
-                            currentItem.score.toInt().toString()
-                        } else {
-                            currentItem.score.toString()
-                        }
+                        textFiledState = formatDecimalString(currentItem.score.toString())
                     }
                     showEditScorePop.value = true
                 })
