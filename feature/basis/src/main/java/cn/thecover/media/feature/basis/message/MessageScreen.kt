@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -261,7 +262,13 @@ private fun MessageItem(
             )
             Column {
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(title, style = MaterialTheme.typography.titleSmall, color = MainTextColor)
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MainTextColor,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(time, style = MaterialTheme.typography.labelMedium, color = TertiaryTextColor)
                 Spacer(modifier = Modifier.height(8.dp))
