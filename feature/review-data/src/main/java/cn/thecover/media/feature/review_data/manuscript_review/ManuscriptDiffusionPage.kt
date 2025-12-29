@@ -44,6 +44,7 @@ import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.search.FilterSearchTextField
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.util.formatDecimalString
 import cn.thecover.media.feature.review_data.PreviewReviewDataViewModelFactory
 import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
@@ -221,14 +222,12 @@ private fun DiffusionItem(rank: Int, data: DiffusionDataEntity, filterChoice: St
                             items = arrayOf(
                                 Triple(
                                     "公式传播分",
-                                    if (data.formulaSpreadScore % 1 == 0.0) data.formulaSpreadScore.toInt()
-                                        .toString() else data.formulaSpreadScore.toString(),
+                                    formatDecimalString(data.formulaSpreadScore.toString()),
                                     if (filterChoice.contains("公式传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                                 ),
                                 Triple(
                                     "最终传播分",
-                                    if (data.spreadScore % 1 == 0.0) data.spreadScore.toInt()
-                                        .toString() else data.spreadScore.toString(),
+                                    formatDecimalString(data.spreadScore.toString()),
                                     if (filterChoice.contains("最终传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                                 ),
                             )

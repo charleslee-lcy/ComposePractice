@@ -38,6 +38,7 @@ import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.util.formatDecimalString
 import cn.thecover.media.feature.review_data.PreviewReviewDataViewModelFactory
 import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
@@ -172,8 +173,7 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
             TopRankingItem(
                 index + 1,
                 item.departmentName,
-                if ((item.averageScore % 1).toFloat() == 0f) item.averageScore.toInt()
-                    .toDouble() else item.averageScore
+                formatDecimalString(item.averageScore.toString())
             )
         }
 
@@ -222,7 +222,7 @@ internal fun DepartmentTopRankingPage(viewModel: ReviewDataViewModel = hiltViewM
  * @param score 部门人均得分
  */
 @Composable
-private fun TopRankingItem(ranking: Int, departmentName: String, score: Double) {
+private fun TopRankingItem(ranking: Int, departmentName: String, score: String) {
     // 使用排名卡片包装器显示排名信息
     DataItemCard {
         DataItemRankingRow(ranking, paddingTop = 3) {
@@ -236,7 +236,7 @@ private fun TopRankingItem(ranking: Int, departmentName: String, score: Double) 
                     modifier = Modifier.padding(start = 16.dp, end = 10.dp).weight(1f)
                 )
                 Text(
-                    if (score % 1 == 0.0) score.toInt().toString() else score.toString(),
+                    score,
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.End
@@ -251,7 +251,7 @@ private fun TopRankingItem(ranking: Int, departmentName: String, score: Double) 
 @Preview(showBackground = true)
 fun TopRankingItemPreview() {
     YBTheme {
-        TopRankingItem(1, "部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称", 4.5)
+        TopRankingItem(1, "部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称部门名称", 4.5.toString())
     }
 
 }

@@ -34,6 +34,7 @@ import cn.thecover.media.core.widget.component.YBToast
 import cn.thecover.media.core.widget.component.picker.DateType
 import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.util.formatDecimalString
 import cn.thecover.media.feature.review_data.PreviewReviewDataViewModelFactory
 import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
@@ -165,26 +166,22 @@ private fun ManuscriptTopRankingItem(
                     items = arrayOf(
                         Triple(
                             "总分",
-                            if ((data.score % 1).toFloat() == 0f) data.score.toInt()
-                                .toString() else data.score.toString(),
+                            formatDecimalString(data.score.toString()),
                             if (filterChoice.contains("总分")) ScoreItemType.PRIMARY_WITH_BORDER else ScoreItemType.PRIMARY
                         ),
                         Triple(
                             "基础分",
-                            if ((data.basicScore % 1).toFloat() == 0f) data.basicScore.toInt()
-                                .toString() else data.basicScore.toString(),
+                            formatDecimalString(data.basicScore.toString()),
                             if (filterChoice.contains("基础分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                         ),
                         Triple(
                             "传播分",
-                            if ((data.diffusionScore % 1).toFloat() == 0f) data.diffusionScore.toInt()
-                                .toString() else data.diffusionScore.toString(),
+                            formatDecimalString(data.diffusionScore.toString()),
                             if (filterChoice.contains("传播分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                         ),
                         Triple(
                             "质量分",
-                            if ((data.qualityScore % 1).toFloat() == 0f) data.qualityScore.toInt()
-                                .toString() else data.qualityScore.toString(),
+                            formatDecimalString(data.qualityScore.toString()),
                             if (filterChoice.contains("质量分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                         ),
                     )

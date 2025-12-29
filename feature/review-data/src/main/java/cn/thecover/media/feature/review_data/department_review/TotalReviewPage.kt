@@ -35,6 +35,7 @@ import cn.thecover.media.core.widget.component.picker.YBDatePicker
 import cn.thecover.media.core.widget.component.showToast
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.util.formatDecimalString
 import cn.thecover.media.feature.review_data.PreviewReviewDataViewModelFactory
 import cn.thecover.media.feature.review_data.ReviewDataViewModel
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
@@ -278,8 +279,7 @@ private fun DepartmentReviewItem(
                     items = arrayOf(
                         Triple(
                             "总稿费",
-                            if (totalPayment % 1 == 0.0) totalPayment.toInt()
-                                .toString() else totalPayment.toString(),
+                            formatDecimalString(totalPayment.toString()),
                             if (filterText.contains("总稿费")) ScoreItemType.PRIMARY_WITH_BORDER else ScoreItemType.PRIMARY
                         ),
                         Triple(
@@ -296,14 +296,12 @@ private fun DepartmentReviewItem(
 
                         Triple(
                             "人员平均分",
-                            if (averageScore % 1 == 0.0) averageScore.toInt()
-                                .toString() else averageScore.toString(),
+                            formatDecimalString(averageScore.toString()),
                             if (filterText.contains("人员平均分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                         ),
                         Triple(
                             "总分",
-                            if (totalScore % 1 == 0.0) totalScore.toInt()
-                                .toString() else totalScore.toString(),
+                            formatDecimalString(totalScore.toString()),
                             if (filterText.contains("总分")) ScoreItemType.NORMAL_WITH_BORDER else ScoreItemType.NORMAL
                         ),
 

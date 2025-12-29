@@ -40,6 +40,7 @@ import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryAuxiliaryColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.util.formatDecimalString
 import cn.thecover.media.feature.basis.home.HomeViewModel
 
 /**
@@ -182,23 +183,19 @@ private fun TopManuscriptPage(
             PrimaryItemScoreRow(
                 items = arrayOf(
                     Triple("总分",
-                        if (item.score % 1 == 0.0) item.score.toInt()
-                            .toString() else item.score.toString(),
+                        formatDecimalString(item.score.toString()),
                         ScoreItemType.PRIMARY
                     ),
                     Triple("基础分",
-                        if (item.basicScore % 1 == 0.0) item.basicScore.toInt()
-                            .toString() else item.basicScore.toString(),
+                        formatDecimalString(item.basicScore.toString()),
                         ScoreItemType.NORMAL
                     ),
                     Triple("传播分",
-                        if (item.diffusionScore % 1 == 0.0) item.diffusionScore.toInt()
-                            .toString() else item.diffusionScore.toString(),
+                        formatDecimalString(item.diffusionScore.toString()),
                         ScoreItemType.NORMAL
                     ),
                     Triple("质量分",
-                        if (item.qualityScore % 1 == 0.0) item.qualityScore.toInt()
-                            .toString() else item.qualityScore.toString(),
+                        formatDecimalString(item.qualityScore.toString()),
                         ScoreItemType.NORMAL
                     )
                 )
@@ -287,14 +284,12 @@ private fun TopDiffusionPage(
                 items = arrayOf(
                     Triple(
                         "公式传播分",
-                        if (item.formulaSpreadScore % 1 == 0.0) item.formulaSpreadScore.toInt()
-                            .toString() else item.formulaSpreadScore.toString(),
+                        formatDecimalString(item.formulaSpreadScore.toString()),
                         ScoreItemType.NORMAL
                     ),
                     Triple(
                         "最终传播分",
-                        if (item.spreadScore % 1 == 0.0) item.spreadScore.toInt()
-                            .toString() else item.spreadScore.toString(),
+                        formatDecimalString(item.spreadScore.toString()),
                         ScoreItemType.PRIMARY
                     ),
                 )

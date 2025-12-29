@@ -30,6 +30,7 @@ import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
 import cn.thecover.media.core.widget.ui.ComponentPreview
+import java.math.BigDecimal
 
 
 /**
@@ -43,11 +44,8 @@ val normalCardElevation = 0.5.dp
 // 格式化分数，确保整数不显示小数点
 fun formatScore(score: String): String {
     return try {
-        val num = score.toDoubleOrNull()
-        if (num == null) score
-        else if (num % 1 == 0.0) num.toInt().toString()
-        else score
-    } catch (_: Exception) {
+        BigDecimal(score).stripTrailingZeros().toPlainString()
+    } catch (e: NumberFormatException) {
         score
     }
 }

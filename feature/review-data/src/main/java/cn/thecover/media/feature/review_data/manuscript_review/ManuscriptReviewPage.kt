@@ -591,23 +591,19 @@ private fun ItemFoldedView(
                 items = arrayOf(
                     Pair(
                         "稿件加减分",
-                        if (addSubScore % 1 == 0.0) addSubScore.toInt()
-                            .toString() else addSubScore.toString()
+                        formatDecimalString(addSubScore.toString())
                     ),
                     Pair(
                         "基础分",
-                        if (basicScore % 1 == 0.0) basicScore.toInt()
-                            .toString() else basicScore.toString()
+                        formatDecimalString(basicScore.toString())
                     ),
                     Pair(
                         "质量分",
-                        if (qualityScore % 1 == 0.0) qualityScore.toInt()
-                            .toString() else qualityScore.toString()
+                        formatDecimalString(qualityScore.toString())
                     ),
                     Pair(
                         "传播分",
-                        if (diffusionScore % 1 == 0.0) diffusionScore.toInt()
-                            .toString() else diffusionScore.toString()
+                        formatDecimalString(diffusionScore.toString())
                     )
                 )
             )
