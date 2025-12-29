@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,12 +25,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.YBTopAppBar
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.icon.YBIcons
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.feature.basis.home.HomeViewModel
 import cn.thecover.media.feature.basis.message.data.entity.MessageDataEntity
 import cn.thecover.media.feature.basis.mine.MineViewModel
 
@@ -82,35 +88,40 @@ fun MessageDetailScreen(
         )
 
         val msgType = MessageType.entries.first { message.type == it.ordinal }
-        
-        Text(
-            message.content ?: "",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MainTextColor,
-            modifier = Modifier.padding(16.dp)
-        )
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        ) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())) {
             Text(
-                msgType.typeName,
-                style = MaterialTheme.typography.labelMedium,
-                color = msgType.textColor(),
-                modifier = Modifier
-                    .background(
-                        shape = MaterialTheme.shapes.extraSmall,
-                        color = msgType.backColor()
-                    )
-                    .padding(horizontal = 5.dp, vertical = 3.dp)
+                message.content ?: "",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MainTextColor,
+                modifier = Modifier.padding(16.dp)
             )
-            Spacer(modifier = Modifier.width(20.dp))
-            Text(
-                message.createTime ?: "",
-                style = MaterialTheme.typography.labelMedium,
-                color = TertiaryTextColor
-            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                Text(
+                    msgType.typeName,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = msgType.textColor(),
+                    modifier = Modifier
+                        .background(
+                            shape = MaterialTheme.shapes.extraSmall,
+                            color = msgType.backColor()
+                        )
+                        .padding(horizontal = 5.dp, vertical = 3.dp)
+                )
+                Spacer(modifier = Modifier.width(20.dp))
+                Text(
+                    message.createTime ?: "",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = TertiaryTextColor
+                )
+            }
+            Spacer(modifier = Modifier.height(25.dp))
         }
     }
 }
@@ -119,9 +130,12 @@ fun MessageDetailScreen(
 @Preview(showBackground = true)
 fun MessageDetailScreenPreview() {
     YBTheme {
-
+        MessageDetailScreen(
+            MineViewModel(
+                SavedStateHandle(),
+                retrofit = { previewRetrofit }
+            ), message = MessageDataEntity())
     }
-
 }
 
  
