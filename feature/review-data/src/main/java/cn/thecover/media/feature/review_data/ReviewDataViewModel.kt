@@ -1,12 +1,16 @@
 package cn.thecover.media.feature.review_data
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.thecover.media.core.data.DiffusionDataEntity
 import cn.thecover.media.core.data.ManuscriptReviewDataEntity
 import cn.thecover.media.core.data.PaginatedResult
+import cn.thecover.media.core.network.asResult
 import cn.thecover.media.core.widget.component.TOAST_TYPE_ERROR
+import cn.thecover.media.core.widget.datastore.Keys
+import cn.thecover.media.core.widget.datastore.saveData
 import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewDataIntent
 import cn.thecover.media.feature.review_data.basic_widget.intent.ReviewUIIntent
@@ -18,10 +22,12 @@ import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntit
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
 import cn.thecover.media.feature.review_data.data.params.RepositoryResult
 import cn.thecover.media.feature.review_data.repository.ReviewDataRepository
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -836,6 +842,15 @@ class ReviewDataViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+    /**
+     * 获取接口用户信息
+     */
+    fun getUserInfo(context: Context) {
+        viewModelScope.launch {
+            repository.getUserInfo(context)
         }
     }
 }

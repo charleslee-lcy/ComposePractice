@@ -1,5 +1,7 @@
 package cn.thecover.media.feature.review_data.repository
 
+import android.content.Context
+import androidx.lifecycle.viewModelScope
 import cn.thecover.media.core.data.DepartmentReviewRequest
 import cn.thecover.media.core.data.DepartmentTaskRequest
 import cn.thecover.media.core.data.DepartmentTopRequest
@@ -13,13 +15,19 @@ import cn.thecover.media.core.data.ModifyManuscriptScoreRequest
 import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.core.data.SortConditions
 import cn.thecover.media.core.data.SortConditions.Companion.DEPT_DATA_AVERAGE_SCORE
+import cn.thecover.media.core.network.asResult
+import cn.thecover.media.core.widget.datastore.Keys
+import cn.thecover.media.core.widget.datastore.saveData
 import cn.thecover.media.core.widget.event.FlowBus
 import cn.thecover.media.core.widget.event.FlowEvent
 import cn.thecover.media.feature.review_data.ReviewDataApiService
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
 import cn.thecover.media.feature.review_data.data.params.RepositoryResult
+import com.google.gson.Gson
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 
 /**
  *  Created by Wing at 14:53 on 2025/8/21
@@ -349,6 +357,21 @@ class ReviewDataRepository @Inject constructor(
         } catch (e: Exception) {
             RepositoryResult.Error(Exception("网络请求出错了"))
         }
+    }
+
+    /**
+     * 获取接口用户信息
+     */
+    suspend fun getUserInfo(context: Context) {
+        flow {
+            val result = reviewApiService.getUserInfo()
+            emit(result)
+        }.asResult()
+            .collect { result ->
+                result.data?.let {
+                    saveData(context, Keys.USER_INFO, Gson().toJson(it))
+                }
+            }
     }
 
 }

@@ -46,6 +46,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -623,7 +624,7 @@ private fun ItemFoldedView(
  */
 @Composable
 private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
-
+    val context = LocalContext.current
     val filterState by viewModel.manuscriptReviewFilterState.collectAsState()
     // 控制日期选择器弹窗的显示状态
     var showDatePicker by remember { mutableStateOf(false) }
@@ -643,6 +644,7 @@ private fun ManuscriptTotalRankingHeader(viewModel: ReviewDataViewModel) {
             selectSearchChoice.value = filterState.searchField
         }
         viewModel.handleReviewDataIntent(ReviewDataIntent.RefreshManuscriptReviewData)
+        viewModel.getUserInfo(context)
     }
 
     LaunchedEffect(selectFilterChoice.value) {

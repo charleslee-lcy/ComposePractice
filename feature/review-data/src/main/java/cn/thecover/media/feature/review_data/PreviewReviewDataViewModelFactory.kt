@@ -13,6 +13,7 @@ import cn.thecover.media.core.data.ManuscriptTopRequest
 import cn.thecover.media.core.data.ModifyManuscriptScoreRequest
 import cn.thecover.media.core.data.NetworkResponse
 import cn.thecover.media.core.data.PaginatedResult
+import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
 
@@ -62,5 +63,9 @@ class PreviewReviewDataApiService : ReviewDataApiService {
 
     override suspend fun getUnreadMessageCount(): NetworkResponse<Int> {
         return NetworkResponse(0)
+    }
+
+    override suspend fun getUserInfo(): NetworkResponse<UserInfo> {
+        return NetworkResponse(UserInfo())
     }
 }

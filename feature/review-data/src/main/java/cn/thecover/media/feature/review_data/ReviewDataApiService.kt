@@ -11,6 +11,7 @@ import cn.thecover.media.core.data.ManuscriptTopRequest
 import cn.thecover.media.core.data.ModifyManuscriptScoreRequest
 import cn.thecover.media.core.data.NetworkResponse
 import cn.thecover.media.core.data.PaginatedResult
+import cn.thecover.media.core.data.UserInfo
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTaskDataEntity
 import cn.thecover.media.feature.review_data.data.entity.DepartmentTotalDataEntity
 import retrofit2.http.Body
@@ -55,4 +56,7 @@ interface ReviewDataApiService {
     //获取未读消息数
     @GET(value = "api/mgr/unReadNotificationCount")
     suspend fun getUnreadMessageCount(): NetworkResponse<Int>
+
+    @POST(value = "api/user/getUserInfo")
+    suspend fun getUserInfo(): NetworkResponse<UserInfo>
 }
