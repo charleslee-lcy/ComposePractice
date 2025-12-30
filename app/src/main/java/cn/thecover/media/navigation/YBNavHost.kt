@@ -33,7 +33,6 @@ import androidx.navigation.compose.NavHost
 import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.feature.basis.home.navigation.SplashRoute
 import cn.thecover.media.feature.basis.home.navigation.homeIndex
-import cn.thecover.media.feature.basis.home.navigation.navigateToMessage
 import cn.thecover.media.feature.basis.mine.navigation.mineScreen
 import cn.thecover.media.ui.YBAppState
 

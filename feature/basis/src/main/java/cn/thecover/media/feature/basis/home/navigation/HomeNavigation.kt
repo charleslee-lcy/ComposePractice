@@ -21,6 +21,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
+import cn.thecover.media.feature.basis.MainScreen
 import cn.thecover.media.feature.basis.SplashRoute
 import cn.thecover.media.feature.basis.home.HomeRoute
 import cn.thecover.media.feature.basis.login.LoginRoute
@@ -56,7 +57,8 @@ fun NavGraphBuilder.homeIndex(navController: NavController) {
     }
 
     composable<LoginRoute> {
-        LoginRoute(navController = navController)
+//        LoginRoute(navController = navController)
+        MainScreen()
     }
 
     composable<HomeRoute>(
