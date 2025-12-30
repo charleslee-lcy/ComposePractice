@@ -42,11 +42,11 @@ fun configureFlavors(
                     when (niaFlavor) {
                         NiaFlavor.qa -> {
                             buildConfigField("int", "ENV_CONFIG", "1")
-                            resValue("string", "app_name", "云报绩效(qa)")
+                            resValue("string", "app_name", "ComposePractice(qa)")
                         }
                         NiaFlavor.online -> {
                             buildConfigField("int", "ENV_CONFIG", "2")
-                            resValue("string", "app_name", "云报绩效")
+                            resValue("string", "app_name", "ComposePractice")
                         }
                     }
                 }
