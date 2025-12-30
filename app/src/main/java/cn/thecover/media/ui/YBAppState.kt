@@ -31,8 +31,6 @@ import cn.thecover.media.core.common.network.NetworkMonitor
 import cn.thecover.media.core.widget.util.TimeZoneMonitor
 import cn.thecover.media.feature.basis.home.navigation.navigateToHome
 import cn.thecover.media.feature.basis.mine.navigation.navigateToMine
-import cn.thecover.media.feature.review_data.navigation.navigateToReviewData
-import cn.thecover.media.feature.review_manager.navigation.navigateToReviewManage
 import cn.thecover.media.navigation.TopLevelDestination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -144,8 +142,6 @@ class YBAppState(
 
         when (topLevelDestination) {
             TopLevelDestination.HOME -> navController.navigateToHome(topLevelNavOptions)
-            TopLevelDestination.REVIEW_MANAGE -> navController.navigateToReviewManage(topLevelNavOptions)
-            TopLevelDestination.REVIEW_DATA -> navController.navigateToReviewData(topLevelNavOptions)
             TopLevelDestination.MINE -> navController.navigateToMine(topLevelNavOptions)
         }
     }
