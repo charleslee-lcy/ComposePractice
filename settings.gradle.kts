@@ -26,7 +26,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "YBReview"
+rootProject.name = "ComposePractice"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":app")
@@ -35,5 +35,3 @@ include(":core:data")
 include(":core:network")
 include(":core:widget")
 include(":feature:basis")
-include(":feature:review-data")
-include(":feature:review-manager")

@@ -67,8 +67,6 @@ dependencies {
     implementation(projects.core.widget)
 
     implementation(projects.feature.basis)
-    implementation(projects.feature.reviewManager)
-    implementation(projects.feature.reviewData)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
