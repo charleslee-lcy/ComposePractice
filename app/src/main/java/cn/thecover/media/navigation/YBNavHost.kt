@@ -35,8 +35,6 @@ import cn.thecover.media.feature.basis.home.navigation.SplashRoute
 import cn.thecover.media.feature.basis.home.navigation.homeIndex
 import cn.thecover.media.feature.basis.home.navigation.navigateToMessage
 import cn.thecover.media.feature.basis.mine.navigation.mineScreen
-import cn.thecover.media.feature.review_data.navigation.reviewDataScreen
-import cn.thecover.media.feature.review_manager.navigation.reviewManageScreen
 import cn.thecover.media.ui.YBAppState
 
 /**
@@ -94,12 +92,6 @@ fun YBNavHost(
         }
     ) {
         homeIndex(navController)
-        reviewManageScreen(navController, routeToMsgScreen = {
-            navController.navigateToMessage()
-        })
-        reviewDataScreen(routeToMsgScreen = {
-            navController.navigateToMessage()
-        })
         mineScreen(navController)
     }
 
