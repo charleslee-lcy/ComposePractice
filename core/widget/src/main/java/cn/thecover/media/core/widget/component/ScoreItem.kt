@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.dp
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
-import cn.thecover.media.core.widget.theme.YBShapes
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonShapes
+import cn.thecover.media.core.widget.theme.CommonTheme
 
 /**
  *  Created by Wing at 16:13 on 2025/8/6
@@ -103,11 +103,11 @@ fun DataScoreItem(
             .border(
                 width = 1.dp,
                 color = borderColor,
-                shape = YBShapes.small
+                shape = CommonShapes.small
             )
             .background(
                 color = backgroundColor,
-                shape = YBShapes.small
+                shape = CommonShapes.small
             )
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -206,7 +206,7 @@ fun PrimaryItemScoreRow(
 @Composable
 @Preview
 fun DepartmentReviewDataItemPreview() {
-    YBTheme {
+    CommonTheme {
         Column {
             DataScoreItem(item = "一级媒体转载数", value = "2222")
 

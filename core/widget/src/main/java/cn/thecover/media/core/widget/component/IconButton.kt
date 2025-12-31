@@ -24,8 +24,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import cn.thecover.media.core.widget.icon.YBIcons
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.icon.CommonIcons
+import cn.thecover.media.core.widget.theme.CommonTheme
 
 /**
  * Now in Android toggle button with icon and checked icon content slots. Wraps Material 3
@@ -40,7 +40,7 @@ import cn.thecover.media.core.widget.theme.YBTheme
  * @param checkedIcon The icon content to show when checked.
  */
 @Composable
-fun YBIconToggleButton(
+fun CommonIconToggleButton(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -60,7 +60,7 @@ fun YBIconToggleButton(
             checkedContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             disabledContainerColor = if (checked) {
                 MaterialTheme.colorScheme.onBackground.copy(
-                    alpha = YBIconButtonDefaults.DISABLED_ICON_BUTTON_CONTAINER_ALPHA,
+                    alpha = CommonIconButtonDefaults.DISABLED_ICON_BUTTON_CONTAINER_ALPHA,
                 )
             } else {
                 Color.Transparent
@@ -74,19 +74,19 @@ fun YBIconToggleButton(
 @ThemePreviews
 @Composable
 fun IconButtonPreview() {
-    YBTheme {
-        YBIconToggleButton(
+    CommonTheme {
+        CommonIconToggleButton(
             checked = true,
             onCheckedChange = { },
             icon = {
                 Icon(
-                    imageVector = YBIcons.BookmarkBorder,
+                    imageVector = CommonIcons.BookmarkBorder,
                     contentDescription = null,
                 )
             },
             checkedIcon = {
                 Icon(
-                    imageVector = YBIcons.Bookmark,
+                    imageVector = CommonIcons.Bookmark,
                     contentDescription = null,
                 )
             },
@@ -97,19 +97,19 @@ fun IconButtonPreview() {
 @ThemePreviews
 @Composable
 fun IconButtonPreviewUnchecked() {
-    YBTheme {
-        YBIconToggleButton(
+    CommonTheme {
+        CommonIconToggleButton(
             checked = false,
             onCheckedChange = { },
             icon = {
                 Icon(
-                    imageVector = YBIcons.BookmarkBorder,
+                    imageVector = CommonIcons.BookmarkBorder,
                     contentDescription = null,
                 )
             },
             checkedIcon = {
                 Icon(
-                    imageVector = YBIcons.Bookmark,
+                    imageVector = CommonIcons.Bookmark,
                     contentDescription = null,
                 )
             },
@@ -120,7 +120,7 @@ fun IconButtonPreviewUnchecked() {
 /**
  * Now in Android icon button default values.
  */
-object YBIconButtonDefaults {
+object CommonIconButtonDefaults {
     // TODO: File bug
     // IconToggleButton disabled container alpha not exposed by IconButtonDefaults
     const val DISABLED_ICON_BUTTON_CONTAINER_ALPHA = 0.12f

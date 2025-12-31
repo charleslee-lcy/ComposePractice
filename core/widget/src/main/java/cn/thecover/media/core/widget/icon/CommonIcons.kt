@@ -40,7 +40,7 @@ import cn.thecover.media.core.widget.R
 /**
  * Now in Android icons. Material icons are [ImageVector]s, custom icons are drawable resource IDs.
  */
-object YBIcons {
+object CommonIcons {
     val Add = Icons.Rounded.Add
     val ArrowBack = Icons.AutoMirrored.Rounded.ArrowBack
     val Bookmark = Icons.Rounded.Bookmark

@@ -16,8 +16,6 @@
 
 package cn.thecover.media.core.widget.component
 
-import android.R.attr.onClick
-import android.R.attr.text
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -34,21 +32,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import cn.thecover.media.core.widget.R
-import cn.thecover.media.core.widget.YBShape
+import cn.thecover.media.core.widget.CommonShape
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.MainColor
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.core.widget.ui.ComponentPreview
 import kotlin.text.uppercase
 
 @Composable
-fun YBTopicTag(
+fun CommonTopicTag(
     modifier: Modifier = Modifier,
     followed: Boolean,
     onClick: () -> Unit,
@@ -60,7 +57,7 @@ fun YBTopicTag(
             MaterialTheme.colorScheme.primaryContainer
         } else {
             MaterialTheme.colorScheme.surfaceVariant.copy(
-                alpha = YBTagDefaults.UNFOLLOWED_TOPIC_TAG_CONTAINER_ALPHA,
+                alpha = CommonTagDefaults.UNFOLLOWED_TOPIC_TAG_CONTAINER_ALPHA,
             )
         }
         TextButton(
@@ -70,7 +67,7 @@ fun YBTopicTag(
                 containerColor = containerColor,
                 contentColor = contentColorFor(backgroundColor = containerColor),
                 disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(
-                    alpha = YBTagDefaults.DISABLED_TOPIC_TAG_CONTAINER_ALPHA,
+                    alpha = CommonTagDefaults.DISABLED_TOPIC_TAG_CONTAINER_ALPHA,
                 ),
             ),
         ) {
@@ -82,7 +79,7 @@ fun YBTopicTag(
 }
 
 @Composable
-fun YBLabel(
+fun CommonLabel(
     modifier: Modifier = Modifier,
     space: Dp = 0.dp,
     label: @Composable RowScope.() -> Unit,
@@ -112,8 +109,8 @@ fun YBLabel(
 @Preview
 @Composable
 fun TagPreview() {
-    YBTheme {
-        YBTopicTag(followed = true, onClick = {}) {
+    CommonTheme {
+        CommonTopicTag(followed = true, onClick = {}) {
             Text("Topic".uppercase())
         }
     }
@@ -121,12 +118,12 @@ fun TagPreview() {
 
 @ComponentPreview
 @Composable
-private fun YBLabelPreview() {
-    YBTheme {
-        YBLabel(label = { Text("Label") }, leadingIcon = {
-            YBShape(modifier = Modifier.size(6.dp, 16.dp), colors = listOf(MainColor, Color.Transparent))
+private fun CommonLabelPreview() {
+    CommonTheme {
+        CommonLabel(label = { Text("Label") }, leadingIcon = {
+            CommonShape(modifier = Modifier.size(6.dp, 16.dp), colors = listOf(MainColor, Color.Transparent))
         }, trailingIcon = {
-            YBImage(placeholder = painterResource(R.drawable.icon_watch))
+            CommonImage(placeholder = painterResource(R.drawable.icon_watch))
         }, onClick = {
 
         })
@@ -136,7 +133,7 @@ private fun YBLabelPreview() {
 /**
  * Now in Android tag default values.
  */
-object YBTagDefaults {
+object CommonTagDefaults {
     const val UNFOLLOWED_TOPIC_TAG_CONTAINER_ALPHA = 0.5f
 
     // TODO: File bug

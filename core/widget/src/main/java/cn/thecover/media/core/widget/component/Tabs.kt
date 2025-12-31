@@ -16,14 +16,12 @@
 
 package cn.thecover.media.core.widget.component
 
-import android.R.id.tabs
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.ScrollableTabRow
@@ -41,7 +39,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 
 /**
  * Now in Android tab. Wraps Material 3 [Tab] and shifts text label down.
@@ -54,7 +52,7 @@ import cn.thecover.media.core.widget.theme.YBTheme
  * @param text The text label content.
  */
 @Composable
-fun YBTab(
+fun CommonTab(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -76,7 +74,7 @@ fun YBTab(
             ProvideTextStyle(
                 value = style,
                 content = {
-                    Box(modifier = Modifier.padding(top = YBTabDefaults.TabTopPadding)) {
+                    Box(modifier = Modifier.padding(top = CommonTabDefaults.TabTopPadding)) {
                         text()
                     }
                 },
@@ -90,11 +88,11 @@ fun YBTab(
  *
  * @param selectedTabIndex The index of the currently selected tab.
  * @param modifier Modifier to be applied to the tab row.
- * @param tabs The tabs inside this tab row. Typically this will be multiple [YBTab]s. Each element
+ * @param tabs The tabs inside this tab row. Typically this will be multiple [CommonTab]s. Each element
  * inside this lambda will be measured and placed evenly across the row, each taking up equal space.
  */
 @Composable
-fun YBTabRow(
+fun CommonTabRow(
     selectedTabIndex: Int,
     modifier: Modifier = Modifier,
     indicatorWidth: Dp = 72.dp,
@@ -121,7 +119,7 @@ fun YBTabRow(
 }
 
 @Composable
-fun YBScrollTabRow(
+fun CommonScrollTabRow(
     selectedTabIndex: Int,
     modifier: Modifier = Modifier,
     tabs: @Composable () -> Unit,
@@ -148,11 +146,11 @@ fun YBScrollTabRow(
 @Preview(showBackground = true)
 @Composable
 fun TabsPreview() {
-    YBTheme {
+    CommonTheme {
         val titles = listOf("Topics", "People")
-        YBTabRow(selectedTabIndex = 0) {
+        CommonTabRow(selectedTabIndex = 0) {
             titles.forEachIndexed { index, title ->
-                YBTab(
+                CommonTab(
                     selected = index == 0,
                     onClick = { },
                     text = { Text(text = title) },
@@ -165,18 +163,18 @@ fun TabsPreview() {
 @Preview(showBackground = true)
 @Composable
 fun ScrolledTabsPreview() {
-    YBTheme {
+    CommonTheme {
         val titles = listOf("Topics", "People")
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            YBScrollTabRow(
+            CommonScrollTabRow(
                 selectedTabIndex = 0,
                 modifier = Modifier.wrapContentWidth()
             ) {
                 titles.forEachIndexed { index, title ->
-                    YBTab(
+                    CommonTab(
                         selected = index == 0,
                         onClick = { },
                         text = { Text(text = title) },
@@ -187,6 +185,6 @@ fun ScrolledTabsPreview() {
     }
 }
 
-object YBTabDefaults {
+object CommonTabDefaults {
     val TabTopPadding = 0.dp
 }

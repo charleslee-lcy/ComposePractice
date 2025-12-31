@@ -28,7 +28,7 @@ import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.MsgColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.core.widget.ui.ComponentPreview
 import java.math.BigDecimal
 
@@ -1037,7 +1037,7 @@ internal fun LeaderUserContent(homeInfo: HomeInfo) {
 @ComponentPreview
 @Composable
 private fun ReporterUserContentPreview() {
-    YBTheme {
+    CommonTheme {
         ReporterUserContent(HomeInfo())
     }
 }
@@ -1487,7 +1487,7 @@ internal fun ReviewerUserContent(homeInfo: HomeInfo) {
 @ComponentPreview
 @Composable
 private fun ReviewerUserContentPreview() {
-    YBTheme {
+    CommonTheme {
         ReviewerUserContent(HomeInfo())
     }
 }
@@ -1495,7 +1495,7 @@ private fun ReviewerUserContentPreview() {
 @ComponentPreview
 @Composable
 private fun LeaderUserContentPreview() {
-    YBTheme {
+    CommonTheme {
         LeaderUserContent(HomeInfo())
     }
 }

@@ -41,10 +41,10 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.WindowCompat
-import cn.thecover.media.core.widget.component.YBButton
-import cn.thecover.media.core.widget.icon.YBIcons
+import cn.thecover.media.core.widget.component.CommonButton
+import cn.thecover.media.core.widget.icon.CommonIcons
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
-import cn.thecover.media.core.widget.theme.YBShapes
+import cn.thecover.media.core.widget.theme.CommonShapes
 import cn.thecover.media.core.widget.ui.PhonePreview
 
 
@@ -67,7 +67,7 @@ import cn.thecover.media.core.widget.ui.PhonePreview
  *
  */
 @Composable
-fun YBDialog(
+fun CommonDialog(
     dialogState: MutableState<Boolean>,
     onDismissRequest: () -> Unit,
     title: String? = null,
@@ -93,7 +93,7 @@ fun YBDialog(
                     colors = CardDefaults.cardColors(
                         containerColor = Color.White,
                     ),
-                    shape = YBShapes.medium,
+                    shape = CommonShapes.medium,
                     modifier = Modifier
                         .width(screenWidth * widthRate)
                         .padding()
@@ -109,7 +109,7 @@ fun YBDialog(
                                 Text(title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                             }
                             Spacer(modifier = Modifier.weight(1f))
-                            Icon(imageVector = YBIcons.Close, "关闭弹窗", modifier = Modifier
+                            Icon(imageVector = CommonIcons.Close, "关闭弹窗", modifier = Modifier
                                 .size(24.dp)
                                 .clickable {
                                     dialogState.value = false
@@ -123,7 +123,7 @@ fun YBDialog(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             if(cancelText!=null){
-                                YBButton(
+                                CommonButton(
                                     onClick = {
                                         onCancel?.invoke()
                                         dialogState.value = false
@@ -141,7 +141,7 @@ fun YBDialog(
                                 Spacer(modifier = Modifier.size(16.dp))
                             }
                             if(confirmText!=null){
-                                YBButton(
+                                CommonButton(
                                     onClick = {
                                         onConfirm?.invoke()
                                         if (!handleConfirmDismiss) {
@@ -174,7 +174,7 @@ fun YBDialog(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun YBFullDialog(
+fun CommonFullDialog(
     dialogState: MutableState<Boolean>,
     onDismissRequest: () -> Unit,
     backgroundColor: Color = Color.White,
@@ -217,7 +217,7 @@ fun YBFullDialog(
 }
 
 @Composable
-fun YBAlertDialog(
+fun CommonAlertDialog(
     dialogState: MutableState<Boolean>,
     onDismissRequest: () -> Unit,
     title: String? = null,
@@ -229,7 +229,7 @@ fun YBAlertDialog(
     isConfirmDestructive: Boolean = false,
     enableDismiss: Boolean = true,
 ) {
-    YBDialog(dialogState, onDismissRequest, title, confirmButtonText, dismissButtonText, onConfirm, onDismiss){
+    CommonDialog(dialogState, onDismissRequest, title, confirmButtonText, dismissButtonText, onConfirm, onDismiss){
         Column {
             content()
         }
@@ -238,8 +238,8 @@ fun YBAlertDialog(
 
 @PhonePreview
 @Composable
-fun YBAlertDialogPreview() {
-    YBDialog(
+fun CommonAlertDialogPreview() {
+    CommonDialog(
         dialogState = remember { mutableStateOf(true) },
         onDismissRequest = {},
         title = "提示",

@@ -27,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusProperties
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -41,16 +40,15 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cn.thecover.media.core.widget.icon.YBIcons
+import cn.thecover.media.core.widget.icon.CommonIcons
 import cn.thecover.media.core.widget.theme.EditHintTextColor
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 
 
@@ -61,7 +59,7 @@ import cn.thecover.media.core.widget.ui.PhonePreview
  */
 
 @Composable
-fun YBInput(
+fun CommonInput(
     modifier: Modifier = Modifier,
     text: String = "",
     textStyle: TextStyle = TextStyle(
@@ -69,8 +67,9 @@ fun YBInput(
     ),
     showKeyboard: Boolean = false,
     hint: String = "",
-    hintTextSize: TextUnit = textStyle.fontSize,
-    hintTextColor: Color = EditHintTextColor,
+    hintTextStyle: TextStyle = TextStyle(
+        fontSize = textStyle.fontSize, color = EditHintTextColor
+    ),
     singleLine: Boolean = true,
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
@@ -169,9 +168,7 @@ fun YBInput(
                     ) {
                         if (textState.isEmpty()) {
                             Text(
-                                text = hint, style = textStyle.copy(
-                                    color = hintTextColor, fontSize = hintTextSize
-                                )
+                                text = hint, style = hintTextStyle
                             )
                         }
                         innerTextField()
@@ -193,7 +190,7 @@ fun YBInput(
         AnimatedVisibility(showVisibleIcon) {
             IconButton(onClick = { textVisible = !textVisible }) {
                 Icon(
-                    painterResource(if (textVisible) YBIcons.Custom.PasswordIsShow else YBIcons.Custom.PasswordIsHide),
+                    painterResource(if (textVisible) CommonIcons.Custom.PasswordIsShow else CommonIcons.Custom.PasswordIsHide),
                     tint = TertiaryTextColor,
                     contentDescription = if (textVisible) "隐藏内容" else "查看内容"
                 )
@@ -206,7 +203,7 @@ fun YBInput(
  * 普通单行文本输入框
  */
 @Composable
-fun CommonInput(
+fun SingleLineInput(
     modifier: Modifier = Modifier,
     text: String = "",
     textStyle: TextStyle = TextStyle(
@@ -214,8 +211,9 @@ fun CommonInput(
     ),
     showKeyboard: Boolean = false,
     hint: String = "",
-    hintTextSize: TextUnit = textStyle.fontSize,
-    hintTextColor: Color = EditHintTextColor,
+    hintTextStyle: TextStyle = TextStyle(
+        fontSize = textStyle.fontSize, color = EditHintTextColor
+    ),
     maxLength: Int = Int.MAX_VALUE,
     isPassword: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
@@ -327,9 +325,8 @@ fun CommonInput(
                     if (textState.isEmpty()) {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = hint, style = textStyle.copy(
-                                color = hintTextColor, fontSize = hintTextSize
-                            )
+                            text = hint,
+                            style = hintTextStyle
                         )
                     }
                     innerTextField()
@@ -341,15 +338,15 @@ fun CommonInput(
 
 @PhonePreview
 @Composable
-fun YBInputPreview() {
+fun CommonInputPreview() {
     var assignScore by remember { mutableStateOf("100") }
-    YBTheme {
+    CommonTheme {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
         ) {
-            YBInput(
+            CommonInput(
                 modifier = Modifier
                     .padding(14.dp)
                     .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(12.dp))
@@ -373,7 +370,7 @@ fun YBInputPreview() {
 
                 })
 
-            CommonInput(
+            SingleLineInput(
                 modifier = Modifier
                     .padding(14.dp)
                     .border(0.5.dp, Color(0xFFEAEAEB), RoundedCornerShape(12.dp))
@@ -389,7 +386,10 @@ fun YBInputPreview() {
                     textAlign = TextAlign.Start
                 ),
                 hint = "暂未输入",
-                hintTextSize = 14.sp,
+                hintTextStyle = TextStyle(
+                    fontSize = 14.sp,
+                    color = EditHintTextColor
+                ),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number
                 ),

@@ -38,7 +38,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 
 
@@ -135,7 +135,7 @@ private fun MediaItem(
             onClick.invoke()
         }) {
         val (image, icon, close) = createRefs()
-        YBImage(
+        CommonImage(
             modifier = Modifier
                 .constrainAs(image) {
                     top.linkTo(parent.top)
@@ -167,7 +167,7 @@ private fun MediaItem(
         }
 
         if (showDelete && !isAdd) {
-            YBImage(
+            CommonImage(
                 modifier = Modifier
                     .constrainAs(close) {
                         top.linkTo(image.top)
@@ -187,7 +187,7 @@ private fun MediaItem(
 @PhonePreview
 @Composable
 private fun UploadMediaPreview() {
-    YBTheme {
+    CommonTheme {
         val items = remember { mutableStateOf(listOf<Uri>()) }
         UploadMedia(items = items.value)
     }

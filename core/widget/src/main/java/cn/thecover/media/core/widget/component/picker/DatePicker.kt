@@ -38,7 +38,7 @@ enum class DateType {
  * @param onChange 选择回调
  */
 @Composable
-fun YBDatePicker(
+fun CommonDatePicker(
     visible: Boolean,
     title: String = "选择日期",
     value: LocalDate? = null,
@@ -56,7 +56,7 @@ fun YBDatePicker(
     val currentRanges by rememberCurrentRanges(rangesSource)
     var currentValues by rememberCurrentValues(rangesSource, value, start, end)
 
-    YBPicker(
+    CommonPicker(
         visible,
         currentRanges,
         values = currentValues,
@@ -225,7 +225,7 @@ fun rememberDatePickerState(): DatePickerState {
     val state = remember { DatePickerStateImpl() }
 
     state.props?.let { props ->
-        YBDatePicker(
+        CommonDatePicker(
             visible = state.visible,
             value = props.value,
             type = props.type,

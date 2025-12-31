@@ -36,9 +36,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import cn.thecover.media.core.widget.icon.YBIcons
+import cn.thecover.media.core.widget.icon.CommonIcons
 import cn.thecover.media.core.widget.theme.MainColor
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 
 /**
  * Now in Android filled button with generic content slot. Wraps Material 3 [Button].
@@ -52,7 +52,7 @@ import cn.thecover.media.core.widget.theme.YBTheme
  * @param content The button content.
  */
 @Composable
-fun YBButton(
+fun CommonButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -91,7 +91,7 @@ fun YBButton(
  * @param leadingIcon The button leading icon content. Pass `null` here for no leading icon.
  */
 @Composable
-fun YBButton(
+fun CommonButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -103,7 +103,7 @@ fun YBButton(
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
-    YBButton(
+    CommonButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
@@ -117,7 +117,7 @@ fun YBButton(
             contentPadding
         },
     ) {
-        YBButtonContent(
+        CommonButtonContent(
             text = text,
             leadingIcon = leadingIcon,
         )
@@ -136,7 +136,7 @@ fun YBButton(
  * @param content The button content.
  */
 @Composable
-fun YBOutlinedButton(
+fun CommonOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -152,12 +152,12 @@ fun YBOutlinedButton(
             contentColor = MaterialTheme.colorScheme.onBackground,
         ),
         border = BorderStroke(
-            width = YBButtonDefaults.OutlinedButtonBorderWidth,
+            width = CommonButtonDefaults.OutlinedButtonBorderWidth,
             color = if (enabled) {
                 MaterialTheme.colorScheme.outline
             } else {
                 MaterialTheme.colorScheme.onSurface.copy(
-                    alpha = YBButtonDefaults.DISABLED_OUTLINED_BUTTON_BORDER_ALPHA,
+                    alpha = CommonButtonDefaults.DISABLED_OUTLINED_BUTTON_BORDER_ALPHA,
                 )
             },
         ),
@@ -178,7 +178,7 @@ fun YBOutlinedButton(
  * @param leadingIcon The button leading icon content. Pass `null` here for no leading icon.
  */
 @Composable
-fun YBOutlinedButton(
+fun CommonOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -186,7 +186,7 @@ fun YBOutlinedButton(
     text: @Composable () -> Unit,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
-    YBOutlinedButton(
+    CommonOutlinedButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
@@ -197,7 +197,7 @@ fun YBOutlinedButton(
             ButtonDefaults.ContentPadding
         },
     ) {
-        YBButtonContent(
+        CommonButtonContent(
             text = text,
             leadingIcon = leadingIcon,
         )
@@ -214,7 +214,7 @@ fun YBOutlinedButton(
  * @param content The button content.
  */
 @Composable
-fun YBTextButton(
+fun CommonTextButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -242,19 +242,19 @@ fun YBTextButton(
  * @param leadingIcon The button leading icon content. Pass `null` here for no leading icon.
  */
 @Composable
-fun YBTextButton(
+fun CommonTextButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     text: @Composable () -> Unit,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
-    YBTextButton(
+    CommonTextButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
     ) {
-        YBButtonContent(
+        CommonButtonContent(
             text = text,
             leadingIcon = leadingIcon,
         )
@@ -268,7 +268,7 @@ fun YBTextButton(
  * @param leadingIcon The button leading icon content. Default is `null` for no leading icon.Ï
  */
 @Composable
-private fun YBButtonContent(
+private fun CommonButtonContent(
     text: @Composable () -> Unit,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
@@ -293,33 +293,33 @@ private fun YBButtonContent(
 
 @Preview
 @Composable
-fun YBButtonPreview() {
-    YBTheme {
-        YBBackground(modifier = Modifier.size(150.dp, 50.dp)) {
-            YBButton(onClick = {}, text = { Text("预算剩余")})
+fun CommonButtonPreview() {
+    CommonTheme {
+        CommonBackground(modifier = Modifier.size(150.dp, 50.dp)) {
+            CommonButton(onClick = {}, text = { Text("预算剩余")})
         }
     }
 }
 
 @Preview
 @Composable
-fun YBOutlinedButtonPreview() {
-    YBTheme {
-        YBBackground(modifier = Modifier.size(150.dp, 50.dp)) {
-            YBOutlinedButton(onClick = {}, enabled = false, text = { Text("Test button") })
+fun CommonOutlinedButtonPreview() {
+    CommonTheme {
+        CommonBackground(modifier = Modifier.size(150.dp, 50.dp)) {
+            CommonOutlinedButton(onClick = {}, enabled = false, text = { Text("Test button") })
         }
     }
 }
 
 @Preview
 @Composable
-fun YBButtonLeadingIconPreview() {
-    YBTheme {
-        YBBackground(modifier = Modifier.size(150.dp, 50.dp)) {
-            YBButton(
+fun CommonButtonLeadingIconPreview() {
+    CommonTheme {
+        CommonBackground(modifier = Modifier.size(150.dp, 50.dp)) {
+            CommonButton(
                 onClick = {},
                 text = { Text("Test button") },
-                leadingIcon = { Icon(imageVector = YBIcons.Add, contentDescription = null) },
+                leadingIcon = { Icon(imageVector = CommonIcons.Add, contentDescription = null) },
             )
         }
     }
@@ -328,7 +328,7 @@ fun YBButtonLeadingIconPreview() {
 /**
  * Now in Android button default values.
  */
-object YBButtonDefaults {
+object CommonButtonDefaults {
     // TODO: File bug
     // OutlinedButton border color doesn't respect disabled state by default
     const val DISABLED_OUTLINED_BUTTON_BORDER_ALPHA = 0.12f

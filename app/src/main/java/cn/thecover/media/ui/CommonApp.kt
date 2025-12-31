@@ -70,13 +70,12 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.navOptions
 import cn.thecover.media.core.data.LogoutEvent
 import cn.thecover.media.core.data.ToastEvent
-import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
-import cn.thecover.media.core.widget.component.YBBackground
-import cn.thecover.media.core.widget.component.YBGradientBackground
-import cn.thecover.media.core.widget.component.YBImage
-import cn.thecover.media.core.widget.component.YBNavigationBar
-import cn.thecover.media.core.widget.component.YBNavigationBarItem
-import cn.thecover.media.core.widget.component.YBToast
+import cn.thecover.media.core.widget.component.CommonBackground
+import cn.thecover.media.core.widget.component.CommonGradientBackground
+import cn.thecover.media.core.widget.component.CommonImage
+import cn.thecover.media.core.widget.component.CommonNavigationBar
+import cn.thecover.media.core.widget.component.CommonNavigationBarItem
+import cn.thecover.media.core.widget.component.CommonToast
 import cn.thecover.media.core.widget.datastore.Keys
 import cn.thecover.media.core.widget.datastore.clearData
 import cn.thecover.media.core.widget.event.FlowBus
@@ -85,7 +84,7 @@ import cn.thecover.media.core.widget.theme.GradientColors
 import cn.thecover.media.core.widget.theme.MsgColor
 import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
-import cn.thecover.media.navigation.YBNavHost
+import cn.thecover.media.navigation.MainNavHost
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -93,14 +92,14 @@ import kotlinx.coroutines.withContext
 import kotlin.reflect.KClass
 
 @Composable
-fun YBApp(
-    appState: YBAppState,
+fun CommonApp(
+    appState: CommonAppState,
     modifier: Modifier = Modifier,
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
 
-    YBBackground(modifier = modifier) {
-        YBGradientBackground(
+    CommonBackground(modifier = modifier) {
+        CommonGradientBackground(
             gradientColors = GradientColors(),
         ) {
             val isOffline by appState.isOffline.collectAsStateWithLifecycle()
@@ -116,14 +115,14 @@ fun YBApp(
 //                }
 //            }
 
-            YBApp(
+            CommonApp(
                 appState = appState,
                 snackBarHostState = snackBarHostState
             )
         }
     }
 
-    YBToast(snackBarHostState = snackBarHostState)
+    CommonToast(snackBarHostState = snackBarHostState)
 }
 
 @Composable
@@ -131,8 +130,8 @@ fun YBApp(
     ExperimentalMaterial3Api::class,
     ExperimentalComposeUiApi::class,
 )
-internal fun YBApp(
-    appState: YBAppState,
+internal fun CommonApp(
+    appState: CommonAppState,
     snackBarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
@@ -157,7 +156,7 @@ internal fun YBApp(
         )
         if (appState.isTopLevelDestination == true || isReviewDataPage) {
             HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 0.25.dp, color = OutlineColor)
-            YBNavigationBar(
+            CommonNavigationBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .windowInsetsPadding(WindowInsets.navigationBars)
@@ -176,20 +175,20 @@ internal fun YBApp(
                         Modifier
                     }
                     val selected = currentDestination.isRouteInHierarchy(destination.route)
-                    YBNavigationBarItem(
+                    CommonNavigationBarItem(
                         selected = selected,
                         onClick = { appState.navigateToTopLevelDestination(destination) },
                         icon = {
                             if (destination.selectedIcon is String) {
                                 // 网络图片
-                                YBImage(
+                                CommonImage(
                                     imageUrl = destination.selectedIcon,
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
                             if (destination.selectedIcon is Int) {
                                 // 静态资源
-                                YBImage(
+                                CommonImage(
                                     placeholder = painterResource(destination.selectedIcon),
                                     modifier = Modifier.size(24.dp)
                                 )
@@ -198,14 +197,14 @@ internal fun YBApp(
                         selectedIcon = {
                             if (destination.unselectedIcon is String) {
                                 // 网络图片
-                                YBImage(
+                                CommonImage(
                                     imageUrl = destination.unselectedIcon,
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
                             if (destination.unselectedIcon is Int) {
                                 // 静态资源
-                                YBImage(
+                                CommonImage(
                                     placeholder = painterResource(destination.unselectedIcon),
                                     modifier = Modifier.size(24.dp)
                                 )
@@ -227,7 +226,7 @@ internal fun YBApp(
 
 @Composable
 private fun MainContent(
-    appState: YBAppState,
+    appState: CommonAppState,
     snackBarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
@@ -308,7 +307,7 @@ private fun MainContent(
                     WindowInsets(0, 0, 0, 0)
                 ),
             ) {
-                YBNavHost(
+                MainNavHost(
                     appState = appState,
                     onShowSnackBar = { message, action ->
                         snackBarHostState.showSnackbar(

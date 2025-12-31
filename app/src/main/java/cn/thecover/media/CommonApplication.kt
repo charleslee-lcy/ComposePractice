@@ -14,7 +14,7 @@ import javax.inject.Inject
  * 15708478830@163.com
  */
 @HiltAndroidApp
-class YBApplication : Application(), ImageLoaderFactory {
+class CommonApplication : Application(), ImageLoaderFactory {
     @Inject
     lateinit var imageLoader: dagger.Lazy<ImageLoader>
 

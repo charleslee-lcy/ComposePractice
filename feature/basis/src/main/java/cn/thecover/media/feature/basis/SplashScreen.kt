@@ -18,11 +18,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import cn.thecover.media.core.network.previewRetrofit
-import cn.thecover.media.core.widget.component.YBImage
+import cn.thecover.media.core.widget.component.CommonImage
 import cn.thecover.media.core.widget.datastore.Keys
 import cn.thecover.media.core.widget.datastore.rememberDataStoreState
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.feature.basis.home.HomeViewModel
 import cn.thecover.media.feature.basis.home.navigation.navigateToHome
 import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
@@ -40,7 +40,7 @@ fun SplashRoute(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
-    YBTheme {
+    CommonTheme {
         SplashScreen(modifier, navController)
     }
 }
@@ -85,14 +85,14 @@ internal fun SplashScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(300.dp))
-        YBImage(placeholder = painterResource(R.mipmap.img_login_logo))
+        CommonImage(placeholder = painterResource(R.mipmap.img_login_logo))
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun HomeScreenPreview() {
-    YBTheme {
+    CommonTheme {
         SplashScreen(
             navController = NavController(LocalContext.current),
             viewModel = HomeViewModel(

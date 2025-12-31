@@ -49,7 +49,7 @@ import coil.compose.rememberAsyncImagePainter
  * @param placeholder 占位图
  */
 @Composable
-fun YBImage(
+fun CommonImage(
     modifier: Modifier = Modifier,
     imageUrl: String = "",
     placeholder: Painter = ColorPainter(Color.LightGray),

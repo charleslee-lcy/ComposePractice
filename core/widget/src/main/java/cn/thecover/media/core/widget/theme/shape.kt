@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
  *
  */
 
-val YBShapes = Shapes(
+val CommonShapes = Shapes(
     extraSmall = RoundedCornerShape(4.dp),
     small = RoundedCornerShape(8.dp),
     medium = RoundedCornerShape(12.dp),

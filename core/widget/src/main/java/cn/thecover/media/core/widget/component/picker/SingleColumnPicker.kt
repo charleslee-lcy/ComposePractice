@@ -21,7 +21,7 @@ fun SingleColumnPicker(
     onChange: (Int) -> Unit,
     onCancel: () -> Unit
 ) {
-    YBPicker(
+    CommonPicker(
         visible,
         arrayOf(range),
         arrayOf(value),

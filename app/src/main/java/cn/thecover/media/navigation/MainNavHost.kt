@@ -34,7 +34,7 @@ import cn.thecover.media.core.widget.event.showToast
 import cn.thecover.media.feature.basis.home.navigation.SplashRoute
 import cn.thecover.media.feature.basis.home.navigation.homeIndex
 import cn.thecover.media.feature.basis.mine.navigation.mineScreen
-import cn.thecover.media.ui.YBAppState
+import cn.thecover.media.ui.CommonAppState
 
 /**
  * Top-level navigation graph. Navigation is organized as explained at
@@ -44,8 +44,8 @@ import cn.thecover.media.ui.YBAppState
  * within each route is handled using state and Back Handlers.
  */
 @Composable
-fun YBNavHost(
-    appState: YBAppState,
+fun MainNavHost(
+    appState: CommonAppState,
     onShowSnackBar: suspend (String, String?) -> Boolean,
     modifier: Modifier = Modifier,
 ) {

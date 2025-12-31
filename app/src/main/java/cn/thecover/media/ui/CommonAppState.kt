@@ -39,19 +39,19 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.datetime.TimeZone
 
 @Composable
-fun rememberYBAppState(
+fun rememberCommonAppState(
     networkMonitor: NetworkMonitor,
     timeZoneMonitor: TimeZoneMonitor,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     navController: NavHostController = rememberNavController(),
-): YBAppState {
+): CommonAppState {
     return remember(
         navController,
         coroutineScope,
         networkMonitor,
         timeZoneMonitor,
     ) {
-        YBAppState(
+        CommonAppState(
             navController = navController,
             coroutineScope = coroutineScope,
             networkMonitor = networkMonitor,
@@ -61,7 +61,7 @@ fun rememberYBAppState(
 }
 
 @Stable
-class YBAppState(
+class CommonAppState(
     val navController: NavHostController,
     coroutineScope: CoroutineScope,
     networkMonitor: NetworkMonitor,

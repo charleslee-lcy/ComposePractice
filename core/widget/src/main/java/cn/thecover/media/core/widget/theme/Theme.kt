@@ -230,7 +230,7 @@ val DarkAndroidBackgroundTheme = BackgroundTheme(color = Color.Black)
  *        supported. This parameter has no effect if [androidTheme] is `true`.
  */
 @Composable
-fun YBTheme(
+fun CommonTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     androidTheme: Boolean = false,
     disableDynamicTheming: Boolean = true,
@@ -281,7 +281,7 @@ fun YBTheme(
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
-            typography = YBTypography,
+            typography = CommonTypography,
             content = content,
         )
     }

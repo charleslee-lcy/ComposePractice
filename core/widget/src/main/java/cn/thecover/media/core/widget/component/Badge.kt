@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.thecover.media.core.widget.theme.MsgColor
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.core.widget.ui.ComponentPreview
 
 
@@ -49,7 +49,7 @@ import cn.thecover.media.core.widget.ui.ComponentPreview
  * @param holder 显示holder
  */
 @Composable
-fun YBBadge(
+fun CommonBadge(
     content: String? = null,
     size: Dp = 10.dp,
     color: Color = Color.Red,
@@ -112,7 +112,7 @@ fun YBBadge(
 }
 
 @Composable
-fun YBBadge(
+fun CommonBadge(
     modifier: Modifier = Modifier,
     msgCount: Int = 0,
     showNumber: Boolean = false,
@@ -144,9 +144,9 @@ fun YBBadge(
 
 @ComponentPreview
 @Composable
-fun YBBadgeNumberPreview() {
-    YBTheme {
-        YBBadge(msgCount = 5, showNumber = true) {
+fun CommonBadgeNumberPreview() {
+    CommonTheme {
+        CommonBadge(msgCount = 5, showNumber = true) {
             Icon(imageVector = Icons.Filled.Message, contentDescription = null)
         }
     }
@@ -154,9 +154,9 @@ fun YBBadgeNumberPreview() {
 
 @ComponentPreview
 @Composable
-fun YBBadgeDotPreview() {
-    YBTheme {
-        YBBadge(msgCount = 5, showNumber = false) {
+fun CommonBadgeDotPreview() {
+    CommonTheme {
+        CommonBadge(msgCount = 5, showNumber = false) {
             Icon(imageVector = Icons.Filled.Message, contentDescription = null)
         }
     }
@@ -164,9 +164,9 @@ fun YBBadgeDotPreview() {
 
 @ComponentPreview
 @Composable
-fun YBBadgeNoMsgPreview() {
-    YBTheme {
-        YBBadge(msgCount = 0, showNumber = false) {
+fun CommonBadgeNoMsgPreview() {
+    CommonTheme {
+        CommonBadge(msgCount = 0, showNumber = false) {
             Icon(imageVector = Icons.Filled.Message, contentDescription = null)
         }
     }

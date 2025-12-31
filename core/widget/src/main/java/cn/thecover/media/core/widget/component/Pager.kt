@@ -40,7 +40,7 @@ import kotlinx.coroutines.delay
  */
 
 @Composable
-fun YBBanner(
+fun CommonBanner(
     modifier: Modifier = Modifier,
     items: SnapshotStateList<String>,
     autoScroll: Boolean = false,
@@ -98,7 +98,7 @@ fun YBBanner(
 
     Box(contentAlignment = Alignment.BottomCenter, modifier = modifier) {
         HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { pageIndex ->
-            YBImage(
+            CommonImage(
                 imageUrl = items[pageMapper(pageIndex)],
                 modifier = Modifier
                     .fillMaxSize()
@@ -140,7 +140,7 @@ private fun Int.floorMod(other: Int): Int = when (other) {
 
 @ComponentPreview
 @Composable
-fun YBBannerPreview() {
+fun CommonBannerPreview() {
     val listData = remember {
         mutableStateListOf(
             "https://gips3.baidu.com/it/u=119870705,2790914505&fm=3028&app=3028&f=JPEG&fmt=auto?w=1280&h=720",
@@ -151,5 +151,5 @@ fun YBBannerPreview() {
         )
     }
 
-    YBBanner(items = listData, autoScroll = true, autoScrollDelay = 3000L)
+    CommonBanner(items = listData, autoScroll = true, autoScrollDelay = 3000L)
 }

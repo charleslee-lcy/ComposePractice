@@ -19,7 +19,6 @@
 package cn.thecover.media.core.widget.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,14 +40,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cn.thecover.media.core.widget.icon.YBIcons
+import cn.thecover.media.core.widget.icon.CommonIcons
 import cn.thecover.media.core.widget.theme.MainTextColor
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun YBTopAppBar(
+fun CommonTopAppBar(
     modifier: Modifier = Modifier,
     title: String,
     navigationIcon: (@Composable () -> Unit)? = null,
@@ -79,7 +78,7 @@ fun YBTopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun YBTopAppBar(
+fun CommonTopAppBar(
     modifier: Modifier = Modifier,
     title: String,
     navigationIcon: ImageVector? = null,
@@ -123,7 +122,7 @@ fun YBTopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun YBTitleBar(
+fun TitleBar(
     modifier: Modifier = Modifier,
     title: String = "标题",
     titleColor: Color = MainTextColor,
@@ -147,7 +146,7 @@ fun YBTitleBar(
                     leftOnClick.invoke()
                 }) {
                     Icon(
-                        painterResource(YBIcons.Custom.BackArrow),
+                        painterResource(CommonIcons.Custom.BackArrow),
                         contentDescription = "返回",
                         tint = MainTextColor
                     )
@@ -182,7 +181,7 @@ fun YBTitleBar(
 @PhonePreview
 @Composable
 private fun NiaTopAppBarPreview() {
-    YBTheme {
-        YBTitleBar()
+    CommonTheme {
+        TitleBar()
     }
 }

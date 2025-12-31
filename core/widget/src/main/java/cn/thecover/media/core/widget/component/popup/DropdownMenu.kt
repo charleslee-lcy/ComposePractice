@@ -47,13 +47,13 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.thecover.media.core.data.DepartmentListData
-import cn.thecover.media.core.widget.component.YBImage
+import cn.thecover.media.core.widget.component.CommonImage
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 
 
@@ -159,7 +159,7 @@ fun DepartmentMultiMenuItem(
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     if (!item.children.isNullOrEmpty()) {
-                        YBImage(
+                        CommonImage(
                             modifier = Modifier
                                 .size(20.dp)
                                 .rotate(animRotate.value)
@@ -204,7 +204,7 @@ fun DepartmentMultiMenuItem(
 
 
 @Composable
-fun YBDropdownMenu(
+fun CommonDropdownMenu(
     modifier: Modifier = Modifier,
     initialIndex: Int = 0,
     data: List<String> = listOf<String>(),
@@ -264,7 +264,7 @@ fun YBDropdownMenu(
  * @param isItemWidthAlign true item宽度与组件Modifier.width()对齐，false 不对齐，宽度自适应
  */
 @Composable
-fun YBAlignDropdownMenu(
+fun CommonAlignDropdownMenu(
     modifier: Modifier = Modifier,
     initialIndex: Int = 0,
     data: List<String> = listOf<String>(),
@@ -327,8 +327,8 @@ fun YBAlignDropdownMenu(
 
 //@PhonePreview
 @Composable
-fun YBDropdownMenuPreview() {
-    YBTheme {
+fun CommonDropdownMenuPreview() {
+    CommonTheme {
         val list = listOf(
             "稿件打分",
             "部门内分配",
@@ -344,7 +344,7 @@ fun YBDropdownMenuPreview() {
                 .statusBarsPadding()
                 .height(40.dp)
         ) {
-            YBDropdownMenu(
+            CommonDropdownMenu(
                 data = list,
                 expanded = expanded,
                 modifier = Modifier.align(Alignment.Center),
@@ -367,7 +367,7 @@ fun YBDropdownMenuPreview() {
                         fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center
                     )
-                    YBImage(
+                    CommonImage(
                         modifier = Modifier.size(20.dp),
                         placeholder = painterResource(cn.thecover.media.core.widget.R.mipmap.ic_arrow_down)
                     )
@@ -379,8 +379,8 @@ fun YBDropdownMenuPreview() {
 
 @PhonePreview
 @Composable
-fun YBAlignDropdownMenuPreview() {
-    YBTheme {
+fun CommonAlignDropdownMenuPreview() {
+    CommonTheme {
         val list = listOf(
             "稿件打分",
             "部门内分配",
@@ -398,7 +398,7 @@ fun YBAlignDropdownMenuPreview() {
                 .height(40.dp),
             contentAlignment = Alignment.CenterStart
         ) {
-            YBAlignDropdownMenu(
+            CommonAlignDropdownMenu(
                 data = list,
                 expanded = expanded,
                 initialIndex = initialIndex,
@@ -425,7 +425,7 @@ fun YBAlignDropdownMenuPreview() {
                         fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center
                     )
-                    YBImage(
+                    CommonImage(
                         modifier = Modifier.size(20.dp),
                         placeholder = painterResource(cn.thecover.media.core.widget.R.mipmap.ic_arrow_down)
                     )

@@ -31,15 +31,15 @@ import cn.thecover.media.core.data.ManuscriptReviewDataEntity
 import cn.thecover.media.core.data.PaginatedResult
 import cn.thecover.media.core.widget.component.PrimaryItemScoreRow
 import cn.thecover.media.core.widget.component.ScoreItemType
-import cn.thecover.media.core.widget.component.YBTab
-import cn.thecover.media.core.widget.component.YBTabRow
+import cn.thecover.media.core.widget.component.CommonTab
+import cn.thecover.media.core.widget.component.CommonTabRow
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.MsgColor
 import cn.thecover.media.core.widget.theme.SecondaryAuxiliaryColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
 import cn.thecover.media.core.widget.theme.TertiaryAuxiliaryColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.core.widget.util.formatDecimalString
 import cn.thecover.media.feature.basis.home.HomeViewModel
 
@@ -82,12 +82,12 @@ internal fun ManuscriptTopRankingItem(
         shape = RoundedCornerShape(12.dp),
     ) {
         Column {
-            YBTabRow(
+            CommonTabRow(
                 selectedTabIndex = currentIndex.intValue,
                 modifier = Modifier.padding()
             ) {
                 availableTabs.forEachIndexed { index, title ->
-                    YBTab(
+                    CommonTab(
                         selected = index == currentIndex.intValue,
                         onClick = {
                             currentIndex.intValue = index
@@ -371,7 +371,7 @@ internal fun ManuScriptItemHeader(
 @Composable
 @Preview
 fun ManuScriptTopRankingItemPreview() {
-    YBTheme {
+    CommonTheme {
 
     }
 

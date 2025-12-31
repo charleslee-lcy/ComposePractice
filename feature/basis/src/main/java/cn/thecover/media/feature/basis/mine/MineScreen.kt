@@ -51,26 +51,25 @@ import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.component.TOAST_TYPE_ERROR
-import cn.thecover.media.core.widget.component.picker.YBDatePicker
-import cn.thecover.media.core.widget.component.picker.YBTimePicker
-import cn.thecover.media.core.widget.component.popup.YBAutoDismissDialog
-import cn.thecover.media.core.widget.component.popup.YBDialog
-import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
-import cn.thecover.media.core.widget.component.popup.YBPopup
+import cn.thecover.media.core.widget.component.picker.CommonDatePicker
+import cn.thecover.media.core.widget.component.picker.CommonTimePicker
+import cn.thecover.media.core.widget.component.popup.CommonAutoDismissDialog
+import cn.thecover.media.core.widget.component.popup.CommonDialog
+import cn.thecover.media.core.widget.component.popup.CommonLoadingDialog
+import cn.thecover.media.core.widget.component.popup.CommonPopup
 import cn.thecover.media.core.widget.datastore.Keys
 import cn.thecover.media.core.widget.datastore.clearData
 import cn.thecover.media.core.widget.datastore.readData
 import cn.thecover.media.core.widget.datastore.rememberDataStoreState
 import cn.thecover.media.core.widget.datastore.saveData
 import cn.thecover.media.core.widget.event.showToast
-import cn.thecover.media.core.widget.icon.YBIcons
+import cn.thecover.media.core.widget.icon.CommonIcons
 import cn.thecover.media.core.widget.state.rememberIconTipsDialogState
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.core.widget.util.getCurrentTimeToDay
-import cn.thecover.media.feature.basis.home.navigation.LoginRoute
 import cn.thecover.media.feature.basis.home.navigation.navigateToLogin
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FAILED
 import cn.thecover.media.feature.basis.mine.MineViewModel.Companion.CACHE_CLEAR_STATE_FINISHED
@@ -153,7 +152,7 @@ internal fun MineScreen(
 
 
         AsyncImage(
-            model = YBIcons.Background.Mine,
+            model = CommonIcons.Background.Mine,
             contentDescription = null,
             contentScale = ContentScale.FillWidth,
             modifier = Modifier.fillMaxWidth()
@@ -179,7 +178,7 @@ internal fun MineScreen(
                     .padding(horizontal = 16.dp)
             ) {
                 MineFunctionItem(
-                    YBIcons.Custom.MineLogout,
+                    CommonIcons.Custom.MineLogout,
                     "退出登录",
                     "",
                     clickAction = { showLogoutDialog.value = true },
@@ -189,7 +188,7 @@ internal fun MineScreen(
 
         }
 
-        YBDialog(
+        CommonDialog(
             dialogState = showLogoutDialog,
             onDismissRequest = { showLogoutDialog.value = false },
             title = "退出登录",
@@ -206,7 +205,7 @@ internal fun MineScreen(
             }
         )
 
-        YBLoadingDialog(logoutLoadingState, enableDismiss = true, onDismissRequest = { logoutLoadingState.hide() })
+        CommonLoadingDialog(logoutLoadingState, enableDismiss = true, onDismissRequest = { logoutLoadingState.hide() })
 
     }
 }
@@ -214,7 +213,7 @@ internal fun MineScreen(
 @Preview(showSystemUi = true)
 @Composable
 private fun MineScreenPreview() {
-    YBTheme {
+    CommonTheme {
         // 手动创建ViewModel实例，用于预览
         val previewViewModel = MineViewModel(SavedStateHandle(), retrofit = { previewRetrofit })
 
@@ -232,15 +231,15 @@ enum class MineFunctionType(
     val navigateAction: (MineNavigationIntent)? = null
 ) {
     Version(
-        YBIcons.Custom.MineVersion,
+        CommonIcons.Custom.MineVersion,
         "版本",
         "v${Constants.APP_VERSION}"
     ),
-    Cache(icon = YBIcons.Custom.MineClearCache, "缓存", " "), ModifyPassword(
-        icon = YBIcons.Custom.MineModifyPassword, "修改密码",
+    Cache(icon = CommonIcons.Custom.MineClearCache, "缓存", " "), ModifyPassword(
+        icon = CommonIcons.Custom.MineModifyPassword, "修改密码",
         ""
     ),
-    HelpCenter(icon = YBIcons.Custom.MineHelpCenter, "帮助中心", "")
+    HelpCenter(icon = CommonIcons.Custom.MineHelpCenter, "帮助中心", "")
 }
 
 /**
@@ -258,9 +257,9 @@ private fun UserAvatar(avatarUrl: String?, userName: String?) {
                 .clip(CircleShape)
                 .background(Color.LightGray),
             contentScale = ContentScale.Crop,
-            placeholder = painterResource(YBIcons.Custom.DefaultAvatar),
+            placeholder = painterResource(CommonIcons.Custom.DefaultAvatar),
             // 加载失败/异常占位图
-            error = painterResource(YBIcons.Custom.DefaultAvatar),
+            error = painterResource(CommonIcons.Custom.DefaultAvatar),
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(userName ?: "", modifier = Modifier.weight(1f), fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
@@ -293,7 +292,7 @@ private fun MineFunctionList(
     } else {
         loadingState.hide()
         if (showClearCacheState == CACHE_CLEAR_STATE_FINISHED) {
-            statusState.show("清理成功", YBIcons.Custom.Checked)
+            statusState.show("清理成功", CommonIcons.Custom.Checked)
         } else if (showClearCacheState == CACHE_CLEAR_STATE_FAILED) {
             statusState.show("清理失败")
         }
@@ -353,15 +352,15 @@ private fun MineFunctionList(
     }
 
 
-    YBLoadingDialog(loadingState, enableDismiss = true, onDismissRequest = { loadingState.hide() })
+    CommonLoadingDialog(loadingState, enableDismiss = true, onDismissRequest = { loadingState.hide() })
 
-    YBAutoDismissDialog(statusState)
+    CommonAutoDismissDialog(statusState)
 
 
 
-    YBTimePicker(timePickerShow, onCancel = { timePickerShow = false }, onChange = {})
-    YBDatePicker(datePickerState.value, onCancel = { datePickerState.value = false }, onChange = {})
-    YBDialog(
+    CommonTimePicker(timePickerShow, onCancel = { timePickerShow = false }, onChange = {})
+    CommonDatePicker(datePickerState.value, onCancel = { datePickerState.value = false }, onChange = {})
+    CommonDialog(
         dialogState = dialogState,
         onDismissRequest = { dialogState.value = false },
         title = "帮助中心",
@@ -376,7 +375,7 @@ private fun MineFunctionList(
             Text("bangzhuzhongxin")
         }
     }
-    YBPopup(showpop, title = "提示", content = {}, draggable = true, onClose = { showpop = false })
+    CommonPopup(showpop, title = "提示", content = {}, draggable = true, onClose = { showpop = false })
 }
 
 
@@ -412,7 +411,7 @@ private fun MineFunctionItem(
 
             if (clickAction != null && showRightArrow) {
                 Icon(
-                    painterResource(YBIcons.Custom.RightArrow),
+                    painterResource(CommonIcons.Custom.RightArrow),
                     "",
                     modifier = Modifier.size(16.dp),
                     tint = TertiaryTextColor

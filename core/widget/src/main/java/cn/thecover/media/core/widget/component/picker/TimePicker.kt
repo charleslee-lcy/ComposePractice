@@ -38,7 +38,7 @@ enum class TimeType {
  * @param onChange 选择回调
  */
 @Composable
-fun YBTimePicker(
+fun CommonTimePicker(
     visible: Boolean,
     value: LocalTime? = null,
     type: TimeType = TimeType.SECOND,
@@ -55,7 +55,7 @@ fun YBTimePicker(
     var values by rememberValues(rangesSource, value, start, end)
     val ranges by rememberFinalRanges(rangesSource)
 
-    YBPicker(
+    CommonPicker(
         visible,
         ranges,
         values,
@@ -196,7 +196,7 @@ fun rememberTimePickerState(): TimePickerState {
     val state = remember { TimePickerStateImpl() }
 
     state.props?.let { props ->
-        YBTimePicker(
+        CommonTimePicker(
             visible = state.visible,
             value = props.value,
             type = props.type,

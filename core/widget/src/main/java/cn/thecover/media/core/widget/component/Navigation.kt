@@ -49,10 +49,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import cn.thecover.media.core.widget.icon.YBIcons
+import cn.thecover.media.core.widget.icon.CommonIcons
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import kotlin.collections.forEachIndexed
 import kotlin.run
 
@@ -72,7 +72,7 @@ import kotlin.run
  * only be shown when this item is selected.
  */
 @Composable
-fun RowScope.YBNavigationBarItem(
+fun RowScope.CommonNavigationBarItem(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -106,7 +106,7 @@ fun RowScope.YBNavigationBarItem(
  * [NavigationBarItem]s.
  */
 @Composable
-fun YBNavigationBar(
+fun CommonNavigationBar(
     modifier: Modifier = Modifier,
     containerColor: Color = Color.White,
     content: @Composable RowScope.() -> Unit,
@@ -172,7 +172,7 @@ fun CustomBottomBar(
  * only be shown when this item is selected.
  */
 @Composable
-fun YBNavigationRailItem(
+fun CommonNavigationRailItem(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -191,11 +191,11 @@ fun YBNavigationRailItem(
         label = label,
         alwaysShowLabel = alwaysShowLabel,
         colors = NavigationRailItemDefaults.colors(
-            selectedIconColor = YBNavigationDefaults.navigationSelectedItemColor(),
-            unselectedIconColor = YBNavigationDefaults.navigationContentColor(),
-            selectedTextColor = YBNavigationDefaults.navigationSelectedItemColor(),
-            unselectedTextColor = YBNavigationDefaults.navigationContentColor(),
-            indicatorColor = YBNavigationDefaults.navigationIndicatorColor(),
+            selectedIconColor = CommonNavigationDefaults.navigationSelectedItemColor(),
+            unselectedIconColor = CommonNavigationDefaults.navigationContentColor(),
+            selectedTextColor = CommonNavigationDefaults.navigationSelectedItemColor(),
+            unselectedTextColor = CommonNavigationDefaults.navigationContentColor(),
+            indicatorColor = CommonNavigationDefaults.navigationIndicatorColor(),
         ),
     )
 }
@@ -209,7 +209,7 @@ fun YBNavigationRailItem(
  * [NavigationRailItem]s.
  */
 @Composable
-fun YBNavigationRail(
+fun CommonNavigationRail(
     modifier: Modifier = Modifier,
     header: @Composable (ColumnScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
@@ -217,7 +217,7 @@ fun YBNavigationRail(
     NavigationRail(
         modifier = modifier,
         containerColor = Color.Transparent,
-        contentColor = YBNavigationDefaults.navigationContentColor(),
+        contentColor = CommonNavigationDefaults.navigationContentColor(),
         header = header,
         content = content,
     )
@@ -228,13 +228,13 @@ fun YBNavigationRail(
  * Wraps Material 3 [NavigationSuiteScaffold].
  *
  * @param modifier Modifier to be applied to the navigation suite scaffold.
- * @param navigationSuiteItems A slot to display multiple items via [YBNavigationSuiteScope].
+ * @param navigationSuiteItems A slot to display multiple items via [CommonNavigationSuiteScope].
  * @param windowAdaptiveInfo The window adaptive info.
  * @param content The app content inside the scaffold.
  */
 @Composable
-fun YBNavigationSuiteScaffold(
-    navigationSuiteItems: YBNavigationSuiteScope.() -> Unit,
+fun CommonNavigationSuiteScaffold(
+    navigationSuiteItems: CommonNavigationSuiteScope.() -> Unit,
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
     content: @Composable () -> Unit,
@@ -245,28 +245,28 @@ fun YBNavigationSuiteScaffold(
         navigationBarItemColors = NavigationBarItemDefaults.colors(
 //            selectedIconColor = YBNavigationDefaults.navigationSelectedItemColor(),
 //            unselectedIconColor = YBNavigationDefaults.navigationContentColor(),
-            selectedTextColor = YBNavigationDefaults.navigationSelectedItemColor(),
-            unselectedTextColor = YBNavigationDefaults.navigationContentColor(),
+            selectedTextColor = CommonNavigationDefaults.navigationSelectedItemColor(),
+            unselectedTextColor = CommonNavigationDefaults.navigationContentColor(),
             indicatorColor = Color.Transparent,
         ),
         navigationRailItemColors = NavigationRailItemDefaults.colors(
-            selectedIconColor = YBNavigationDefaults.navigationSelectedItemColor(),
-            unselectedIconColor = YBNavigationDefaults.navigationContentColor(),
-            selectedTextColor = YBNavigationDefaults.navigationSelectedItemColor(),
-            unselectedTextColor = YBNavigationDefaults.navigationContentColor(),
-            indicatorColor = YBNavigationDefaults.navigationIndicatorColor(),
+            selectedIconColor = CommonNavigationDefaults.navigationSelectedItemColor(),
+            unselectedIconColor = CommonNavigationDefaults.navigationContentColor(),
+            selectedTextColor = CommonNavigationDefaults.navigationSelectedItemColor(),
+            unselectedTextColor = CommonNavigationDefaults.navigationContentColor(),
+            indicatorColor = CommonNavigationDefaults.navigationIndicatorColor(),
         ),
         navigationDrawerItemColors = NavigationDrawerItemDefaults.colors(
-            selectedIconColor = YBNavigationDefaults.navigationSelectedItemColor(),
-            unselectedIconColor = YBNavigationDefaults.navigationContentColor(),
-            selectedTextColor = YBNavigationDefaults.navigationSelectedItemColor(),
-            unselectedTextColor = YBNavigationDefaults.navigationContentColor(),
+            selectedIconColor = CommonNavigationDefaults.navigationSelectedItemColor(),
+            unselectedIconColor = CommonNavigationDefaults.navigationContentColor(),
+            selectedTextColor = CommonNavigationDefaults.navigationSelectedItemColor(),
+            unselectedTextColor = CommonNavigationDefaults.navigationContentColor(),
         ),
     )
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {
-            YBNavigationSuiteScope(
+            CommonNavigationSuiteScope(
                 navigationSuiteScope = this,
                 navigationSuiteItemColors = navigationSuiteItemColors,
             ).run(navigationSuiteItems)
@@ -286,7 +286,7 @@ fun YBNavigationSuiteScaffold(
 /**
  * A wrapper around [NavigationSuiteScope] to declare navigation items.
  */
-class YBNavigationSuiteScope internal constructor(
+class CommonNavigationSuiteScope internal constructor(
     private val navigationSuiteScope: NavigationSuiteScope,
     private val navigationSuiteItemColors: NavigationSuiteItemColors,
 ) {
@@ -315,23 +315,23 @@ class YBNavigationSuiteScope internal constructor(
 
 @Preview(showBackground = true)
 @Composable
-fun YBNavigationBarPreview() {
+fun CommonNavigationBarPreview() {
     val items = listOf("For you", "Saved", "Interests")
     val icons = listOf(
-        YBIcons.UpcomingBorder,
-        YBIcons.BookmarksBorder,
-        YBIcons.Grid3x3,
+        CommonIcons.UpcomingBorder,
+        CommonIcons.BookmarksBorder,
+        CommonIcons.Grid3x3,
     )
     val selectedIcons = listOf(
-        YBIcons.Upcoming,
-        YBIcons.Bookmarks,
-        YBIcons.Grid3x3,
+        CommonIcons.Upcoming,
+        CommonIcons.Bookmarks,
+        CommonIcons.Grid3x3,
     )
 
-    YBTheme {
-        YBNavigationBar {
+    CommonTheme {
+        CommonNavigationBar {
             items.forEachIndexed { index, item ->
-                YBNavigationBarItem(
+                CommonNavigationBarItem(
                     icon = {
                         Icon(
                             imageVector = icons[index],
@@ -354,23 +354,23 @@ fun YBNavigationBarPreview() {
 }
 
 @Composable
-fun YBNavigationRailPreview() {
+fun CommonNavigationRailPreview() {
     val items = listOf("For you", "Saved", "Interests")
     val icons = listOf(
-        YBIcons.UpcomingBorder,
-        YBIcons.BookmarksBorder,
-        YBIcons.Grid3x3,
+        CommonIcons.UpcomingBorder,
+        CommonIcons.BookmarksBorder,
+        CommonIcons.Grid3x3,
     )
     val selectedIcons = listOf(
-        YBIcons.Upcoming,
-        YBIcons.Bookmarks,
-        YBIcons.Grid3x3,
+        CommonIcons.Upcoming,
+        CommonIcons.Bookmarks,
+        CommonIcons.Grid3x3,
     )
 
-    YBTheme {
-        YBNavigationRail {
+    CommonTheme {
+        CommonNavigationRail {
             items.forEachIndexed { index, item ->
-                YBNavigationRailItem(
+                CommonNavigationRailItem(
                     icon = {
                         Icon(
                             imageVector = icons[index],
@@ -395,7 +395,7 @@ fun YBNavigationRailPreview() {
 /**
  * Now in Android navigation default values.
  */
-object YBNavigationDefaults {
+object CommonNavigationDefaults {
     @Composable
     fun navigationContentColor() = MaterialTheme.colorScheme.onSurfaceVariant
 

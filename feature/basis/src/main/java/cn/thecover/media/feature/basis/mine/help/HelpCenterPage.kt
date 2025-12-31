@@ -7,7 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import cn.thecover.media.core.widget.component.YBWebViewPage
+import cn.thecover.media.core.widget.component.CommonWebView
 import cn.thecover.media.feature.basis.mine.MineIntent
 import cn.thecover.media.feature.basis.mine.MineViewModel
 
@@ -32,7 +32,7 @@ internal fun HelpCenterRoute(
 private fun HelpCenterPage(viewModel: MineViewModel,onPopBack: () -> Unit) {
     val htmlContent by viewModel.helpCenterUrlUiData.collectAsState()
     if (htmlContent == null) return
-    YBWebViewPage(
+    CommonWebView(
         modifier = Modifier.fillMaxSize(),
         defaultTitle = "帮助中心",
         htmlContent = htmlContent?.content,

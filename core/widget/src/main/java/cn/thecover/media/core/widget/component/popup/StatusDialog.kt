@@ -47,7 +47,7 @@ import kotlin.math.roundToInt
  */
 
 @Composable
-fun YBAutoDismissDialog(
+fun CommonAutoDismissDialog(
     tipsState: IconDialogState,
     onDismissRequest: () -> Unit = {},
 ) {
@@ -98,7 +98,7 @@ fun IconStatusDialog(
  * @param enableDismiss 是否允许点击蒙层或返回键关闭弹窗，默认为 false
  */
 @Composable
-fun YBLoadingDialog(
+fun CommonLoadingDialog(
     loadingState: TipsDialogState,
     onDismissRequest: () -> Unit = {},
     enableDismiss: Boolean = false

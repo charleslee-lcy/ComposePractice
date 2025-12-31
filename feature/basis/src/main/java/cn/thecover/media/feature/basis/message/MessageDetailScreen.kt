@@ -26,15 +26,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import cn.thecover.media.core.network.previewRetrofit
-import cn.thecover.media.core.widget.component.YBTopAppBar
+import cn.thecover.media.core.widget.component.CommonTopAppBar
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
-import cn.thecover.media.core.widget.icon.YBIcons
+import cn.thecover.media.core.widget.icon.CommonIcons
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
-import cn.thecover.media.core.widget.theme.YBTheme
-import cn.thecover.media.feature.basis.home.HomeViewModel
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.feature.basis.message.data.entity.MessageDataEntity
 import cn.thecover.media.feature.basis.mine.MineViewModel
 
@@ -64,7 +62,7 @@ fun MessageDetailScreen(
                 // 消耗点击事件，防止穿透到下层
             }
     ) {
-        YBTopAppBar(
+        CommonTopAppBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
@@ -75,7 +73,7 @@ fun MessageDetailScreen(
             backgroundColor = MaterialTheme.colorScheme.background,
             navigationIcon = {
                 Icon(
-                    painter = painterResource(YBIcons.Custom.BackArrow),
+                    painter = painterResource(CommonIcons.Custom.BackArrow),
                     contentDescription = "返回"
                 )
             })
@@ -129,7 +127,7 @@ fun MessageDetailScreen(
 @Composable
 @Preview(showBackground = true)
 fun MessageDetailScreenPreview() {
-    YBTheme {
+    CommonTheme {
         MessageDetailScreen(
             MineViewModel(
                 SavedStateHandle(),

@@ -27,7 +27,7 @@ import android.os.Build.VERSION_CODES
 import androidx.core.content.getSystemService
 import cn.thecover.media.core.common.network.Dispatcher
 import cn.thecover.media.core.common.network.NetworkMonitor
-import cn.thecover.media.core.common.network.YBDispatchers.IO
+import cn.thecover.media.core.common.network.CommonDispatchers.IO
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose

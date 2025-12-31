@@ -72,7 +72,7 @@ import kotlin.math.roundToInt
  * @param content 内容
  */
 @Composable
-fun YBPopup(
+fun CommonPopup(
     visible: Boolean,
     title: String? = null,
     enterTransition: EnterTransition = slideInVertically(

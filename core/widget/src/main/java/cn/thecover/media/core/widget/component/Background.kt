@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import cn.thecover.media.core.widget.theme.GradientColors
 import cn.thecover.media.core.widget.theme.LocalBackgroundTheme
 import cn.thecover.media.core.widget.theme.LocalGradientColors
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import kotlin.math.tan
 import kotlin.to
 
@@ -49,7 +49,7 @@ import kotlin.to
  * @param content The background content.
  */
 @Composable
-fun YBBackground(
+fun CommonBackground(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
@@ -75,7 +75,7 @@ fun YBBackground(
  * @param content The background content.
  */
 @Composable
-fun YBGradientBackground(
+fun CommonGradientBackground(
     modifier: Modifier = Modifier,
     gradientColors: GradientColors = LocalGradientColors.current,
     content: @Composable () -> Unit,
@@ -151,47 +151,47 @@ annotation class ThemePreviews
 @Preview
 @Composable
 fun BackgroundDefault() {
-    YBTheme(disableDynamicTheming = true) {
-        YBBackground(Modifier.size(100.dp), content = {})
+    CommonTheme(disableDynamicTheming = true) {
+        CommonBackground(Modifier.size(100.dp), content = {})
     }
 }
 
 @Preview
 @Composable
 fun BackgroundDynamic() {
-    YBTheme(disableDynamicTheming = false) {
-        YBBackground(Modifier.size(100.dp), content = {})
+    CommonTheme(disableDynamicTheming = false) {
+        CommonBackground(Modifier.size(100.dp), content = {})
     }
 }
 
 @Preview
 @Composable
 fun BackgroundAndroid() {
-    YBTheme(androidTheme = true) {
-        YBBackground(Modifier.size(100.dp), content = {})
+    CommonTheme(androidTheme = true) {
+        CommonBackground(Modifier.size(100.dp), content = {})
     }
 }
 
 @Preview
 @Composable
 fun GradientBackgroundDefault() {
-    YBTheme(disableDynamicTheming = true) {
-        YBGradientBackground(Modifier.size(100.dp), content = {})
+    CommonTheme(disableDynamicTheming = true) {
+        CommonGradientBackground(Modifier.size(100.dp), content = {})
     }
 }
 
 @Preview
 @Composable
 fun GradientBackgroundDynamic() {
-    YBTheme(disableDynamicTheming = false) {
-        YBGradientBackground(Modifier.size(100.dp), content = {})
+    CommonTheme(disableDynamicTheming = false) {
+        CommonGradientBackground(Modifier.size(100.dp), content = {})
     }
 }
 
 @Preview
 @Composable
 fun GradientBackgroundAndroid() {
-    YBTheme(androidTheme = true) {
-        YBGradientBackground(Modifier.size(100.dp), content = {})
+    CommonTheme(androidTheme = true) {
+        CommonGradientBackground(Modifier.size(100.dp), content = {})
     }
 }

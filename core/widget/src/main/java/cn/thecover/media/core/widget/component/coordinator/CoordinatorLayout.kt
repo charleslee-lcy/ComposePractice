@@ -31,11 +31,11 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
-import cn.thecover.media.core.widget.component.YBButton
-import cn.thecover.media.core.widget.component.YBTitleBar
+import cn.thecover.media.core.widget.component.CommonButton
+import cn.thecover.media.core.widget.component.TitleBar
 import cn.thecover.media.core.widget.theme.Blue90
 import cn.thecover.media.core.widget.theme.DividerColor
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -124,7 +124,7 @@ fun CoordinatorLayout(
 @PhonePreview
 @Composable
 private fun CoordinatorLayoutPreview() {
-    YBTheme {
+    CommonTheme {
         Column(
             Modifier
                 .fillMaxSize()
@@ -142,7 +142,7 @@ private fun CoordinatorLayoutPreview() {
                     .padding(horizontal = 20.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
-                YBTitleBar(title = "标题", left = {})
+                TitleBar(title = "标题", left = {})
                 Button(onClick = {
                     coroutineScope.launch {
                         if (coordinatorState.isFullyCollapsed) {
@@ -173,7 +173,7 @@ private fun CoordinatorLayoutPreview() {
                 },
             ) {
                 Column(Modifier.fillMaxSize()) {
-                    YBButton(onClick = {
+                    CommonButton(onClick = {
                         // 吸顶
                         coroutineScope.launch {
                             coordinatorState.animateToCollapsed()

@@ -23,7 +23,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cn.thecover.media.core.widget.component.popup.YBFullDialog
+import cn.thecover.media.core.widget.component.popup.CommonFullDialog
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.MainTextColor
 
@@ -39,7 +39,7 @@ fun PreviewImages(
     showImages: MutableState<Boolean>,
     initialPage: Int = 0
 ) {
-    YBFullDialog(
+    CommonFullDialog(
         dialogState = showImages,
         onDismissRequest = { showImages.value = false },
         content = {
@@ -68,7 +68,7 @@ fun PreviewImagesCore(
                     .fillMaxSize()
                     .clipToBounds()
             ) {
-                YBImage(
+                CommonImage(
                     imageUrl = imagesData[pageIndex],
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Fit,

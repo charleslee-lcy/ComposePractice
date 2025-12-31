@@ -42,17 +42,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.R
-import cn.thecover.media.core.widget.component.YBNormalList
-import cn.thecover.media.core.widget.component.YBTopAppBar
-import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
+import cn.thecover.media.core.widget.component.NormalList
+import cn.thecover.media.core.widget.component.CommonTopAppBar
+import cn.thecover.media.core.widget.component.popup.CommonAlignDropdownMenu
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
-import cn.thecover.media.core.widget.icon.YBIcons
+import cn.thecover.media.core.widget.icon.CommonIcons
 import cn.thecover.media.core.widget.theme.CardOutlineColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.MsgColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
-import cn.thecover.media.core.widget.theme.YBShapes
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonShapes
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.feature.basis.message.data.entity.MessageDataEntity
 import cn.thecover.media.feature.basis.message.intent.MessageIntent
 import cn.thecover.media.feature.basis.mine.MineViewModel
@@ -120,7 +120,7 @@ fun MessageScreen(
             .background(MaterialTheme.colorScheme.background)
     ) {
         Column {
-            YBTopAppBar(
+            CommonTopAppBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = MaterialTheme.colorScheme.surface)
@@ -128,7 +128,7 @@ fun MessageScreen(
                 title = "消息通知",
                 navigationIcon = {
                     Icon(
-                        painter = painterResource(YBIcons.Custom.BackArrow),
+                        painter = painterResource(CommonIcons.Custom.BackArrow),
                         contentDescription = "返回",
                         modifier = Modifier.clickable {
                             onPopBack()
@@ -136,7 +136,7 @@ fun MessageScreen(
                     )
                 })
 
-            YBNormalList(
+            NormalList(
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 items = localList,
@@ -148,7 +148,7 @@ fun MessageScreen(
                 },
                 onLoadMore = { viewModel.handleMessageIntent(MessageIntent.FetchMessageList(true)) },
                 header = {
-                    YBAlignDropdownMenu(
+                    CommonAlignDropdownMenu(
                         data = messageTypeList,
                         backgroundColor = MaterialTheme.colorScheme.surface,
                         expanded = showDrop,
@@ -172,7 +172,7 @@ fun MessageScreen(
                                 .fillMaxWidth()
                                 .background(
                                     MaterialTheme.colorScheme.surface,
-                                    shape = YBShapes.small
+                                    shape = CommonShapes.small
                                 )
                                 .padding(horizontal = 12.dp)
                                 .padding(horizontal = 12.dp, vertical = 8.dp)
@@ -242,12 +242,12 @@ private fun MessageItem(
         modifier = Modifier
             .border(width = 0.5.dp, color = CardOutlineColor, shape = MaterialTheme.shapes.small)
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface, shape = YBShapes.small)
+            .background(MaterialTheme.colorScheme.surface, shape = CommonShapes.small)
             .padding(horizontal = 12.dp)
             .clickable {
                 callback()
             },
-        shape = YBShapes.small,
+        shape = CommonShapes.small,
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent
         ),
@@ -291,7 +291,7 @@ private fun MessageItem(
                         color = TertiaryTextColor
                     )
                     Icon(
-                        painter = painterResource(YBIcons.Custom.RightArrow),
+                        painter = painterResource(CommonIcons.Custom.RightArrow),
                         contentDescription = "查看详情",
                         modifier = Modifier.size(18.dp),
                         tint = TertiaryTextColor
@@ -343,7 +343,7 @@ enum class MessageType(val typeName: String) {
 @Composable
 @Preview(showBackground = true)
 fun MessageScreenPreview() {
-    YBTheme {
+    CommonTheme {
         MessageScreen(MineViewModel(SavedStateHandle(), retrofit = { previewRetrofit }), {})
     }
 
@@ -352,7 +352,7 @@ fun MessageScreenPreview() {
 @Composable
 @Preview(showBackground = true)
 fun MessageItemPreview() {
-    YBTheme {
+    CommonTheme {
         MessageItem(
             title = "测试消息标题",
             time = "2025-12-05 10:30",

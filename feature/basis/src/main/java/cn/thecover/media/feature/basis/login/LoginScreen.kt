@@ -1,6 +1,5 @@
 package cn.thecover.media.feature.basis.login
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,16 +37,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
-import cn.thecover.media.core.common.util.DESUtil
+import cn.thecover.media.core.common.util.DESUtil.simpleEncrypt
 import cn.thecover.media.core.network.BaseUiState
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
+import cn.thecover.media.core.widget.component.CommonInput
 import cn.thecover.media.core.widget.component.TOAST_TYPE_ERROR
 import cn.thecover.media.core.widget.component.TOAST_TYPE_WARNING
-import cn.thecover.media.core.widget.component.YBButton
-import cn.thecover.media.core.widget.component.YBImage
-import cn.thecover.media.core.widget.component.YBInput
-import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
+import cn.thecover.media.core.widget.component.CommonButton
+import cn.thecover.media.core.widget.component.CommonImage
+import cn.thecover.media.core.widget.component.popup.CommonLoadingDialog
 import cn.thecover.media.core.widget.datastore.Keys
 import cn.thecover.media.core.widget.datastore.saveData
 import cn.thecover.media.core.widget.event.showToast
@@ -56,7 +55,7 @@ import cn.thecover.media.core.widget.theme.EditHintTextColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.OutlineColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.core.widget.ui.ComponentVisibility
 import cn.thecover.media.core.widget.ui.Visibility
 import cn.thecover.media.feature.basis.R
@@ -75,7 +74,7 @@ fun LoginRoute(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
-    YBTheme {
+    CommonTheme {
         LoginScreen(modifier, navController)
     }
 }
@@ -181,7 +180,7 @@ internal fun LoginScreen(
             .fillMaxSize()
             .background(PageBackgroundColor)
     ) {
-        YBImage(
+        CommonImage(
             modifier = Modifier.fillMaxSize(),
             placeholder = painterResource(R.drawable.img_login_page_bg)
         )
@@ -192,7 +191,7 @@ internal fun LoginScreen(
                 .padding(horizontal = 60.dp)
         ) {
             Spacer(Modifier.size(80.dp))
-            YBImage(
+            CommonImage(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally),
                 placeholder = painterResource(R.mipmap.img_login_logo)
@@ -211,15 +210,17 @@ internal fun LoginScreen(
                         modifier = Modifier.padding(start = 20.dp),
                     )
                 }
-                YBInput(
+                CommonInput(
                     modifier = Modifier.fillMaxWidth(),
                     textStyle = TextStyle(
                         fontSize = 15.sp, color = MainTextColor
                     ),
                     text = nameText,
                     hint = "请输入您的用户名",
-                    hintTextSize = 15.sp,
-                    hintTextColor = EditHintTextColor,
+                    hintTextStyle = TextStyle(
+                        fontSize = 15.sp,
+                        color = EditHintTextColor
+                    ),
                     onValueChange = {
                         nameText = it
                         isLoginEnable = nameText.isNotEmpty() && passwordText.isNotEmpty()
@@ -239,15 +240,17 @@ internal fun LoginScreen(
                         modifier = Modifier.padding(start = 20.dp)
                     )
                 }
-                YBInput(
+                CommonInput(
                     modifier = Modifier.fillMaxWidth(),
                     textStyle = TextStyle(
                         fontSize = 15.sp, color = MainTextColor
                     ),
                     text = passwordText,
                     hint = "请输入密码",
-                    hintTextSize = 15.sp,
-                    hintTextColor = EditHintTextColor,
+                    hintTextStyle = TextStyle(
+                        fontSize = 15.sp,
+                        color = EditHintTextColor
+                    ),
                     isPassword = true,
                     showVisibleIcon = true,
                     onValueChange = {
@@ -256,7 +259,7 @@ internal fun LoginScreen(
                     })
             }
             HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = OutlineColor, thickness = 0.8.dp)
-            YBButton(
+            CommonButton(
                 text = { Text("登录", fontSize = 16.sp, fontWeight = FontWeight.SemiBold) },
                 modifier = modifier
                     .align(Alignment.CenterHorizontally)
@@ -266,19 +269,19 @@ internal fun LoginScreen(
                     .alpha(if (isLoginEnable) 1f else 0.5f),
                 shape = RoundedCornerShape(2.dp),
                 onClick = {
-                    if (!isLoginEnable) return@YBButton
+                    if (!isLoginEnable) return@CommonButton
 
                     if (nameText.isEmpty()) {
                         showToast("用户名不能为空", TOAST_TYPE_WARNING)
-                        return@YBButton
+                        return@CommonButton
                     }
                     if (passwordText.isEmpty()) {
                         showToast("密码不能为空", TOAST_TYPE_WARNING)
-                        return@YBButton
+                        return@CommonButton
                     }
                     focusManager.clearFocus()
 
-                    viewModel.login(DESUtil.simpleEncrypt(nameText), DESUtil.simpleEncrypt(passwordText))
+                    viewModel.login(simpleEncrypt(nameText), simpleEncrypt(passwordText))
                 }
             )
 
@@ -296,13 +299,13 @@ internal fun LoginScreen(
         }
     }
 
-    YBLoadingDialog(loadingState, enableDismiss = true, onDismissRequest = { loadingState.hide() })
+    CommonLoadingDialog(loadingState, enableDismiss = true, onDismissRequest = { loadingState.hide() })
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun HomeScreenPreview() {
-    YBTheme {
+    CommonTheme {
         LoginScreen(
             navController = NavController(LocalContext.current),
             viewModel = HomeViewModel(

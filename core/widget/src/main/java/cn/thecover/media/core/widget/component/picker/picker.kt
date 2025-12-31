@@ -8,7 +8,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -21,7 +20,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -41,8 +39,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cn.thecover.media.core.widget.component.YBButton
-import cn.thecover.media.core.widget.component.popup.YBPopup
+import cn.thecover.media.core.widget.component.CommonButton
+import cn.thecover.media.core.widget.component.popup.CommonPopup
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
 
@@ -66,7 +64,7 @@ import kotlin.math.roundToInt
  *
  */
 @Composable
-fun YBPicker(
+fun CommonPicker(
     visible: Boolean,
     ranges: Array<List<String>>,
     values: Array<Int>,
@@ -78,7 +76,7 @@ fun YBPicker(
 ) {
     val localValues = remember(visible) { values.copyOf() }
 
-    YBPopup(
+    CommonPopup(
         visible,
         title = title,
         enterTransition = fadeIn(tween(150)) + slideInVertically(tween(150)) { it / 3 },
@@ -232,7 +230,7 @@ private fun Modifier.drawIndicator(color: Color) = this.drawBehind {
 @Composable
 private fun ActionBar(onCancel: () -> Unit, onConfirm: () -> Unit) {
     Row {
-        YBButton(
+        CommonButton(
             onClick = {
                 onCancel.invoke()
 
@@ -246,7 +244,7 @@ private fun ActionBar(onCancel: () -> Unit, onConfirm: () -> Unit) {
             Text(text = "取消")
         }
         Spacer(modifier = Modifier.width(20.dp))
-        YBButton(
+        CommonButton(
             onClick = {
                 onConfirm.invoke()
             },

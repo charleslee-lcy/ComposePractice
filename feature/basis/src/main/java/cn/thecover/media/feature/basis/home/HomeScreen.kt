@@ -52,18 +52,18 @@ import cn.thecover.media.core.data.HomeInfo
 import cn.thecover.media.core.network.HttpStatus
 import cn.thecover.media.core.network.previewRetrofit
 import cn.thecover.media.core.widget.R
-import cn.thecover.media.core.widget.component.YBBadge
-import cn.thecover.media.core.widget.component.YBImage
-import cn.thecover.media.core.widget.component.YBToast
+import cn.thecover.media.core.widget.component.CommonBadge
+import cn.thecover.media.core.widget.component.CommonImage
+import cn.thecover.media.core.widget.component.CommonToast
 import cn.thecover.media.core.widget.component.picker.DateType
-import cn.thecover.media.core.widget.component.picker.YBDatePicker
+import cn.thecover.media.core.widget.component.picker.CommonDatePicker
 import cn.thecover.media.core.widget.component.showToast
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.core.widget.ui.ComponentPreview
 import cn.thecover.media.feature.basis.home.navigation.navigateToMessage
 import cn.thecover.media.feature.basis.home.ui.LeaderUserContent
@@ -84,7 +84,7 @@ internal fun HomeRoute(navController: NavController) {
     val goToMessageRoute = {
         navController.navigateToMessage()
     }
-    YBTheme {
+    CommonTheme {
         HomeScreen(
             routeToMessageScreen = goToMessageRoute, navController = navController
         )
@@ -302,7 +302,7 @@ internal fun HomeScreen(
         }
     }
 
-    YBToast(snackBarHostState = snackBarHostState)
+    CommonToast(snackBarHostState = snackBarHostState)
 }
 
 @Composable
@@ -350,19 +350,19 @@ private fun TopBar(
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center
             )
-            YBImage(
+            CommonImage(
                 modifier = Modifier.size(20.dp),
                 placeholder = painterResource(R.mipmap.ic_arrow_down)
             )
         }
-        YBBadge(
+        CommonBadge(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .align(Alignment.CenterEnd),
             msgCount = unreadMessageCount,
             showNumber = true
         ) {
-            YBImage(
+            CommonImage(
                 modifier = Modifier
                     .padding(5.dp)
                     .size(18.dp)
@@ -374,7 +374,7 @@ private fun TopBar(
         }
     }
 
-    YBDatePicker(
+    CommonDatePicker(
         visible = datePickerShow,
         value = LocalDate.of(currentYear.value, currentMonth.value, 1),
         start = LocalDate.of(2025, 1, 1),
@@ -392,7 +392,7 @@ private fun TopBar(
 @ComponentPreview
 @Composable
 private fun HomeScreenPreview() {
-    YBTheme {
+    CommonTheme {
         HomeScreen(
             navController = NavController(LocalContext.current),
             viewModel = HomeViewModel(

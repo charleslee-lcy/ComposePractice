@@ -140,8 +140,8 @@ object DESUtil {
      * 简单加密
      * @return
      */
-    fun simpleEncrypt(data: String?): String? {
-        return encrypt(SIMPLE_KEY, data)
+    fun simpleEncrypt(data: String?): String {
+        return encrypt(SIMPLE_KEY, data) ?: ""
     }
 
     /**

@@ -44,7 +44,7 @@ import cn.thecover.media.core.widget.component.coordinator.CoordinatorState
 import cn.thecover.media.core.widget.component.coordinator.rememberCoordinatorState
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.core.widget.ui.PhonePreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -57,7 +57,7 @@ import kotlinx.coroutines.flow.combine
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <T> YBNormalList(
+fun <T> NormalList(
     modifier: Modifier = Modifier,
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(0.dp),
     items: MutableState<List<T>>,
@@ -172,7 +172,7 @@ fun <T> YBNormalList(
                 Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                YBImage(
+                CommonImage(
                     modifier = Modifier.padding(12.dp),
                     placeholder = painterResource(R.mipmap.img_empty_content)
                 )
@@ -183,7 +183,7 @@ fun <T> YBNormalList(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <T> YBCoordinatorList(
+fun <T> CoordinatorList(
     modifier: Modifier = Modifier,
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(0.dp),
     items: MutableState<List<T>>,
@@ -325,7 +325,7 @@ fun <T> YBCoordinatorList(
                             .height(with(LocalDensity.current) { coordinatorState.emptyHeight.toDp() }),
                         contentAlignment = Alignment.Center
                     ) {
-                        YBImage(
+                        CommonImage(
                             modifier = Modifier.padding(12.dp),
                             placeholder = painterResource(R.mipmap.img_empty_content)
                         )
@@ -338,8 +338,8 @@ fun <T> YBCoordinatorList(
 
 @PhonePreview
 @Composable
-private fun YBNormalListPreview() {
-    YBTheme {
-//        YBNormalList()
+private fun CommonNormalListPreview() {
+    CommonTheme {
+//        NormalList()
     }
 }

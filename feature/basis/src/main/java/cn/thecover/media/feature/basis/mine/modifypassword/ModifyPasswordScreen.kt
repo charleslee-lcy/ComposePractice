@@ -34,10 +34,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import cn.thecover.media.core.widget.component.YBButton
-import cn.thecover.media.core.widget.component.YBInput
-import cn.thecover.media.core.widget.component.YBTitleBar
-import cn.thecover.media.core.widget.component.YBToast
+import cn.thecover.media.core.widget.component.CommonInput
+import cn.thecover.media.core.widget.component.CommonButton
+import cn.thecover.media.core.widget.component.TitleBar
+import cn.thecover.media.core.widget.component.CommonToast
 import cn.thecover.media.core.widget.theme.EditHintTextColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.SecondaryTextColor
@@ -114,7 +114,7 @@ internal fun ModifyPasswordRoute(
             }
         }
 
-        YBToast(snackBarHostState = snackBarHostState)
+        CommonToast(snackBarHostState = snackBarHostState)
     }
 }
 
@@ -144,7 +144,7 @@ fun ModifyPasswordScreen(
                 .background(MaterialTheme.colorScheme.background)
                 .statusBarsPadding()
         )
-        YBTitleBar(
+        TitleBar(
             title = "修改密码", leftOnClick = {
                 if (isFromLogin) {
                     // 如果是从登录页面跳转过来的，需要保留用户名
@@ -186,7 +186,7 @@ fun ModifyPasswordScreen(
                 fontSize = 12.sp
             )
             Spacer(modifier = Modifier.height(40.dp))
-            YBButton(
+            CommonButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = { Text("提交") },
                 onClick = {
@@ -216,7 +216,7 @@ fun ModifyPasswordInput(
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(label, fontSize = 15.sp, color = SecondaryTextColor, modifier = Modifier.width(64.dp))
         Spacer(modifier = Modifier.width(16.dp))
-        YBInput(
+        CommonInput(
             modifier = Modifier
                 .weight(1f)
                 .height(48.dp),
@@ -225,8 +225,9 @@ fun ModifyPasswordInput(
             ),
             text = textState.value,
             hint = hint.toString(),
-            hintTextSize = 15.sp,
-            hintTextColor = EditHintTextColor,
+            hintTextStyle = TextStyle(
+                fontSize = 15.sp, color = EditHintTextColor
+            ),
             maxLines = 1,
             isPassword = true,
             showVisibleIcon = true,

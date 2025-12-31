@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import cn.thecover.media.core.widget.theme.MainColor
 import cn.thecover.media.core.widget.theme.MsgColor
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.core.widget.ui.ComponentPreview
 
 
@@ -33,7 +33,7 @@ val GradientLeftBottom = Offset(0f, Float.POSITIVE_INFINITY)
 val GradientRightBottom = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
 
 @Composable
-fun YBShape(
+fun CommonShape(
     modifier: Modifier = Modifier,
     colors: List<Color> = listOf(Color(0xFF00BCD4), Color(0xFF3F51B5)),
     start: Offset = GradientLeftTop,
@@ -85,29 +85,29 @@ fun Modifier.gradientShape(
 
 @ComponentPreview
 @Composable
-private fun YBShapePreview() {
-    YBTheme {
+private fun CommonShapePreview() {
+    CommonTheme {
         Column {
-            YBShape(
+            CommonShape(
                 modifier = Modifier.size(100.dp, 100.dp),
                 colors = listOf(MainColor, MsgColor),
                 start = GradientLeftTop,
                 end = GradientRightTop
             )
-            YBShape(
+            CommonShape(
                 modifier = Modifier.size(100.dp, 100.dp),
                 start = GradientLeftTop,
                 end = GradientLeftBottom,
                 shape = RoundedCornerShape(10.dp)
             )
-            YBShape(
+            CommonShape(
                 modifier = Modifier.size(100.dp, 100.dp),
                 colors = listOf(MainColor, MsgColor),
                 start = GradientLeftTop,
                 end = GradientRightBottom,
                 shape = CircleShape
             )
-            YBShape(
+            CommonShape(
                 modifier = Modifier.size(100.dp, 100.dp),
                 colors = listOf(MainColor, MsgColor),
                 start = GradientLeftTop,

@@ -1,13 +1,8 @@
 package cn.thecover.media.core.widget.component
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,7 +12,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,7 +32,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import cn.thecover.media.core.widget.R
 import cn.thecover.media.core.widget.theme.MainTextColor
-import cn.thecover.media.core.widget.theme.PageBackgroundColor
 import kotlinx.coroutines.delay
 
 
@@ -55,10 +48,9 @@ suspend fun SnackbarHostState.showToast(message: String) {
 
 /**
  * 自定义toast
- * @param bottomRate 距底部的间距，默认为父容器高度的20%
  */
 @Composable
-fun YBToast(
+fun CommonToast(
     snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     duration: Long = 2000L
 ) {

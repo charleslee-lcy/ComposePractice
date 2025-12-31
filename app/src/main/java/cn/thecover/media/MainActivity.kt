@@ -1,7 +1,6 @@
 package cn.thecover.media
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -18,13 +17,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import cn.thecover.media.MainActivityUiState.Loading
 import cn.thecover.media.core.common.network.NetworkMonitor
-import cn.thecover.media.core.widget.event.EventConstants
-import cn.thecover.media.core.widget.event.FlowBus
-import cn.thecover.media.core.widget.theme.YBTheme
+import cn.thecover.media.core.widget.theme.CommonTheme
 import cn.thecover.media.core.widget.ui.LocalTimeZone
 import cn.thecover.media.core.widget.util.TimeZoneMonitor
-import cn.thecover.media.ui.YBApp
-import cn.thecover.media.ui.rememberYBAppState
+import cn.thecover.media.ui.CommonApp
+import cn.thecover.media.ui.rememberCommonAppState
 import cn.thecover.media.util.isSystemInDarkTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
@@ -95,7 +92,7 @@ class MainActivity : ComponentActivity() {
         splashScreen.setKeepOnScreenCondition { viewModel.uiState.value.shouldKeepSplashScreen() }
 
         setContent {
-            val appState = rememberYBAppState(
+            val appState = rememberCommonAppState(
                 networkMonitor = networkMonitor,
                 timeZoneMonitor = timeZoneMonitor,
             )
@@ -105,12 +102,12 @@ class MainActivity : ComponentActivity() {
             CompositionLocalProvider(
                 LocalTimeZone provides currentTimeZone,
             ) {
-                YBTheme(
+                CommonTheme(
                     darkTheme = themeSettings.darkTheme,
                     androidTheme = themeSettings.androidTheme,
                     disableDynamicTheming = themeSettings.disableDynamicTheming,
                 ) {
-                    YBApp(appState)
+                    CommonApp(appState)
                 }
             }
         }

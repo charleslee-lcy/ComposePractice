@@ -31,7 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import cn.thecover.media.core.widget.component.popup.YBLoadingDialog
+import cn.thecover.media.core.widget.component.popup.CommonLoadingDialog
 import cn.thecover.media.core.widget.state.rememberTipsDialogState
 import cn.thecover.media.core.widget.theme.MainTextColor
 
@@ -53,7 +53,7 @@ import cn.thecover.media.core.widget.theme.MainTextColor
  */
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-fun YBWebViewPage(
+fun CommonWebView(
     modifier: Modifier = Modifier,
     url: String = "",
     htmlContent: String? = null,
@@ -79,7 +79,7 @@ fun YBWebViewPage(
                 .background(statusBarColor)
                 .statusBarsPadding()
         )
-        YBTitleBar (
+        TitleBar (
             center = {
                 Text(
                     text = webTitle,
@@ -190,7 +190,7 @@ fun YBWebViewPage(
                 }
             )
 
-            YBLoadingDialog(
+            CommonLoadingDialog(
                 enableDismiss = false,
                 onDismissRequest = {
 

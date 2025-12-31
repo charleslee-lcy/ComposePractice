@@ -36,13 +36,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastCoerceAtLeast
 import cn.thecover.media.core.widget.R
-import cn.thecover.media.core.widget.component.YBInput
-import cn.thecover.media.core.widget.component.popup.YBAlignDropdownMenu
+import cn.thecover.media.core.widget.component.CommonInput
+import cn.thecover.media.core.widget.component.popup.CommonAlignDropdownMenu
 import cn.thecover.media.core.widget.event.clickableWithoutRipple
 import cn.thecover.media.core.widget.theme.EditHintTextColor
 import cn.thecover.media.core.widget.theme.MainTextColor
 import cn.thecover.media.core.widget.theme.TertiaryTextColor
-import cn.thecover.media.core.widget.theme.YBShapes
+import cn.thecover.media.core.widget.theme.CommonShapes
 
 /**
  *  Created by Wing at 09:41 on 2025/8/8
@@ -122,11 +122,11 @@ fun FilterSearchTextField(
                 color = MaterialTheme.colorScheme.outlineVariant
             )
             .fillMaxWidth()
-            .background(backgroundColor, shape = YBShapes.extraSmall),
+            .background(backgroundColor, shape = CommonShapes.extraSmall),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // 下拉菜单组件，用于选择筛选类型
-        YBAlignDropdownMenu(
+        CommonAlignDropdownMenu(
             data = dataList,
             expanded = showDrop,
             initialIndex = dataList.indexOf(data.value).fastCoerceAtLeast(0),
@@ -143,7 +143,7 @@ fun FilterSearchTextField(
                     .width(filterMenuWidth)
                     .background(
                         backgroundColor,
-                        shape = YBShapes.extraSmall
+                        shape = CommonShapes.extraSmall
                     )
                     .padding(horizontal = 12.dp, vertical = 8.dp)
                     .clickableWithoutRipple {
@@ -181,7 +181,7 @@ fun FilterSearchTextField(
         )
 
         // 文本输入框，用于输入搜索关键词
-        YBInput(
+        CommonInput(
             text = textState.value,
             modifier = Modifier
                 .weight(1f)
@@ -190,8 +190,9 @@ fun FilterSearchTextField(
                 fontSize = 13.sp, color = MainTextColor
             ),
             hint = "请输入搜索内容",
-            hintTextSize = 13.sp,
-            hintTextColor = EditHintTextColor,
+            hintTextStyle = TextStyle(
+                fontSize = 13.sp, color = EditHintTextColor
+            ),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Search
             ),

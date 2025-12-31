@@ -17,7 +17,7 @@
 package cn.thecover.media.core.common.di
 
 import cn.thecover.media.core.common.network.Dispatcher
-import cn.thecover.media.core.common.network.YBDispatchers.Default
+import cn.thecover.media.core.common.network.CommonDispatchers.Default
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

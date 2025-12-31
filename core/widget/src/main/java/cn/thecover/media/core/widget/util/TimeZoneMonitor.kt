@@ -24,7 +24,7 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import cn.thecover.media.core.common.di.ApplicationScope
 import cn.thecover.media.core.common.network.Dispatcher
-import cn.thecover.media.core.common.network.YBDispatchers.IO
+import cn.thecover.media.core.common.network.CommonDispatchers.IO
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
