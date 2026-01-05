@@ -22,12 +22,8 @@ dependencies {
     api(libs.androidx.compose.ui.util)
     api(libs.androidx.activity.compose)
     api(libs.androidx.constraintLayout)
-    api(libs.coil.kt)
-    api(libs.coil.kt.svg)
-    api(libs.coil.kt.compose)
+    api(libs.bundles.coil)
     api(libs.androidx.browser)
 
-    testImplementation(libs.androidx.compose.ui.test)
-    testImplementation(libs.androidx.compose.ui.testManifest)
     testImplementation(libs.hilt.android.testing)
 }
